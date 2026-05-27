@@ -1,0 +1,27 @@
+Task 020 manual Codex log
+
+Goal:
+- Add stage-2 episode recording and LeRobot-ready export.
+
+Planned changes:
+- Add aerial_manip_eval episode recorder node.
+- Add tools/export_to_lerobot.py.
+- Add docs/STAGE2_DATASET_SCHEMA.md.
+
+Validation:
+- python3 -m compileall src/aerial_manip_policy src/aerial_manip_eval tools
+  PASS
+- python3 tools/export_to_lerobot.py --help || true
+  PASS
+- temporary exporter smoke test with one synthetic episode
+  PASS
+- colcon build --packages-select aerial_manip_eval
+  PASS
+
+Changed files:
+- src/aerial_manip_eval/aerial_manip_eval/episode_recorder.py
+- src/aerial_manip_eval/setup.py
+- src/aerial_manip_eval/package.xml
+- tools/export_to_lerobot.py
+- docs/STAGE2_DATASET_SCHEMA.md
+- codex-logs/020-add-episode-recorder-and-lerobot-export.log

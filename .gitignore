@@ -1,0 +1,46 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.vscode/
+.idea/
+
+# Secrets and local environment
+.env
+.env.*
+*.pem
+*.key
+*.token
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# ROS2 / colcon generated output
+px4_ros2_ws/build/
+px4_ros2_ws/install/
+px4_ros2_ws/log/
+
+# Runtime logs and generated experiment artifacts
+px4_ros2_ws/logs/
+px4_ros2_ws/visualizations/
+*.ulg
+*.bag
+*.db3
+*.mcap
+*.mp4
+
+# Large model/checkpoint outputs
+*.pt
+*.pth
+*.onnx
+*.ckpt
+
+# Generated ROS graph snapshots
+px4_ros2_ws/frames_*.gv

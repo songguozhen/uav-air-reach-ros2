@@ -1,0 +1,1850 @@
+Reading prompt from stdin...
+OpenAI Codex v0.133.0
+--------
+workdir: /home/clcwork/UAV_capture/px4_ros2_ws
+model: gpt-5.5
+provider: openai
+approval: never
+sandbox: danger-full-access
+reasoning effort: high
+reasoning summaries: none
+session id: 019e6515-417c-7702-b81c-4d1b861fd6af
+--------
+user
+# Task 001: Audit Project Structure
+
+## Task goal
+
+- 理解当前 `px4_ros2_ws` 的目录结构。
+- 找出已有 demo 脚本、可视化脚本、ROS2 包、日志目录。
+- 生成项目结构摘要文档。
+
+## Allowed changes
+
+- 只能新增或更新 `docs/PROJECT_STRUCTURE.md`。
+- 可以创建 `docs/` 目录。
+- 不允许改动任何 Python 控制节点、shell 实验脚本、PX4 配置和日志数据。
+
+## Required commands
+
+将命令输出保存到 `codex-logs/001-audit-project-structure.log`：
+
+```bash
+pwd
+find . -maxdepth 3 -type f | sort
+find . -maxdepth 3 -type d | sort
+if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then git status --short; fi
+ls scripts
+ls src
+if [ -d logs ]; then ls logs; fi
+```
+
+## Deliverables
+
+- `docs/PROJECT_STRUCTURE.md`
+- `codex-logs/001-audit-project-structure.log`
+
+## Final report requirements
+
+最终报告必须说明：
+
+- 当前有哪些 ROS2 包。
+- 当前有哪些 demo 脚本。
+- 当前有哪些可视化输出。
+- 哪些目录是源码，哪些目录是实验结果，哪些目录不应删除。
+- `changed files`
+- `commands run`
+- `test result`
+- `known risks`
+
+codex
+我会先按任务要求审计目录并把指定命令输出写入 `codex-logs/001-audit-project-structure.log`，然后只创建/更新 `docs/PROJECT_STRUCTURE.md`。不会改控制节点、脚本、PX4 配置或日志数据。
+exec
+/bin/bash -lc 'mkdir -p codex-logs && { pwd; find . -maxdepth 3 -type f | sort; find . -maxdepth 3 -type d | sort; if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then git status --short; fi; ls scripts; ls src; if [ -d logs ]; then ls logs; fi; } > codex-logs/001-audit-project-structure.log 2>&1' in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+codex
+指定审计命令已经执行并写入日志。我接下来读取日志和关键目录清单，提炼 ROS2 包、demo 脚本、可视化/日志输出分布，然后写摘要文档。
+exec
+/bin/bash -lc 'find src -maxdepth 3 -type f | sort' in /home/clcwork/UAV_capture/px4_ros2_ws
+exec
+/bin/bash -lc "sed -n '1,260p' codex-logs/001-audit-project-structure.log" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+/home/clcwork/UAV_capture/px4_ros2_ws
+./AGENTS.md
+./BASIC_CONTROL_DEMOS.md
+./OFFBOARD_HOVER_EXPERIMENT.md
+./TOOLS_AND_SCRIPTS_GUIDE.md
+./build/.built_by
+./build/COLCON_IGNORE
+./build/px4_msgs/AMENT_IGNORE
+./build/px4_msgs/CMakeCache.txt
+./build/px4_msgs/CTestConfiguration.ini
+./build/px4_msgs/CTestCustom.cmake
+./build/px4_msgs/CTestTestfile.cmake
+./build/px4_msgs/Makefile
+./build/px4_msgs/ament_cmake_symlink_install_targets_0_.cmake
+./build/px4_msgs/ament_cmake_symlink_install_targets_1_.cmake
+./build/px4_msgs/ament_cmake_symlink_install_targets_2_.cmake
+./build/px4_msgs/cmake_args.last
+./build/px4_msgs/cmake_install.cmake
+./build/px4_msgs/colcon_build.rc
+./build/px4_msgs/colcon_command_prefix_build.sh
+./build/px4_msgs/colcon_command_prefix_build.sh.env
+./build/px4_msgs/install_manifest.txt
+./build/px4_msgs/libpx4_msgs__rosidl_generator_c.so
+./build/px4_msgs/libpx4_msgs__rosidl_generator_py.so
+./build/px4_msgs/libpx4_msgs__rosidl_typesupport_c.so
+./build/px4_msgs/libpx4_msgs__rosidl_typesupport_cpp.so
+./build/px4_msgs/libpx4_msgs__rosidl_typesupport_fastrtps_c.so
+./build/px4_msgs/libpx4_msgs__rosidl_typesupport_fastrtps_cpp.so
+./build/px4_msgs/libpx4_msgs__rosidl_typesupport_introspection_c.so
+./build/px4_msgs/libpx4_msgs__rosidl_typesupport_introspection_cpp.so
+./build/px4_msgs/rosidl_adapter__arguments__px4_msgs.json
+./build/px4_msgs/rosidl_generator_c__arguments.json
+./build/px4_msgs/rosidl_generator_cpp__arguments.json
+./build/px4_msgs/rosidl_generator_py__arguments.json
+./build/px4_msgs/rosidl_generator_rs__arguments.json
+./build/px4_msgs/rosidl_generator_type_description__arguments.json
+./build/px4_msgs/rosidl_typesupport_c__arguments.json
+./build/px4_msgs/rosidl_typesupport_cpp__arguments.json
+./build/px4_msgs/rosidl_typesupport_fastrtps_c__arguments.json
+./build/px4_msgs/rosidl_typesupport_fastrtps_cpp__arguments.json
+./build/px4_msgs/rosidl_typesupport_introspection_c__arguments.json
+./build/px4_msgs/rosidl_typesupport_introspection_cpp__arguments.json
+./build/px4_msgs/symlink_install_manifest.txt
+./build/px4_offboard_hover/colcon_build.rc
+./build/px4_offboard_hover/colcon_command_prefix_setup_py.sh
+./build/px4_offboard_hover/colcon_command_prefix_setup_py.sh.env
+./codex-logs/001-audit-project-structure-20260527_001340.log
+./codex-logs/001-audit-project-structure-20260527_001912.log
+./codex-logs/001-audit-project-structure.log
+./codex-logs/run-codex-queue-fix-20260527_001740.log
+./codex-tasks/001-audit-project-structure.md
+./codex-tasks/002-standardize-demo-visualization.md
+./codex-tasks/003-add-demo-regression-checks.md
+./codex-tasks/004-design-uav-control-api.md
+./codex-tasks/005-plan-uav-arm-simulation.md
+./install/.colcon_install_layout
+./install/COLCON_IGNORE
+./install/_local_setup_util_ps1.py
+./install/_local_setup_util_sh.py
+./install/local_setup.bash
+./install/local_setup.ps1
+./install/local_setup.sh
+./install/local_setup.zsh
+./install/setup.bash
+./install/setup.ps1
+./install/setup.sh
+./install/setup.zsh
+./log/COLCON_IGNORE
+./log/build_2026-05-25_21-07-07/events.log
+./log/build_2026-05-25_21-07-07/logger_all.log
+./log/build_2026-05-25_21-24-09/events.log
+./log/build_2026-05-25_21-24-09/logger_all.log
+./log/build_2026-05-25_21-28-09/events.log
+./log/build_2026-05-25_21-28-09/logger_all.log
+./log/build_2026-05-26_08-20-16/events.log
+./log/build_2026-05-26_08-20-16/logger_all.log
+./log/build_2026-05-26_08-20-53/events.log
+./log/build_2026-05-26_08-20-53/logger_all.log
+./log/build_2026-05-26_08-39-39/events.log
+./log/build_2026-05-26_08-39-39/logger_all.log
+./log/build_2026-05-26_08-48-36/events.log
+./log/build_2026-05-26_08-48-36/logger_all.log
+./log/build_2026-05-26_09-01-34/events.log
+./log/build_2026-05-26_09-01-34/logger_all.log
+./log/build_2026-05-26_22-14-26/events.log
+./log/build_2026-05-26_22-14-26/logger_all.log
+./log/build_2026-05-26_22-16-18/events.log
+./log/build_2026-05-26_22-16-18/logger_all.log
+./log/build_2026-05-26_22-21-16/events.log
+./log/build_2026-05-26_22-21-16/logger_all.log
+./run_codex_queue.sh
+./scripts/run_demo01_hover.sh
+./scripts/run_demo02_waypoint_flight.sh
+./scripts/run_demo03_circle_trajectory.sh
+./scripts/run_demo04_external_setpoint.sh
+./scripts/run_hover_experiment.sh
+./scripts/run_trajectory_recorder.sh
+./scripts/start_stack.sh
+./scripts/stop_stack.sh
+./src/px4_msgs/.gitignore
+./src/px4_msgs/CMakeLists.txt
+./src/px4_msgs/CONTRIBUTING.md
+./src/px4_msgs/LICENSE
+./src/px4_msgs/README.md
+./src/px4_msgs/package.xml
+./src/px4_offboard_hover/package.xml
+./src/px4_offboard_hover/setup.cfg
+./src/px4_offboard_hover/setup.py
+.
+./build
+./build/px4_msgs
+./build/px4_msgs/.cmake
+./build/px4_msgs/CMakeFiles
+./build/px4_msgs/ament_cmake_core
+./build/px4_msgs/ament_cmake_environment_hooks
+./build/px4_msgs/ament_cmake_export_dependencies
+./build/px4_msgs/ament_cmake_export_include_directories
+./build/px4_msgs/ament_cmake_export_libraries
+./build/px4_msgs/ament_cmake_export_targets
+./build/px4_msgs/ament_cmake_index
+./build/px4_msgs/ament_cmake_package_templates
+./build/px4_msgs/ament_cmake_python
+./build/px4_msgs/ament_cmake_symlink_install
+./build/px4_msgs/ament_cmake_uninstall_target
+./build/px4_msgs/px4_msgs__py
+./build/px4_msgs/px4_msgs__rs
+./build/px4_msgs/rosidl_adapter
+./build/px4_msgs/rosidl_cmake
+./build/px4_msgs/rosidl_generator_c
+./build/px4_msgs/rosidl_generator_cpp
+./build/px4_msgs/rosidl_generator_py
+./build/px4_msgs/rosidl_generator_rs
+./build/px4_msgs/rosidl_generator_type_description
+./build/px4_msgs/rosidl_typesupport_c
+./build/px4_msgs/rosidl_typesupport_cpp
+./build/px4_msgs/rosidl_typesupport_fastrtps_c
+./build/px4_msgs/rosidl_typesupport_fastrtps_cpp
+./build/px4_msgs/rosidl_typesupport_introspection_c
+./build/px4_msgs/rosidl_typesupport_introspection_cpp
+./build/px4_offboard_hover
+./build/px4_offboard_hover/prefix_override
+./build/px4_offboard_hover/px4_offboard_hover.egg-info
+./build/px4_offboard_hover/resource
+./build/px4_offboard_hover/share
+./codex-logs
+./codex-tasks
+./install
+./install/px4_msgs
+./install/px4_msgs/include
+./install/px4_msgs/lib
+./install/px4_msgs/share
+./install/px4_offboard_hover
+./install/px4_offboard_hover/lib
+./install/px4_offboard_hover/share
+./log
+./log/build_2026-05-25_21-07-07
+./log/build_2026-05-25_21-07-07/px4_msgs
+./log/build_2026-05-25_21-07-07/px4_offboard_hover
+./log/build_2026-05-25_21-24-09
+./log/build_2026-05-25_21-24-09/px4_offboard_hover
+./log/build_2026-05-25_21-28-09
+./log/build_2026-05-25_21-28-09/px4_offboard_hover
+./log/build_2026-05-26_08-20-16
+./log/build_2026-05-26_08-20-16/px4_offboard_hover
+./log/build_2026-05-26_08-20-53
+./log/build_2026-05-26_08-20-53/px4_offboard_hover
+./log/build_2026-05-26_08-39-39
+./log/build_2026-05-26_08-39-39/px4_offboard_hover
+./log/build_2026-05-26_08-48-36
+./log/build_2026-05-26_08-48-36/px4_offboard_hover
+./log/build_2026-05-26_09-01-34
+./log/build_2026-05-26_09-01-34/px4_offboard_hover
+./log/build_2026-05-26_22-14-26
+./log/build_2026-05-26_22-14-26/px4_offboard_hover
+./log/build_2026-05-26_22-16-18
+./log/build_2026-05-26_22-16-18/px4_offboard_hover
+./log/build_2026-05-26_22-21-16
+./log/build_2026-05-26_22-21-16/px4_offboard_hover
+./logs
+./logs/demo01_hover
+./logs/demo01_hover/20260526_221722
+./logs/demo02_waypoint_flight
+./logs/demo02_waypoint_flight/20260526_085827
+./logs/demo02_waypoint_flight/20260526_090144
+./logs/demo02_waypoint_flight/20260526_221833
+./logs/demo02_waypoint_flight/20260526_222121
+./logs/demo03_circle_trajectory
+./logs/demo03_circle_trajectory/20260526_083341
+./logs/demo03_circle_trajectory/20260526_090359
+./logs/demo03_circle_trajectory/20260526_222313
+./logs/demo04_external_setpoint
+./logs/demo04_external_setpoint/20260526_090546
+./logs/demo04_external_setpoint/20260526_222502
+./logs/offboard_hover
+./logs/offboard_hover/20260525_212417
+./logs/offboard_hover/20260525_212434
+./logs/offboard_hover/20260525_212600
+./logs/offboard_hover/20260525_212810
+./logs/offboard_hover/20260526_080357
+./scripts
+./src
+./src/px4_msgs
+./src/px4_msgs/.git
+./src/px4_msgs/.github
+./src/px4_msgs/msg
+./src/px4_msgs/srv
+./src/px4_offboard_hover
+./src/px4_offboard_hover/px4_offboard_hover
+./src/px4_offboard_hover/resource
+./visualizations
+./visualizations/demo01_hover
+./visualizations/demo01_hover/20260526_221722
+./visualizations/demo02_waypoint_flight
+./visualizations/demo02_waypoint_flight/20260526_085827
+./visualizations/demo02_waypoint_flight/20260526_090144
+./visualizations/demo02_waypoint_flight/20260526_221833
+./visualizations/demo02_waypoint_flight/20260526_222121
+./visualizations/demo03_circle_trajectory
+./visualizations/demo03_circle_trajectory/20260526_090359
+./visualizations/demo03_circle_trajectory/20260526_222313
+./visualizations/demo04_external_setpoint
+./visualizations/demo04_external_setpoint/20260526_090546
+./visualizations/demo04_external_setpoint/20260526_222502
+run_demo01_hover.sh
+run_demo02_waypoint_flight.sh
+run_demo03_circle_trajectory.sh
+run_demo04_external_setpoint.sh
+run_hover_experiment.sh
+run_trajectory_recorder.sh
+start_stack.sh
+stop_stack.sh
+px4_msgs
+px4_offboard_hover
+demo01_hover
+demo02_waypoint_flight
+demo03_circle_trajectory
+demo04_external_setpoint
+offboard_hover
+
+ succeeded in 0ms:
+src/px4_msgs/.git/HEAD
+src/px4_msgs/.git/config
+src/px4_msgs/.git/description
+src/px4_msgs/.git/index
+src/px4_msgs/.git/packed-refs
+src/px4_msgs/.github/dependabot.yml
+src/px4_msgs/.gitignore
+src/px4_msgs/CMakeLists.txt
+src/px4_msgs/CONTRIBUTING.md
+src/px4_msgs/LICENSE
+src/px4_msgs/README.md
+src/px4_msgs/msg/ActionRequest.msg
+src/px4_msgs/msg/ActuatorArmed.msg
+src/px4_msgs/msg/ActuatorControlsStatus.msg
+src/px4_msgs/msg/ActuatorMotors.msg
+src/px4_msgs/msg/ActuatorOutputs.msg
+src/px4_msgs/msg/ActuatorServos.msg
+src/px4_msgs/msg/ActuatorServosTrim.msg
+src/px4_msgs/msg/ActuatorTest.msg
+src/px4_msgs/msg/AdcReport.msg
+src/px4_msgs/msg/Airspeed.msg
+src/px4_msgs/msg/AirspeedValidated.msg
+src/px4_msgs/msg/AirspeedWind.msg
+src/px4_msgs/msg/ArmingCheckReply.msg
+src/px4_msgs/msg/ArmingCheckRequest.msg
+src/px4_msgs/msg/AutotuneAttitudeControlStatus.msg
+src/px4_msgs/msg/AuxGlobalPosition.msg
+src/px4_msgs/msg/BatteryInfo.msg
+src/px4_msgs/msg/BatteryStatus.msg
+src/px4_msgs/msg/ButtonEvent.msg
+src/px4_msgs/msg/CameraCapture.msg
+src/px4_msgs/msg/CameraStatus.msg
+src/px4_msgs/msg/CameraTrigger.msg
+src/px4_msgs/msg/CanInterfaceStatus.msg
+src/px4_msgs/msg/CellularStatus.msg
+src/px4_msgs/msg/CollisionConstraints.msg
+src/px4_msgs/msg/ConfigOverrides.msg
+src/px4_msgs/msg/ControlAllocatorStatus.msg
+src/px4_msgs/msg/Cpuload.msg
+src/px4_msgs/msg/DatamanRequest.msg
+src/px4_msgs/msg/DatamanResponse.msg
+src/px4_msgs/msg/DebugArray.msg
+src/px4_msgs/msg/DebugKeyValue.msg
+src/px4_msgs/msg/DebugValue.msg
+src/px4_msgs/msg/DebugVect.msg
+src/px4_msgs/msg/DeviceInformation.msg
+src/px4_msgs/msg/DifferentialPressure.msg
+src/px4_msgs/msg/DistanceSensor.msg
+src/px4_msgs/msg/DistanceSensorModeChangeRequest.msg
+src/px4_msgs/msg/DronecanNodeStatus.msg
+src/px4_msgs/msg/Ekf2Timestamps.msg
+src/px4_msgs/msg/EscEepromRead.msg
+src/px4_msgs/msg/EscEepromWrite.msg
+src/px4_msgs/msg/EscReport.msg
+src/px4_msgs/msg/EscStatus.msg
+src/px4_msgs/msg/EstimatorAidSource1d.msg
+src/px4_msgs/msg/EstimatorAidSource2d.msg
+src/px4_msgs/msg/EstimatorAidSource3d.msg
+src/px4_msgs/msg/EstimatorBias.msg
+src/px4_msgs/msg/EstimatorBias3d.msg
+src/px4_msgs/msg/EstimatorEventFlags.msg
+src/px4_msgs/msg/EstimatorFusionControl.msg
+src/px4_msgs/msg/EstimatorGpsStatus.msg
+src/px4_msgs/msg/EstimatorInnovations.msg
+src/px4_msgs/msg/EstimatorSelectorStatus.msg
+src/px4_msgs/msg/EstimatorSensorBias.msg
+src/px4_msgs/msg/EstimatorStates.msg
+src/px4_msgs/msg/EstimatorStatus.msg
+src/px4_msgs/msg/EstimatorStatusFlags.msg
+src/px4_msgs/msg/Event.msg
+src/px4_msgs/msg/FailsafeFlags.msg
+src/px4_msgs/msg/FailureDetectorStatus.msg
+src/px4_msgs/msg/FigureEightStatus.msg
+src/px4_msgs/msg/FixedWingLateralGuidanceStatus.msg
+src/px4_msgs/msg/FixedWingLateralSetpoint.msg
+src/px4_msgs/msg/FixedWingLateralStatus.msg
+src/px4_msgs/msg/FixedWingLongitudinalSetpoint.msg
+src/px4_msgs/msg/FixedWingRunwayControl.msg
+src/px4_msgs/msg/FlightPhaseEstimation.msg
+src/px4_msgs/msg/FollowTarget.msg
+src/px4_msgs/msg/FollowTargetEstimator.msg
+src/px4_msgs/msg/FollowTargetStatus.msg
+src/px4_msgs/msg/FuelTankStatus.msg
+src/px4_msgs/msg/GainCompression.msg
+src/px4_msgs/msg/GeneratorStatus.msg
+src/px4_msgs/msg/GeofenceResult.msg
+src/px4_msgs/msg/GeofenceStatus.msg
+src/px4_msgs/msg/GimbalControls.msg
+src/px4_msgs/msg/GimbalDeviceAttitudeStatus.msg
+src/px4_msgs/msg/GimbalDeviceInformation.msg
+src/px4_msgs/msg/GimbalDeviceSetAttitude.msg
+src/px4_msgs/msg/GimbalManagerInformation.msg
+src/px4_msgs/msg/GimbalManagerSetAttitude.msg
+src/px4_msgs/msg/GimbalManagerSetManualControl.msg
+src/px4_msgs/msg/GimbalManagerStatus.msg
+src/px4_msgs/msg/GotoSetpoint.msg
+src/px4_msgs/msg/GpioConfig.msg
+src/px4_msgs/msg/GpioIn.msg
+src/px4_msgs/msg/GpioOut.msg
+src/px4_msgs/msg/GpioRequest.msg
+src/px4_msgs/msg/GpsDump.msg
+src/px4_msgs/msg/GpsInjectData.msg
+src/px4_msgs/msg/Gripper.msg
+src/px4_msgs/msg/HealthReport.msg
+src/px4_msgs/msg/HeaterStatus.msg
+src/px4_msgs/msg/HomePosition.msg
+src/px4_msgs/msg/HoverThrustEstimate.msg
+src/px4_msgs/msg/InputRc.msg
+src/px4_msgs/msg/InternalCombustionEngineControl.msg
+src/px4_msgs/msg/InternalCombustionEngineStatus.msg
+src/px4_msgs/msg/IridiumsbdStatus.msg
+src/px4_msgs/msg/IrlockReport.msg
+src/px4_msgs/msg/LandingGear.msg
+src/px4_msgs/msg/LandingGearWheel.msg
+src/px4_msgs/msg/LandingTargetInnovations.msg
+src/px4_msgs/msg/LandingTargetPose.msg
+src/px4_msgs/msg/LateralControlConfiguration.msg
+src/px4_msgs/msg/LaunchDetectionStatus.msg
+src/px4_msgs/msg/LedControl.msg
+src/px4_msgs/msg/LogMessage.msg
+src/px4_msgs/msg/LoggerStatus.msg
+src/px4_msgs/msg/LongitudinalControlConfiguration.msg
+src/px4_msgs/msg/MagWorkerData.msg
+src/px4_msgs/msg/MagnetometerBiasEstimate.msg
+src/px4_msgs/msg/ManualControlSetpoint.msg
+src/px4_msgs/msg/ManualControlSwitches.msg
+src/px4_msgs/msg/MavlinkLog.msg
+src/px4_msgs/msg/MavlinkTunnel.msg
+src/px4_msgs/msg/MessageFormatRequest.msg
+src/px4_msgs/msg/MessageFormatResponse.msg
+src/px4_msgs/msg/Mission.msg
+src/px4_msgs/msg/MissionResult.msg
+src/px4_msgs/msg/ModeCompleted.msg
+src/px4_msgs/msg/MountOrientation.msg
+src/px4_msgs/msg/NavigatorMissionItem.msg
+src/px4_msgs/msg/NavigatorStatus.msg
+src/px4_msgs/msg/NeuralControl.msg
+src/px4_msgs/msg/NormalizedUnsignedSetpoint.msg
+src/px4_msgs/msg/ObstacleDistance.msg
+src/px4_msgs/msg/OffboardControlMode.msg
+src/px4_msgs/msg/OnboardComputerStatus.msg
+src/px4_msgs/msg/OpenDroneIdArmStatus.msg
+src/px4_msgs/msg/OpenDroneIdOperatorId.msg
+src/px4_msgs/msg/OpenDroneIdSelfId.msg
+src/px4_msgs/msg/OpenDroneIdSystem.msg
+src/px4_msgs/msg/OrbTest.msg
+src/px4_msgs/msg/OrbTestLarge.msg
+src/px4_msgs/msg/OrbTestMedium.msg
+src/px4_msgs/msg/OrbitStatus.msg
+src/px4_msgs/msg/ParameterResetRequest.msg
+src/px4_msgs/msg/ParameterSetUsedRequest.msg
+src/px4_msgs/msg/ParameterSetValueRequest.msg
+src/px4_msgs/msg/ParameterSetValueResponse.msg
+src/px4_msgs/msg/ParameterUpdate.msg
+src/px4_msgs/msg/Ping.msg
+src/px4_msgs/msg/PositionControllerLandingStatus.msg
+src/px4_msgs/msg/PositionControllerStatus.msg
+src/px4_msgs/msg/PositionSetpoint.msg
+src/px4_msgs/msg/PositionSetpointTriplet.msg
+src/px4_msgs/msg/PowerButtonState.msg
+src/px4_msgs/msg/PowerMonitor.msg
+src/px4_msgs/msg/PpsCapture.msg
+src/px4_msgs/msg/PurePursuitStatus.msg
+src/px4_msgs/msg/PwmInput.msg
+src/px4_msgs/msg/Px4ioStatus.msg
+src/px4_msgs/msg/QshellReq.msg
+src/px4_msgs/msg/QshellRetval.msg
+src/px4_msgs/msg/RadioStatus.msg
+src/px4_msgs/msg/RangingBeacon.msg
+src/px4_msgs/msg/RaptorInput.msg
+src/px4_msgs/msg/RaptorStatus.msg
+src/px4_msgs/msg/RateCtrlStatus.msg
+src/px4_msgs/msg/RcChannels.msg
+src/px4_msgs/msg/RcParameterMap.msg
+src/px4_msgs/msg/RegisterExtComponentReply.msg
+src/px4_msgs/msg/RegisterExtComponentRequest.msg
+src/px4_msgs/msg/RoverAttitudeSetpoint.msg
+src/px4_msgs/msg/RoverAttitudeStatus.msg
+src/px4_msgs/msg/RoverPositionSetpoint.msg
+src/px4_msgs/msg/RoverRateSetpoint.msg
+src/px4_msgs/msg/RoverRateStatus.msg
+src/px4_msgs/msg/RoverSpeedSetpoint.msg
+src/px4_msgs/msg/RoverSpeedStatus.msg
+src/px4_msgs/msg/RoverSteeringSetpoint.msg
+src/px4_msgs/msg/RoverThrottleSetpoint.msg
+src/px4_msgs/msg/Rpm.msg
+src/px4_msgs/msg/RtlStatus.msg
+src/px4_msgs/msg/RtlTimeEstimate.msg
+src/px4_msgs/msg/SatelliteInfo.msg
+src/px4_msgs/msg/SensorAccel.msg
+src/px4_msgs/msg/SensorAccelFifo.msg
+src/px4_msgs/msg/SensorAirflow.msg
+src/px4_msgs/msg/SensorBaro.msg
+src/px4_msgs/msg/SensorCombined.msg
+src/px4_msgs/msg/SensorCorrection.msg
+src/px4_msgs/msg/SensorGnssRelative.msg
+src/px4_msgs/msg/SensorGnssStatus.msg
+src/px4_msgs/msg/SensorGps.msg
+src/px4_msgs/msg/SensorGyro.msg
+src/px4_msgs/msg/SensorGyroFft.msg
+src/px4_msgs/msg/SensorGyroFifo.msg
+src/px4_msgs/msg/SensorHygrometer.msg
+src/px4_msgs/msg/SensorMag.msg
+src/px4_msgs/msg/SensorOpticalFlow.msg
+src/px4_msgs/msg/SensorPreflightMag.msg
+src/px4_msgs/msg/SensorSelection.msg
+src/px4_msgs/msg/SensorTemp.msg
+src/px4_msgs/msg/SensorUwb.msg
+src/px4_msgs/msg/SensorsStatus.msg
+src/px4_msgs/msg/SensorsStatusImu.msg
+src/px4_msgs/msg/SystemPower.msg
+src/px4_msgs/msg/TakeoffStatus.msg
+src/px4_msgs/msg/TaskStackInfo.msg
+src/px4_msgs/msg/TecsStatus.msg
+src/px4_msgs/msg/TelemetryStatus.msg
+src/px4_msgs/msg/TiltrotorExtraControls.msg
+src/px4_msgs/msg/TimesyncStatus.msg
+src/px4_msgs/msg/TrajectorySetpoint.msg
+src/px4_msgs/msg/TrajectorySetpoint6dof.msg
+src/px4_msgs/msg/TransponderReport.msg
+src/px4_msgs/msg/TuneControl.msg
+src/px4_msgs/msg/UavcanParameterRequest.msg
+src/px4_msgs/msg/UavcanParameterValue.msg
+src/px4_msgs/msg/UlogStream.msg
+src/px4_msgs/msg/UlogStreamAck.msg
+src/px4_msgs/msg/UnregisterExtComponent.msg
+src/px4_msgs/msg/VehicleAcceleration.msg
+src/px4_msgs/msg/VehicleAirData.msg
+src/px4_msgs/msg/VehicleAngularAccelerationSetpoint.msg
+src/px4_msgs/msg/VehicleAngularVelocity.msg
+src/px4_msgs/msg/VehicleAttitude.msg
+src/px4_msgs/msg/VehicleAttitudeSetpoint.msg
+src/px4_msgs/msg/VehicleCommand.msg
+src/px4_msgs/msg/VehicleCommandAck.msg
+src/px4_msgs/msg/VehicleConstraints.msg
+src/px4_msgs/msg/VehicleControlMode.msg
+src/px4_msgs/msg/VehicleGlobalPosition.msg
+src/px4_msgs/msg/VehicleImu.msg
+src/px4_msgs/msg/VehicleImuStatus.msg
+src/px4_msgs/msg/VehicleLandDetected.msg
+src/px4_msgs/msg/VehicleLocalPosition.msg
+src/px4_msgs/msg/VehicleLocalPositionSetpoint.msg
+src/px4_msgs/msg/VehicleMagnetometer.msg
+src/px4_msgs/msg/VehicleOdometry.msg
+src/px4_msgs/msg/VehicleOpticalFlow.msg
+src/px4_msgs/msg/VehicleOpticalFlowVel.msg
+src/px4_msgs/msg/VehicleRatesSetpoint.msg
+src/px4_msgs/msg/VehicleRoi.msg
+src/px4_msgs/msg/VehicleStatus.msg
+src/px4_msgs/msg/VehicleThrustSetpoint.msg
+src/px4_msgs/msg/VehicleTorqueSetpoint.msg
+src/px4_msgs/msg/VelocityLimits.msg
+src/px4_msgs/msg/VtolVehicleStatus.msg
+src/px4_msgs/msg/Vtx.msg
+src/px4_msgs/msg/WheelEncoders.msg
+src/px4_msgs/msg/Wind.msg
+src/px4_msgs/msg/YawEstimatorStatus.msg
+src/px4_msgs/package.xml
+src/px4_msgs/srv/VehicleCommand.srv
+src/px4_offboard_hover/package.xml
+src/px4_offboard_hover/px4_offboard_hover/__init__.py
+src/px4_offboard_hover/px4_offboard_hover/circle_trajectory.py
+src/px4_offboard_hover/px4_offboard_hover/external_setpoint.py
+src/px4_offboard_hover/px4_offboard_hover/hover.py
+src/px4_offboard_hover/px4_offboard_hover/offboard_base.py
+src/px4_offboard_hover/px4_offboard_hover/trajectory_recorder.py
+src/px4_offboard_hover/px4_offboard_hover/verify_hover.py
+src/px4_offboard_hover/px4_offboard_hover/waypoint_flight.py
+src/px4_offboard_hover/resource/px4_offboard_hover
+src/px4_offboard_hover/setup.cfg
+src/px4_offboard_hover/setup.py
+
+exec
+/bin/bash -lc 'find scripts -maxdepth 2 -type f | sort' in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+scripts/run_demo01_hover.sh
+scripts/run_demo02_waypoint_flight.sh
+scripts/run_demo03_circle_trajectory.sh
+scripts/run_demo04_external_setpoint.sh
+scripts/run_hover_experiment.sh
+scripts/run_trajectory_recorder.sh
+scripts/start_stack.sh
+scripts/stop_stack.sh
+
+exec
+/bin/bash -lc "find . -maxdepth 4 -type d \\( -name visualizations -o -name logs -o -name codex-logs -o -name codex-tasks \\) -print | sort" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+./codex-logs
+./codex-tasks
+./logs
+./src/px4_msgs/.git/logs
+./visualizations
+
+codex
+日志显示工作区已有两个 ROS2 包：`px4_msgs` 和 `px4_offboard_hover`，脚本集中在 `scripts/`。我还需要看一下可视化目录内部的标准输出文件名，以及包的入口点，确保文档不是只写目录名。
+exec
+/bin/bash -lc 'find visualizations -maxdepth 3 -type f | sort' in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+visualizations/demo01_hover/20260526_221722/height_curve.png
+visualizations/demo01_hover/20260526_221722/result.txt
+visualizations/demo01_hover/20260526_221722/speed_curve.png
+visualizations/demo01_hover/20260526_221722/summary.md
+visualizations/demo01_hover/20260526_221722/tracking_error.png
+visualizations/demo01_hover/20260526_221722/trajectory.csv
+visualizations/demo01_hover/20260526_221722/trajectory.mp4
+visualizations/demo01_hover/20260526_221722/trajectory_3d.png
+visualizations/demo01_hover/20260526_221722/xy_path.png
+visualizations/demo02_waypoint_flight/20260526_085827/summary.md
+visualizations/demo02_waypoint_flight/20260526_085827/trajectory.csv
+visualizations/demo02_waypoint_flight/20260526_085827/trajectory.mp4
+visualizations/demo02_waypoint_flight/20260526_085827/trajectory.png
+visualizations/demo02_waypoint_flight/20260526_090144/summary.md
+visualizations/demo02_waypoint_flight/20260526_090144/trajectory.csv
+visualizations/demo02_waypoint_flight/20260526_090144/trajectory.mp4
+visualizations/demo02_waypoint_flight/20260526_090144/trajectory.png
+visualizations/demo02_waypoint_flight/20260526_221833/height_curve.png
+visualizations/demo02_waypoint_flight/20260526_221833/result.txt
+visualizations/demo02_waypoint_flight/20260526_221833/speed_curve.png
+visualizations/demo02_waypoint_flight/20260526_221833/summary.md
+visualizations/demo02_waypoint_flight/20260526_221833/tracking_error.png
+visualizations/demo02_waypoint_flight/20260526_221833/trajectory.csv
+visualizations/demo02_waypoint_flight/20260526_221833/trajectory.mp4
+visualizations/demo02_waypoint_flight/20260526_221833/trajectory_3d.png
+visualizations/demo02_waypoint_flight/20260526_221833/xy_path.png
+visualizations/demo02_waypoint_flight/20260526_222121/height_curve.png
+visualizations/demo02_waypoint_flight/20260526_222121/result.txt
+visualizations/demo02_waypoint_flight/20260526_222121/speed_curve.png
+visualizations/demo02_waypoint_flight/20260526_222121/summary.md
+visualizations/demo02_waypoint_flight/20260526_222121/tracking_error.png
+visualizations/demo02_waypoint_flight/20260526_222121/trajectory.csv
+visualizations/demo02_waypoint_flight/20260526_222121/trajectory.mp4
+visualizations/demo02_waypoint_flight/20260526_222121/trajectory_3d.png
+visualizations/demo02_waypoint_flight/20260526_222121/xy_path.png
+visualizations/demo03_circle_trajectory/20260526_090359/summary.md
+visualizations/demo03_circle_trajectory/20260526_090359/trajectory.csv
+visualizations/demo03_circle_trajectory/20260526_090359/trajectory.mp4
+visualizations/demo03_circle_trajectory/20260526_090359/trajectory.png
+visualizations/demo03_circle_trajectory/20260526_222313/height_curve.png
+visualizations/demo03_circle_trajectory/20260526_222313/result.txt
+visualizations/demo03_circle_trajectory/20260526_222313/speed_curve.png
+visualizations/demo03_circle_trajectory/20260526_222313/summary.md
+visualizations/demo03_circle_trajectory/20260526_222313/tracking_error.png
+visualizations/demo03_circle_trajectory/20260526_222313/trajectory.csv
+visualizations/demo03_circle_trajectory/20260526_222313/trajectory.mp4
+visualizations/demo03_circle_trajectory/20260526_222313/trajectory_3d.png
+visualizations/demo03_circle_trajectory/20260526_222313/xy_path.png
+visualizations/demo04_external_setpoint/20260526_090546/summary.md
+visualizations/demo04_external_setpoint/20260526_090546/trajectory.csv
+visualizations/demo04_external_setpoint/20260526_090546/trajectory.mp4
+visualizations/demo04_external_setpoint/20260526_090546/trajectory.png
+visualizations/demo04_external_setpoint/20260526_222502/height_curve.png
+visualizations/demo04_external_setpoint/20260526_222502/result.txt
+visualizations/demo04_external_setpoint/20260526_222502/speed_curve.png
+visualizations/demo04_external_setpoint/20260526_222502/summary.md
+visualizations/demo04_external_setpoint/20260526_222502/tracking_error.png
+visualizations/demo04_external_setpoint/20260526_222502/trajectory.csv
+visualizations/demo04_external_setpoint/20260526_222502/trajectory.mp4
+visualizations/demo04_external_setpoint/20260526_222502/trajectory_3d.png
+visualizations/demo04_external_setpoint/20260526_222502/xy_path.png
+
+exec
+/bin/bash -lc 'find logs -maxdepth 3 -type f | sort' in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+logs/demo01_hover/20260526_221722/demo01.log
+logs/demo01_hover/20260526_221722/trajectory_recorder.log
+logs/demo02_waypoint_flight/20260526_085827/demo02.log
+logs/demo02_waypoint_flight/20260526_085827/trajectory_recorder.log
+logs/demo02_waypoint_flight/20260526_090144/demo02.log
+logs/demo02_waypoint_flight/20260526_090144/trajectory_recorder.log
+logs/demo02_waypoint_flight/20260526_221833/demo02.log
+logs/demo02_waypoint_flight/20260526_221833/trajectory_recorder.log
+logs/demo02_waypoint_flight/20260526_222121/demo02.log
+logs/demo02_waypoint_flight/20260526_222121/trajectory_recorder.log
+logs/demo03_circle_trajectory/20260526_083341/demo03.log
+logs/demo03_circle_trajectory/20260526_090359/demo03.log
+logs/demo03_circle_trajectory/20260526_090359/trajectory_recorder.log
+logs/demo03_circle_trajectory/20260526_222313/demo03.log
+logs/demo03_circle_trajectory/20260526_222313/trajectory_recorder.log
+logs/demo04_external_setpoint/20260526_090546/demo04.log
+logs/demo04_external_setpoint/20260526_090546/trajectory_recorder.log
+logs/demo04_external_setpoint/20260526_222502/demo04.log
+logs/demo04_external_setpoint/20260526_222502/target_sequence.log
+logs/demo04_external_setpoint/20260526_222502/trajectory_recorder.log
+logs/offboard_hover/20260525_212434/hover.log
+logs/offboard_hover/20260525_212434/verify.log
+logs/offboard_hover/20260525_212600/agent_tail.log
+logs/offboard_hover/20260525_212600/hover.log
+logs/offboard_hover/20260525_212600/px4_tail.log
+logs/offboard_hover/20260525_212600/verify.log
+logs/offboard_hover/20260525_212810/agent_tail.log
+logs/offboard_hover/20260525_212810/hover.log
+logs/offboard_hover/20260525_212810/px4_tail.log
+logs/offboard_hover/20260525_212810/verify.log
+logs/offboard_hover/20260526_080357/agent_tail.log
+logs/offboard_hover/20260526_080357/hover.log
+logs/offboard_hover/20260526_080357/px4_tail.log
+logs/offboard_hover/20260526_080357/verify.log
+
+exec
+/bin/bash -lc "sed -n '1,180p' src/px4_msgs/package.xml" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>px4_msgs</name>
+  <version>2.0.1</version>
+  <description>Package with the ROS-equivalent of PX4 uORB msgs</description>
+  <maintainer email="nuno.marques@dronesolutions.io">Nuno Marques</maintainer>
+  <author email="nuno.marques@dronesolutions.io">Nuno Marques</author>
+  <license>BSD 3-Clause</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>rosidl_default_generators</buildtool_depend>
+
+  <depend>builtin_interfaces</depend>
+  <depend>ros_environment</depend>
+
+  <exec_depend>rosidl_default_runtime</exec_depend>
+
+  <test_depend>ament_lint_common</test_depend>
+
+  <member_of_group>rosidl_interface_packages</member_of_group>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
+
+exec
+/bin/bash -lc "sed -n '1,220p' src/px4_offboard_hover/setup.py" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+from setuptools import find_packages, setup
+
+package_name = "px4_offboard_hover"
+
+setup(
+    name=package_name,
+    version="0.0.1",
+    packages=find_packages(exclude=["test"]),
+    data_files=[
+        ("share/ament_index/resource_index/packages", [f"resource/{package_name}"]),
+        (f"share/{package_name}", ["package.xml"]),
+    ],
+    install_requires=["setuptools"],
+    zip_safe=True,
+    maintainer="clcwork",
+    maintainer_email="clcwork@example.com",
+    description="Minimal PX4 ROS 2 offboard takeoff and hover example.",
+    license="Apache-2.0",
+    entry_points={
+        "console_scripts": [
+            "hover = px4_offboard_hover.hover:main",
+            "verify_hover = px4_offboard_hover.verify_hover:main",
+            "demo02_waypoint_flight = px4_offboard_hover.waypoint_flight:main",
+            "demo03_circle_trajectory = px4_offboard_hover.circle_trajectory:main",
+            "demo04_external_setpoint = px4_offboard_hover.external_setpoint:main",
+            "trajectory_recorder = px4_offboard_hover.trajectory_recorder:main",
+        ],
+    },
+)
+
+exec
+/bin/bash -lc "sed -n '1,180p' src/px4_offboard_hover/package.xml" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+<?xml version="1.0"?>
+<package format="3">
+  <name>px4_offboard_hover</name>
+  <version>0.0.1</version>
+  <description>Minimal PX4 ROS 2 offboard takeoff and hover example.</description>
+  <maintainer email="clcwork@example.com">clcwork</maintainer>
+  <license>Apache-2.0</license>
+
+  <buildtool_depend>ament_python</buildtool_depend>
+
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>px4_msgs</exec_depend>
+  <exec_depend>python3-matplotlib</exec_depend>
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>
+
+exec
+/bin/bash -lc 'find docs -maxdepth 2 -type f | sort' in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+find: ‘docs’: No such file or directory
+
+exec
+/bin/bash -lc 'find codex-tasks -maxdepth 1 -type f | sort' in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+codex-tasks/001-audit-project-structure.md
+codex-tasks/002-standardize-demo-visualization.md
+codex-tasks/003-add-demo-regression-checks.md
+codex-tasks/004-design-uav-control-api.md
+codex-tasks/005-plan-uav-arm-simulation.md
+
+exec
+/bin/bash -lc 'git status --short' in /home/clcwork/UAV_capture/px4_ros2_ws
+ exited 128 in 0ms:
+fatal: not a git repository (or any of the parent directories): .git
+
+codex
+我现在只新增文档文件：先创建 `docs/`，再写 `PROJECT_STRUCTURE.md`。内容会基于刚才保存的审计日志和只读检查结果，不触碰源码、脚本或已有结果目录。
+exec
+/bin/bash -lc 'mkdir -p docs' in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+apply patch
+patch: completed
+/home/clcwork/UAV_capture/px4_ros2_ws/docs/PROJECT_STRUCTURE.md
+diff --git a/UAV_capture/px4_ros2_ws/docs/PROJECT_STRUCTURE.md b/UAV_capture/px4_ros2_ws/docs/PROJECT_STRUCTURE.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..c46e59995204e566856964506910e338c9c173e1
+--- /dev/null
++++ b/UAV_capture/px4_ros2_ws/docs/PROJECT_STRUCTURE.md
+@@ -0,0 +1,148 @@
++# px4_ros2_ws Project Structure
++
++This document summarizes the current structure of `/home/clcwork/UAV_capture/px4_ros2_ws` for Task 001. The raw audit command output is saved in `codex-logs/001-audit-project-structure.log`.
++
++## Workspace Overview
++
++Top-level workspace areas:
++
++| Path | Role | Notes |
++| --- | --- | --- |
++| `src/` | ROS 2 source packages | Main editable package area for this workspace. |
++| `scripts/` | Stack, demo, experiment, and recorder launch helpers | Prefer these scripts for PX4/Gazebo/Micro XRCE-DDS and demo runs. |
++| `logs/` | Experiment/runtime logs | Contains timestamped demo and hover logs. Do not delete. |
++| `visualizations/` | Generated visualization artifacts | Contains timestamped demo outputs such as CSV, plots, videos, summaries, and results. Do not delete or overwrite existing timestamped runs. |
++| `codex-tasks/` | Task definitions | Current task queue and requirements. |
++| `codex-logs/` | Codex task execution logs | Includes this task's audit log. |
++| `build/` | Colcon build output | Generated build artifacts. |
++| `install/` | Colcon install output | Generated install artifacts and setup files. |
++| `log/` | Colcon build logs | Generated build logs from previous `colcon` runs. |
++
++## ROS 2 Packages
++
++Current packages under `src/`:
++
++| Package | Build type | Purpose |
++| --- | --- | --- |
++| `px4_msgs` | `ament_cmake` | PX4 uORB-equivalent ROS message and service definitions. This directory contains many generated interface definitions under `msg/` and `srv/`, and should be treated as upstream PX4 message source unless a task explicitly requires changes. |
++| `px4_offboard_hover` | `ament_python` | Custom Python package for PX4 offboard demos, trajectory recording, and hover verification. |
++
++`px4_offboard_hover` Python modules currently include:
++
++- `hover.py`
++- `verify_hover.py`
++- `waypoint_flight.py`
++- `circle_trajectory.py`
++- `external_setpoint.py`
++- `trajectory_recorder.py`
++- `offboard_base.py`
++
++Installed console entry points from `px4_offboard_hover/setup.py`:
++
++- `hover`
++- `verify_hover`
++- `demo02_waypoint_flight`
++- `demo03_circle_trajectory`
++- `demo04_external_setpoint`
++- `trajectory_recorder`
++
++## Scripts
++
++Current files under `scripts/`:
++
++| Script | Purpose |
++| --- | --- |
++| `start_stack.sh` | Starts the PX4/Gazebo/Micro XRCE-DDS stack used by the demos. |
++| `stop_stack.sh` | Stops the running stack. |
++| `run_demo01_hover.sh` | Demo 01 Offboard Hover runner. |
++| `run_demo02_waypoint_flight.sh` | Demo 02 Waypoint Flight runner. |
++| `run_demo03_circle_trajectory.sh` | Demo 03 Circle Trajectory runner. |
++| `run_demo04_external_setpoint.sh` | Demo 04 External Setpoint Interface runner. |
++| `run_hover_experiment.sh` | Earlier/offboard hover experiment runner. |
++| `run_trajectory_recorder.sh` | Trajectory recorder helper used by demo visualization workflows. |
++
++These scripts are existing workflow entry points and were not modified during this audit.
++
++## Experiment Logs
++
++Runtime logs are stored under `logs/` by demo or experiment name:
++
++- `logs/demo01_hover/`
++- `logs/demo02_waypoint_flight/`
++- `logs/demo03_circle_trajectory/`
++- `logs/demo04_external_setpoint/`
++- `logs/offboard_hover/`
++
++Each demo directory contains timestamped runs. Observed log file names include:
++
++- `demo01.log`
++- `demo02.log`
++- `demo03.log`
++- `demo04.log`
++- `trajectory_recorder.log`
++- `target_sequence.log`
++- `hover.log`
++- `verify.log`
++- `agent_tail.log`
++- `px4_tail.log`
++
++These are experiment results and diagnostic logs. They should not be deleted, truncated, or overwritten unless a task explicitly requires it and the user confirms.
++
++## Visualization Outputs
++
++Visualization results are stored under `visualizations/<demo>/<timestamp>/`.
++
++Current demo visualization roots:
++
++- `visualizations/demo01_hover/`
++- `visualizations/demo02_waypoint_flight/`
++- `visualizations/demo03_circle_trajectory/`
++- `visualizations/demo04_external_setpoint/`
++
++Observed standard output files:
++
++- `trajectory.csv`
++- `trajectory_3d.png`
++- `xy_path.png`
++- `height_curve.png`
++- `speed_curve.png`
++- `tracking_error.png`
++- `trajectory.mp4`
++- `summary.md`
++- `result.txt`
++
++Some earlier runs also contain `trajectory.png` instead of the newer split plot names. Existing timestamped visualization directories are experiment results and should not be deleted or overwritten.
++
++## Source vs Generated vs Results
++
++Source/editable project areas:
++
++- `src/px4_offboard_hover/`
++- `scripts/`
++- `docs/`
++- `codex-tasks/`
++- Top-level project documents such as `BASIC_CONTROL_DEMOS.md`, `OFFBOARD_HOVER_EXPERIMENT.md`, and `TOOLS_AND_SCRIPTS_GUIDE.md`
++
++External/upstream or avoid-editing areas:
++
++- `src/px4_msgs/`: PX4 message/interface package. Avoid modifying unless the task explicitly requires it.
++
++Generated build areas:
++
++- `build/`
++- `install/`
++- `log/`
++
++Experiment/result areas that should not be deleted:
++
++- `logs/`
++- `visualizations/`
++- `codex-logs/`
++- Any timestamped run directory under `logs/` or `visualizations/`
++- Data artifacts such as `trajectory.csv`, plots, videos, summaries, and result files
++
++## Audit Notes
++
++- The workspace root itself is not a Git repository according to `git status`; however, `src/px4_msgs/` contains its own `.git` directory.
++- Demo 1-4 have existing runtime logs and visualization outputs.
++- The audit deliverable log for this task is `codex-logs/001-audit-project-structure.log`.
+
+diff --git a/UAV_capture/px4_ros2_ws/docs/PROJECT_STRUCTURE.md b/UAV_capture/px4_ros2_ws/docs/PROJECT_STRUCTURE.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..c46e59995204e566856964506910e338c9c173e1
+--- /dev/null
++++ b/UAV_capture/px4_ros2_ws/docs/PROJECT_STRUCTURE.md
+@@ -0,0 +1,148 @@
++# px4_ros2_ws Project Structure
++
++This document summarizes the current structure of `/home/clcwork/UAV_capture/px4_ros2_ws` for Task 001. The raw audit command output is saved in `codex-logs/001-audit-project-structure.log`.
++
++## Workspace Overview
++
++Top-level workspace areas:
++
++| Path | Role | Notes |
++| --- | --- | --- |
++| `src/` | ROS 2 source packages | Main editable package area for this workspace. |
++| `scripts/` | Stack, demo, experiment, and recorder launch helpers | Prefer these scripts for PX4/Gazebo/Micro XRCE-DDS and demo runs. |
++| `logs/` | Experiment/runtime logs | Contains timestamped demo and hover logs. Do not delete. |
++| `visualizations/` | Generated visualization artifacts | Contains timestamped demo outputs such as CSV, plots, videos, summaries, and results. Do not delete or overwrite existing timestamped runs. |
++| `codex-tasks/` | Task definitions | Current task queue and requirements. |
++| `codex-logs/` | Codex task execution logs | Includes this task's audit log. |
++| `build/` | Colcon build output | Generated build artifacts. |
++| `install/` | Colcon install output | Generated install artifacts and setup files. |
++| `log/` | Colcon build logs | Generated build logs from previous `colcon` runs. |
++
++## ROS 2 Packages
++
++Current packages under `src/`:
++
++| Package | Build type | Purpose |
++| --- | --- | --- |
++| `px4_msgs` | `ament_cmake` | PX4 uORB-equivalent ROS message and service definitions. This directory contains many generated interface definitions under `msg/` and `srv/`, and should be treated as upstream PX4 message source unless a task explicitly requires changes. |
++| `px4_offboard_hover` | `ament_python` | Custom Python package for PX4 offboard demos, trajectory recording, and hover verification. |
++
++`px4_offboard_hover` Python modules currently include:
++
++- `hover.py`
++- `verify_hover.py`
++- `waypoint_flight.py`
++- `circle_trajectory.py`
++- `external_setpoint.py`
++- `trajectory_recorder.py`
++- `offboard_base.py`
++
++Installed console entry points from `px4_offboard_hover/setup.py`:
++
++- `hover`
++- `verify_hover`
++- `demo02_waypoint_flight`
++- `demo03_circle_trajectory`
++- `demo04_external_setpoint`
++- `trajectory_recorder`
++
++## Scripts
++
++Current files under `scripts/`:
++
++| Script | Purpose |
++| --- | --- |
++| `start_stack.sh` | Starts the PX4/Gazebo/Micro XRCE-DDS stack used by the demos. |
++| `stop_stack.sh` | Stops the running stack. |
++| `run_demo01_hover.sh` | Demo 01 Offboard Hover runner. |
++| `run_demo02_waypoint_flight.sh` | Demo 02 Waypoint Flight runner. |
++| `run_demo03_circle_trajectory.sh` | Demo 03 Circle Trajectory runner. |
++| `run_demo04_external_setpoint.sh` | Demo 04 External Setpoint Interface runner. |
++| `run_hover_experiment.sh` | Earlier/offboard hover experiment runner. |
++| `run_trajectory_recorder.sh` | Trajectory recorder helper used by demo visualization workflows. |
++
++These scripts are existing workflow entry points and were not modified during this audit.
++
++## Experiment Logs
++
++Runtime logs are stored under `logs/` by demo or experiment name:
++
++- `logs/demo01_hover/`
++- `logs/demo02_waypoint_flight/`
++- `logs/demo03_circle_trajectory/`
++- `logs/demo04_external_setpoint/`
++- `logs/offboard_hover/`
++
++Each demo directory contains timestamped runs. Observed log file names include:
++
++- `demo01.log`
++- `demo02.log`
++- `demo03.log`
++- `demo04.log`
++- `trajectory_recorder.log`
++- `target_sequence.log`
++- `hover.log`
++- `verify.log`
++- `agent_tail.log`
++- `px4_tail.log`
++
++These are experiment results and diagnostic logs. They should not be deleted, truncated, or overwritten unless a task explicitly requires it and the user confirms.
++
++## Visualization Outputs
++
++Visualization results are stored under `visualizations/<demo>/<timestamp>/`.
++
++Current demo visualization roots:
++
++- `visualizations/demo01_hover/`
++- `visualizations/demo02_waypoint_flight/`
++- `visualizations/demo03_circle_trajectory/`
++- `visualizations/demo04_external_setpoint/`
++
++Observed standard output files:
++
++- `trajectory.csv`
++- `trajectory_3d.png`
++- `xy_path.png`
++- `height_curve.png`
++- `speed_curve.png`
++- `tracking_error.png`
++- `trajectory.mp4`
++- `summary.md`
++- `result.txt`
++
++Some earlier runs also contain `trajectory.png` instead of the newer split plot names. Existing timestamped visualization directories are experiment results and should not be deleted or overwritten.
++
++## Source vs Generated vs Results
++
++Source/editable project areas:
++
++- `src/px4_offboard_hover/`
++- `scripts/`
++- `docs/`
++- `codex-tasks/`
++- Top-level project documents such as `BASIC_CONTROL_DEMOS.md`, `OFFBOARD_HOVER_EXPERIMENT.md`, and `TOOLS_AND_SCRIPTS_GUIDE.md`
++
++External/upstream or avoid-editing areas:
++
++- `src/px4_msgs/`: PX4 message/interface package. Avoid modifying unless the task explicitly requires it.
++
++Generated build areas:
++
++- `build/`
++- `install/`
++- `log/`
++
++Experiment/result areas that should not be deleted:
++
++- `logs/`
++- `visualizations/`
++- `codex-logs/`
++- Any timestamped run directory under `logs/` or `visualizations/`
++- Data artifacts such as `trajectory.csv`, plots, videos, summaries, and result files
++
++## Audit Notes
++
++- The workspace root itself is not a Git repository according to `git status`; however, `src/px4_msgs/` contains its own `.git` directory.
++- Demo 1-4 have existing runtime logs and visualization outputs.
++- The audit deliverable log for this task is `codex-logs/001-audit-project-structure.log`.
+
+codex
+文档已创建。接下来我做最小验证：确认两个交付物存在且非空，并检查文档里覆盖了 ROS2 包、demo 脚本、可视化输出和不可删除目录这些必需项。
+exec
+/bin/bash -lc "{
+  printf '\\n# Validation\\n'
+  test -s docs/PROJECT_STRUCTURE.md && printf 'PASS docs/PROJECT_STRUCTURE.md exists and is non-empty\\n'
+  test -s codex-logs/001-audit-project-structure.log && printf 'PASS codex-logs/001-audit-project-structure.log exists and is non-empty\\n'
+  grep -q 'px4_msgs' docs/PROJECT_STRUCTURE.md && printf 'PASS documents px4_msgs\\n'
+  grep -q 'px4_offboard_hover' docs/PROJECT_STRUCTURE.md && printf 'PASS documents px4_offboard_hover\\n'
+  grep -q 'run_demo01_hover.sh' docs/PROJECT_STRUCTURE.md && printf 'PASS documents demo scripts\\n'
+  grep -q 'trajectory_3d.png' docs/PROJECT_STRUCTURE.md && printf 'PASS documents visualization outputs\\n'
+  grep -q 'Do not delete' docs/PROJECT_STRUCTURE.md && printf 'PASS documents non-deletion guidance\\n'
+} >> codex-logs/001-audit-project-structure.log 2>&1" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+diff --git a/UAV_capture/px4_ros2_ws/docs/PROJECT_STRUCTURE.md b/UAV_capture/px4_ros2_ws/docs/PROJECT_STRUCTURE.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..c46e59995204e566856964506910e338c9c173e1
+--- /dev/null
++++ b/UAV_capture/px4_ros2_ws/docs/PROJECT_STRUCTURE.md
+@@ -0,0 +1,148 @@
++# px4_ros2_ws Project Structure
++
++This document summarizes the current structure of `/home/clcwork/UAV_capture/px4_ros2_ws` for Task 001. The raw audit command output is saved in `codex-logs/001-audit-project-structure.log`.
++
++## Workspace Overview
++
++Top-level workspace areas:
++
++| Path | Role | Notes |
++| --- | --- | --- |
++| `src/` | ROS 2 source packages | Main editable package area for this workspace. |
++| `scripts/` | Stack, demo, experiment, and recorder launch helpers | Prefer these scripts for PX4/Gazebo/Micro XRCE-DDS and demo runs. |
++| `logs/` | Experiment/runtime logs | Contains timestamped demo and hover logs. Do not delete. |
++| `visualizations/` | Generated visualization artifacts | Contains timestamped demo outputs such as CSV, plots, videos, summaries, and results. Do not delete or overwrite existing timestamped runs. |
++| `codex-tasks/` | Task definitions | Current task queue and requirements. |
++| `codex-logs/` | Codex task execution logs | Includes this task's audit log. |
++| `build/` | Colcon build output | Generated build artifacts. |
++| `install/` | Colcon install output | Generated install artifacts and setup files. |
++| `log/` | Colcon build logs | Generated build logs from previous `colcon` runs. |
++
++## ROS 2 Packages
++
++Current packages under `src/`:
++
++| Package | Build type | Purpose |
++| --- | --- | --- |
++| `px4_msgs` | `ament_cmake` | PX4 uORB-equivalent ROS message and service definitions. This directory contains many generated interface definitions under `msg/` and `srv/`, and should be treated as upstream PX4 message source unless a task explicitly requires changes. |
++| `px4_offboard_hover` | `ament_python` | Custom Python package for PX4 offboard demos, trajectory recording, and hover verification. |
++
++`px4_offboard_hover` Python modules currently include:
++
++- `hover.py`
++- `verify_hover.py`
++- `waypoint_flight.py`
++- `circle_trajectory.py`
++- `external_setpoint.py`
++- `trajectory_recorder.py`
++- `offboard_base.py`
++
++Installed console entry points from `px4_offboard_hover/setup.py`:
++
++- `hover`
++- `verify_hover`
++- `demo02_waypoint_flight`
++- `demo03_circle_trajectory`
++- `demo04_external_setpoint`
++- `trajectory_recorder`
++
++## Scripts
++
++Current files under `scripts/`:
++
++| Script | Purpose |
++| --- | --- |
++| `start_stack.sh` | Starts the PX4/Gazebo/Micro XRCE-DDS stack used by the demos. |
++| `stop_stack.sh` | Stops the running stack. |
++| `run_demo01_hover.sh` | Demo 01 Offboard Hover runner. |
++| `run_demo02_waypoint_flight.sh` | Demo 02 Waypoint Flight runner. |
++| `run_demo03_circle_trajectory.sh` | Demo 03 Circle Trajectory runner. |
++| `run_demo04_external_setpoint.sh` | Demo 04 External Setpoint Interface runner. |
++| `run_hover_experiment.sh` | Earlier/offboard hover experiment runner. |
++| `run_trajectory_recorder.sh` | Trajectory recorder helper used by demo visualization workflows. |
++
++These scripts are existing workflow entry points and were not modified during this audit.
++
++## Experiment Logs
++
++Runtime logs are stored under `logs/` by demo or experiment name:
++
++- `logs/demo01_hover/`
++- `logs/demo02_waypoint_flight/`
++- `logs/demo03_circle_trajectory/`
++- `logs/demo04_external_setpoint/`
++- `logs/offboard_hover/`
++
++Each demo directory contains timestamped runs. Observed log file names include:
++
++- `demo01.log`
++- `demo02.log`
++- `demo03.log`
++- `demo04.log`
++- `trajectory_recorder.log`
++- `target_sequence.log`
++- `hover.log`
++- `verify.log`
++- `agent_tail.log`
++- `px4_tail.log`
++
++These are experiment results and diagnostic logs. They should not be deleted, truncated, or overwritten unless a task explicitly requires it and the user confirms.
++
++## Visualization Outputs
++
++Visualization results are stored under `visualizations/<demo>/<timestamp>/`.
++
++Current demo visualization roots:
++
++- `visualizations/demo01_hover/`
++- `visualizations/demo02_waypoint_flight/`
++- `visualizations/demo03_circle_trajectory/`
++- `visualizations/demo04_external_setpoint/`
++
++Observed standard output files:
++
++- `trajectory.csv`
++- `trajectory_3d.png`
++- `xy_path.png`
++- `height_curve.png`
++- `speed_curve.png`
++- `tracking_error.png`
++- `trajectory.mp4`
++- `summary.md`
++- `result.txt`
++
++Some earlier runs also contain `trajectory.png` instead of the newer split plot names. Existing timestamped visualization directories are experiment results and should not be deleted or overwritten.
++
++## Source vs Generated vs Results
++
++Source/editable project areas:
++
++- `src/px4_offboard_hover/`
++- `scripts/`
++- `docs/`
++- `codex-tasks/`
++- Top-level project documents such as `BASIC_CONTROL_DEMOS.md`, `OFFBOARD_HOVER_EXPERIMENT.md`, and `TOOLS_AND_SCRIPTS_GUIDE.md`
++
++External/upstream or avoid-editing areas:
++
++- `src/px4_msgs/`: PX4 message/interface package. Avoid modifying unless the task explicitly requires it.
++
++Generated build areas:
++
++- `build/`
++- `install/`
++- `log/`
++
++Experiment/result areas that should not be deleted:
++
++- `logs/`
++- `visualizations/`
++- `codex-logs/`
++- Any timestamped run directory under `logs/` or `visualizations/`
++- Data artifacts such as `trajectory.csv`, plots, videos, summaries, and result files
++
++## Audit Notes
++
++- The workspace root itself is not a Git repository according to `git status`; however, `src/px4_msgs/` contains its own `.git` directory.
++- Demo 1-4 have existing runtime logs and visualization outputs.
++- The audit deliverable log for this task is `codex-logs/001-audit-project-structure.log`.
+
+exec
+/bin/bash -lc "sed -n '1,240p' docs/PROJECT_STRUCTURE.md" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+# px4_ros2_ws Project Structure
+
+This document summarizes the current structure of `/home/clcwork/UAV_capture/px4_ros2_ws` for Task 001. The raw audit command output is saved in `codex-logs/001-audit-project-structure.log`.
+
+## Workspace Overview
+
+Top-level workspace areas:
+
+| Path | Role | Notes |
+| --- | --- | --- |
+| `src/` | ROS 2 source packages | Main editable package area for this workspace. |
+| `scripts/` | Stack, demo, experiment, and recorder launch helpers | Prefer these scripts for PX4/Gazebo/Micro XRCE-DDS and demo runs. |
+| `logs/` | Experiment/runtime logs | Contains timestamped demo and hover logs. Do not delete. |
+| `visualizations/` | Generated visualization artifacts | Contains timestamped demo outputs such as CSV, plots, videos, summaries, and results. Do not delete or overwrite existing timestamped runs. |
+| `codex-tasks/` | Task definitions | Current task queue and requirements. |
+| `codex-logs/` | Codex task execution logs | Includes this task's audit log. |
+| `build/` | Colcon build output | Generated build artifacts. |
+| `install/` | Colcon install output | Generated install artifacts and setup files. |
+| `log/` | Colcon build logs | Generated build logs from previous `colcon` runs. |
+
+## ROS 2 Packages
+
+Current packages under `src/`:
+
+| Package | Build type | Purpose |
+| --- | --- | --- |
+| `px4_msgs` | `ament_cmake` | PX4 uORB-equivalent ROS message and service definitions. This directory contains many generated interface definitions under `msg/` and `srv/`, and should be treated as upstream PX4 message source unless a task explicitly requires changes. |
+| `px4_offboard_hover` | `ament_python` | Custom Python package for PX4 offboard demos, trajectory recording, and hover verification. |
+
+`px4_offboard_hover` Python modules currently include:
+
+- `hover.py`
+- `verify_hover.py`
+- `waypoint_flight.py`
+- `circle_trajectory.py`
+- `external_setpoint.py`
+- `trajectory_recorder.py`
+- `offboard_base.py`
+
+Installed console entry points from `px4_offboard_hover/setup.py`:
+
+- `hover`
+- `verify_hover`
+- `demo02_waypoint_flight`
+- `demo03_circle_trajectory`
+- `demo04_external_setpoint`
+- `trajectory_recorder`
+
+## Scripts
+
+Current files under `scripts/`:
+
+| Script | Purpose |
+| --- | --- |
+| `start_stack.sh` | Starts the PX4/Gazebo/Micro XRCE-DDS stack used by the demos. |
+| `stop_stack.sh` | Stops the running stack. |
+| `run_demo01_hover.sh` | Demo 01 Offboard Hover runner. |
+| `run_demo02_waypoint_flight.sh` | Demo 02 Waypoint Flight runner. |
+| `run_demo03_circle_trajectory.sh` | Demo 03 Circle Trajectory runner. |
+| `run_demo04_external_setpoint.sh` | Demo 04 External Setpoint Interface runner. |
+| `run_hover_experiment.sh` | Earlier/offboard hover experiment runner. |
+| `run_trajectory_recorder.sh` | Trajectory recorder helper used by demo visualization workflows. |
+
+These scripts are existing workflow entry points and were not modified during this audit.
+
+## Experiment Logs
+
+Runtime logs are stored under `logs/` by demo or experiment name:
+
+- `logs/demo01_hover/`
+- `logs/demo02_waypoint_flight/`
+- `logs/demo03_circle_trajectory/`
+- `logs/demo04_external_setpoint/`
+- `logs/offboard_hover/`
+
+Each demo directory contains timestamped runs. Observed log file names include:
+
+- `demo01.log`
+- `demo02.log`
+- `demo03.log`
+- `demo04.log`
+- `trajectory_recorder.log`
+- `target_sequence.log`
+- `hover.log`
+- `verify.log`
+- `agent_tail.log`
+- `px4_tail.log`
+
+These are experiment results and diagnostic logs. They should not be deleted, truncated, or overwritten unless a task explicitly requires it and the user confirms.
+
+## Visualization Outputs
+
+Visualization results are stored under `visualizations/<demo>/<timestamp>/`.
+
+Current demo visualization roots:
+
+- `visualizations/demo01_hover/`
+- `visualizations/demo02_waypoint_flight/`
+- `visualizations/demo03_circle_trajectory/`
+- `visualizations/demo04_external_setpoint/`
+
+Observed standard output files:
+
+- `trajectory.csv`
+- `trajectory_3d.png`
+- `xy_path.png`
+- `height_curve.png`
+- `speed_curve.png`
+- `tracking_error.png`
+- `trajectory.mp4`
+- `summary.md`
+- `result.txt`
+
+Some earlier runs also contain `trajectory.png` instead of the newer split plot names. Existing timestamped visualization directories are experiment results and should not be deleted or overwritten.
+
+## Source vs Generated vs Results
+
+Source/editable project areas:
+
+- `src/px4_offboard_hover/`
+- `scripts/`
+- `docs/`
+- `codex-tasks/`
+- Top-level project documents such as `BASIC_CONTROL_DEMOS.md`, `OFFBOARD_HOVER_EXPERIMENT.md`, and `TOOLS_AND_SCRIPTS_GUIDE.md`
+
+External/upstream or avoid-editing areas:
+
+- `src/px4_msgs/`: PX4 message/interface package. Avoid modifying unless the task explicitly requires it.
+
+Generated build areas:
+
+- `build/`
+- `install/`
+- `log/`
+
+Experiment/result areas that should not be deleted:
+
+- `logs/`
+- `visualizations/`
+- `codex-logs/`
+- Any timestamped run directory under `logs/` or `visualizations/`
+- Data artifacts such as `trajectory.csv`, plots, videos, summaries, and result files
+
+## Audit Notes
+
+- The workspace root itself is not a Git repository according to `git status`; however, `src/px4_msgs/` contains its own `.git` directory.
+- Demo 1-4 have existing runtime logs and visualization outputs.
+- The audit deliverable log for this task is `codex-logs/001-audit-project-structure.log`.
+
+exec
+/bin/bash -lc 'tail -n 20 codex-logs/001-audit-project-structure.log' in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+run_hover_experiment.sh
+run_trajectory_recorder.sh
+start_stack.sh
+stop_stack.sh
+px4_msgs
+px4_offboard_hover
+demo01_hover
+demo02_waypoint_flight
+demo03_circle_trajectory
+demo04_external_setpoint
+offboard_hover
+
+# Validation
+PASS docs/PROJECT_STRUCTURE.md exists and is non-empty
+PASS codex-logs/001-audit-project-structure.log exists and is non-empty
+PASS documents px4_msgs
+PASS documents px4_offboard_hover
+PASS documents demo scripts
+PASS documents visualization outputs
+PASS documents non-deletion guidance
+
+exec
+/bin/bash -lc 'find docs codex-logs -maxdepth 1 -type f | sort' in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+codex-logs/001-audit-project-structure-20260527_001340.log
+codex-logs/001-audit-project-structure-20260527_001912.log
+codex-logs/001-audit-project-structure.log
+codex-logs/run-codex-queue-fix-20260527_001740.log
+docs/PROJECT_STRUCTURE.md
+
+diff --git a/UAV_capture/px4_ros2_ws/docs/PROJECT_STRUCTURE.md b/UAV_capture/px4_ros2_ws/docs/PROJECT_STRUCTURE.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..c46e59995204e566856964506910e338c9c173e1
+--- /dev/null
++++ b/UAV_capture/px4_ros2_ws/docs/PROJECT_STRUCTURE.md
+@@ -0,0 +1,148 @@
++# px4_ros2_ws Project Structure
++
++This document summarizes the current structure of `/home/clcwork/UAV_capture/px4_ros2_ws` for Task 001. The raw audit command output is saved in `codex-logs/001-audit-project-structure.log`.
++
++## Workspace Overview
++
++Top-level workspace areas:
++
++| Path | Role | Notes |
++| --- | --- | --- |
++| `src/` | ROS 2 source packages | Main editable package area for this workspace. |
++| `scripts/` | Stack, demo, experiment, and recorder launch helpers | Prefer these scripts for PX4/Gazebo/Micro XRCE-DDS and demo runs. |
++| `logs/` | Experiment/runtime logs | Contains timestamped demo and hover logs. Do not delete. |
++| `visualizations/` | Generated visualization artifacts | Contains timestamped demo outputs such as CSV, plots, videos, summaries, and results. Do not delete or overwrite existing timestamped runs. |
++| `codex-tasks/` | Task definitions | Current task queue and requirements. |
++| `codex-logs/` | Codex task execution logs | Includes this task's audit log. |
++| `build/` | Colcon build output | Generated build artifacts. |
++| `install/` | Colcon install output | Generated install artifacts and setup files. |
++| `log/` | Colcon build logs | Generated build logs from previous `colcon` runs. |
++
++## ROS 2 Packages
++
++Current packages under `src/`:
++
++| Package | Build type | Purpose |
++| --- | --- | --- |
++| `px4_msgs` | `ament_cmake` | PX4 uORB-equivalent ROS message and service definitions. This directory contains many generated interface definitions under `msg/` and `srv/`, and should be treated as upstream PX4 message source unless a task explicitly requires changes. |
++| `px4_offboard_hover` | `ament_python` | Custom Python package for PX4 offboard demos, trajectory recording, and hover verification. |
++
++`px4_offboard_hover` Python modules currently include:
++
++- `hover.py`
++- `verify_hover.py`
++- `waypoint_flight.py`
++- `circle_trajectory.py`
++- `external_setpoint.py`
++- `trajectory_recorder.py`
++- `offboard_base.py`
++
++Installed console entry points from `px4_offboard_hover/setup.py`:
++
++- `hover`
++- `verify_hover`
++- `demo02_waypoint_flight`
++- `demo03_circle_trajectory`
++- `demo04_external_setpoint`
++- `trajectory_recorder`
++
++## Scripts
++
++Current files under `scripts/`:
++
++| Script | Purpose |
++| --- | --- |
++| `start_stack.sh` | Starts the PX4/Gazebo/Micro XRCE-DDS stack used by the demos. |
++| `stop_stack.sh` | Stops the running stack. |
++| `run_demo01_hover.sh` | Demo 01 Offboard Hover runner. |
++| `run_demo02_waypoint_flight.sh` | Demo 02 Waypoint Flight runner. |
++| `run_demo03_circle_trajectory.sh` | Demo 03 Circle Trajectory runner. |
++| `run_demo04_external_setpoint.sh` | Demo 04 External Setpoint Interface runner. |
++| `run_hover_experiment.sh` | Earlier/offboard hover experiment runner. |
++| `run_trajectory_recorder.sh` | Trajectory recorder helper used by demo visualization workflows. |
++
++These scripts are existing workflow entry points and were not modified during this audit.
++
++## Experiment Logs
++
++Runtime logs are stored under `logs/` by demo or experiment name:
++
++- `logs/demo01_hover/`
++- `logs/demo02_waypoint_flight/`
++- `logs/demo03_circle_trajectory/`
++- `logs/demo04_external_setpoint/`
++- `logs/offboard_hover/`
++
++Each demo directory contains timestamped runs. Observed log file names include:
++
++- `demo01.log`
++- `demo02.log`
++- `demo03.log`
++- `demo04.log`
++- `trajectory_recorder.log`
++- `target_sequence.log`
++- `hover.log`
++- `verify.log`
++- `agent_tail.log`
++- `px4_tail.log`
++
++These are experiment results and diagnostic logs. They should not be deleted, truncated, or overwritten unless a task explicitly requires it and the user confirms.
++
++## Visualization Outputs
++
++Visualization results are stored under `visualizations/<demo>/<timestamp>/`.
++
++Current demo visualization roots:
++
++- `visualizations/demo01_hover/`
++- `visualizations/demo02_waypoint_flight/`
++- `visualizations/demo03_circle_trajectory/`
++- `visualizations/demo04_external_setpoint/`
++
++Observed standard output files:
++
++- `trajectory.csv`
++- `trajectory_3d.png`
++- `xy_path.png`
++- `height_curve.png`
++- `speed_curve.png`
++- `tracking_error.png`
++- `trajectory.mp4`
++- `summary.md`
++- `result.txt`
++
++Some earlier runs also contain `trajectory.png` instead of the newer split plot names. Existing timestamped visualization directories are experiment results and should not be deleted or overwritten.
++
++## Source vs Generated vs Results
++
++Source/editable project areas:
++
++- `src/px4_offboard_hover/`
++- `scripts/`
++- `docs/`
++- `codex-tasks/`
++- Top-level project documents such as `BASIC_CONTROL_DEMOS.md`, `OFFBOARD_HOVER_EXPERIMENT.md`, and `TOOLS_AND_SCRIPTS_GUIDE.md`
++
++External/upstream or avoid-editing areas:
++
++- `src/px4_msgs/`: PX4 message/interface package. Avoid modifying unless the task explicitly requires it.
++
++Generated build areas:
++
++- `build/`
++- `install/`
++- `log/`
++
++Experiment/result areas that should not be deleted:
++
++- `logs/`
++- `visualizations/`
++- `codex-logs/`
++- Any timestamped run directory under `logs/` or `visualizations/`
++- Data artifacts such as `trajectory.csv`, plots, videos, summaries, and result files
++
++## Audit Notes
++
++- The workspace root itself is not a Git repository according to `git status`; however, `src/px4_msgs/` contains its own `.git` directory.
++- Demo 1-4 have existing runtime logs and visualization outputs.
++- The audit deliverable log for this task is `codex-logs/001-audit-project-structure.log`.
+
+codex
+完成 Task 001。已生成项目结构摘要：[docs/PROJECT_STRUCTURE.md](/home/clcwork/UAV_capture/px4_ros2_ws/docs/PROJECT_STRUCTURE.md)，并保存审计日志：[codex-logs/001-audit-project-structure.log](/home/clcwork/UAV_capture/px4_ros2_ws/codex-logs/001-audit-project-structure.log)。
+
+- 当前 ROS2 包：`px4_msgs`、`px4_offboard_hover`
+- 当前 demo 脚本：`run_demo01_hover.sh`、`run_demo02_waypoint_flight.sh`、`run_demo03_circle_trajectory.sh`、`run_demo04_external_setpoint.sh`
+- 当前可视化输出：`trajectory.csv`、`trajectory_3d.png`、`xy_path.png`、`height_curve.png`、`speed_curve.png`、`tracking_error.png`、`trajectory.mp4`、`summary.md`、`result.txt`，部分旧结果还有 `trajectory.png`
+- 源码目录：`src/px4_offboard_hover/`、`scripts/`、`docs/`
+- 实验结果目录：`logs/`、`visualizations/`
+- 不应删除目录/数据：`logs/`、`visualizations/`、`codex-logs/`、各 timestamp 结果目录、`trajectory.csv`、图片、视频、summary/result 文件
+
+`changed files`:
+- `docs/PROJECT_STRUCTURE.md`
+- `codex-logs/001-audit-project-structure.log`
+
+`commands run`:
+- 任务要求的审计命令块：`pwd`、`find . -maxdepth 3 -type f | sort`、`find . -maxdepth 3 -type d | sort`、条件 `git status --short`、`ls scripts`、`ls src`、`ls logs`
+- 只读补充检查：`find src`、`find scripts`、`find visualizations`、`find logs`、查看 `setup.py`/`package.xml`
+- 验证：`test -s` 和 `grep` 检查交付物及关键内容
+
+`test result`:
+- PASS。两个交付物存在且非空，文档覆盖 ROS2 包、demo 脚本、可视化输出和不可删除目录说明。
+
+`known risks`:
+- 本任务只做结构审计和文档生成，未运行 PX4/Gazebo/ROS2 demo 或仿真实验。
+- 工作区根目录不是 Git 仓库；`src/px4_msgs/` 自身含 `.git`。
+diff --git a/UAV_capture/px4_ros2_ws/docs/PROJECT_STRUCTURE.md b/UAV_capture/px4_ros2_ws/docs/PROJECT_STRUCTURE.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..c46e59995204e566856964506910e338c9c173e1
+--- /dev/null
++++ b/UAV_capture/px4_ros2_ws/docs/PROJECT_STRUCTURE.md
+@@ -0,0 +1,148 @@
++# px4_ros2_ws Project Structure
++
++This document summarizes the current structure of `/home/clcwork/UAV_capture/px4_ros2_ws` for Task 001. The raw audit command output is saved in `codex-logs/001-audit-project-structure.log`.
++
++## Workspace Overview
++
++Top-level workspace areas:
++
++| Path | Role | Notes |
++| --- | --- | --- |
++| `src/` | ROS 2 source packages | Main editable package area for this workspace. |
++| `scripts/` | Stack, demo, experiment, and recorder launch helpers | Prefer these scripts for PX4/Gazebo/Micro XRCE-DDS and demo runs. |
++| `logs/` | Experiment/runtime logs | Contains timestamped demo and hover logs. Do not delete. |
++| `visualizations/` | Generated visualization artifacts | Contains timestamped demo outputs such as CSV, plots, videos, summaries, and results. Do not delete or overwrite existing timestamped runs. |
++| `codex-tasks/` | Task definitions | Current task queue and requirements. |
++| `codex-logs/` | Codex task execution logs | Includes this task's audit log. |
++| `build/` | Colcon build output | Generated build artifacts. |
++| `install/` | Colcon install output | Generated install artifacts and setup files. |
++| `log/` | Colcon build logs | Generated build logs from previous `colcon` runs. |
++
++## ROS 2 Packages
++
++Current packages under `src/`:
++
++| Package | Build type | Purpose |
++| --- | --- | --- |
++| `px4_msgs` | `ament_cmake` | PX4 uORB-equivalent ROS message and service definitions. This directory contains many generated interface definitions under `msg/` and `srv/`, and should be treated as upstream PX4 message source unless a task explicitly requires changes. |
++| `px4_offboard_hover` | `ament_python` | Custom Python package for PX4 offboard demos, trajectory recording, and hover verification. |
++
++`px4_offboard_hover` Python modules currently include:
++
++- `hover.py`
++- `verify_hover.py`
++- `waypoint_flight.py`
++- `circle_trajectory.py`
++- `external_setpoint.py`
++- `trajectory_recorder.py`
++- `offboard_base.py`
++
++Installed console entry points from `px4_offboard_hover/setup.py`:
++
++- `hover`
++- `verify_hover`
++- `demo02_waypoint_flight`
++- `demo03_circle_trajectory`
++- `demo04_external_setpoint`
++- `trajectory_recorder`
++
++## Scripts
++
++Current files under `scripts/`:
++
++| Script | Purpose |
++| --- | --- |
++| `start_stack.sh` | Starts the PX4/Gazebo/Micro XRCE-DDS stack used by the demos. |
++| `stop_stack.sh` | Stops the running stack. |
++| `run_demo01_hover.sh` | Demo 01 Offboard Hover runner. |
++| `run_demo02_waypoint_flight.sh` | Demo 02 Waypoint Flight runner. |
++| `run_demo03_circle_trajectory.sh` | Demo 03 Circle Trajectory runner. |
++| `run_demo04_external_setpoint.sh` | Demo 04 External Setpoint Interface runner. |
++| `run_hover_experiment.sh` | Earlier/offboard hover experiment runner. |
++| `run_trajectory_recorder.sh` | Trajectory recorder helper used by demo visualization workflows. |
++
++These scripts are existing workflow entry points and were not modified during this audit.
++
++## Experiment Logs
++
++Runtime logs are stored under `logs/` by demo or experiment name:
++
++- `logs/demo01_hover/`
++- `logs/demo02_waypoint_flight/`
++- `logs/demo03_circle_trajectory/`
++- `logs/demo04_external_setpoint/`
++- `logs/offboard_hover/`
++
++Each demo directory contains timestamped runs. Observed log file names include:
++
++- `demo01.log`
++- `demo02.log`
++- `demo03.log`
++- `demo04.log`
++- `trajectory_recorder.log`
++- `target_sequence.log`
++- `hover.log`
++- `verify.log`
++- `agent_tail.log`
++- `px4_tail.log`
++
++These are experiment results and diagnostic logs. They should not be deleted, truncated, or overwritten unless a task explicitly requires it and the user confirms.
++
++## Visualization Outputs
++
++Visualization results are stored under `visualizations/<demo>/<timestamp>/`.
++
++Current demo visualization roots:
++
++- `visualizations/demo01_hover/`
++- `visualizations/demo02_waypoint_flight/`
++- `visualizations/demo03_circle_trajectory/`
++- `visualizations/demo04_external_setpoint/`
++
++Observed standard output files:
++
++- `trajectory.csv`
++- `trajectory_3d.png`
++- `xy_path.png`
++- `height_curve.png`
++- `speed_curve.png`
++- `tracking_error.png`
++- `trajectory.mp4`
++- `summary.md`
++- `result.txt`
++
++Some earlier runs also contain `trajectory.png` instead of the newer split plot names. Existing timestamped visualization directories are experiment results and should not be deleted or overwritten.
++
++## Source vs Generated vs Results
++
++Source/editable project areas:
++
++- `src/px4_offboard_hover/`
++- `scripts/`
++- `docs/`
++- `codex-tasks/`
++- Top-level project documents such as `BASIC_CONTROL_DEMOS.md`, `OFFBOARD_HOVER_EXPERIMENT.md`, and `TOOLS_AND_SCRIPTS_GUIDE.md`
++
++External/upstream or avoid-editing areas:
++
++- `src/px4_msgs/`: PX4 message/interface package. Avoid modifying unless the task explicitly requires it.
++
++Generated build areas:
++
++- `build/`
++- `install/`
++- `log/`
++
++Experiment/result areas that should not be deleted:
++
++- `logs/`
++- `visualizations/`
++- `codex-logs/`
++- Any timestamped run directory under `logs/` or `visualizations/`
++- Data artifacts such as `trajectory.csv`, plots, videos, summaries, and result files
++
++## Audit Notes
++
++- The workspace root itself is not a Git repository according to `git status`; however, `src/px4_msgs/` contains its own `.git` directory.
++- Demo 1-4 have existing runtime logs and visualization outputs.
++- The audit deliverable log for this task is `codex-logs/001-audit-project-structure.log`.
+
+tokens used
+40,310
+完成 Task 001。已生成项目结构摘要：[docs/PROJECT_STRUCTURE.md](/home/clcwork/UAV_capture/px4_ros2_ws/docs/PROJECT_STRUCTURE.md)，并保存审计日志：[codex-logs/001-audit-project-structure.log](/home/clcwork/UAV_capture/px4_ros2_ws/codex-logs/001-audit-project-structure.log)。
+
+- 当前 ROS2 包：`px4_msgs`、`px4_offboard_hover`
+- 当前 demo 脚本：`run_demo01_hover.sh`、`run_demo02_waypoint_flight.sh`、`run_demo03_circle_trajectory.sh`、`run_demo04_external_setpoint.sh`
+- 当前可视化输出：`trajectory.csv`、`trajectory_3d.png`、`xy_path.png`、`height_curve.png`、`speed_curve.png`、`tracking_error.png`、`trajectory.mp4`、`summary.md`、`result.txt`，部分旧结果还有 `trajectory.png`
+- 源码目录：`src/px4_offboard_hover/`、`scripts/`、`docs/`
+- 实验结果目录：`logs/`、`visualizations/`
+- 不应删除目录/数据：`logs/`、`visualizations/`、`codex-logs/`、各 timestamp 结果目录、`trajectory.csv`、图片、视频、summary/result 文件
+
+`changed files`:
+- `docs/PROJECT_STRUCTURE.md`
+- `codex-logs/001-audit-project-structure.log`
+
+`commands run`:
+- 任务要求的审计命令块：`pwd`、`find . -maxdepth 3 -type f | sort`、`find . -maxdepth 3 -type d | sort`、条件 `git status --short`、`ls scripts`、`ls src`、`ls logs`
+- 只读补充检查：`find src`、`find scripts`、`find visualizations`、`find logs`、查看 `setup.py`/`package.xml`
+- 验证：`test -s` 和 `grep` 检查交付物及关键内容
+
+`test result`:
+- PASS。两个交付物存在且非空，文档覆盖 ROS2 包、demo 脚本、可视化输出和不可删除目录说明。
+
+`known risks`:
+- 本任务只做结构审计和文档生成，未运行 PX4/Gazebo/ROS2 demo 或仿真实验。
+- 工作区根目录不是 Git 仓库；`src/px4_msgs/` 自身含 `.git`。

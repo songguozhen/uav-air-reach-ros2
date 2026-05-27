@@ -1,0 +1,1105 @@
++ source /opt/ros/jazzy/setup.bash
+++ AMENT_SHELL=bash
+++++ dirname /opt/ros/jazzy/setup.bash
++++ builtin cd /opt/ros/jazzy
++++ pwd
+++ AMENT_CURRENT_PREFIX=/opt/ros/jazzy
+++ '[' -n '' ']'
+++ . /opt/ros/jazzy/setup.sh
++++ : /opt/ros/jazzy
++++ : bash
++++ _prefix_setup_IFS=' 	
+'
++++ IFS='
+'
++++ _UNIQUE_PREFIX_PATH=
++++ '[' -z SKIP_PARENT_PREFIX_PATH ']'
++++ ament_append_unique_value _UNIQUE_PREFIX_PATH /opt/ros/jazzy
++++ _listname=_UNIQUE_PREFIX_PATH
++++ _value=/opt/ros/jazzy
++++ eval '_values=$_UNIQUE_PREFIX_PATH'
+++++ _values=
++++ _duplicate=
++++ _ament_append_unique_value_IFS='
+'
++++ IFS=:
++++ '[' bash = zsh ']'
++++ unset _item
++++ '[' -z '' ']'
++++ '[' -z '' ']'
++++ eval '_UNIQUE_PREFIX_PATH="/opt/ros/jazzy"'
+++++ _UNIQUE_PREFIX_PATH=/opt/ros/jazzy
++++ IFS='
+'
++++ unset _ament_append_unique_value_IFS
++++ unset _duplicate
++++ unset _values
++++ unset _value
++++ unset _listname
++++ unset AMENT_CURRENT_PREFIX
++++ _prefix_setup_AMENT_SHELL=bash
++++ IFS=:
++++ '[' bash = zsh ']'
++++ for _path in $_UNIQUE_PREFIX_PATH
++++ '[' -n '' ']'
++++ '[' -f /opt/ros/jazzy/local_setup.bash ']'
++++ '[' bash = sh ']'
++++ IFS=' 	
+'
++++ . /opt/ros/jazzy/local_setup.bash
+++++ AMENT_SHELL=bash
+++++++ dirname /opt/ros/jazzy/local_setup.bash
++++++ builtin cd /opt/ros/jazzy
++++++ pwd
+++++ AMENT_CURRENT_PREFIX=/opt/ros/jazzy
+++++ '[' -n '' ']'
+++++ . /opt/ros/jazzy/local_setup.sh
++++++ _ament_prefix_sh_AMENT_CURRENT_PREFIX=/opt/ros/jazzy
++++++ '[' -z /opt/ros/jazzy ']'
++++++ _ament_prefix_sh_AMENT_CURRENT_PREFIX=/opt/ros/jazzy
++++++ : bash
++++++ _ament_python_executable=/usr/bin/python3
++++++ '[' -n '' ']'
++++++ '[' '!' -f /usr/bin/python3 ']'
++++++ _ament_additional_extension=
++++++ '[' bash '!=' sh ']'
++++++ _ament_additional_extension=bash
+++++++ /usr/bin/python3 /opt/ros/jazzy/_local_setup_util.py sh bash
++++++ _ament_ordered_commands='AMENT_CURRENT_PREFIX="/opt/ros/jazzy" _ament_prefix_sh_source_script "/opt/ros/jazzy/share/ros2cli/environment/ros2-argcomplete.bash"
+AMENT_CURRENT_PREFIX="/opt/ros/jazzy" _ament_prefix_sh_source_script "/opt/ros/jazzy/share/ros_environment/environment/0.ros_distro_check.sh"
+# export ROS_AUTOMATIC_DISCOVERY_RANGE="SUBNET"
+export ROS_DISTRO="jazzy"
+export ROS_PYTHON_VERSION="3"
+export ROS_VERSION="2"
+AMENT_CURRENT_PREFIX="/opt/ros/jazzy" _ament_prefix_sh_source_script "/opt/ros/jazzy/share/rosidl_cli/environment/rosidl-argcomplete.bash"'
++++++ unset _ament_additional_extension
++++++ unset _ament_python_executable
++++++ '[' -n '' ']'
++++++ eval 'AMENT_CURRENT_PREFIX="/opt/ros/jazzy" _ament_prefix_sh_source_script "/opt/ros/jazzy/share/ros2cli/environment/ros2-argcomplete.bash"
+AMENT_CURRENT_PREFIX="/opt/ros/jazzy" _ament_prefix_sh_source_script "/opt/ros/jazzy/share/ros_environment/environment/0.ros_distro_check.sh"
+# export ROS_AUTOMATIC_DISCOVERY_RANGE="SUBNET"
+export ROS_DISTRO="jazzy"
+export ROS_PYTHON_VERSION="3"
+export ROS_VERSION="2"
+AMENT_CURRENT_PREFIX="/opt/ros/jazzy" _ament_prefix_sh_source_script "/opt/ros/jazzy/share/rosidl_cli/environment/rosidl-argcomplete.bash"'
+++++++ AMENT_CURRENT_PREFIX=/opt/ros/jazzy
+++++++ _ament_prefix_sh_source_script /opt/ros/jazzy/share/ros2cli/environment/ros2-argcomplete.bash
+++++++ '[' -f /opt/ros/jazzy/share/ros2cli/environment/ros2-argcomplete.bash ']'
+++++++ '[' -n '' ']'
+++++++ . /opt/ros/jazzy/share/ros2cli/environment/ros2-argcomplete.bash
++++++++ type register-python-argcomplete3
++++++++ type register-python-argcomplete
+++++++++ register-python-argcomplete ros2
++++++++ eval '
+# Run something, muting output or redirecting it to the debug stream
+# depending on the value of _ARC_DEBUG.
+# If ARGCOMPLETE_USE_TEMPFILES is set, use tempfiles for IPC.
+__python_argcomplete_run() {
+    if [[ -z "${ARGCOMPLETE_USE_TEMPFILES-}" ]]; then
+        __python_argcomplete_run_inner "$@"
+        return
+    fi
+    local tmpfile="$(mktemp)"
+    _ARGCOMPLETE_STDOUT_FILENAME="$tmpfile" __python_argcomplete_run_inner "$@"
+    local code=$?
+    cat "$tmpfile"
+    rm "$tmpfile"
+    return $code
+}
+
+__python_argcomplete_run_inner() {
+    if [[ -z "${_ARC_DEBUG-}" ]]; then
+        "$@" 8>&1 9>&2 1>/dev/null 2>&1
+    else
+        "$@" 8>&1 9>&2 1>&9 2>&1
+    fi
+}
+
+_python_argcomplete() {
+    local IFS=$'\''\013'\''
+    local script=""
+    if [[ -n "${ZSH_VERSION-}" ]]; then
+        local completions
+        completions=($(IFS="$IFS" \
+            COMP_LINE="$BUFFER" \
+            COMP_POINT="$CURSOR" \
+            _ARGCOMPLETE=1 \
+            _ARGCOMPLETE_SHELL="zsh" \
+            _ARGCOMPLETE_SUPPRESS_SPACE=1 \
+            __python_argcomplete_run ${script:-${words[1]}}))
+        _describe "${words[1]}" completions -o nosort
+    else
+        local SUPPRESS_SPACE=0
+        if compopt +o nospace 2> /dev/null; then
+            SUPPRESS_SPACE=1
+        fi
+        COMPREPLY=($(IFS="$IFS" \
+            COMP_LINE="$COMP_LINE" \
+            COMP_POINT="$COMP_POINT" \
+            COMP_TYPE="$COMP_TYPE" \
+            _ARGCOMPLETE_COMP_WORDBREAKS="$COMP_WORDBREAKS" \
+            _ARGCOMPLETE=1 \
+            _ARGCOMPLETE_SHELL="bash" \
+            _ARGCOMPLETE_SUPPRESS_SPACE=$SUPPRESS_SPACE \
+            __python_argcomplete_run ${script:-$1}))
+        if [[ $? != 0 ]]; then
+            unset COMPREPLY
+        elif [[ $SUPPRESS_SPACE == 1 ]] && [[ "${COMPREPLY-}" =~ [=/:]$ ]]; then
+            compopt -o nospace
+        fi
+    fi
+}
+if [[ -z "${ZSH_VERSION-}" ]]; then
+    complete -o nospace -o default -o bashdefault -F _python_argcomplete ros2
+else
+    compdef _python_argcomplete ros2
+fi'
+++++++++ [[ -z '' ]]
+++++++++ complete -o nospace -o default -o bashdefault -F _python_argcomplete ros2
+++++++ AMENT_CURRENT_PREFIX=/opt/ros/jazzy
+++++++ _ament_prefix_sh_source_script /opt/ros/jazzy/share/ros_environment/environment/0.ros_distro_check.sh
+++++++ '[' -f /opt/ros/jazzy/share/ros_environment/environment/0.ros_distro_check.sh ']'
+++++++ '[' -n '' ']'
+++++++ . /opt/ros/jazzy/share/ros_environment/environment/0.ros_distro_check.sh
++++++++ '[' -n jazzy -a jazzy '!=' jazzy ']'
+++++++ export ROS_DISTRO=jazzy
+++++++ ROS_DISTRO=jazzy
+++++++ export ROS_PYTHON_VERSION=3
+++++++ ROS_PYTHON_VERSION=3
+++++++ export ROS_VERSION=2
+++++++ ROS_VERSION=2
+++++++ AMENT_CURRENT_PREFIX=/opt/ros/jazzy
+++++++ _ament_prefix_sh_source_script /opt/ros/jazzy/share/rosidl_cli/environment/rosidl-argcomplete.bash
+++++++ '[' -f /opt/ros/jazzy/share/rosidl_cli/environment/rosidl-argcomplete.bash ']'
+++++++ '[' -n '' ']'
+++++++ . /opt/ros/jazzy/share/rosidl_cli/environment/rosidl-argcomplete.bash
++++++++ type register-python-argcomplete3
++++++++ type register-python-argcomplete
+++++++++ register-python-argcomplete rosidl
++++++++ eval '
+# Run something, muting output or redirecting it to the debug stream
+# depending on the value of _ARC_DEBUG.
+# If ARGCOMPLETE_USE_TEMPFILES is set, use tempfiles for IPC.
+__python_argcomplete_run() {
+    if [[ -z "${ARGCOMPLETE_USE_TEMPFILES-}" ]]; then
+        __python_argcomplete_run_inner "$@"
+        return
+    fi
+    local tmpfile="$(mktemp)"
+    _ARGCOMPLETE_STDOUT_FILENAME="$tmpfile" __python_argcomplete_run_inner "$@"
+    local code=$?
+    cat "$tmpfile"
+    rm "$tmpfile"
+    return $code
+}
+
+__python_argcomplete_run_inner() {
+    if [[ -z "${_ARC_DEBUG-}" ]]; then
+        "$@" 8>&1 9>&2 1>/dev/null 2>&1
+    else
+        "$@" 8>&1 9>&2 1>&9 2>&1
+    fi
+}
+
+_python_argcomplete() {
+    local IFS=$'\''\013'\''
+    local script=""
+    if [[ -n "${ZSH_VERSION-}" ]]; then
+        local completions
+        completions=($(IFS="$IFS" \
+            COMP_LINE="$BUFFER" \
+            COMP_POINT="$CURSOR" \
+            _ARGCOMPLETE=1 \
+            _ARGCOMPLETE_SHELL="zsh" \
+            _ARGCOMPLETE_SUPPRESS_SPACE=1 \
+            __python_argcomplete_run ${script:-${words[1]}}))
+        _describe "${words[1]}" completions -o nosort
+    else
+        local SUPPRESS_SPACE=0
+        if compopt +o nospace 2> /dev/null; then
+            SUPPRESS_SPACE=1
+        fi
+        COMPREPLY=($(IFS="$IFS" \
+            COMP_LINE="$COMP_LINE" \
+            COMP_POINT="$COMP_POINT" \
+            COMP_TYPE="$COMP_TYPE" \
+            _ARGCOMPLETE_COMP_WORDBREAKS="$COMP_WORDBREAKS" \
+            _ARGCOMPLETE=1 \
+            _ARGCOMPLETE_SHELL="bash" \
+            _ARGCOMPLETE_SUPPRESS_SPACE=$SUPPRESS_SPACE \
+            __python_argcomplete_run ${script:-$1}))
+        if [[ $? != 0 ]]; then
+            unset COMPREPLY
+        elif [[ $SUPPRESS_SPACE == 1 ]] && [[ "${COMPREPLY-}" =~ [=/:]$ ]]; then
+            compopt -o nospace
+        fi
+    fi
+}
+if [[ -z "${ZSH_VERSION-}" ]]; then
+    complete -o nospace -o default -o bashdefault -F _python_argcomplete rosidl
+else
+    compdef _python_argcomplete rosidl
+fi'
+++++++++ [[ -z '' ]]
+++++++++ complete -o nospace -o default -o bashdefault -F _python_argcomplete rosidl
++++++ unset _ament_ordered_commands
++++++ unset _ament_prefix_sh_source_script
++++++ unset _ament_prefix_sh_AMENT_CURRENT_PREFIX
++++ AMENT_SHELL=bash
++++ unset _path
++++ IFS=' 	
+'
++++ unset _prefix_setup_IFS
++++ unset _prefix_setup_AMENT_SHELL
++++ unset _UNIQUE_PREFIX_PATH
++++ unset AMENT_SHELL
++ source install/setup.bash
+++ COLCON_CURRENT_PREFIX=/opt/ros/jazzy
+++ _colcon_prefix_chain_bash_source_script /opt/ros/jazzy/local_setup.bash
+++ '[' -f /opt/ros/jazzy/local_setup.bash ']'
+++ '[' -n '' ']'
+++ . /opt/ros/jazzy/local_setup.bash
++++ AMENT_SHELL=bash
++++++ dirname /opt/ros/jazzy/local_setup.bash
+++++ builtin cd /opt/ros/jazzy
+++++ pwd
++++ AMENT_CURRENT_PREFIX=/opt/ros/jazzy
++++ '[' -n '' ']'
++++ . /opt/ros/jazzy/local_setup.sh
+++++ _ament_prefix_sh_AMENT_CURRENT_PREFIX=/opt/ros/jazzy
+++++ '[' -z /opt/ros/jazzy ']'
+++++ _ament_prefix_sh_AMENT_CURRENT_PREFIX=/opt/ros/jazzy
+++++ : bash
+++++ _ament_python_executable=/usr/bin/python3
+++++ '[' -n '' ']'
+++++ '[' '!' -f /usr/bin/python3 ']'
+++++ _ament_additional_extension=
+++++ '[' bash '!=' sh ']'
+++++ _ament_additional_extension=bash
++++++ /usr/bin/python3 /opt/ros/jazzy/_local_setup_util.py sh bash
+++++ _ament_ordered_commands='AMENT_CURRENT_PREFIX="/opt/ros/jazzy" _ament_prefix_sh_source_script "/opt/ros/jazzy/share/ros2cli/environment/ros2-argcomplete.bash"
+AMENT_CURRENT_PREFIX="/opt/ros/jazzy" _ament_prefix_sh_source_script "/opt/ros/jazzy/share/ros_environment/environment/0.ros_distro_check.sh"
+# export ROS_AUTOMATIC_DISCOVERY_RANGE="SUBNET"
+export ROS_DISTRO="jazzy"
+export ROS_PYTHON_VERSION="3"
+export ROS_VERSION="2"
+AMENT_CURRENT_PREFIX="/opt/ros/jazzy" _ament_prefix_sh_source_script "/opt/ros/jazzy/share/rosidl_cli/environment/rosidl-argcomplete.bash"'
+++++ unset _ament_additional_extension
+++++ unset _ament_python_executable
+++++ '[' -n '' ']'
+++++ eval 'AMENT_CURRENT_PREFIX="/opt/ros/jazzy" _ament_prefix_sh_source_script "/opt/ros/jazzy/share/ros2cli/environment/ros2-argcomplete.bash"
+AMENT_CURRENT_PREFIX="/opt/ros/jazzy" _ament_prefix_sh_source_script "/opt/ros/jazzy/share/ros_environment/environment/0.ros_distro_check.sh"
+# export ROS_AUTOMATIC_DISCOVERY_RANGE="SUBNET"
+export ROS_DISTRO="jazzy"
+export ROS_PYTHON_VERSION="3"
+export ROS_VERSION="2"
+AMENT_CURRENT_PREFIX="/opt/ros/jazzy" _ament_prefix_sh_source_script "/opt/ros/jazzy/share/rosidl_cli/environment/rosidl-argcomplete.bash"'
++++++ AMENT_CURRENT_PREFIX=/opt/ros/jazzy
++++++ _ament_prefix_sh_source_script /opt/ros/jazzy/share/ros2cli/environment/ros2-argcomplete.bash
++++++ '[' -f /opt/ros/jazzy/share/ros2cli/environment/ros2-argcomplete.bash ']'
++++++ '[' -n '' ']'
++++++ . /opt/ros/jazzy/share/ros2cli/environment/ros2-argcomplete.bash
+++++++ type register-python-argcomplete3
+++++++ type register-python-argcomplete
++++++++ register-python-argcomplete ros2
+++++++ eval '
+# Run something, muting output or redirecting it to the debug stream
+# depending on the value of _ARC_DEBUG.
+# If ARGCOMPLETE_USE_TEMPFILES is set, use tempfiles for IPC.
+__python_argcomplete_run() {
+    if [[ -z "${ARGCOMPLETE_USE_TEMPFILES-}" ]]; then
+        __python_argcomplete_run_inner "$@"
+        return
+    fi
+    local tmpfile="$(mktemp)"
+    _ARGCOMPLETE_STDOUT_FILENAME="$tmpfile" __python_argcomplete_run_inner "$@"
+    local code=$?
+    cat "$tmpfile"
+    rm "$tmpfile"
+    return $code
+}
+
+__python_argcomplete_run_inner() {
+    if [[ -z "${_ARC_DEBUG-}" ]]; then
+        "$@" 8>&1 9>&2 1>/dev/null 2>&1
+    else
+        "$@" 8>&1 9>&2 1>&9 2>&1
+    fi
+}
+
+_python_argcomplete() {
+    local IFS=$'\''\013'\''
+    local script=""
+    if [[ -n "${ZSH_VERSION-}" ]]; then
+        local completions
+        completions=($(IFS="$IFS" \
+            COMP_LINE="$BUFFER" \
+            COMP_POINT="$CURSOR" \
+            _ARGCOMPLETE=1 \
+            _ARGCOMPLETE_SHELL="zsh" \
+            _ARGCOMPLETE_SUPPRESS_SPACE=1 \
+            __python_argcomplete_run ${script:-${words[1]}}))
+        _describe "${words[1]}" completions -o nosort
+    else
+        local SUPPRESS_SPACE=0
+        if compopt +o nospace 2> /dev/null; then
+            SUPPRESS_SPACE=1
+        fi
+        COMPREPLY=($(IFS="$IFS" \
+            COMP_LINE="$COMP_LINE" \
+            COMP_POINT="$COMP_POINT" \
+            COMP_TYPE="$COMP_TYPE" \
+            _ARGCOMPLETE_COMP_WORDBREAKS="$COMP_WORDBREAKS" \
+            _ARGCOMPLETE=1 \
+            _ARGCOMPLETE_SHELL="bash" \
+            _ARGCOMPLETE_SUPPRESS_SPACE=$SUPPRESS_SPACE \
+            __python_argcomplete_run ${script:-$1}))
+        if [[ $? != 0 ]]; then
+            unset COMPREPLY
+        elif [[ $SUPPRESS_SPACE == 1 ]] && [[ "${COMPREPLY-}" =~ [=/:]$ ]]; then
+            compopt -o nospace
+        fi
+    fi
+}
+if [[ -z "${ZSH_VERSION-}" ]]; then
+    complete -o nospace -o default -o bashdefault -F _python_argcomplete ros2
+else
+    compdef _python_argcomplete ros2
+fi'
++++++++ [[ -z '' ]]
++++++++ complete -o nospace -o default -o bashdefault -F _python_argcomplete ros2
++++++ AMENT_CURRENT_PREFIX=/opt/ros/jazzy
++++++ _ament_prefix_sh_source_script /opt/ros/jazzy/share/ros_environment/environment/0.ros_distro_check.sh
++++++ '[' -f /opt/ros/jazzy/share/ros_environment/environment/0.ros_distro_check.sh ']'
++++++ '[' -n '' ']'
++++++ . /opt/ros/jazzy/share/ros_environment/environment/0.ros_distro_check.sh
+++++++ '[' -n jazzy -a jazzy '!=' jazzy ']'
++++++ export ROS_DISTRO=jazzy
++++++ ROS_DISTRO=jazzy
++++++ export ROS_PYTHON_VERSION=3
++++++ ROS_PYTHON_VERSION=3
++++++ export ROS_VERSION=2
++++++ ROS_VERSION=2
++++++ AMENT_CURRENT_PREFIX=/opt/ros/jazzy
++++++ _ament_prefix_sh_source_script /opt/ros/jazzy/share/rosidl_cli/environment/rosidl-argcomplete.bash
++++++ '[' -f /opt/ros/jazzy/share/rosidl_cli/environment/rosidl-argcomplete.bash ']'
++++++ '[' -n '' ']'
++++++ . /opt/ros/jazzy/share/rosidl_cli/environment/rosidl-argcomplete.bash
+++++++ type register-python-argcomplete3
+++++++ type register-python-argcomplete
++++++++ register-python-argcomplete rosidl
+++++++ eval '
+# Run something, muting output or redirecting it to the debug stream
+# depending on the value of _ARC_DEBUG.
+# If ARGCOMPLETE_USE_TEMPFILES is set, use tempfiles for IPC.
+__python_argcomplete_run() {
+    if [[ -z "${ARGCOMPLETE_USE_TEMPFILES-}" ]]; then
+        __python_argcomplete_run_inner "$@"
+        return
+    fi
+    local tmpfile="$(mktemp)"
+    _ARGCOMPLETE_STDOUT_FILENAME="$tmpfile" __python_argcomplete_run_inner "$@"
+    local code=$?
+    cat "$tmpfile"
+    rm "$tmpfile"
+    return $code
+}
+
+__python_argcomplete_run_inner() {
+    if [[ -z "${_ARC_DEBUG-}" ]]; then
+        "$@" 8>&1 9>&2 1>/dev/null 2>&1
+    else
+        "$@" 8>&1 9>&2 1>&9 2>&1
+    fi
+}
+
+_python_argcomplete() {
+    local IFS=$'\''\013'\''
+    local script=""
+    if [[ -n "${ZSH_VERSION-}" ]]; then
+        local completions
+        completions=($(IFS="$IFS" \
+            COMP_LINE="$BUFFER" \
+            COMP_POINT="$CURSOR" \
+            _ARGCOMPLETE=1 \
+            _ARGCOMPLETE_SHELL="zsh" \
+            _ARGCOMPLETE_SUPPRESS_SPACE=1 \
+            __python_argcomplete_run ${script:-${words[1]}}))
+        _describe "${words[1]}" completions -o nosort
+    else
+        local SUPPRESS_SPACE=0
+        if compopt +o nospace 2> /dev/null; then
+            SUPPRESS_SPACE=1
+        fi
+        COMPREPLY=($(IFS="$IFS" \
+            COMP_LINE="$COMP_LINE" \
+            COMP_POINT="$COMP_POINT" \
+            COMP_TYPE="$COMP_TYPE" \
+            _ARGCOMPLETE_COMP_WORDBREAKS="$COMP_WORDBREAKS" \
+            _ARGCOMPLETE=1 \
+            _ARGCOMPLETE_SHELL="bash" \
+            _ARGCOMPLETE_SUPPRESS_SPACE=$SUPPRESS_SPACE \
+            __python_argcomplete_run ${script:-$1}))
+        if [[ $? != 0 ]]; then
+            unset COMPREPLY
+        elif [[ $SUPPRESS_SPACE == 1 ]] && [[ "${COMPREPLY-}" =~ [=/:]$ ]]; then
+            compopt -o nospace
+        fi
+    fi
+}
+if [[ -z "${ZSH_VERSION-}" ]]; then
+    complete -o nospace -o default -o bashdefault -F _python_argcomplete rosidl
+else
+    compdef _python_argcomplete rosidl
+fi'
++++++++ [[ -z '' ]]
++++++++ complete -o nospace -o default -o bashdefault -F _python_argcomplete rosidl
+++++ unset _ament_ordered_commands
+++++ unset _ament_prefix_sh_source_script
+++++ unset _ament_prefix_sh_AMENT_CURRENT_PREFIX
+++++ dirname install/setup.bash
++++ builtin cd install
++++ pwd
+++ COLCON_CURRENT_PREFIX=/home/clcwork/UAV_capture/px4_ros2_ws/install
+++ _colcon_prefix_chain_bash_source_script /home/clcwork/UAV_capture/px4_ros2_ws/install/local_setup.bash
+++ '[' -f /home/clcwork/UAV_capture/px4_ros2_ws/install/local_setup.bash ']'
+++ '[' -n '' ']'
+++ . /home/clcwork/UAV_capture/px4_ros2_ws/install/local_setup.bash
++++ '[' -z /home/clcwork/UAV_capture/px4_ros2_ws/install ']'
++++ _colcon_prefix_bash_COLCON_CURRENT_PREFIX=/home/clcwork/UAV_capture/px4_ros2_ws/install
++++ _colcon_prefix_bash_prepend_unique_value COLCON_PREFIX_PATH /home/clcwork/UAV_capture/px4_ros2_ws/install
++++ _listname=COLCON_PREFIX_PATH
++++ _value=/home/clcwork/UAV_capture/px4_ros2_ws/install
++++ eval '_values="$COLCON_PREFIX_PATH"'
+++++ _values=
++++ _colcon_prefix_bash_prepend_unique_value_IFS=' 	
+'
++++ IFS=:
++++ _all_values=/home/clcwork/UAV_capture/px4_ros2_ws/install
++++ _contained_value=
++++ unset _item
++++ '[' -z '' ']'
++++ '[' -n '' ']'
++++ unset _contained_value
++++ IFS=' 	
+'
++++ unset _colcon_prefix_bash_prepend_unique_value_IFS
++++ eval export 'COLCON_PREFIX_PATH="/home/clcwork/UAV_capture/px4_ros2_ws/install"'
+++++ export COLCON_PREFIX_PATH=/home/clcwork/UAV_capture/px4_ros2_ws/install
+++++ COLCON_PREFIX_PATH=/home/clcwork/UAV_capture/px4_ros2_ws/install
++++ unset _all_values
++++ unset _values
++++ unset _value
++++ unset _listname
++++ unset _colcon_prefix_bash_prepend_unique_value
++++ '[' -n '' ']'
++++ _colcon_python_executable=/usr/bin/python3
++++ '[' '!' -f /usr/bin/python3 ']'
+++++ /usr/bin/python3 /home/clcwork/UAV_capture/px4_ros2_ws/install/_local_setup_util_sh.py sh bash
++++ _colcon_ordered_commands='export CMAKE_PREFIX_PATH="/home/clcwork/UAV_capture/px4_ros2_ws/install/px4_msgs:$CMAKE_PREFIX_PATH"
+export LD_LIBRARY_PATH="/home/clcwork/UAV_capture/px4_ros2_ws/install/px4_msgs/lib:$LD_LIBRARY_PATH"
+export PYTHONPATH="/home/clcwork/UAV_capture/px4_ros2_ws/install/px4_msgs/lib/python3.12/site-packages:$PYTHONPATH"
+export AMENT_PREFIX_PATH="/home/clcwork/UAV_capture/px4_ros2_ws/install/px4_msgs:$AMENT_PREFIX_PATH"
+export PYTHONPATH="/home/clcwork/UAV_capture/px4_ros2_ws/install/px4_offboard_hover/lib/python3.12/site-packages:$PYTHONPATH"
+export AMENT_PREFIX_PATH="/home/clcwork/UAV_capture/px4_ros2_ws/install/px4_offboard_hover:$AMENT_PREFIX_PATH"
+export PYTHONPATH="/home/clcwork/UAV_capture/px4_ros2_ws/build/px4_offboard_hover:$PYTHONPATH"'
++++ unset _colcon_python_executable
++++ '[' -n '' ']'
++++ eval 'export CMAKE_PREFIX_PATH="/home/clcwork/UAV_capture/px4_ros2_ws/install/px4_msgs:$CMAKE_PREFIX_PATH"
+export LD_LIBRARY_PATH="/home/clcwork/UAV_capture/px4_ros2_ws/install/px4_msgs/lib:$LD_LIBRARY_PATH"
+export PYTHONPATH="/home/clcwork/UAV_capture/px4_ros2_ws/install/px4_msgs/lib/python3.12/site-packages:$PYTHONPATH"
+export AMENT_PREFIX_PATH="/home/clcwork/UAV_capture/px4_ros2_ws/install/px4_msgs:$AMENT_PREFIX_PATH"
+export PYTHONPATH="/home/clcwork/UAV_capture/px4_ros2_ws/install/px4_offboard_hover/lib/python3.12/site-packages:$PYTHONPATH"
+export AMENT_PREFIX_PATH="/home/clcwork/UAV_capture/px4_ros2_ws/install/px4_offboard_hover:$AMENT_PREFIX_PATH"
+export PYTHONPATH="/home/clcwork/UAV_capture/px4_ros2_ws/build/px4_offboard_hover:$PYTHONPATH"'
+++++ export CMAKE_PREFIX_PATH=/home/clcwork/UAV_capture/px4_ros2_ws/install/px4_msgs:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/home/clcwork/intel/oneapi/tbb/2022.3/env/..:/home/clcwork/intel/oneapi/mkl/2025.3/lib/cmake:/home/clcwork/intel/oneapi/ishmem/1.5/lib/cmake/ishmem:/home/clcwork/intel/oneapi/ipp/2022.3/lib/cmake/ipp:/home/clcwork/intel/oneapi/dnnl/2025.3/lib/cmake:/home/clcwork/intel/oneapi/dal/2025.9:/home/clcwork/intel/oneapi/compiler/2025.3:/home/clcwork/intel/oneapi/ccl/2021.17/lib/cmake/oneCCL
+++++ CMAKE_PREFIX_PATH=/home/clcwork/UAV_capture/px4_ros2_ws/install/px4_msgs:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/home/clcwork/intel/oneapi/tbb/2022.3/env/..:/home/clcwork/intel/oneapi/mkl/2025.3/lib/cmake:/home/clcwork/intel/oneapi/ishmem/1.5/lib/cmake/ishmem:/home/clcwork/intel/oneapi/ipp/2022.3/lib/cmake/ipp:/home/clcwork/intel/oneapi/dnnl/2025.3/lib/cmake:/home/clcwork/intel/oneapi/dal/2025.9:/home/clcwork/intel/oneapi/compiler/2025.3:/home/clcwork/intel/oneapi/ccl/2021.17/lib/cmake/oneCCL
+++++ export LD_LIBRARY_PATH=/home/clcwork/UAV_capture/px4_ros2_ws/install/px4_msgs/lib:/opt/ros/jazzy/opt/rviz_ogre_vendor/lib:/opt/ros/jazzy/lib/x86_64-linux-gnu:/opt/ros/jazzy/opt/gz_math_vendor/lib:/opt/ros/jazzy/opt/gz_utils_vendor/lib:/opt/ros/jazzy/opt/gz_cmake_vendor/lib:/opt/ros/jazzy/lib:/home/clcwork/intel/oneapi/tcm/1.4/lib:/home/clcwork/intel/oneapi/umf/1.0/lib:/home/clcwork/intel/oneapi/tbb/2022.3/env/../lib/intel64/gcc4.8:/home/clcwork/intel/oneapi/mpi/2021.17/opt/mpi/libfabric/lib:/home/clcwork/intel/oneapi/mpi/2021.17/lib:/home/clcwork/intel/oneapi/mkl/2025.3/lib:/home/clcwork/intel/oneapi/ishmem/1.5/lib:/home/clcwork/intel/oneapi/ippcp/2025.3/lib/:/home/clcwork/intel/oneapi/ipp/2022.3/lib:/home/clcwork/intel/oneapi/dnnl/2025.3/lib:/home/clcwork/intel/oneapi/dal/2025.9/lib:/home/clcwork/intel/oneapi/compiler/2025.3/opt/compiler/lib:/home/clcwork/intel/oneapi/compiler/2025.3/lib:/home/clcwork/intel/oneapi/ccl/2021.17/lib/
+++++ LD_LIBRARY_PATH=/home/clcwork/UAV_capture/px4_ros2_ws/install/px4_msgs/lib:/opt/ros/jazzy/opt/rviz_ogre_vendor/lib:/opt/ros/jazzy/lib/x86_64-linux-gnu:/opt/ros/jazzy/opt/gz_math_vendor/lib:/opt/ros/jazzy/opt/gz_utils_vendor/lib:/opt/ros/jazzy/opt/gz_cmake_vendor/lib:/opt/ros/jazzy/lib:/home/clcwork/intel/oneapi/tcm/1.4/lib:/home/clcwork/intel/oneapi/umf/1.0/lib:/home/clcwork/intel/oneapi/tbb/2022.3/env/../lib/intel64/gcc4.8:/home/clcwork/intel/oneapi/mpi/2021.17/opt/mpi/libfabric/lib:/home/clcwork/intel/oneapi/mpi/2021.17/lib:/home/clcwork/intel/oneapi/mkl/2025.3/lib:/home/clcwork/intel/oneapi/ishmem/1.5/lib:/home/clcwork/intel/oneapi/ippcp/2025.3/lib/:/home/clcwork/intel/oneapi/ipp/2022.3/lib:/home/clcwork/intel/oneapi/dnnl/2025.3/lib:/home/clcwork/intel/oneapi/dal/2025.9/lib:/home/clcwork/intel/oneapi/compiler/2025.3/opt/compiler/lib:/home/clcwork/intel/oneapi/compiler/2025.3/lib:/home/clcwork/intel/oneapi/ccl/2021.17/lib/
+++++ export PYTHONPATH=/home/clcwork/UAV_capture/px4_ros2_ws/install/px4_msgs/lib/python3.12/site-packages:/opt/ros/jazzy/lib/python3.12/site-packages:/home/clcwork/intel/oneapi/advisor/2025.4/pythonapi
+++++ PYTHONPATH=/home/clcwork/UAV_capture/px4_ros2_ws/install/px4_msgs/lib/python3.12/site-packages:/opt/ros/jazzy/lib/python3.12/site-packages:/home/clcwork/intel/oneapi/advisor/2025.4/pythonapi
+++++ export AMENT_PREFIX_PATH=/home/clcwork/UAV_capture/px4_ros2_ws/install/px4_msgs:/opt/ros/jazzy
+++++ AMENT_PREFIX_PATH=/home/clcwork/UAV_capture/px4_ros2_ws/install/px4_msgs:/opt/ros/jazzy
+++++ export PYTHONPATH=/home/clcwork/UAV_capture/px4_ros2_ws/install/px4_offboard_hover/lib/python3.12/site-packages:/home/clcwork/UAV_capture/px4_ros2_ws/install/px4_msgs/lib/python3.12/site-packages:/opt/ros/jazzy/lib/python3.12/site-packages:/home/clcwork/intel/oneapi/advisor/2025.4/pythonapi
+++++ PYTHONPATH=/home/clcwork/UAV_capture/px4_ros2_ws/install/px4_offboard_hover/lib/python3.12/site-packages:/home/clcwork/UAV_capture/px4_ros2_ws/install/px4_msgs/lib/python3.12/site-packages:/opt/ros/jazzy/lib/python3.12/site-packages:/home/clcwork/intel/oneapi/advisor/2025.4/pythonapi
+++++ export AMENT_PREFIX_PATH=/home/clcwork/UAV_capture/px4_ros2_ws/install/px4_offboard_hover:/home/clcwork/UAV_capture/px4_ros2_ws/install/px4_msgs:/opt/ros/jazzy
+++++ AMENT_PREFIX_PATH=/home/clcwork/UAV_capture/px4_ros2_ws/install/px4_offboard_hover:/home/clcwork/UAV_capture/px4_ros2_ws/install/px4_msgs:/opt/ros/jazzy
+++++ export PYTHONPATH=/home/clcwork/UAV_capture/px4_ros2_ws/build/px4_offboard_hover:/home/clcwork/UAV_capture/px4_ros2_ws/install/px4_offboard_hover/lib/python3.12/site-packages:/home/clcwork/UAV_capture/px4_ros2_ws/install/px4_msgs/lib/python3.12/site-packages:/opt/ros/jazzy/lib/python3.12/site-packages:/home/clcwork/intel/oneapi/advisor/2025.4/pythonapi
+++++ PYTHONPATH=/home/clcwork/UAV_capture/px4_ros2_ws/build/px4_offboard_hover:/home/clcwork/UAV_capture/px4_ros2_ws/install/px4_offboard_hover/lib/python3.12/site-packages:/home/clcwork/UAV_capture/px4_ros2_ws/install/px4_msgs/lib/python3.12/site-packages:/opt/ros/jazzy/lib/python3.12/site-packages:/home/clcwork/intel/oneapi/advisor/2025.4/pythonapi
++++ unset _colcon_ordered_commands
++++ unset _colcon_prefix_sh_source_script
++++ unset _colcon_prefix_bash_COLCON_CURRENT_PREFIX
+++ unset COLCON_CURRENT_PREFIX
+++ unset _colcon_prefix_chain_bash_source_script
++ python3 -m compileall src scripts
+Listing 'src'...
+Listing 'src/px4_msgs'...
+Listing 'src/px4_msgs/.git'...
+Listing 'src/px4_msgs/.git/branches'...
+Listing 'src/px4_msgs/.git/hooks'...
+Listing 'src/px4_msgs/.git/info'...
+Listing 'src/px4_msgs/.git/logs'...
+Listing 'src/px4_msgs/.git/logs/refs'...
+Listing 'src/px4_msgs/.git/logs/refs/heads'...
+Listing 'src/px4_msgs/.git/logs/refs/remotes'...
+Listing 'src/px4_msgs/.git/logs/refs/remotes/origin'...
+Listing 'src/px4_msgs/.git/objects'...
+Listing 'src/px4_msgs/.git/objects/info'...
+Listing 'src/px4_msgs/.git/objects/pack'...
+Listing 'src/px4_msgs/.git/refs'...
+Listing 'src/px4_msgs/.git/refs/heads'...
+Listing 'src/px4_msgs/.git/refs/remotes'...
+Listing 'src/px4_msgs/.git/refs/remotes/origin'...
+Listing 'src/px4_msgs/.git/refs/tags'...
+Listing 'src/px4_msgs/.github'...
+Listing 'src/px4_msgs/.github/workflows'...
+Listing 'src/px4_msgs/msg'...
+Listing 'src/px4_msgs/srv'...
+Listing 'src/px4_offboard_hover'...
+Listing 'src/px4_offboard_hover/px4_offboard_hover'...
+Compiling 'src/px4_offboard_hover/px4_offboard_hover/uav_control_bridge.py'...
+Listing 'src/px4_offboard_hover/resource'...
+Compiling 'src/px4_offboard_hover/setup.py'...
+Listing 'scripts'...
++ colcon build --packages-select px4_offboard_hover
+Starting >>> px4_offboard_hover
+Finished <<< px4_offboard_hover [1.17s]
+
+Summary: 1 package finished [1.32s]
++ source /opt/ros/jazzy/setup.bash
+++ AMENT_SHELL=bash
+++++ dirname /opt/ros/jazzy/setup.bash
++++ builtin cd /opt/ros/jazzy
++++ pwd
+++ AMENT_CURRENT_PREFIX=/opt/ros/jazzy
+++ '[' -n '' ']'
+++ . /opt/ros/jazzy/setup.sh
++++ : /opt/ros/jazzy
++++ : bash
++++ _prefix_setup_IFS=' 	
+'
++++ IFS='
+'
++++ _UNIQUE_PREFIX_PATH=
++++ '[' -z SKIP_PARENT_PREFIX_PATH ']'
++++ ament_append_unique_value _UNIQUE_PREFIX_PATH /opt/ros/jazzy
++++ _listname=_UNIQUE_PREFIX_PATH
++++ _value=/opt/ros/jazzy
++++ eval '_values=$_UNIQUE_PREFIX_PATH'
+++++ _values=
++++ _duplicate=
++++ _ament_append_unique_value_IFS='
+'
++++ IFS=:
++++ '[' bash = zsh ']'
++++ unset _item
++++ '[' -z '' ']'
++++ '[' -z '' ']'
++++ eval '_UNIQUE_PREFIX_PATH="/opt/ros/jazzy"'
+++++ _UNIQUE_PREFIX_PATH=/opt/ros/jazzy
++++ IFS='
+'
++++ unset _ament_append_unique_value_IFS
++++ unset _duplicate
++++ unset _values
++++ unset _value
++++ unset _listname
++++ unset AMENT_CURRENT_PREFIX
++++ _prefix_setup_AMENT_SHELL=bash
++++ IFS=:
++++ '[' bash = zsh ']'
++++ for _path in $_UNIQUE_PREFIX_PATH
++++ '[' -n '' ']'
++++ '[' -f /opt/ros/jazzy/local_setup.bash ']'
++++ '[' bash = sh ']'
++++ IFS=' 	
+'
++++ . /opt/ros/jazzy/local_setup.bash
+++++ AMENT_SHELL=bash
+++++++ dirname /opt/ros/jazzy/local_setup.bash
++++++ builtin cd /opt/ros/jazzy
++++++ pwd
+++++ AMENT_CURRENT_PREFIX=/opt/ros/jazzy
+++++ '[' -n '' ']'
+++++ . /opt/ros/jazzy/local_setup.sh
++++++ _ament_prefix_sh_AMENT_CURRENT_PREFIX=/opt/ros/jazzy
++++++ '[' -z /opt/ros/jazzy ']'
++++++ _ament_prefix_sh_AMENT_CURRENT_PREFIX=/opt/ros/jazzy
++++++ : bash
++++++ _ament_python_executable=/usr/bin/python3
++++++ '[' -n '' ']'
++++++ '[' '!' -f /usr/bin/python3 ']'
++++++ _ament_additional_extension=
++++++ '[' bash '!=' sh ']'
++++++ _ament_additional_extension=bash
+++++++ /usr/bin/python3 /opt/ros/jazzy/_local_setup_util.py sh bash
++++++ _ament_ordered_commands='AMENT_CURRENT_PREFIX="/opt/ros/jazzy" _ament_prefix_sh_source_script "/opt/ros/jazzy/share/ros2cli/environment/ros2-argcomplete.bash"
+AMENT_CURRENT_PREFIX="/opt/ros/jazzy" _ament_prefix_sh_source_script "/opt/ros/jazzy/share/ros_environment/environment/0.ros_distro_check.sh"
+# export ROS_AUTOMATIC_DISCOVERY_RANGE="SUBNET"
+export ROS_DISTRO="jazzy"
+export ROS_PYTHON_VERSION="3"
+export ROS_VERSION="2"
+AMENT_CURRENT_PREFIX="/opt/ros/jazzy" _ament_prefix_sh_source_script "/opt/ros/jazzy/share/rosidl_cli/environment/rosidl-argcomplete.bash"'
++++++ unset _ament_additional_extension
++++++ unset _ament_python_executable
++++++ '[' -n '' ']'
++++++ eval 'AMENT_CURRENT_PREFIX="/opt/ros/jazzy" _ament_prefix_sh_source_script "/opt/ros/jazzy/share/ros2cli/environment/ros2-argcomplete.bash"
+AMENT_CURRENT_PREFIX="/opt/ros/jazzy" _ament_prefix_sh_source_script "/opt/ros/jazzy/share/ros_environment/environment/0.ros_distro_check.sh"
+# export ROS_AUTOMATIC_DISCOVERY_RANGE="SUBNET"
+export ROS_DISTRO="jazzy"
+export ROS_PYTHON_VERSION="3"
+export ROS_VERSION="2"
+AMENT_CURRENT_PREFIX="/opt/ros/jazzy" _ament_prefix_sh_source_script "/opt/ros/jazzy/share/rosidl_cli/environment/rosidl-argcomplete.bash"'
+++++++ AMENT_CURRENT_PREFIX=/opt/ros/jazzy
+++++++ _ament_prefix_sh_source_script /opt/ros/jazzy/share/ros2cli/environment/ros2-argcomplete.bash
+++++++ '[' -f /opt/ros/jazzy/share/ros2cli/environment/ros2-argcomplete.bash ']'
+++++++ '[' -n '' ']'
+++++++ . /opt/ros/jazzy/share/ros2cli/environment/ros2-argcomplete.bash
++++++++ type register-python-argcomplete3
++++++++ type register-python-argcomplete
+++++++++ register-python-argcomplete ros2
++++++++ eval '
+# Run something, muting output or redirecting it to the debug stream
+# depending on the value of _ARC_DEBUG.
+# If ARGCOMPLETE_USE_TEMPFILES is set, use tempfiles for IPC.
+__python_argcomplete_run() {
+    if [[ -z "${ARGCOMPLETE_USE_TEMPFILES-}" ]]; then
+        __python_argcomplete_run_inner "$@"
+        return
+    fi
+    local tmpfile="$(mktemp)"
+    _ARGCOMPLETE_STDOUT_FILENAME="$tmpfile" __python_argcomplete_run_inner "$@"
+    local code=$?
+    cat "$tmpfile"
+    rm "$tmpfile"
+    return $code
+}
+
+__python_argcomplete_run_inner() {
+    if [[ -z "${_ARC_DEBUG-}" ]]; then
+        "$@" 8>&1 9>&2 1>/dev/null 2>&1
+    else
+        "$@" 8>&1 9>&2 1>&9 2>&1
+    fi
+}
+
+_python_argcomplete() {
+    local IFS=$'\''\013'\''
+    local script=""
+    if [[ -n "${ZSH_VERSION-}" ]]; then
+        local completions
+        completions=($(IFS="$IFS" \
+            COMP_LINE="$BUFFER" \
+            COMP_POINT="$CURSOR" \
+            _ARGCOMPLETE=1 \
+            _ARGCOMPLETE_SHELL="zsh" \
+            _ARGCOMPLETE_SUPPRESS_SPACE=1 \
+            __python_argcomplete_run ${script:-${words[1]}}))
+        _describe "${words[1]}" completions -o nosort
+    else
+        local SUPPRESS_SPACE=0
+        if compopt +o nospace 2> /dev/null; then
+            SUPPRESS_SPACE=1
+        fi
+        COMPREPLY=($(IFS="$IFS" \
+            COMP_LINE="$COMP_LINE" \
+            COMP_POINT="$COMP_POINT" \
+            COMP_TYPE="$COMP_TYPE" \
+            _ARGCOMPLETE_COMP_WORDBREAKS="$COMP_WORDBREAKS" \
+            _ARGCOMPLETE=1 \
+            _ARGCOMPLETE_SHELL="bash" \
+            _ARGCOMPLETE_SUPPRESS_SPACE=$SUPPRESS_SPACE \
+            __python_argcomplete_run ${script:-$1}))
+        if [[ $? != 0 ]]; then
+            unset COMPREPLY
+        elif [[ $SUPPRESS_SPACE == 1 ]] && [[ "${COMPREPLY-}" =~ [=/:]$ ]]; then
+            compopt -o nospace
+        fi
+    fi
+}
+if [[ -z "${ZSH_VERSION-}" ]]; then
+    complete -o nospace -o default -o bashdefault -F _python_argcomplete ros2
+else
+    compdef _python_argcomplete ros2
+fi'
+++++++++ [[ -z '' ]]
+++++++++ complete -o nospace -o default -o bashdefault -F _python_argcomplete ros2
+++++++ AMENT_CURRENT_PREFIX=/opt/ros/jazzy
+++++++ _ament_prefix_sh_source_script /opt/ros/jazzy/share/ros_environment/environment/0.ros_distro_check.sh
+++++++ '[' -f /opt/ros/jazzy/share/ros_environment/environment/0.ros_distro_check.sh ']'
+++++++ '[' -n '' ']'
+++++++ . /opt/ros/jazzy/share/ros_environment/environment/0.ros_distro_check.sh
++++++++ '[' -n jazzy -a jazzy '!=' jazzy ']'
+++++++ export ROS_DISTRO=jazzy
+++++++ ROS_DISTRO=jazzy
+++++++ export ROS_PYTHON_VERSION=3
+++++++ ROS_PYTHON_VERSION=3
+++++++ export ROS_VERSION=2
+++++++ ROS_VERSION=2
+++++++ AMENT_CURRENT_PREFIX=/opt/ros/jazzy
+++++++ _ament_prefix_sh_source_script /opt/ros/jazzy/share/rosidl_cli/environment/rosidl-argcomplete.bash
+++++++ '[' -f /opt/ros/jazzy/share/rosidl_cli/environment/rosidl-argcomplete.bash ']'
+++++++ '[' -n '' ']'
+++++++ . /opt/ros/jazzy/share/rosidl_cli/environment/rosidl-argcomplete.bash
++++++++ type register-python-argcomplete3
++++++++ type register-python-argcomplete
+++++++++ register-python-argcomplete rosidl
++++++++ eval '
+# Run something, muting output or redirecting it to the debug stream
+# depending on the value of _ARC_DEBUG.
+# If ARGCOMPLETE_USE_TEMPFILES is set, use tempfiles for IPC.
+__python_argcomplete_run() {
+    if [[ -z "${ARGCOMPLETE_USE_TEMPFILES-}" ]]; then
+        __python_argcomplete_run_inner "$@"
+        return
+    fi
+    local tmpfile="$(mktemp)"
+    _ARGCOMPLETE_STDOUT_FILENAME="$tmpfile" __python_argcomplete_run_inner "$@"
+    local code=$?
+    cat "$tmpfile"
+    rm "$tmpfile"
+    return $code
+}
+
+__python_argcomplete_run_inner() {
+    if [[ -z "${_ARC_DEBUG-}" ]]; then
+        "$@" 8>&1 9>&2 1>/dev/null 2>&1
+    else
+        "$@" 8>&1 9>&2 1>&9 2>&1
+    fi
+}
+
+_python_argcomplete() {
+    local IFS=$'\''\013'\''
+    local script=""
+    if [[ -n "${ZSH_VERSION-}" ]]; then
+        local completions
+        completions=($(IFS="$IFS" \
+            COMP_LINE="$BUFFER" \
+            COMP_POINT="$CURSOR" \
+            _ARGCOMPLETE=1 \
+            _ARGCOMPLETE_SHELL="zsh" \
+            _ARGCOMPLETE_SUPPRESS_SPACE=1 \
+            __python_argcomplete_run ${script:-${words[1]}}))
+        _describe "${words[1]}" completions -o nosort
+    else
+        local SUPPRESS_SPACE=0
+        if compopt +o nospace 2> /dev/null; then
+            SUPPRESS_SPACE=1
+        fi
+        COMPREPLY=($(IFS="$IFS" \
+            COMP_LINE="$COMP_LINE" \
+            COMP_POINT="$COMP_POINT" \
+            COMP_TYPE="$COMP_TYPE" \
+            _ARGCOMPLETE_COMP_WORDBREAKS="$COMP_WORDBREAKS" \
+            _ARGCOMPLETE=1 \
+            _ARGCOMPLETE_SHELL="bash" \
+            _ARGCOMPLETE_SUPPRESS_SPACE=$SUPPRESS_SPACE \
+            __python_argcomplete_run ${script:-$1}))
+        if [[ $? != 0 ]]; then
+            unset COMPREPLY
+        elif [[ $SUPPRESS_SPACE == 1 ]] && [[ "${COMPREPLY-}" =~ [=/:]$ ]]; then
+            compopt -o nospace
+        fi
+    fi
+}
+if [[ -z "${ZSH_VERSION-}" ]]; then
+    complete -o nospace -o default -o bashdefault -F _python_argcomplete rosidl
+else
+    compdef _python_argcomplete rosidl
+fi'
+++++++++ [[ -z '' ]]
+++++++++ complete -o nospace -o default -o bashdefault -F _python_argcomplete rosidl
++++++ unset _ament_ordered_commands
++++++ unset _ament_prefix_sh_source_script
++++++ unset _ament_prefix_sh_AMENT_CURRENT_PREFIX
++++ AMENT_SHELL=bash
++++ unset _path
++++ IFS=' 	
+'
++++ unset _prefix_setup_IFS
++++ unset _prefix_setup_AMENT_SHELL
++++ unset _UNIQUE_PREFIX_PATH
++++ unset AMENT_SHELL
++ source install/setup.bash
+++ COLCON_CURRENT_PREFIX=/opt/ros/jazzy
+++ _colcon_prefix_chain_bash_source_script /opt/ros/jazzy/local_setup.bash
+++ '[' -f /opt/ros/jazzy/local_setup.bash ']'
+++ '[' -n '' ']'
+++ . /opt/ros/jazzy/local_setup.bash
++++ AMENT_SHELL=bash
++++++ dirname /opt/ros/jazzy/local_setup.bash
+++++ builtin cd /opt/ros/jazzy
+++++ pwd
++++ AMENT_CURRENT_PREFIX=/opt/ros/jazzy
++++ '[' -n '' ']'
++++ . /opt/ros/jazzy/local_setup.sh
+++++ _ament_prefix_sh_AMENT_CURRENT_PREFIX=/opt/ros/jazzy
+++++ '[' -z /opt/ros/jazzy ']'
+++++ _ament_prefix_sh_AMENT_CURRENT_PREFIX=/opt/ros/jazzy
+++++ : bash
+++++ _ament_python_executable=/usr/bin/python3
+++++ '[' -n '' ']'
+++++ '[' '!' -f /usr/bin/python3 ']'
+++++ _ament_additional_extension=
+++++ '[' bash '!=' sh ']'
+++++ _ament_additional_extension=bash
++++++ /usr/bin/python3 /opt/ros/jazzy/_local_setup_util.py sh bash
+++++ _ament_ordered_commands='AMENT_CURRENT_PREFIX="/opt/ros/jazzy" _ament_prefix_sh_source_script "/opt/ros/jazzy/share/ros2cli/environment/ros2-argcomplete.bash"
+AMENT_CURRENT_PREFIX="/opt/ros/jazzy" _ament_prefix_sh_source_script "/opt/ros/jazzy/share/ros_environment/environment/0.ros_distro_check.sh"
+# export ROS_AUTOMATIC_DISCOVERY_RANGE="SUBNET"
+export ROS_DISTRO="jazzy"
+export ROS_PYTHON_VERSION="3"
+export ROS_VERSION="2"
+AMENT_CURRENT_PREFIX="/opt/ros/jazzy" _ament_prefix_sh_source_script "/opt/ros/jazzy/share/rosidl_cli/environment/rosidl-argcomplete.bash"'
+++++ unset _ament_additional_extension
+++++ unset _ament_python_executable
+++++ '[' -n '' ']'
+++++ eval 'AMENT_CURRENT_PREFIX="/opt/ros/jazzy" _ament_prefix_sh_source_script "/opt/ros/jazzy/share/ros2cli/environment/ros2-argcomplete.bash"
+AMENT_CURRENT_PREFIX="/opt/ros/jazzy" _ament_prefix_sh_source_script "/opt/ros/jazzy/share/ros_environment/environment/0.ros_distro_check.sh"
+# export ROS_AUTOMATIC_DISCOVERY_RANGE="SUBNET"
+export ROS_DISTRO="jazzy"
+export ROS_PYTHON_VERSION="3"
+export ROS_VERSION="2"
+AMENT_CURRENT_PREFIX="/opt/ros/jazzy" _ament_prefix_sh_source_script "/opt/ros/jazzy/share/rosidl_cli/environment/rosidl-argcomplete.bash"'
++++++ AMENT_CURRENT_PREFIX=/opt/ros/jazzy
++++++ _ament_prefix_sh_source_script /opt/ros/jazzy/share/ros2cli/environment/ros2-argcomplete.bash
++++++ '[' -f /opt/ros/jazzy/share/ros2cli/environment/ros2-argcomplete.bash ']'
++++++ '[' -n '' ']'
++++++ . /opt/ros/jazzy/share/ros2cli/environment/ros2-argcomplete.bash
+++++++ type register-python-argcomplete3
+++++++ type register-python-argcomplete
++++++++ register-python-argcomplete ros2
+++++++ eval '
+# Run something, muting output or redirecting it to the debug stream
+# depending on the value of _ARC_DEBUG.
+# If ARGCOMPLETE_USE_TEMPFILES is set, use tempfiles for IPC.
+__python_argcomplete_run() {
+    if [[ -z "${ARGCOMPLETE_USE_TEMPFILES-}" ]]; then
+        __python_argcomplete_run_inner "$@"
+        return
+    fi
+    local tmpfile="$(mktemp)"
+    _ARGCOMPLETE_STDOUT_FILENAME="$tmpfile" __python_argcomplete_run_inner "$@"
+    local code=$?
+    cat "$tmpfile"
+    rm "$tmpfile"
+    return $code
+}
+
+__python_argcomplete_run_inner() {
+    if [[ -z "${_ARC_DEBUG-}" ]]; then
+        "$@" 8>&1 9>&2 1>/dev/null 2>&1
+    else
+        "$@" 8>&1 9>&2 1>&9 2>&1
+    fi
+}
+
+_python_argcomplete() {
+    local IFS=$'\''\013'\''
+    local script=""
+    if [[ -n "${ZSH_VERSION-}" ]]; then
+        local completions
+        completions=($(IFS="$IFS" \
+            COMP_LINE="$BUFFER" \
+            COMP_POINT="$CURSOR" \
+            _ARGCOMPLETE=1 \
+            _ARGCOMPLETE_SHELL="zsh" \
+            _ARGCOMPLETE_SUPPRESS_SPACE=1 \
+            __python_argcomplete_run ${script:-${words[1]}}))
+        _describe "${words[1]}" completions -o nosort
+    else
+        local SUPPRESS_SPACE=0
+        if compopt +o nospace 2> /dev/null; then
+            SUPPRESS_SPACE=1
+        fi
+        COMPREPLY=($(IFS="$IFS" \
+            COMP_LINE="$COMP_LINE" \
+            COMP_POINT="$COMP_POINT" \
+            COMP_TYPE="$COMP_TYPE" \
+            _ARGCOMPLETE_COMP_WORDBREAKS="$COMP_WORDBREAKS" \
+            _ARGCOMPLETE=1 \
+            _ARGCOMPLETE_SHELL="bash" \
+            _ARGCOMPLETE_SUPPRESS_SPACE=$SUPPRESS_SPACE \
+            __python_argcomplete_run ${script:-$1}))
+        if [[ $? != 0 ]]; then
+            unset COMPREPLY
+        elif [[ $SUPPRESS_SPACE == 1 ]] && [[ "${COMPREPLY-}" =~ [=/:]$ ]]; then
+            compopt -o nospace
+        fi
+    fi
+}
+if [[ -z "${ZSH_VERSION-}" ]]; then
+    complete -o nospace -o default -o bashdefault -F _python_argcomplete ros2
+else
+    compdef _python_argcomplete ros2
+fi'
++++++++ [[ -z '' ]]
++++++++ complete -o nospace -o default -o bashdefault -F _python_argcomplete ros2
++++++ AMENT_CURRENT_PREFIX=/opt/ros/jazzy
++++++ _ament_prefix_sh_source_script /opt/ros/jazzy/share/ros_environment/environment/0.ros_distro_check.sh
++++++ '[' -f /opt/ros/jazzy/share/ros_environment/environment/0.ros_distro_check.sh ']'
++++++ '[' -n '' ']'
++++++ . /opt/ros/jazzy/share/ros_environment/environment/0.ros_distro_check.sh
+++++++ '[' -n jazzy -a jazzy '!=' jazzy ']'
++++++ export ROS_DISTRO=jazzy
++++++ ROS_DISTRO=jazzy
++++++ export ROS_PYTHON_VERSION=3
++++++ ROS_PYTHON_VERSION=3
++++++ export ROS_VERSION=2
++++++ ROS_VERSION=2
++++++ AMENT_CURRENT_PREFIX=/opt/ros/jazzy
++++++ _ament_prefix_sh_source_script /opt/ros/jazzy/share/rosidl_cli/environment/rosidl-argcomplete.bash
++++++ '[' -f /opt/ros/jazzy/share/rosidl_cli/environment/rosidl-argcomplete.bash ']'
++++++ '[' -n '' ']'
++++++ . /opt/ros/jazzy/share/rosidl_cli/environment/rosidl-argcomplete.bash
+++++++ type register-python-argcomplete3
+++++++ type register-python-argcomplete
++++++++ register-python-argcomplete rosidl
+++++++ eval '
+# Run something, muting output or redirecting it to the debug stream
+# depending on the value of _ARC_DEBUG.
+# If ARGCOMPLETE_USE_TEMPFILES is set, use tempfiles for IPC.
+__python_argcomplete_run() {
+    if [[ -z "${ARGCOMPLETE_USE_TEMPFILES-}" ]]; then
+        __python_argcomplete_run_inner "$@"
+        return
+    fi
+    local tmpfile="$(mktemp)"
+    _ARGCOMPLETE_STDOUT_FILENAME="$tmpfile" __python_argcomplete_run_inner "$@"
+    local code=$?
+    cat "$tmpfile"
+    rm "$tmpfile"
+    return $code
+}
+
+__python_argcomplete_run_inner() {
+    if [[ -z "${_ARC_DEBUG-}" ]]; then
+        "$@" 8>&1 9>&2 1>/dev/null 2>&1
+    else
+        "$@" 8>&1 9>&2 1>&9 2>&1
+    fi
+}
+
+_python_argcomplete() {
+    local IFS=$'\''\013'\''
+    local script=""
+    if [[ -n "${ZSH_VERSION-}" ]]; then
+        local completions
+        completions=($(IFS="$IFS" \
+            COMP_LINE="$BUFFER" \
+            COMP_POINT="$CURSOR" \
+            _ARGCOMPLETE=1 \
+            _ARGCOMPLETE_SHELL="zsh" \
+            _ARGCOMPLETE_SUPPRESS_SPACE=1 \
+            __python_argcomplete_run ${script:-${words[1]}}))
+        _describe "${words[1]}" completions -o nosort
+    else
+        local SUPPRESS_SPACE=0
+        if compopt +o nospace 2> /dev/null; then
+            SUPPRESS_SPACE=1
+        fi
+        COMPREPLY=($(IFS="$IFS" \
+            COMP_LINE="$COMP_LINE" \
+            COMP_POINT="$COMP_POINT" \
+            COMP_TYPE="$COMP_TYPE" \
+            _ARGCOMPLETE_COMP_WORDBREAKS="$COMP_WORDBREAKS" \
+            _ARGCOMPLETE=1 \
+            _ARGCOMPLETE_SHELL="bash" \
+            _ARGCOMPLETE_SUPPRESS_SPACE=$SUPPRESS_SPACE \
+            __python_argcomplete_run ${script:-$1}))
+        if [[ $? != 0 ]]; then
+            unset COMPREPLY
+        elif [[ $SUPPRESS_SPACE == 1 ]] && [[ "${COMPREPLY-}" =~ [=/:]$ ]]; then
+            compopt -o nospace
+        fi
+    fi
+}
+if [[ -z "${ZSH_VERSION-}" ]]; then
+    complete -o nospace -o default -o bashdefault -F _python_argcomplete rosidl
+else
+    compdef _python_argcomplete rosidl
+fi'
++++++++ [[ -z '' ]]
++++++++ complete -o nospace -o default -o bashdefault -F _python_argcomplete rosidl
+++++ unset _ament_ordered_commands
+++++ unset _ament_prefix_sh_source_script
+++++ unset _ament_prefix_sh_AMENT_CURRENT_PREFIX
+++++ dirname install/setup.bash
++++ builtin cd install
++++ pwd
+++ COLCON_CURRENT_PREFIX=/home/clcwork/UAV_capture/px4_ros2_ws/install
+++ _colcon_prefix_chain_bash_source_script /home/clcwork/UAV_capture/px4_ros2_ws/install/local_setup.bash
+++ '[' -f /home/clcwork/UAV_capture/px4_ros2_ws/install/local_setup.bash ']'
+++ '[' -n '' ']'
+++ . /home/clcwork/UAV_capture/px4_ros2_ws/install/local_setup.bash
++++ '[' -z /home/clcwork/UAV_capture/px4_ros2_ws/install ']'
++++ _colcon_prefix_bash_COLCON_CURRENT_PREFIX=/home/clcwork/UAV_capture/px4_ros2_ws/install
++++ _colcon_prefix_bash_prepend_unique_value COLCON_PREFIX_PATH /home/clcwork/UAV_capture/px4_ros2_ws/install
++++ _listname=COLCON_PREFIX_PATH
++++ _value=/home/clcwork/UAV_capture/px4_ros2_ws/install
++++ eval '_values="$COLCON_PREFIX_PATH"'
+++++ _values=
++++ _colcon_prefix_bash_prepend_unique_value_IFS=' 	
+'
++++ IFS=:
++++ _all_values=/home/clcwork/UAV_capture/px4_ros2_ws/install
++++ _contained_value=
++++ unset _item
++++ '[' -z '' ']'
++++ '[' -n '' ']'
++++ unset _contained_value
++++ IFS=' 	
+'
++++ unset _colcon_prefix_bash_prepend_unique_value_IFS
++++ eval export 'COLCON_PREFIX_PATH="/home/clcwork/UAV_capture/px4_ros2_ws/install"'
+++++ export COLCON_PREFIX_PATH=/home/clcwork/UAV_capture/px4_ros2_ws/install
+++++ COLCON_PREFIX_PATH=/home/clcwork/UAV_capture/px4_ros2_ws/install
++++ unset _all_values
++++ unset _values
++++ unset _value
++++ unset _listname
++++ unset _colcon_prefix_bash_prepend_unique_value
++++ '[' -n '' ']'
++++ _colcon_python_executable=/usr/bin/python3
++++ '[' '!' -f /usr/bin/python3 ']'
+++++ /usr/bin/python3 /home/clcwork/UAV_capture/px4_ros2_ws/install/_local_setup_util_sh.py sh bash
++++ _colcon_ordered_commands='export CMAKE_PREFIX_PATH="/home/clcwork/UAV_capture/px4_ros2_ws/install/px4_msgs:$CMAKE_PREFIX_PATH"
+export LD_LIBRARY_PATH="/home/clcwork/UAV_capture/px4_ros2_ws/install/px4_msgs/lib:$LD_LIBRARY_PATH"
+export PYTHONPATH="/home/clcwork/UAV_capture/px4_ros2_ws/install/px4_msgs/lib/python3.12/site-packages:$PYTHONPATH"
+export AMENT_PREFIX_PATH="/home/clcwork/UAV_capture/px4_ros2_ws/install/px4_msgs:$AMENT_PREFIX_PATH"
+export PYTHONPATH="/home/clcwork/UAV_capture/px4_ros2_ws/install/px4_offboard_hover/lib/python3.12/site-packages:$PYTHONPATH"
+export AMENT_PREFIX_PATH="/home/clcwork/UAV_capture/px4_ros2_ws/install/px4_offboard_hover:$AMENT_PREFIX_PATH"'
++++ unset _colcon_python_executable
++++ '[' -n '' ']'
++++ eval 'export CMAKE_PREFIX_PATH="/home/clcwork/UAV_capture/px4_ros2_ws/install/px4_msgs:$CMAKE_PREFIX_PATH"
+export LD_LIBRARY_PATH="/home/clcwork/UAV_capture/px4_ros2_ws/install/px4_msgs/lib:$LD_LIBRARY_PATH"
+export PYTHONPATH="/home/clcwork/UAV_capture/px4_ros2_ws/install/px4_msgs/lib/python3.12/site-packages:$PYTHONPATH"
+export AMENT_PREFIX_PATH="/home/clcwork/UAV_capture/px4_ros2_ws/install/px4_msgs:$AMENT_PREFIX_PATH"
+export PYTHONPATH="/home/clcwork/UAV_capture/px4_ros2_ws/install/px4_offboard_hover/lib/python3.12/site-packages:$PYTHONPATH"
+export AMENT_PREFIX_PATH="/home/clcwork/UAV_capture/px4_ros2_ws/install/px4_offboard_hover:$AMENT_PREFIX_PATH"'
+++++ export CMAKE_PREFIX_PATH=/home/clcwork/UAV_capture/px4_ros2_ws/install/px4_msgs:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/home/clcwork/intel/oneapi/tbb/2022.3/env/..:/home/clcwork/intel/oneapi/mkl/2025.3/lib/cmake:/home/clcwork/intel/oneapi/ishmem/1.5/lib/cmake/ishmem:/home/clcwork/intel/oneapi/ipp/2022.3/lib/cmake/ipp:/home/clcwork/intel/oneapi/dnnl/2025.3/lib/cmake:/home/clcwork/intel/oneapi/dal/2025.9:/home/clcwork/intel/oneapi/compiler/2025.3:/home/clcwork/intel/oneapi/ccl/2021.17/lib/cmake/oneCCL
+++++ CMAKE_PREFIX_PATH=/home/clcwork/UAV_capture/px4_ros2_ws/install/px4_msgs:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/home/clcwork/intel/oneapi/tbb/2022.3/env/..:/home/clcwork/intel/oneapi/mkl/2025.3/lib/cmake:/home/clcwork/intel/oneapi/ishmem/1.5/lib/cmake/ishmem:/home/clcwork/intel/oneapi/ipp/2022.3/lib/cmake/ipp:/home/clcwork/intel/oneapi/dnnl/2025.3/lib/cmake:/home/clcwork/intel/oneapi/dal/2025.9:/home/clcwork/intel/oneapi/compiler/2025.3:/home/clcwork/intel/oneapi/ccl/2021.17/lib/cmake/oneCCL
+++++ export LD_LIBRARY_PATH=/home/clcwork/UAV_capture/px4_ros2_ws/install/px4_msgs/lib:/opt/ros/jazzy/opt/rviz_ogre_vendor/lib:/opt/ros/jazzy/lib/x86_64-linux-gnu:/opt/ros/jazzy/opt/gz_math_vendor/lib:/opt/ros/jazzy/opt/gz_utils_vendor/lib:/opt/ros/jazzy/opt/gz_cmake_vendor/lib:/opt/ros/jazzy/lib:/home/clcwork/intel/oneapi/tcm/1.4/lib:/home/clcwork/intel/oneapi/umf/1.0/lib:/home/clcwork/intel/oneapi/tbb/2022.3/env/../lib/intel64/gcc4.8:/home/clcwork/intel/oneapi/mpi/2021.17/opt/mpi/libfabric/lib:/home/clcwork/intel/oneapi/mpi/2021.17/lib:/home/clcwork/intel/oneapi/mkl/2025.3/lib:/home/clcwork/intel/oneapi/ishmem/1.5/lib:/home/clcwork/intel/oneapi/ippcp/2025.3/lib/:/home/clcwork/intel/oneapi/ipp/2022.3/lib:/home/clcwork/intel/oneapi/dnnl/2025.3/lib:/home/clcwork/intel/oneapi/dal/2025.9/lib:/home/clcwork/intel/oneapi/compiler/2025.3/opt/compiler/lib:/home/clcwork/intel/oneapi/compiler/2025.3/lib:/home/clcwork/intel/oneapi/ccl/2021.17/lib/
+++++ LD_LIBRARY_PATH=/home/clcwork/UAV_capture/px4_ros2_ws/install/px4_msgs/lib:/opt/ros/jazzy/opt/rviz_ogre_vendor/lib:/opt/ros/jazzy/lib/x86_64-linux-gnu:/opt/ros/jazzy/opt/gz_math_vendor/lib:/opt/ros/jazzy/opt/gz_utils_vendor/lib:/opt/ros/jazzy/opt/gz_cmake_vendor/lib:/opt/ros/jazzy/lib:/home/clcwork/intel/oneapi/tcm/1.4/lib:/home/clcwork/intel/oneapi/umf/1.0/lib:/home/clcwork/intel/oneapi/tbb/2022.3/env/../lib/intel64/gcc4.8:/home/clcwork/intel/oneapi/mpi/2021.17/opt/mpi/libfabric/lib:/home/clcwork/intel/oneapi/mpi/2021.17/lib:/home/clcwork/intel/oneapi/mkl/2025.3/lib:/home/clcwork/intel/oneapi/ishmem/1.5/lib:/home/clcwork/intel/oneapi/ippcp/2025.3/lib/:/home/clcwork/intel/oneapi/ipp/2022.3/lib:/home/clcwork/intel/oneapi/dnnl/2025.3/lib:/home/clcwork/intel/oneapi/dal/2025.9/lib:/home/clcwork/intel/oneapi/compiler/2025.3/opt/compiler/lib:/home/clcwork/intel/oneapi/compiler/2025.3/lib:/home/clcwork/intel/oneapi/ccl/2021.17/lib/
+++++ export PYTHONPATH=/home/clcwork/UAV_capture/px4_ros2_ws/install/px4_msgs/lib/python3.12/site-packages:/opt/ros/jazzy/lib/python3.12/site-packages:/home/clcwork/intel/oneapi/advisor/2025.4/pythonapi
+++++ PYTHONPATH=/home/clcwork/UAV_capture/px4_ros2_ws/install/px4_msgs/lib/python3.12/site-packages:/opt/ros/jazzy/lib/python3.12/site-packages:/home/clcwork/intel/oneapi/advisor/2025.4/pythonapi
+++++ export AMENT_PREFIX_PATH=/home/clcwork/UAV_capture/px4_ros2_ws/install/px4_msgs:/opt/ros/jazzy
+++++ AMENT_PREFIX_PATH=/home/clcwork/UAV_capture/px4_ros2_ws/install/px4_msgs:/opt/ros/jazzy
+++++ export PYTHONPATH=/home/clcwork/UAV_capture/px4_ros2_ws/install/px4_offboard_hover/lib/python3.12/site-packages:/home/clcwork/UAV_capture/px4_ros2_ws/install/px4_msgs/lib/python3.12/site-packages:/opt/ros/jazzy/lib/python3.12/site-packages:/home/clcwork/intel/oneapi/advisor/2025.4/pythonapi
+++++ PYTHONPATH=/home/clcwork/UAV_capture/px4_ros2_ws/install/px4_offboard_hover/lib/python3.12/site-packages:/home/clcwork/UAV_capture/px4_ros2_ws/install/px4_msgs/lib/python3.12/site-packages:/opt/ros/jazzy/lib/python3.12/site-packages:/home/clcwork/intel/oneapi/advisor/2025.4/pythonapi
+++++ export AMENT_PREFIX_PATH=/home/clcwork/UAV_capture/px4_ros2_ws/install/px4_offboard_hover:/home/clcwork/UAV_capture/px4_ros2_ws/install/px4_msgs:/opt/ros/jazzy
+++++ AMENT_PREFIX_PATH=/home/clcwork/UAV_capture/px4_ros2_ws/install/px4_offboard_hover:/home/clcwork/UAV_capture/px4_ros2_ws/install/px4_msgs:/opt/ros/jazzy
++++ unset _colcon_ordered_commands
++++ unset _colcon_prefix_sh_source_script
++++ unset _colcon_prefix_bash_COLCON_CURRENT_PREFIX
+++ unset COLCON_CURRENT_PREFIX
+++ unset _colcon_prefix_chain_bash_source_script
++ ros2 pkg executables px4_offboard_hover
+px4_offboard_hover demo02_waypoint_flight
+px4_offboard_hover demo03_circle_trajectory
+px4_offboard_hover demo04_external_setpoint
+px4_offboard_hover hover
+px4_offboard_hover trajectory_recorder
+px4_offboard_hover uav_control_bridge
+px4_offboard_hover verify_hover

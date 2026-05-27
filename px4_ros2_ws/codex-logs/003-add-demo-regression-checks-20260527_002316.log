@@ -1,0 +1,3845 @@
+Reading prompt from stdin...
+OpenAI Codex v0.133.0
+--------
+workdir: /home/clcwork/UAV_capture/px4_ros2_ws
+model: gpt-5.5
+provider: openai
+approval: never
+sandbox: danger-full-access
+reasoning effort: high
+reasoning summaries: none
+session id: 019e6518-fb46-7050-a88e-6df30dc557df
+--------
+user
+# Task 003: Add Demo Regression Checks
+
+## Task goal
+
+- 增加轻量检查脚本 `scripts/check_demo_outputs.sh`。
+- 检查最近一次实验输出中是否存在必要文件。
+- 检查 `verify` 输出或 `result.txt` 里是否有 `RESULT=PASS`。
+- 检查 `trajectory.csv` 是否存在且包含 `timestamp` 或 `t`、`x`、`y`、`z`、`vx`、`vy`、`vz` 等字段。
+- 检查可视化 PNG 是否存在。
+
+## Allowed changes
+
+- `scripts/check_demo_outputs.sh`
+- `docs/REGRESSION_CHECKS.md`
+- 不允许修改控制节点。
+- 不允许删除已有日志、CSV、PNG、MP4 或实验目录。
+
+## Suggested script behavior
+
+支持参数：日志或可视化目录路径。
+
+用法：
+
+```bash
+./scripts/check_demo_outputs.sh logs/offboard_hover/<timestamp>
+./scripts/check_demo_outputs.sh visualizations/demo01_hover/<timestamp>
+```
+
+行为：
+
+- 如果通过，输出 `CHECK=PASS`。
+- 如果失败，输出 `CHECK=FAIL` 并说明缺哪个文件或字段。
+- 退出码：通过为 `0`，失败为非 `0`。
+
+兼容性要求：
+
+- Demo 1-4 新展示目录应优先检查：
+  - `trajectory.csv`
+  - `trajectory_3d.png`
+  - `xy_path.png`
+  - `height_curve.png`
+  - `speed_curve.png`
+  - `tracking_error.png`
+  - `summary.md`
+  - `result.txt`
+- 老的 hover 验证日志可以检查 `verify.log` 中的 `RESULT=PASS`。
+
+## Required commands
+
+将命令输出保存到 `codex-logs/003-add-demo-regression-checks.log`：
+
+```bash
+chmod +x scripts/check_demo_outputs.sh
+bash -n scripts/check_demo_outputs.sh
+./scripts/check_demo_outputs.sh <一个实际存在的日志目录或可视化目录>
+```
+
+## Deliverables
+
+- `scripts/check_demo_outputs.sh`
+- `docs/REGRESSION_CHECKS.md`
+- `codex-logs/003-add-demo-regression-checks.log`
+
+## Final report requirements
+
+最终报告必须说明：
+
+- 检查了哪些文件。
+- 哪些 Demo 目前能通过。
+- 哪些检查仍是弱检查。
+- `changed files`
+- `commands run`
+- `test result`
+- `known risks`
+
+codex
+我会先快速查看工作区结构、现有脚本和可用的日志/可视化目录，再按任务限定只新增脚本和文档，并把验证输出集中写到指定日志。
+exec
+/bin/bash -lc 'git status --short' in /home/clcwork/UAV_capture/px4_ros2_ws
+ exited 128 in 0ms:
+fatal: not a git repository (or any of the parent directories): .git
+
+exec
+/bin/bash -lc "pwd && rg --files -g '"'!*PX4-Autopilot*'"' | sed -n '1,160p'" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+/home/clcwork/UAV_capture/px4_ros2_ws
+/bin/bash: line 1: rg: command not found
+
+exec
+/bin/bash -lc "find logs visualizations codex-tasks scripts docs -maxdepth 3 -type f -o -type d 2>/dev/null | sort | sed -n '1,220p'" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+codex-tasks
+codex-tasks/001-audit-project-structure.md
+codex-tasks/002-standardize-demo-visualization.md
+codex-tasks/003-add-demo-regression-checks.md
+codex-tasks/004-design-uav-control-api.md
+codex-tasks/005-plan-uav-arm-simulation.md
+docs
+docs/PROJECT_STRUCTURE.md
+docs/VISUALIZATION_GUIDE.md
+logs
+logs/demo01_hover
+logs/demo01_hover/20260526_221722
+logs/demo01_hover/20260526_221722/demo01.log
+logs/demo01_hover/20260526_221722/trajectory_recorder.log
+logs/demo02_waypoint_flight
+logs/demo02_waypoint_flight/20260526_085827
+logs/demo02_waypoint_flight/20260526_085827/demo02.log
+logs/demo02_waypoint_flight/20260526_085827/trajectory_recorder.log
+logs/demo02_waypoint_flight/20260526_090144
+logs/demo02_waypoint_flight/20260526_090144/demo02.log
+logs/demo02_waypoint_flight/20260526_090144/trajectory_recorder.log
+logs/demo02_waypoint_flight/20260526_221833
+logs/demo02_waypoint_flight/20260526_221833/demo02.log
+logs/demo02_waypoint_flight/20260526_221833/trajectory_recorder.log
+logs/demo02_waypoint_flight/20260526_222121
+logs/demo02_waypoint_flight/20260526_222121/demo02.log
+logs/demo02_waypoint_flight/20260526_222121/trajectory_recorder.log
+logs/demo03_circle_trajectory
+logs/demo03_circle_trajectory/20260526_083341
+logs/demo03_circle_trajectory/20260526_083341/demo03.log
+logs/demo03_circle_trajectory/20260526_090359
+logs/demo03_circle_trajectory/20260526_090359/demo03.log
+logs/demo03_circle_trajectory/20260526_090359/trajectory_recorder.log
+logs/demo03_circle_trajectory/20260526_222313
+logs/demo03_circle_trajectory/20260526_222313/demo03.log
+logs/demo03_circle_trajectory/20260526_222313/trajectory_recorder.log
+logs/demo04_external_setpoint
+logs/demo04_external_setpoint/20260526_090546
+logs/demo04_external_setpoint/20260526_090546/demo04.log
+logs/demo04_external_setpoint/20260526_090546/trajectory_recorder.log
+logs/demo04_external_setpoint/20260526_222502
+logs/demo04_external_setpoint/20260526_222502/demo04.log
+logs/demo04_external_setpoint/20260526_222502/target_sequence.log
+logs/demo04_external_setpoint/20260526_222502/trajectory_recorder.log
+logs/offboard_hover
+logs/offboard_hover/20260525_212417
+logs/offboard_hover/20260525_212434
+logs/offboard_hover/20260525_212434/hover.log
+logs/offboard_hover/20260525_212434/verify.log
+logs/offboard_hover/20260525_212600
+logs/offboard_hover/20260525_212600/agent_tail.log
+logs/offboard_hover/20260525_212600/hover.log
+logs/offboard_hover/20260525_212600/px4_tail.log
+logs/offboard_hover/20260525_212600/verify.log
+logs/offboard_hover/20260525_212810
+logs/offboard_hover/20260525_212810/agent_tail.log
+logs/offboard_hover/20260525_212810/hover.log
+logs/offboard_hover/20260525_212810/px4_tail.log
+logs/offboard_hover/20260525_212810/verify.log
+logs/offboard_hover/20260526_080357
+logs/offboard_hover/20260526_080357/agent_tail.log
+logs/offboard_hover/20260526_080357/hover.log
+logs/offboard_hover/20260526_080357/px4_tail.log
+logs/offboard_hover/20260526_080357/verify.log
+scripts
+scripts/run_demo01_hover.sh
+scripts/run_demo02_waypoint_flight.sh
+scripts/run_demo03_circle_trajectory.sh
+scripts/run_demo04_external_setpoint.sh
+scripts/run_hover_experiment.sh
+scripts/run_trajectory_recorder.sh
+scripts/start_stack.sh
+scripts/stop_stack.sh
+visualizations
+visualizations/demo01_hover
+visualizations/demo01_hover/20260526_221722
+visualizations/demo01_hover/20260526_221722/height_curve.png
+visualizations/demo01_hover/20260526_221722/result.txt
+visualizations/demo01_hover/20260526_221722/speed_curve.png
+visualizations/demo01_hover/20260526_221722/summary.md
+visualizations/demo01_hover/20260526_221722/tracking_error.png
+visualizations/demo01_hover/20260526_221722/trajectory.csv
+visualizations/demo01_hover/20260526_221722/trajectory.mp4
+visualizations/demo01_hover/20260526_221722/trajectory_3d.png
+visualizations/demo01_hover/20260526_221722/xy_path.png
+visualizations/demo02_waypoint_flight
+visualizations/demo02_waypoint_flight/20260526_085827
+visualizations/demo02_waypoint_flight/20260526_085827/summary.md
+visualizations/demo02_waypoint_flight/20260526_085827/trajectory.csv
+visualizations/demo02_waypoint_flight/20260526_085827/trajectory.mp4
+visualizations/demo02_waypoint_flight/20260526_085827/trajectory.png
+visualizations/demo02_waypoint_flight/20260526_090144
+visualizations/demo02_waypoint_flight/20260526_090144/summary.md
+visualizations/demo02_waypoint_flight/20260526_090144/trajectory.csv
+visualizations/demo02_waypoint_flight/20260526_090144/trajectory.mp4
+visualizations/demo02_waypoint_flight/20260526_090144/trajectory.png
+visualizations/demo02_waypoint_flight/20260526_221833
+visualizations/demo02_waypoint_flight/20260526_221833/height_curve.png
+visualizations/demo02_waypoint_flight/20260526_221833/result.txt
+visualizations/demo02_waypoint_flight/20260526_221833/speed_curve.png
+visualizations/demo02_waypoint_flight/20260526_221833/summary.md
+visualizations/demo02_waypoint_flight/20260526_221833/tracking_error.png
+visualizations/demo02_waypoint_flight/20260526_221833/trajectory.csv
+visualizations/demo02_waypoint_flight/20260526_221833/trajectory.mp4
+visualizations/demo02_waypoint_flight/20260526_221833/trajectory_3d.png
+visualizations/demo02_waypoint_flight/20260526_221833/xy_path.png
+visualizations/demo02_waypoint_flight/20260526_222121
+visualizations/demo02_waypoint_flight/20260526_222121/height_curve.png
+visualizations/demo02_waypoint_flight/20260526_222121/result.txt
+visualizations/demo02_waypoint_flight/20260526_222121/speed_curve.png
+visualizations/demo02_waypoint_flight/20260526_222121/summary.md
+visualizations/demo02_waypoint_flight/20260526_222121/tracking_error.png
+visualizations/demo02_waypoint_flight/20260526_222121/trajectory.csv
+visualizations/demo02_waypoint_flight/20260526_222121/trajectory.mp4
+visualizations/demo02_waypoint_flight/20260526_222121/trajectory_3d.png
+visualizations/demo02_waypoint_flight/20260526_222121/xy_path.png
+visualizations/demo03_circle_trajectory
+visualizations/demo03_circle_trajectory/20260526_090359
+visualizations/demo03_circle_trajectory/20260526_090359/summary.md
+visualizations/demo03_circle_trajectory/20260526_090359/trajectory.csv
+visualizations/demo03_circle_trajectory/20260526_090359/trajectory.mp4
+visualizations/demo03_circle_trajectory/20260526_090359/trajectory.png
+visualizations/demo03_circle_trajectory/20260526_222313
+visualizations/demo03_circle_trajectory/20260526_222313/height_curve.png
+visualizations/demo03_circle_trajectory/20260526_222313/result.txt
+visualizations/demo03_circle_trajectory/20260526_222313/speed_curve.png
+visualizations/demo03_circle_trajectory/20260526_222313/summary.md
+visualizations/demo03_circle_trajectory/20260526_222313/tracking_error.png
+visualizations/demo03_circle_trajectory/20260526_222313/trajectory.csv
+visualizations/demo03_circle_trajectory/20260526_222313/trajectory.mp4
+visualizations/demo03_circle_trajectory/20260526_222313/trajectory_3d.png
+visualizations/demo03_circle_trajectory/20260526_222313/xy_path.png
+visualizations/demo04_external_setpoint
+visualizations/demo04_external_setpoint/20260526_090546
+visualizations/demo04_external_setpoint/20260526_090546/summary.md
+visualizations/demo04_external_setpoint/20260526_090546/trajectory.csv
+visualizations/demo04_external_setpoint/20260526_090546/trajectory.mp4
+visualizations/demo04_external_setpoint/20260526_090546/trajectory.png
+visualizations/demo04_external_setpoint/20260526_222502
+visualizations/demo04_external_setpoint/20260526_222502/height_curve.png
+visualizations/demo04_external_setpoint/20260526_222502/result.txt
+visualizations/demo04_external_setpoint/20260526_222502/speed_curve.png
+visualizations/demo04_external_setpoint/20260526_222502/summary.md
+visualizations/demo04_external_setpoint/20260526_222502/tracking_error.png
+visualizations/demo04_external_setpoint/20260526_222502/trajectory.csv
+visualizations/demo04_external_setpoint/20260526_222502/trajectory.mp4
+visualizations/demo04_external_setpoint/20260526_222502/trajectory_3d.png
+visualizations/demo04_external_setpoint/20260526_222502/xy_path.png
+
+codex
+`rg` 在这个环境里不可用，我会用 `find/sed` 继续。当前目录不是 git 仓库，所以无法依赖 `git status` 判断改动；我会只触碰任务允许的两个交付文件和验证日志。
+exec
+/bin/bash -lc "sed -n '1,220p' codex-tasks/003-add-demo-regression-checks.md" in /home/clcwork/UAV_capture/px4_ros2_ws
+exec
+/bin/bash -lc "sed -n '1,220p' docs/VISUALIZATION_GUIDE.md" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+# Demo Visualization Guide
+
+This guide covers the standard visualization outputs for Demo 1-4 in
+`/home/clcwork/UAV_capture/px4_ros2_ws`.
+
+## Standard Output Layout
+
+Demo visualizations are written to timestamped directories:
+
+```text
+visualizations/<demo>/<YYYYMMDD_HHMMSS>/
+```
+
+The current standard files are:
+
+| File | Purpose |
+| --- | --- |
+| `trajectory.csv` | Raw time series: position, velocity, speed, target position, and tracking error. |
+| `trajectory_3d.png` | 3D actual and target trajectory. |
+| `xy_path.png` | Top-down XY path with start/end markers. |
+| `height_curve.png` | Altitude over time with target altitude when available. |
+| `speed_curve.png` | Speed over time with the configured pass limit. |
+| `tracking_error.png` | 3D, XY, and height tracking error over time. |
+| `trajectory.mp4` | Optional XY animation when `ffmpeg` is available. |
+| `summary.md` | Metrics and generated output list. |
+| `result.txt` | PASS/FAIL status and reason. |
+
+Older visualization directories may contain only `trajectory.png` plus
+`trajectory.csv`. Do not rename, delete, or overwrite those historical results.
+
+## Demo Output Names
+
+Each current demo runner uses `scripts/run_trajectory_recorder.sh`, which starts
+the `trajectory_recorder` ROS 2 node and writes the same standard file names.
+
+| Demo | Runner | Visualization root | Standard files |
+| --- | --- | --- | --- |
+| Demo 01 Offboard Hover | `scripts/run_demo01_hover.sh` | `visualizations/demo01_hover/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
+| Demo 02 Waypoint Flight | `scripts/run_demo02_waypoint_flight.sh` | `visualizations/demo02_waypoint_flight/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
+| Demo 03 Circle Trajectory | `scripts/run_demo03_circle_trajectory.sh` | `visualizations/demo03_circle_trajectory/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
+| Demo 04 External Setpoint Interface | `scripts/run_demo04_external_setpoint.sh` | `visualizations/demo04_external_setpoint/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
+
+## Generate New Results
+
+Run demos from the workspace root:
+
+```bash
+cd /home/clcwork/UAV_capture/px4_ros2_ws
+source /opt/ros/jazzy/setup.bash
+source install/setup.bash
+
+./scripts/run_demo01_hover.sh
+./scripts/run_demo02_waypoint_flight.sh
+./scripts/run_demo03_circle_trajectory.sh
+./scripts/run_demo04_external_setpoint.sh
+```
+
+Each runner creates a new timestamped directory under `logs/<demo>/` and
+`visualizations/<demo>/`. The runner prints the exact output paths after the
+trajectory recorder finishes.
+
+## Check Existing Results
+
+List available PNG outputs:
+
+```bash
+find visualizations -name "*.png" | sort
+```
+
+Check the newest directory for each demo:
+
+```bash
+for demo in demo01_hover demo02_waypoint_flight demo03_circle_trajectory demo04_external_setpoint; do
+  latest="$(find "visualizations/$demo" -mindepth 1 -maxdepth 1 -type d | sort | tail -n 1)"
+  echo "$demo -> $latest"
+  ls "$latest"/trajectory.csv \
+     "$latest"/trajectory_3d.png \
+     "$latest"/xy_path.png \
+     "$latest"/height_curve.png \
+     "$latest"/speed_curve.png
+done
+```
+
+## View Results Locally
+
+Open PNG files from the timestamped visualization directory with an image viewer:
+
+```bash
+xdg-open visualizations/demo01_hover/<timestamp>/trajectory_3d.png
+xdg-open visualizations/demo01_hover/<timestamp>/xy_path.png
+xdg-open visualizations/demo01_hover/<timestamp>/height_curve.png
+xdg-open visualizations/demo01_hover/<timestamp>/speed_curve.png
+```
+
+Read metrics and status:
+
+```bash
+cat visualizations/demo01_hover/<timestamp>/summary.md
+cat visualizations/demo01_hover/<timestamp>/result.txt
+```
+
+## Copy Results To Mac
+
+From the Mac terminal, copy one timestamped result directory:
+
+```bash
+scp -r <linux_user>@<linux_host>:/home/clcwork/UAV_capture/px4_ros2_ws/visualizations/demo01_hover/<timestamp> ~/Desktop/px4_demo01_hover_<timestamp>
+```
+
+Copy all Demo 1-4 visualization results:
+
+```bash
+scp -r <linux_user>@<linux_host>:/home/clcwork/UAV_capture/px4_ros2_ws/visualizations ~/Desktop/px4_visualizations
+```
+
+Replace `<linux_user>` and `<linux_host>` with the SSH user and host for the
+Linux machine. If SSH uses a non-default port, add `-P <port>` after `scp`.
+
+## Current Missing Metrics
+
+The current recorder covers position, velocity magnitude, target position,
+tracking error, summary PASS/FAIL, and optional animation. It does not currently
+plot or summarize:
+
+- attitude, yaw, or yaw-rate tracking;
+- acceleration or jerk;
+- battery, estimator, actuator, or failsafe status;
+- per-waypoint arrival time and dwell time;
+- rosbag-based replay or offline redraw from a saved bag.
+
+ succeeded in 0ms:
+# Task 003: Add Demo Regression Checks
+
+## Task goal
+
+- 增加轻量检查脚本 `scripts/check_demo_outputs.sh`。
+- 检查最近一次实验输出中是否存在必要文件。
+- 检查 `verify` 输出或 `result.txt` 里是否有 `RESULT=PASS`。
+- 检查 `trajectory.csv` 是否存在且包含 `timestamp` 或 `t`、`x`、`y`、`z`、`vx`、`vy`、`vz` 等字段。
+- 检查可视化 PNG 是否存在。
+
+## Allowed changes
+
+- `scripts/check_demo_outputs.sh`
+- `docs/REGRESSION_CHECKS.md`
+- 不允许修改控制节点。
+- 不允许删除已有日志、CSV、PNG、MP4 或实验目录。
+
+## Suggested script behavior
+
+支持参数：日志或可视化目录路径。
+
+用法：
+
+```bash
+./scripts/check_demo_outputs.sh logs/offboard_hover/<timestamp>
+./scripts/check_demo_outputs.sh visualizations/demo01_hover/<timestamp>
+```
+
+行为：
+
+- 如果通过，输出 `CHECK=PASS`。
+- 如果失败，输出 `CHECK=FAIL` 并说明缺哪个文件或字段。
+- 退出码：通过为 `0`，失败为非 `0`。
+
+兼容性要求：
+
+- Demo 1-4 新展示目录应优先检查：
+  - `trajectory.csv`
+  - `trajectory_3d.png`
+  - `xy_path.png`
+  - `height_curve.png`
+  - `speed_curve.png`
+  - `tracking_error.png`
+  - `summary.md`
+  - `result.txt`
+- 老的 hover 验证日志可以检查 `verify.log` 中的 `RESULT=PASS`。
+
+## Required commands
+
+将命令输出保存到 `codex-logs/003-add-demo-regression-checks.log`：
+
+```bash
+chmod +x scripts/check_demo_outputs.sh
+bash -n scripts/check_demo_outputs.sh
+./scripts/check_demo_outputs.sh <一个实际存在的日志目录或可视化目录>
+```
+
+## Deliverables
+
+- `scripts/check_demo_outputs.sh`
+- `docs/REGRESSION_CHECKS.md`
+- `codex-logs/003-add-demo-regression-checks.log`
+
+## Final report requirements
+
+最终报告必须说明：
+
+- 检查了哪些文件。
+- 哪些 Demo 目前能通过。
+- 哪些检查仍是弱检查。
+- `changed files`
+- `commands run`
+- `test result`
+- `known risks`
+
+exec
+/bin/bash -lc "for f in visualizations/demo01_hover/20260526_221722/trajectory.csv visualizations/demo02_waypoint_flight/20260526_222121/trajectory.csv visualizations/demo03_circle_trajectory/20260526_222313/trajectory.csv visualizations/demo04_external_setpoint/20260526_222502/trajectory.csv; do printf '%s\\n' \"--- "'$f"; sed -n '"'1,3p' \""'$f"; done' in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+--- visualizations/demo01_hover/20260526_221722/trajectory.csv
+t,x,y,z,vx,vy,vz,speed_mps,target_x,target_y,target_z,error_xy_m,error_z_m,error_3d_m
+1.552,0.0189,-0.0106,-0.0439,0.0120,-0.0162,-0.0037,0.0205,0.0000,0.0000,-2.0000,0.0216,1.9561,1.9562
+1.557,0.0188,-0.0106,-0.0439,0.0118,-0.0163,-0.0037,0.0204,0.0000,0.0000,-2.0000,0.0216,1.9561,1.9562
+--- visualizations/demo02_waypoint_flight/20260526_222121/trajectory.csv
+t,x,y,z,vx,vy,vz,speed_mps,target_x,target_y,target_z,error_xy_m,error_z_m,error_3d_m
+2.146,-0.0035,-0.0043,-0.0244,-0.0032,0.0016,0.0006,0.0037,0.0000,0.0000,-2.0000,0.0056,1.9756,1.9756
+2.154,-0.0039,-0.0044,-0.0242,-0.0036,0.0016,0.0007,0.0040,0.0000,0.0000,-2.0000,0.0059,1.9758,1.9758
+--- visualizations/demo03_circle_trajectory/20260526_222313/trajectory.csv
+t,x,y,z,vx,vy,vz,speed_mps,target_x,target_y,target_z,error_xy_m,error_z_m,error_3d_m
+1.987,0.0000,-0.0072,0.0002,-0.0005,0.0035,-0.0115,0.0120,1.4991,0.0525,-2.0000,1.5002,2.0002,2.5003
+1.989,0.0001,-0.0072,0.0004,-0.0005,0.0035,-0.0115,0.0120,1.4991,0.0525,-2.0000,1.5002,2.0004,2.5005
+--- visualizations/demo04_external_setpoint/20260526_222502/trajectory.csv
+t,x,y,z,vx,vy,vz,speed_mps,target_x,target_y,target_z,error_xy_m,error_z_m,error_3d_m
+2.007,-0.0140,0.0231,-0.0215,-0.0023,0.0129,-0.0073,0.0150,0.0000,0.0000,-2.0000,0.0270,1.9785,1.9787
+2.008,-0.0139,0.0230,-0.0216,-0.0022,0.0128,-0.0073,0.0149,0.0000,0.0000,-2.0000,0.0269,1.9784,1.9786
+
+exec
+/bin/bash -lc "for f in visualizations/demo01_hover/20260526_221722/result.txt visualizations/demo02_waypoint_flight/20260526_222121/result.txt logs/offboard_hover/20260526_080357/verify.log; do printf '%s\\n' \"--- "'$f"; sed -n '"'1,80p' \""'$f"; done' in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+--- visualizations/demo01_hover/20260526_221722/result.txt
+RESULT=PASS reason=ok
+--- visualizations/demo02_waypoint_flight/20260526_222121/result.txt
+RESULT=PASS reason=ok
+--- logs/offboard_hover/20260526_080357/verify.log
+samples=1242 stable_window=50
+last arming_state=2 nav_state=14 x=0.001 y=0.006 z=-1.993 vx=0.012 vy=0.004 vz=-0.006
+stable z_avg=-1.997 z_min=-2.000 z_max=-1.993
+stable x_abs_max=0.010 y_abs_max=0.016 speed_avg=0.020 speed_max=0.024
+stable offboard_count=50 armed_count=50
+RESULT=PASS
+
+codex
+我已经确认当前标准可视化目录包含任务要求的 PNG、`trajectory.csv`、`summary.md`、`result.txt`，旧 hover 日志用 `verify.log` 记录 `RESULT=PASS`。接下来会做一个单参数脚本：优先检查传入目录本身，若传入的是 `logs/demoXX/<timestamp>` 则映射到同名 `visualizations/demoXX/<timestamp>`，旧 `logs/offboard_hover` 保持 verify 兼容。
+apply patch
+patch: completed
+/home/clcwork/UAV_capture/px4_ros2_ws/scripts/check_demo_outputs.sh
+diff --git a/UAV_capture/px4_ros2_ws/scripts/check_demo_outputs.sh b/UAV_capture/px4_ros2_ws/scripts/check_demo_outputs.sh
+new file mode 100644
+index 0000000000000000000000000000000000000000..89da7823e0c0eeb11f5d620595a3b388108d79ba
+--- /dev/null
++++ b/UAV_capture/px4_ros2_ws/scripts/check_demo_outputs.sh
+@@ -0,0 +1,198 @@
++#!/usr/bin/env bash
++set -u
++
++failures=()
++checked_files=()
++
++usage() {
++  cat <<'EOF'
++Usage:
++  ./scripts/check_demo_outputs.sh <log-or-visualization-directory>
++
++Examples:
++  ./scripts/check_demo_outputs.sh logs/offboard_hover/<timestamp>
++  ./scripts/check_demo_outputs.sh visualizations/demo01_hover/<timestamp>
++EOF
++}
++
++add_failure() {
++  failures+=("$1")
++}
++
++mark_checked() {
++  checked_files+=("$1")
++}
++
++has_standard_output_marker() {
++  local dir="$1"
++  [[ -f "$dir/trajectory.csv" || -f "$dir/result.txt" || -f "$dir/verify.log" ]]
++}
++
++latest_child_dir() {
++  local dir="$1"
++  find "$dir" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort | tail -n 1
++}
++
++resolve_target_dir() {
++  local input_dir="$1"
++  local target_dir="$input_dir"
++
++  if ! has_standard_output_marker "$target_dir"; then
++    local latest
++    latest="$(latest_child_dir "$target_dir")"
++    if [[ -n "$latest" ]]; then
++      target_dir="$latest"
++    fi
++  fi
++
++  local parent_dir demo_name timestamp vis_dir
++  parent_dir="$(dirname "$target_dir")"
++  demo_name="$(basename "$parent_dir")"
++  timestamp="$(basename "$target_dir")"
++  vis_dir="visualizations/$demo_name/$timestamp"
++
++  if [[ "$target_dir" == logs/* && -d "$vis_dir" ]]; then
++    target_dir="$vis_dir"
++  fi
++
++  printf '%s\n' "$target_dir"
++}
++
++require_file() {
++  local file="$1"
++  if [[ -f "$file" ]]; then
++    mark_checked "$file"
++  else
++    add_failure "missing file: $file"
++  fi
++}
++
++check_pass_marker() {
++  local dir="$1"
++
++  if [[ -f "$dir/result.txt" ]]; then
++    mark_checked "$dir/result.txt"
++    if ! grep -q 'RESULT=PASS' "$dir/result.txt"; then
++      add_failure "missing RESULT=PASS in: $dir/result.txt"
++    fi
++    return
++  fi
++
++  if [[ -f "$dir/verify.log" ]]; then
++    mark_checked "$dir/verify.log"
++    if ! grep -q 'RESULT=PASS' "$dir/verify.log"; then
++      add_failure "missing RESULT=PASS in: $dir/verify.log"
++    fi
++    return
++  fi
++
++  add_failure "missing pass marker file: $dir/result.txt or $dir/verify.log"
++}
++
++check_csv_header() {
++  local csv_file="$1"
++  require_file "$csv_file"
++  [[ -f "$csv_file" ]] || return
++
++  local missing
++  missing="$(
++    awk -F',' '
++      NR == 1 {
++        for (i = 1; i <= NF; i++) {
++          field = $i
++          gsub(/\r/, "", field)
++          gsub(/^[[:space:]"]+|[[:space:]"]+$/, "", field)
++          seen[field] = 1
++        }
++
++        if (!seen["timestamp"] && !seen["t"]) {
++          print "timestamp-or-t"
++        }
++
++        required[1] = "x"
++        required[2] = "y"
++        required[3] = "z"
++        required[4] = "vx"
++        required[5] = "vy"
++        required[6] = "vz"
++
++        for (i = 1; i <= 6; i++) {
++          if (!seen[required[i]]) {
++            print required[i]
++          }
++        }
++        exit
++      }
++    ' "$csv_file"
++  )"
++
++  if [[ -n "$missing" ]]; then
++    while IFS= read -r field; do
++      [[ -n "$field" ]] && add_failure "missing CSV field in $csv_file: $field"
++    done <<< "$missing"
++  fi
++}
++
++check_standard_visualization_dir() {
++  local dir="$1"
++
++  check_csv_header "$dir/trajectory.csv"
++  require_file "$dir/trajectory_3d.png"
++  require_file "$dir/xy_path.png"
++  require_file "$dir/height_curve.png"
++  require_file "$dir/speed_curve.png"
++  require_file "$dir/tracking_error.png"
++  require_file "$dir/summary.md"
++  require_file "$dir/result.txt"
++  check_pass_marker "$dir"
++}
++
++check_legacy_log_dir() {
++  local dir="$1"
++  require_file "$dir/verify.log"
++  check_pass_marker "$dir"
++}
++
++main() {
++  if [[ "$#" -ne 1 ]]; then
++    usage
++    echo "CHECK=FAIL"
++    return 2
++  fi
++
++  local input_dir="$1"
++  if [[ ! -d "$input_dir" ]]; then
++    echo "input directory not found: $input_dir"
++    echo "CHECK=FAIL"
++    return 2
++  fi
++
++  local target_dir
++  target_dir="$(resolve_target_dir "$input_dir")"
++  echo "checking: $target_dir"
++
++  if [[ -f "$target_dir/trajectory.csv" || -f "$target_dir/result.txt" ]]; then
++    check_standard_visualization_dir "$target_dir"
++  elif [[ -f "$target_dir/verify.log" ]]; then
++    check_legacy_log_dir "$target_dir"
++  else
++    add_failure "unsupported output directory: $target_dir"
++  fi
++
++  if [[ "${#checked_files[@]}" -gt 0 ]]; then
++    echo "checked files:"
++    printf '  %s\n' "${checked_files[@]}"
++  fi
++
++  if [[ "${#failures[@]}" -gt 0 ]]; then
++    echo "failures:"
++    printf '  %s\n' "${failures[@]}"
++    echo "CHECK=FAIL"
++    return 1
++  fi
++
++  echo "CHECK=PASS"
++  return 0
++}
++
++main "$@"
+
+diff --git a/UAV_capture/px4_ros2_ws/scripts/check_demo_outputs.sh b/UAV_capture/px4_ros2_ws/scripts/check_demo_outputs.sh
+new file mode 100644
+index 0000000000000000000000000000000000000000..89da7823e0c0eeb11f5d620595a3b388108d79ba
+--- /dev/null
++++ b/UAV_capture/px4_ros2_ws/scripts/check_demo_outputs.sh
+@@ -0,0 +1,198 @@
++#!/usr/bin/env bash
++set -u
++
++failures=()
++checked_files=()
++
++usage() {
++  cat <<'EOF'
++Usage:
++  ./scripts/check_demo_outputs.sh <log-or-visualization-directory>
++
++Examples:
++  ./scripts/check_demo_outputs.sh logs/offboard_hover/<timestamp>
++  ./scripts/check_demo_outputs.sh visualizations/demo01_hover/<timestamp>
++EOF
++}
++
++add_failure() {
++  failures+=("$1")
++}
++
++mark_checked() {
++  checked_files+=("$1")
++}
++
++has_standard_output_marker() {
++  local dir="$1"
++  [[ -f "$dir/trajectory.csv" || -f "$dir/result.txt" || -f "$dir/verify.log" ]]
++}
++
++latest_child_dir() {
++  local dir="$1"
++  find "$dir" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort | tail -n 1
++}
++
++resolve_target_dir() {
++  local input_dir="$1"
++  local target_dir="$input_dir"
++
++  if ! has_standard_output_marker "$target_dir"; then
++    local latest
++    latest="$(latest_child_dir "$target_dir")"
++    if [[ -n "$latest" ]]; then
++      target_dir="$latest"
++    fi
++  fi
++
++  local parent_dir demo_name timestamp vis_dir
++  parent_dir="$(dirname "$target_dir")"
++  demo_name="$(basename "$parent_dir")"
++  timestamp="$(basename "$target_dir")"
++  vis_dir="visualizations/$demo_name/$timestamp"
++
++  if [[ "$target_dir" == logs/* && -d "$vis_dir" ]]; then
++    target_dir="$vis_dir"
++  fi
++
++  printf '%s\n' "$target_dir"
++}
++
++require_file() {
++  local file="$1"
++  if [[ -f "$file" ]]; then
++    mark_checked "$file"
++  else
++    add_failure "missing file: $file"
++  fi
++}
++
++check_pass_marker() {
++  local dir="$1"
++
++  if [[ -f "$dir/result.txt" ]]; then
++    mark_checked "$dir/result.txt"
++    if ! grep -q 'RESULT=PASS' "$dir/result.txt"; then
++      add_failure "missing RESULT=PASS in: $dir/result.txt"
++    fi
++    return
++  fi
++
++  if [[ -f "$dir/verify.log" ]]; then
++    mark_checked "$dir/verify.log"
++    if ! grep -q 'RESULT=PASS' "$dir/verify.log"; then
++      add_failure "missing RESULT=PASS in: $dir/verify.log"
++    fi
++    return
++  fi
++
++  add_failure "missing pass marker file: $dir/result.txt or $dir/verify.log"
++}
++
++check_csv_header() {
++  local csv_file="$1"
++  require_file "$csv_file"
++  [[ -f "$csv_file" ]] || return
++
++  local missing
++  missing="$(
++    awk -F',' '
++      NR == 1 {
++        for (i = 1; i <= NF; i++) {
++          field = $i
++          gsub(/\r/, "", field)
++          gsub(/^[[:space:]"]+|[[:space:]"]+$/, "", field)
++          seen[field] = 1
++        }
++
++        if (!seen["timestamp"] && !seen["t"]) {
++          print "timestamp-or-t"
++        }
++
++        required[1] = "x"
++        required[2] = "y"
++        required[3] = "z"
++        required[4] = "vx"
++        required[5] = "vy"
++        required[6] = "vz"
++
++        for (i = 1; i <= 6; i++) {
++          if (!seen[required[i]]) {
++            print required[i]
++          }
++        }
++        exit
++      }
++    ' "$csv_file"
++  )"
++
++  if [[ -n "$missing" ]]; then
++    while IFS= read -r field; do
++      [[ -n "$field" ]] && add_failure "missing CSV field in $csv_file: $field"
++    done <<< "$missing"
++  fi
++}
++
++check_standard_visualization_dir() {
++  local dir="$1"
++
++  check_csv_header "$dir/trajectory.csv"
++  require_file "$dir/trajectory_3d.png"
++  require_file "$dir/xy_path.png"
++  require_file "$dir/height_curve.png"
++  require_file "$dir/speed_curve.png"
++  require_file "$dir/tracking_error.png"
++  require_file "$dir/summary.md"
++  require_file "$dir/result.txt"
++  check_pass_marker "$dir"
++}
++
++check_legacy_log_dir() {
++  local dir="$1"
++  require_file "$dir/verify.log"
++  check_pass_marker "$dir"
++}
++
++main() {
++  if [[ "$#" -ne 1 ]]; then
++    usage
++    echo "CHECK=FAIL"
++    return 2
++  fi
++
++  local input_dir="$1"
++  if [[ ! -d "$input_dir" ]]; then
++    echo "input directory not found: $input_dir"
++    echo "CHECK=FAIL"
++    return 2
++  fi
++
++  local target_dir
++  target_dir="$(resolve_target_dir "$input_dir")"
++  echo "checking: $target_dir"
++
++  if [[ -f "$target_dir/trajectory.csv" || -f "$target_dir/result.txt" ]]; then
++    check_standard_visualization_dir "$target_dir"
++  elif [[ -f "$target_dir/verify.log" ]]; then
++    check_legacy_log_dir "$target_dir"
++  else
++    add_failure "unsupported output directory: $target_dir"
++  fi
++
++  if [[ "${#checked_files[@]}" -gt 0 ]]; then
++    echo "checked files:"
++    printf '  %s\n' "${checked_files[@]}"
++  fi
++
++  if [[ "${#failures[@]}" -gt 0 ]]; then
++    echo "failures:"
++    printf '  %s\n' "${failures[@]}"
++    echo "CHECK=FAIL"
++    return 1
++  fi
++
++  echo "CHECK=PASS"
++  return 0
++}
++
++main "$@"
+
+codex
+脚本已新增，下一步我会补文档说明检查规则、适用目录和弱检查边界，然后运行语法检查和实际目录验证。
+apply patch
+patch: completed
+/home/clcwork/UAV_capture/px4_ros2_ws/docs/REGRESSION_CHECKS.md
+diff --git a/UAV_capture/px4_ros2_ws/docs/REGRESSION_CHECKS.md b/UAV_capture/px4_ros2_ws/docs/REGRESSION_CHECKS.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..ee752127c552d513faadad194a265bfba3532b9d
+--- /dev/null
++++ b/UAV_capture/px4_ros2_ws/docs/REGRESSION_CHECKS.md
+@@ -0,0 +1,72 @@
++# Demo Regression Checks
++
++This workspace provides a lightweight output checker for Demo 1-4 visualization
++results and legacy hover verification logs.
++
++## Script
++
++Run from the workspace root:
++
++```bash
++./scripts/check_demo_outputs.sh visualizations/demo01_hover/<timestamp>
++./scripts/check_demo_outputs.sh logs/offboard_hover/<timestamp>
++```
++
++The script prints `CHECK=PASS` and exits `0` when the checked output directory
++passes. It prints `CHECK=FAIL`, lists missing files or fields, and exits non-zero
++when a required check fails.
++
++If the argument is a demo root such as `visualizations/demo01_hover`, the script
++checks the newest timestamped child directory. If the argument is a current demo
++log directory such as `logs/demo02_waypoint_flight/<timestamp>` and the matching
++visualization directory exists, the script checks the visualization output.
++
++## Current Demo 1-4 Checks
++
++Current visualization directories are expected to contain:
++
++```text
++trajectory.csv
++trajectory_3d.png
++xy_path.png
++height_curve.png
++speed_curve.png
++tracking_error.png
++summary.md
++result.txt
++```
++
++The checker also requires `result.txt` to contain:
++
++```text
++RESULT=PASS
++```
++
++`trajectory.csv` must contain a header with `timestamp` or `t`, plus all of:
++
++```text
++x
++y
++z
++vx
++vy
++vz
++```
++
++## Legacy Hover Check
++
++Older hover experiment directories under `logs/offboard_hover/<timestamp>` may
++not contain visualization files. For those directories, the checker accepts
++`verify.log` when it contains:
++
++```text
++RESULT=PASS
++```
++
++## Known Limits
++
++These checks are regression smoke checks, not full flight-quality validation.
++They verify that standard artifacts exist, required CSV columns are present, and
++the recorded PASS marker is present. They do not recompute trajectory metrics,
++inspect image contents, validate MP4 playback, or prove that the vehicle followed
++the expected path.
+diff --git a/UAV_capture/px4_ros2_ws/scripts/check_demo_outputs.sh b/UAV_capture/px4_ros2_ws/scripts/check_demo_outputs.sh
+new file mode 100644
+index 0000000000000000000000000000000000000000..89da7823e0c0eeb11f5d620595a3b388108d79ba
+--- /dev/null
++++ b/UAV_capture/px4_ros2_ws/scripts/check_demo_outputs.sh
+@@ -0,0 +1,198 @@
++#!/usr/bin/env bash
++set -u
++
++failures=()
++checked_files=()
++
++usage() {
++  cat <<'EOF'
++Usage:
++  ./scripts/check_demo_outputs.sh <log-or-visualization-directory>
++
++Examples:
++  ./scripts/check_demo_outputs.sh logs/offboard_hover/<timestamp>
++  ./scripts/check_demo_outputs.sh visualizations/demo01_hover/<timestamp>
++EOF
++}
++
++add_failure() {
++  failures+=("$1")
++}
++
++mark_checked() {
++  checked_files+=("$1")
++}
++
++has_standard_output_marker() {
++  local dir="$1"
++  [[ -f "$dir/trajectory.csv" || -f "$dir/result.txt" || -f "$dir/verify.log" ]]
++}
++
++latest_child_dir() {
++  local dir="$1"
++  find "$dir" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort | tail -n 1
++}
++
++resolve_target_dir() {
++  local input_dir="$1"
++  local target_dir="$input_dir"
++
++  if ! has_standard_output_marker "$target_dir"; then
++    local latest
++    latest="$(latest_child_dir "$target_dir")"
++    if [[ -n "$latest" ]]; then
++      target_dir="$latest"
++    fi
++  fi
++
++  local parent_dir demo_name timestamp vis_dir
++  parent_dir="$(dirname "$target_dir")"
++  demo_name="$(basename "$parent_dir")"
++  timestamp="$(basename "$target_dir")"
++  vis_dir="visualizations/$demo_name/$timestamp"
++
++  if [[ "$target_dir" == logs/* && -d "$vis_dir" ]]; then
++    target_dir="$vis_dir"
++  fi
++
++  printf '%s\n' "$target_dir"
++}
++
++require_file() {
++  local file="$1"
++  if [[ -f "$file" ]]; then
++    mark_checked "$file"
++  else
++    add_failure "missing file: $file"
++  fi
++}
++
++check_pass_marker() {
++  local dir="$1"
++
++  if [[ -f "$dir/result.txt" ]]; then
++    mark_checked "$dir/result.txt"
++    if ! grep -q 'RESULT=PASS' "$dir/result.txt"; then
++      add_failure "missing RESULT=PASS in: $dir/result.txt"
++    fi
++    return
++  fi
++
++  if [[ -f "$dir/verify.log" ]]; then
++    mark_checked "$dir/verify.log"
++    if ! grep -q 'RESULT=PASS' "$dir/verify.log"; then
++      add_failure "missing RESULT=PASS in: $dir/verify.log"
++    fi
++    return
++  fi
++
++  add_failure "missing pass marker file: $dir/result.txt or $dir/verify.log"
++}
++
++check_csv_header() {
++  local csv_file="$1"
++  require_file "$csv_file"
++  [[ -f "$csv_file" ]] || return
++
++  local missing
++  missing="$(
++    awk -F',' '
++      NR == 1 {
++        for (i = 1; i <= NF; i++) {
++          field = $i
++          gsub(/\r/, "", field)
++          gsub(/^[[:space:]"]+|[[:space:]"]+$/, "", field)
++          seen[field] = 1
++        }
++
++        if (!seen["timestamp"] && !seen["t"]) {
++          print "timestamp-or-t"
++        }
++
++        required[1] = "x"
++        required[2] = "y"
++        required[3] = "z"
++        required[4] = "vx"
++        required[5] = "vy"
++        required[6] = "vz"
++
++        for (i = 1; i <= 6; i++) {
++          if (!seen[required[i]]) {
++            print required[i]
++          }
++        }
++        exit
++      }
++    ' "$csv_file"
++  )"
++
++  if [[ -n "$missing" ]]; then
++    while IFS= read -r field; do
++      [[ -n "$field" ]] && add_failure "missing CSV field in $csv_file: $field"
++    done <<< "$missing"
++  fi
++}
++
++check_standard_visualization_dir() {
++  local dir="$1"
++
++  check_csv_header "$dir/trajectory.csv"
++  require_file "$dir/trajectory_3d.png"
++  require_file "$dir/xy_path.png"
++  require_file "$dir/height_curve.png"
++  require_file "$dir/speed_curve.png"
++  require_file "$dir/tracking_error.png"
++  require_file "$dir/summary.md"
++  require_file "$dir/result.txt"
++  check_pass_marker "$dir"
++}
++
++check_legacy_log_dir() {
++  local dir="$1"
++  require_file "$dir/verify.log"
++  check_pass_marker "$dir"
++}
++
++main() {
++  if [[ "$#" -ne 1 ]]; then
++    usage
++    echo "CHECK=FAIL"
++    return 2
++  fi
++
++  local input_dir="$1"
++  if [[ ! -d "$input_dir" ]]; then
++    echo "input directory not found: $input_dir"
++    echo "CHECK=FAIL"
++    return 2
++  fi
++
++  local target_dir
++  target_dir="$(resolve_target_dir "$input_dir")"
++  echo "checking: $target_dir"
++
++  if [[ -f "$target_dir/trajectory.csv" || -f "$target_dir/result.txt" ]]; then
++    check_standard_visualization_dir "$target_dir"
++  elif [[ -f "$target_dir/verify.log" ]]; then
++    check_legacy_log_dir "$target_dir"
++  else
++    add_failure "unsupported output directory: $target_dir"
++  fi
++
++  if [[ "${#checked_files[@]}" -gt 0 ]]; then
++    echo "checked files:"
++    printf '  %s\n' "${checked_files[@]}"
++  fi
++
++  if [[ "${#failures[@]}" -gt 0 ]]; then
++    echo "failures:"
++    printf '  %s\n' "${failures[@]}"
++    echo "CHECK=FAIL"
++    return 1
++  fi
++
++  echo "CHECK=PASS"
++  return 0
++}
++
++main "$@"
+
+diff --git a/UAV_capture/px4_ros2_ws/docs/REGRESSION_CHECKS.md b/UAV_capture/px4_ros2_ws/docs/REGRESSION_CHECKS.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..ee752127c552d513faadad194a265bfba3532b9d
+--- /dev/null
++++ b/UAV_capture/px4_ros2_ws/docs/REGRESSION_CHECKS.md
+@@ -0,0 +1,72 @@
++# Demo Regression Checks
++
++This workspace provides a lightweight output checker for Demo 1-4 visualization
++results and legacy hover verification logs.
++
++## Script
++
++Run from the workspace root:
++
++```bash
++./scripts/check_demo_outputs.sh visualizations/demo01_hover/<timestamp>
++./scripts/check_demo_outputs.sh logs/offboard_hover/<timestamp>
++```
++
++The script prints `CHECK=PASS` and exits `0` when the checked output directory
++passes. It prints `CHECK=FAIL`, lists missing files or fields, and exits non-zero
++when a required check fails.
++
++If the argument is a demo root such as `visualizations/demo01_hover`, the script
++checks the newest timestamped child directory. If the argument is a current demo
++log directory such as `logs/demo02_waypoint_flight/<timestamp>` and the matching
++visualization directory exists, the script checks the visualization output.
++
++## Current Demo 1-4 Checks
++
++Current visualization directories are expected to contain:
++
++```text
++trajectory.csv
++trajectory_3d.png
++xy_path.png
++height_curve.png
++speed_curve.png
++tracking_error.png
++summary.md
++result.txt
++```
++
++The checker also requires `result.txt` to contain:
++
++```text
++RESULT=PASS
++```
++
++`trajectory.csv` must contain a header with `timestamp` or `t`, plus all of:
++
++```text
++x
++y
++z
++vx
++vy
++vz
++```
++
++## Legacy Hover Check
++
++Older hover experiment directories under `logs/offboard_hover/<timestamp>` may
++not contain visualization files. For those directories, the checker accepts
++`verify.log` when it contains:
++
++```text
++RESULT=PASS
++```
++
++## Known Limits
++
++These checks are regression smoke checks, not full flight-quality validation.
++They verify that standard artifacts exist, required CSV columns are present, and
++the recorded PASS marker is present. They do not recompute trajectory metrics,
++inspect image contents, validate MP4 playback, or prove that the vehicle followed
++the expected path.
+diff --git a/UAV_capture/px4_ros2_ws/scripts/check_demo_outputs.sh b/UAV_capture/px4_ros2_ws/scripts/check_demo_outputs.sh
+new file mode 100644
+index 0000000000000000000000000000000000000000..89da7823e0c0eeb11f5d620595a3b388108d79ba
+--- /dev/null
++++ b/UAV_capture/px4_ros2_ws/scripts/check_demo_outputs.sh
+@@ -0,0 +1,198 @@
++#!/usr/bin/env bash
++set -u
++
++failures=()
++checked_files=()
++
++usage() {
++  cat <<'EOF'
++Usage:
++  ./scripts/check_demo_outputs.sh <log-or-visualization-directory>
++
++Examples:
++  ./scripts/check_demo_outputs.sh logs/offboard_hover/<timestamp>
++  ./scripts/check_demo_outputs.sh visualizations/demo01_hover/<timestamp>
++EOF
++}
++
++add_failure() {
++  failures+=("$1")
++}
++
++mark_checked() {
++  checked_files+=("$1")
++}
++
++has_standard_output_marker() {
++  local dir="$1"
++  [[ -f "$dir/trajectory.csv" || -f "$dir/result.txt" || -f "$dir/verify.log" ]]
++}
++
++latest_child_dir() {
++  local dir="$1"
++  find "$dir" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort | tail -n 1
++}
++
++resolve_target_dir() {
++  local input_dir="$1"
++  local target_dir="$input_dir"
++
++  if ! has_standard_output_marker "$target_dir"; then
++    local latest
++    latest="$(latest_child_dir "$target_dir")"
++    if [[ -n "$latest" ]]; then
++      target_dir="$latest"
++    fi
++  fi
++
++  local parent_dir demo_name timestamp vis_dir
++  parent_dir="$(dirname "$target_dir")"
++  demo_name="$(basename "$parent_dir")"
++  timestamp="$(basename "$target_dir")"
++  vis_dir="visualizations/$demo_name/$timestamp"
++
++  if [[ "$target_dir" == logs/* && -d "$vis_dir" ]]; then
++    target_dir="$vis_dir"
++  fi
++
++  printf '%s\n' "$target_dir"
++}
++
++require_file() {
++  local file="$1"
++  if [[ -f "$file" ]]; then
++    mark_checked "$file"
++  else
++    add_failure "missing file: $file"
++  fi
++}
++
++check_pass_marker() {
++  local dir="$1"
++
++  if [[ -f "$dir/result.txt" ]]; then
++    mark_checked "$dir/result.txt"
++    if ! grep -q 'RESULT=PASS' "$dir/result.txt"; then
++      add_failure "missing RESULT=PASS in: $dir/result.txt"
++    fi
++    return
++  fi
++
++  if [[ -f "$dir/verify.log" ]]; then
++    mark_checked "$dir/verify.log"
++    if ! grep -q 'RESULT=PASS' "$dir/verify.log"; then
++      add_failure "missing RESULT=PASS in: $dir/verify.log"
++    fi
++    return
++  fi
++
++  add_failure "missing pass marker file: $dir/result.txt or $dir/verify.log"
++}
++
++check_csv_header() {
++  local csv_file="$1"
++  require_file "$csv_file"
++  [[ -f "$csv_file" ]] || return
++
++  local missing
++  missing="$(
++    awk -F',' '
++      NR == 1 {
++        for (i = 1; i <= NF; i++) {
++          field = $i
++          gsub(/\r/, "", field)
++          gsub(/^[[:space:]"]+|[[:space:]"]+$/, "", field)
++          seen[field] = 1
++        }
++
++        if (!seen["timestamp"] && !seen["t"]) {
++          print "timestamp-or-t"
++        }
++
++        required[1] = "x"
++        required[2] = "y"
++        required[3] = "z"
++        required[4] = "vx"
++        required[5] = "vy"
++        required[6] = "vz"
++
++        for (i = 1; i <= 6; i++) {
++          if (!seen[required[i]]) {
++            print required[i]
++          }
++        }
++        exit
++      }
++    ' "$csv_file"
++  )"
++
++  if [[ -n "$missing" ]]; then
++    while IFS= read -r field; do
++      [[ -n "$field" ]] && add_failure "missing CSV field in $csv_file: $field"
++    done <<< "$missing"
++  fi
++}
++
++check_standard_visualization_dir() {
++  local dir="$1"
++
++  check_csv_header "$dir/trajectory.csv"
++  require_file "$dir/trajectory_3d.png"
++  require_file "$dir/xy_path.png"
++  require_file "$dir/height_curve.png"
++  require_file "$dir/speed_curve.png"
++  require_file "$dir/tracking_error.png"
++  require_file "$dir/summary.md"
++  require_file "$dir/result.txt"
++  check_pass_marker "$dir"
++}
++
++check_legacy_log_dir() {
++  local dir="$1"
++  require_file "$dir/verify.log"
++  check_pass_marker "$dir"
++}
++
++main() {
++  if [[ "$#" -ne 1 ]]; then
++    usage
++    echo "CHECK=FAIL"
++    return 2
++  fi
++
++  local input_dir="$1"
++  if [[ ! -d "$input_dir" ]]; then
++    echo "input directory not found: $input_dir"
++    echo "CHECK=FAIL"
++    return 2
++  fi
++
++  local target_dir
++  target_dir="$(resolve_target_dir "$input_dir")"
++  echo "checking: $target_dir"
++
++  if [[ -f "$target_dir/trajectory.csv" || -f "$target_dir/result.txt" ]]; then
++    check_standard_visualization_dir "$target_dir"
++  elif [[ -f "$target_dir/verify.log" ]]; then
++    check_legacy_log_dir "$target_dir"
++  else
++    add_failure "unsupported output directory: $target_dir"
++  fi
++
++  if [[ "${#checked_files[@]}" -gt 0 ]]; then
++    echo "checked files:"
++    printf '  %s\n' "${checked_files[@]}"
++  fi
++
++  if [[ "${#failures[@]}" -gt 0 ]]; then
++    echo "failures:"
++    printf '  %s\n' "${failures[@]}"
++    echo "CHECK=FAIL"
++    return 1
++  fi
++
++  echo "CHECK=PASS"
++  return 0
++}
++
++main "$@"
+
+codex
+文档也已新增。现在我会把必需命令和扩展验证都写入 `codex-logs/003-add-demo-regression-checks.log`，包括 4 个当前标准可视化目录和一个旧 hover `verify.log` 目录。
+exec
+/bin/bash -lc "mkdir -p codex-logs
+{
+  printf '"'$ chmod +x scripts/check_demo_outputs.sh'"\\n'
+  chmod +x scripts/check_demo_outputs.sh
+
+  printf '\\n"'$ bash -n scripts/check_demo_outputs.sh'"\\n'
+  bash -n scripts/check_demo_outputs.sh
+
+  printf '\\n"'$ ./scripts/check_demo_outputs.sh visualizations/demo01_hover/20260526_221722'"\\n'
+  ./scripts/check_demo_outputs.sh visualizations/demo01_hover/20260526_221722
+
+  printf '\\n"'$ ./scripts/check_demo_outputs.sh visualizations/demo02_waypoint_flight'"\\n'
+  ./scripts/check_demo_outputs.sh visualizations/demo02_waypoint_flight
+
+  printf '\\n"'$ ./scripts/check_demo_outputs.sh visualizations/demo03_circle_trajectory'"\\n'
+  ./scripts/check_demo_outputs.sh visualizations/demo03_circle_trajectory
+
+  printf '\\n"'$ ./scripts/check_demo_outputs.sh visualizations/demo04_external_setpoint'"\\n'
+  ./scripts/check_demo_outputs.sh visualizations/demo04_external_setpoint
+
+  printf '\\n"'$ ./scripts/check_demo_outputs.sh logs/demo04_external_setpoint/20260526_222502'"\\n'
+  ./scripts/check_demo_outputs.sh logs/demo04_external_setpoint/20260526_222502
+
+  printf '\\n"'$ ./scripts/check_demo_outputs.sh logs/offboard_hover/20260526_080357'"\\n'
+  ./scripts/check_demo_outputs.sh logs/offboard_hover/20260526_080357
+} > codex-logs/003-add-demo-regression-checks.log 2>&1
+sed -n '1,260p' codex-logs/003-add-demo-regression-checks.log" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+$ chmod +x scripts/check_demo_outputs.sh
+
+$ bash -n scripts/check_demo_outputs.sh
+
+$ ./scripts/check_demo_outputs.sh visualizations/demo01_hover/20260526_221722
+checking: visualizations/demo01_hover/20260526_221722
+checked files:
+  visualizations/demo01_hover/20260526_221722/trajectory.csv
+  visualizations/demo01_hover/20260526_221722/trajectory_3d.png
+  visualizations/demo01_hover/20260526_221722/xy_path.png
+  visualizations/demo01_hover/20260526_221722/height_curve.png
+  visualizations/demo01_hover/20260526_221722/speed_curve.png
+  visualizations/demo01_hover/20260526_221722/tracking_error.png
+  visualizations/demo01_hover/20260526_221722/summary.md
+  visualizations/demo01_hover/20260526_221722/result.txt
+  visualizations/demo01_hover/20260526_221722/result.txt
+CHECK=PASS
+
+$ ./scripts/check_demo_outputs.sh visualizations/demo02_waypoint_flight
+checking: visualizations/demo02_waypoint_flight/20260526_222121
+checked files:
+  visualizations/demo02_waypoint_flight/20260526_222121/trajectory.csv
+  visualizations/demo02_waypoint_flight/20260526_222121/trajectory_3d.png
+  visualizations/demo02_waypoint_flight/20260526_222121/xy_path.png
+  visualizations/demo02_waypoint_flight/20260526_222121/height_curve.png
+  visualizations/demo02_waypoint_flight/20260526_222121/speed_curve.png
+  visualizations/demo02_waypoint_flight/20260526_222121/tracking_error.png
+  visualizations/demo02_waypoint_flight/20260526_222121/summary.md
+  visualizations/demo02_waypoint_flight/20260526_222121/result.txt
+  visualizations/demo02_waypoint_flight/20260526_222121/result.txt
+CHECK=PASS
+
+$ ./scripts/check_demo_outputs.sh visualizations/demo03_circle_trajectory
+checking: visualizations/demo03_circle_trajectory/20260526_222313
+checked files:
+  visualizations/demo03_circle_trajectory/20260526_222313/trajectory.csv
+  visualizations/demo03_circle_trajectory/20260526_222313/trajectory_3d.png
+  visualizations/demo03_circle_trajectory/20260526_222313/xy_path.png
+  visualizations/demo03_circle_trajectory/20260526_222313/height_curve.png
+  visualizations/demo03_circle_trajectory/20260526_222313/speed_curve.png
+  visualizations/demo03_circle_trajectory/20260526_222313/tracking_error.png
+  visualizations/demo03_circle_trajectory/20260526_222313/summary.md
+  visualizations/demo03_circle_trajectory/20260526_222313/result.txt
+  visualizations/demo03_circle_trajectory/20260526_222313/result.txt
+CHECK=PASS
+
+$ ./scripts/check_demo_outputs.sh visualizations/demo04_external_setpoint
+checking: visualizations/demo04_external_setpoint/20260526_222502
+checked files:
+  visualizations/demo04_external_setpoint/20260526_222502/trajectory.csv
+  visualizations/demo04_external_setpoint/20260526_222502/trajectory_3d.png
+  visualizations/demo04_external_setpoint/20260526_222502/xy_path.png
+  visualizations/demo04_external_setpoint/20260526_222502/height_curve.png
+  visualizations/demo04_external_setpoint/20260526_222502/speed_curve.png
+  visualizations/demo04_external_setpoint/20260526_222502/tracking_error.png
+  visualizations/demo04_external_setpoint/20260526_222502/summary.md
+  visualizations/demo04_external_setpoint/20260526_222502/result.txt
+  visualizations/demo04_external_setpoint/20260526_222502/result.txt
+CHECK=PASS
+
+$ ./scripts/check_demo_outputs.sh logs/demo04_external_setpoint/20260526_222502
+checking: visualizations/demo04_external_setpoint/20260526_222502
+checked files:
+  visualizations/demo04_external_setpoint/20260526_222502/trajectory.csv
+  visualizations/demo04_external_setpoint/20260526_222502/trajectory_3d.png
+  visualizations/demo04_external_setpoint/20260526_222502/xy_path.png
+  visualizations/demo04_external_setpoint/20260526_222502/height_curve.png
+  visualizations/demo04_external_setpoint/20260526_222502/speed_curve.png
+  visualizations/demo04_external_setpoint/20260526_222502/tracking_error.png
+  visualizations/demo04_external_setpoint/20260526_222502/summary.md
+  visualizations/demo04_external_setpoint/20260526_222502/result.txt
+  visualizations/demo04_external_setpoint/20260526_222502/result.txt
+CHECK=PASS
+
+$ ./scripts/check_demo_outputs.sh logs/offboard_hover/20260526_080357
+checking: logs/offboard_hover/20260526_080357
+checked files:
+  logs/offboard_hover/20260526_080357/verify.log
+  logs/offboard_hover/20260526_080357/verify.log
+CHECK=PASS
+
+diff --git a/UAV_capture/px4_ros2_ws/docs/REGRESSION_CHECKS.md b/UAV_capture/px4_ros2_ws/docs/REGRESSION_CHECKS.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..ee752127c552d513faadad194a265bfba3532b9d
+--- /dev/null
++++ b/UAV_capture/px4_ros2_ws/docs/REGRESSION_CHECKS.md
+@@ -0,0 +1,72 @@
++# Demo Regression Checks
++
++This workspace provides a lightweight output checker for Demo 1-4 visualization
++results and legacy hover verification logs.
++
++## Script
++
++Run from the workspace root:
++
++```bash
++./scripts/check_demo_outputs.sh visualizations/demo01_hover/<timestamp>
++./scripts/check_demo_outputs.sh logs/offboard_hover/<timestamp>
++```
++
++The script prints `CHECK=PASS` and exits `0` when the checked output directory
++passes. It prints `CHECK=FAIL`, lists missing files or fields, and exits non-zero
++when a required check fails.
++
++If the argument is a demo root such as `visualizations/demo01_hover`, the script
++checks the newest timestamped child directory. If the argument is a current demo
++log directory such as `logs/demo02_waypoint_flight/<timestamp>` and the matching
++visualization directory exists, the script checks the visualization output.
++
++## Current Demo 1-4 Checks
++
++Current visualization directories are expected to contain:
++
++```text
++trajectory.csv
++trajectory_3d.png
++xy_path.png
++height_curve.png
++speed_curve.png
++tracking_error.png
++summary.md
++result.txt
++```
++
++The checker also requires `result.txt` to contain:
++
++```text
++RESULT=PASS
++```
++
++`trajectory.csv` must contain a header with `timestamp` or `t`, plus all of:
++
++```text
++x
++y
++z
++vx
++vy
++vz
++```
++
++## Legacy Hover Check
++
++Older hover experiment directories under `logs/offboard_hover/<timestamp>` may
++not contain visualization files. For those directories, the checker accepts
++`verify.log` when it contains:
++
++```text
++RESULT=PASS
++```
++
++## Known Limits
++
++These checks are regression smoke checks, not full flight-quality validation.
++They verify that standard artifacts exist, required CSV columns are present, and
++the recorded PASS marker is present. They do not recompute trajectory metrics,
++inspect image contents, validate MP4 playback, or prove that the vehicle followed
++the expected path.
+diff --git a/UAV_capture/px4_ros2_ws/scripts/check_demo_outputs.sh b/UAV_capture/px4_ros2_ws/scripts/check_demo_outputs.sh
+new file mode 100644
+index 0000000000000000000000000000000000000000..89da7823e0c0eeb11f5d620595a3b388108d79ba
+--- /dev/null
++++ b/UAV_capture/px4_ros2_ws/scripts/check_demo_outputs.sh
+@@ -0,0 +1,198 @@
++#!/usr/bin/env bash
++set -u
++
++failures=()
++checked_files=()
++
++usage() {
++  cat <<'EOF'
++Usage:
++  ./scripts/check_demo_outputs.sh <log-or-visualization-directory>
++
++Examples:
++  ./scripts/check_demo_outputs.sh logs/offboard_hover/<timestamp>
++  ./scripts/check_demo_outputs.sh visualizations/demo01_hover/<timestamp>
++EOF
++}
++
++add_failure() {
++  failures+=("$1")
++}
++
++mark_checked() {
++  checked_files+=("$1")
++}
++
++has_standard_output_marker() {
++  local dir="$1"
++  [[ -f "$dir/trajectory.csv" || -f "$dir/result.txt" || -f "$dir/verify.log" ]]
++}
++
++latest_child_dir() {
++  local dir="$1"
++  find "$dir" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort | tail -n 1
++}
++
++resolve_target_dir() {
++  local input_dir="$1"
++  local target_dir="$input_dir"
++
++  if ! has_standard_output_marker "$target_dir"; then
++    local latest
++    latest="$(latest_child_dir "$target_dir")"
++    if [[ -n "$latest" ]]; then
++      target_dir="$latest"
++    fi
++  fi
++
++  local parent_dir demo_name timestamp vis_dir
++  parent_dir="$(dirname "$target_dir")"
++  demo_name="$(basename "$parent_dir")"
++  timestamp="$(basename "$target_dir")"
++  vis_dir="visualizations/$demo_name/$timestamp"
++
++  if [[ "$target_dir" == logs/* && -d "$vis_dir" ]]; then
++    target_dir="$vis_dir"
++  fi
++
++  printf '%s\n' "$target_dir"
++}
++
++require_file() {
++  local file="$1"
++  if [[ -f "$file" ]]; then
++    mark_checked "$file"
++  else
++    add_failure "missing file: $file"
++  fi
++}
++
++check_pass_marker() {
++  local dir="$1"
++
++  if [[ -f "$dir/result.txt" ]]; then
++    mark_checked "$dir/result.txt"
++    if ! grep -q 'RESULT=PASS' "$dir/result.txt"; then
++      add_failure "missing RESULT=PASS in: $dir/result.txt"
++    fi
++    return
++  fi
++
++  if [[ -f "$dir/verify.log" ]]; then
++    mark_checked "$dir/verify.log"
++    if ! grep -q 'RESULT=PASS' "$dir/verify.log"; then
++      add_failure "missing RESULT=PASS in: $dir/verify.log"
++    fi
++    return
++  fi
++
++  add_failure "missing pass marker file: $dir/result.txt or $dir/verify.log"
++}
++
++check_csv_header() {
++  local csv_file="$1"
++  require_file "$csv_file"
++  [[ -f "$csv_file" ]] || return
++
++  local missing
++  missing="$(
++    awk -F',' '
++      NR == 1 {
++        for (i = 1; i <= NF; i++) {
++          field = $i
++          gsub(/\r/, "", field)
++          gsub(/^[[:space:]"]+|[[:space:]"]+$/, "", field)
++          seen[field] = 1
++        }
++
++        if (!seen["timestamp"] && !seen["t"]) {
++          print "timestamp-or-t"
++        }
++
++        required[1] = "x"
++        required[2] = "y"
++        required[3] = "z"
++        required[4] = "vx"
++        required[5] = "vy"
++        required[6] = "vz"
++
++        for (i = 1; i <= 6; i++) {
++          if (!seen[required[i]]) {
++            print required[i]
++          }
++        }
++        exit
++      }
++    ' "$csv_file"
++  )"
++
++  if [[ -n "$missing" ]]; then
++    while IFS= read -r field; do
++      [[ -n "$field" ]] && add_failure "missing CSV field in $csv_file: $field"
++    done <<< "$missing"
++  fi
++}
++
++check_standard_visualization_dir() {
++  local dir="$1"
++
++  check_csv_header "$dir/trajectory.csv"
++  require_file "$dir/trajectory_3d.png"
++  require_file "$dir/xy_path.png"
++  require_file "$dir/height_curve.png"
++  require_file "$dir/speed_curve.png"
++  require_file "$dir/tracking_error.png"
++  require_file "$dir/summary.md"
++  require_file "$dir/result.txt"
++  check_pass_marker "$dir"
++}
++
++check_legacy_log_dir() {
++  local dir="$1"
++  require_file "$dir/verify.log"
++  check_pass_marker "$dir"
++}
++
++main() {
++  if [[ "$#" -ne 1 ]]; then
++    usage
++    echo "CHECK=FAIL"
++    return 2
++  fi
++
++  local input_dir="$1"
++  if [[ ! -d "$input_dir" ]]; then
++    echo "input directory not found: $input_dir"
++    echo "CHECK=FAIL"
++    return 2
++  fi
++
++  local target_dir
++  target_dir="$(resolve_target_dir "$input_dir")"
++  echo "checking: $target_dir"
++
++  if [[ -f "$target_dir/trajectory.csv" || -f "$target_dir/result.txt" ]]; then
++    check_standard_visualization_dir "$target_dir"
++  elif [[ -f "$target_dir/verify.log" ]]; then
++    check_legacy_log_dir "$target_dir"
++  else
++    add_failure "unsupported output directory: $target_dir"
++  fi
++
++  if [[ "${#checked_files[@]}" -gt 0 ]]; then
++    echo "checked files:"
++    printf '  %s\n' "${checked_files[@]}"
++  fi
++
++  if [[ "${#failures[@]}" -gt 0 ]]; then
++    echo "failures:"
++    printf '  %s\n' "${failures[@]}"
++    echo "CHECK=FAIL"
++    return 1
++  fi
++
++  echo "CHECK=PASS"
++  return 0
++}
++
++main "$@"
+
+codex
+验证已经全部通过，不过输出里 `result.txt` 和 `verify.log` 被列了两次，因为文件存在检查和 PASS 标记检查都记录了它。我顺手收紧一下输出去重，并补上空 CSV 的失败判断，然后重新跑同一组验证。
+apply patch
+patch: completed
+/home/clcwork/UAV_capture/px4_ros2_ws/scripts/check_demo_outputs.sh
+diff --git a/UAV_capture/px4_ros2_ws/docs/REGRESSION_CHECKS.md b/UAV_capture/px4_ros2_ws/docs/REGRESSION_CHECKS.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..ee752127c552d513faadad194a265bfba3532b9d
+--- /dev/null
++++ b/UAV_capture/px4_ros2_ws/docs/REGRESSION_CHECKS.md
+@@ -0,0 +1,72 @@
++# Demo Regression Checks
++
++This workspace provides a lightweight output checker for Demo 1-4 visualization
++results and legacy hover verification logs.
++
++## Script
++
++Run from the workspace root:
++
++```bash
++./scripts/check_demo_outputs.sh visualizations/demo01_hover/<timestamp>
++./scripts/check_demo_outputs.sh logs/offboard_hover/<timestamp>
++```
++
++The script prints `CHECK=PASS` and exits `0` when the checked output directory
++passes. It prints `CHECK=FAIL`, lists missing files or fields, and exits non-zero
++when a required check fails.
++
++If the argument is a demo root such as `visualizations/demo01_hover`, the script
++checks the newest timestamped child directory. If the argument is a current demo
++log directory such as `logs/demo02_waypoint_flight/<timestamp>` and the matching
++visualization directory exists, the script checks the visualization output.
++
++## Current Demo 1-4 Checks
++
++Current visualization directories are expected to contain:
++
++```text
++trajectory.csv
++trajectory_3d.png
++xy_path.png
++height_curve.png
++speed_curve.png
++tracking_error.png
++summary.md
++result.txt
++```
++
++The checker also requires `result.txt` to contain:
++
++```text
++RESULT=PASS
++```
++
++`trajectory.csv` must contain a header with `timestamp` or `t`, plus all of:
++
++```text
++x
++y
++z
++vx
++vy
++vz
++```
++
++## Legacy Hover Check
++
++Older hover experiment directories under `logs/offboard_hover/<timestamp>` may
++not contain visualization files. For those directories, the checker accepts
++`verify.log` when it contains:
++
++```text
++RESULT=PASS
++```
++
++## Known Limits
++
++These checks are regression smoke checks, not full flight-quality validation.
++They verify that standard artifacts exist, required CSV columns are present, and
++the recorded PASS marker is present. They do not recompute trajectory metrics,
++inspect image contents, validate MP4 playback, or prove that the vehicle followed
++the expected path.
+diff --git a/UAV_capture/px4_ros2_ws/scripts/check_demo_outputs.sh b/UAV_capture/px4_ros2_ws/scripts/check_demo_outputs.sh
+new file mode 100644
+index 0000000000000000000000000000000000000000..34f04c3769b63b53f37786210d082d93455d1a1f
+--- /dev/null
++++ b/UAV_capture/px4_ros2_ws/scripts/check_demo_outputs.sh
+@@ -0,0 +1,208 @@
++#!/usr/bin/env bash
++set -u
++
++failures=()
++checked_files=()
++
++usage() {
++  cat <<'EOF'
++Usage:
++  ./scripts/check_demo_outputs.sh <log-or-visualization-directory>
++
++Examples:
++  ./scripts/check_demo_outputs.sh logs/offboard_hover/<timestamp>
++  ./scripts/check_demo_outputs.sh visualizations/demo01_hover/<timestamp>
++EOF
++}
++
++add_failure() {
++  failures+=("$1")
++}
++
++mark_checked() {
++  local existing
++  for existing in "${checked_files[@]}"; do
++    [[ "$existing" == "$1" ]] && return
++  done
++  checked_files+=("$1")
++}
++
++has_standard_output_marker() {
++  local dir="$1"
++  [[ -f "$dir/trajectory.csv" || -f "$dir/result.txt" || -f "$dir/verify.log" ]]
++}
++
++latest_child_dir() {
++  local dir="$1"
++  find "$dir" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort | tail -n 1
++}
++
++resolve_target_dir() {
++  local input_dir="$1"
++  local target_dir="$input_dir"
++
++  if ! has_standard_output_marker "$target_dir"; then
++    local latest
++    latest="$(latest_child_dir "$target_dir")"
++    if [[ -n "$latest" ]]; then
++      target_dir="$latest"
++    fi
++  fi
++
++  local parent_dir demo_name timestamp vis_dir
++  parent_dir="$(dirname "$target_dir")"
++  demo_name="$(basename "$parent_dir")"
++  timestamp="$(basename "$target_dir")"
++  vis_dir="visualizations/$demo_name/$timestamp"
++
++  if [[ "$target_dir" == logs/* && -d "$vis_dir" ]]; then
++    target_dir="$vis_dir"
++  fi
++
++  printf '%s\n' "$target_dir"
++}
++
++require_file() {
++  local file="$1"
++  if [[ -f "$file" ]]; then
++    mark_checked "$file"
++  else
++    add_failure "missing file: $file"
++  fi
++}
++
++check_pass_marker() {
++  local dir="$1"
++
++  if [[ -f "$dir/result.txt" ]]; then
++    mark_checked "$dir/result.txt"
++    if ! grep -q 'RESULT=PASS' "$dir/result.txt"; then
++      add_failure "missing RESULT=PASS in: $dir/result.txt"
++    fi
++    return
++  fi
++
++  if [[ -f "$dir/verify.log" ]]; then
++    mark_checked "$dir/verify.log"
++    if ! grep -q 'RESULT=PASS' "$dir/verify.log"; then
++      add_failure "missing RESULT=PASS in: $dir/verify.log"
++    fi
++    return
++  fi
++
++  add_failure "missing pass marker file: $dir/result.txt or $dir/verify.log"
++}
++
++check_csv_header() {
++  local csv_file="$1"
++  require_file "$csv_file"
++  [[ -f "$csv_file" ]] || return
++
++  local missing
++  missing="$(
++    awk -F',' '
++      NR == 1 {
++        saw_header = 1
++        for (i = 1; i <= NF; i++) {
++          field = $i
++          gsub(/\r/, "", field)
++          gsub(/^[[:space:]"]+|[[:space:]"]+$/, "", field)
++          seen[field] = 1
++        }
++
++        if (!seen["timestamp"] && !seen["t"]) {
++          print "timestamp-or-t"
++        }
++
++        required[1] = "x"
++        required[2] = "y"
++        required[3] = "z"
++        required[4] = "vx"
++        required[5] = "vy"
++        required[6] = "vz"
++
++        for (i = 1; i <= 6; i++) {
++          if (!seen[required[i]]) {
++            print required[i]
++          }
++        }
++        exit
++      }
++      END {
++        if (!saw_header) {
++          print "header"
++        }
++      }
++    ' "$csv_file"
++  )"
++
++  if [[ -n "$missing" ]]; then
++    while IFS= read -r field; do
++      [[ -n "$field" ]] && add_failure "missing CSV field in $csv_file: $field"
++    done <<< "$missing"
++  fi
++}
++
++check_standard_visualization_dir() {
++  local dir="$1"
++
++  check_csv_header "$dir/trajectory.csv"
++  require_file "$dir/trajectory_3d.png"
++  require_file "$dir/xy_path.png"
++  require_file "$dir/height_curve.png"
++  require_file "$dir/speed_curve.png"
++  require_file "$dir/tracking_error.png"
++  require_file "$dir/summary.md"
++  require_file "$dir/result.txt"
++  check_pass_marker "$dir"
++}
++
++check_legacy_log_dir() {
++  local dir="$1"
++  require_file "$dir/verify.log"
++  check_pass_marker "$dir"
++}
++
++main() {
++  if [[ "$#" -ne 1 ]]; then
++    usage
++    echo "CHECK=FAIL"
++    return 2
++  fi
++
++  local input_dir="$1"
++  if [[ ! -d "$input_dir" ]]; then
++    echo "input directory not found: $input_dir"
++    echo "CHECK=FAIL"
++    return 2
++  fi
++
++  local target_dir
++  target_dir="$(resolve_target_dir "$input_dir")"
++  echo "checking: $target_dir"
++
++  if [[ -f "$target_dir/trajectory.csv" || -f "$target_dir/result.txt" ]]; then
++    check_standard_visualization_dir "$target_dir"
++  elif [[ -f "$target_dir/verify.log" ]]; then
++    check_legacy_log_dir "$target_dir"
++  else
++    add_failure "unsupported output directory: $target_dir"
++  fi
++
++  if [[ "${#checked_files[@]}" -gt 0 ]]; then
++    echo "checked files:"
++    printf '  %s\n' "${checked_files[@]}"
++  fi
++
++  if [[ "${#failures[@]}" -gt 0 ]]; then
++    echo "failures:"
++    printf '  %s\n' "${failures[@]}"
++    echo "CHECK=FAIL"
++    return 1
++  fi
++
++  echo "CHECK=PASS"
++  return 0
++}
++
++main "$@"
+
+diff --git a/UAV_capture/px4_ros2_ws/docs/REGRESSION_CHECKS.md b/UAV_capture/px4_ros2_ws/docs/REGRESSION_CHECKS.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..ee752127c552d513faadad194a265bfba3532b9d
+--- /dev/null
++++ b/UAV_capture/px4_ros2_ws/docs/REGRESSION_CHECKS.md
+@@ -0,0 +1,72 @@
++# Demo Regression Checks
++
++This workspace provides a lightweight output checker for Demo 1-4 visualization
++results and legacy hover verification logs.
++
++## Script
++
++Run from the workspace root:
++
++```bash
++./scripts/check_demo_outputs.sh visualizations/demo01_hover/<timestamp>
++./scripts/check_demo_outputs.sh logs/offboard_hover/<timestamp>
++```
++
++The script prints `CHECK=PASS` and exits `0` when the checked output directory
++passes. It prints `CHECK=FAIL`, lists missing files or fields, and exits non-zero
++when a required check fails.
++
++If the argument is a demo root such as `visualizations/demo01_hover`, the script
++checks the newest timestamped child directory. If the argument is a current demo
++log directory such as `logs/demo02_waypoint_flight/<timestamp>` and the matching
++visualization directory exists, the script checks the visualization output.
++
++## Current Demo 1-4 Checks
++
++Current visualization directories are expected to contain:
++
++```text
++trajectory.csv
++trajectory_3d.png
++xy_path.png
++height_curve.png
++speed_curve.png
++tracking_error.png
++summary.md
++result.txt
++```
++
++The checker also requires `result.txt` to contain:
++
++```text
++RESULT=PASS
++```
++
++`trajectory.csv` must contain a header with `timestamp` or `t`, plus all of:
++
++```text
++x
++y
++z
++vx
++vy
++vz
++```
++
++## Legacy Hover Check
++
++Older hover experiment directories under `logs/offboard_hover/<timestamp>` may
++not contain visualization files. For those directories, the checker accepts
++`verify.log` when it contains:
++
++```text
++RESULT=PASS
++```
++
++## Known Limits
++
++These checks are regression smoke checks, not full flight-quality validation.
++They verify that standard artifacts exist, required CSV columns are present, and
++the recorded PASS marker is present. They do not recompute trajectory metrics,
++inspect image contents, validate MP4 playback, or prove that the vehicle followed
++the expected path.
+diff --git a/UAV_capture/px4_ros2_ws/scripts/check_demo_outputs.sh b/UAV_capture/px4_ros2_ws/scripts/check_demo_outputs.sh
+new file mode 100644
+index 0000000000000000000000000000000000000000..34f04c3769b63b53f37786210d082d93455d1a1f
+--- /dev/null
++++ b/UAV_capture/px4_ros2_ws/scripts/check_demo_outputs.sh
+@@ -0,0 +1,208 @@
++#!/usr/bin/env bash
++set -u
++
++failures=()
++checked_files=()
++
++usage() {
++  cat <<'EOF'
++Usage:
++  ./scripts/check_demo_outputs.sh <log-or-visualization-directory>
++
++Examples:
++  ./scripts/check_demo_outputs.sh logs/offboard_hover/<timestamp>
++  ./scripts/check_demo_outputs.sh visualizations/demo01_hover/<timestamp>
++EOF
++}
++
++add_failure() {
++  failures+=("$1")
++}
++
++mark_checked() {
++  local existing
++  for existing in "${checked_files[@]}"; do
++    [[ "$existing" == "$1" ]] && return
++  done
++  checked_files+=("$1")
++}
++
++has_standard_output_marker() {
++  local dir="$1"
++  [[ -f "$dir/trajectory.csv" || -f "$dir/result.txt" || -f "$dir/verify.log" ]]
++}
++
++latest_child_dir() {
++  local dir="$1"
++  find "$dir" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort | tail -n 1
++}
++
++resolve_target_dir() {
++  local input_dir="$1"
++  local target_dir="$input_dir"
++
++  if ! has_standard_output_marker "$target_dir"; then
++    local latest
++    latest="$(latest_child_dir "$target_dir")"
++    if [[ -n "$latest" ]]; then
++      target_dir="$latest"
++    fi
++  fi
++
++  local parent_dir demo_name timestamp vis_dir
++  parent_dir="$(dirname "$target_dir")"
++  demo_name="$(basename "$parent_dir")"
++  timestamp="$(basename "$target_dir")"
++  vis_dir="visualizations/$demo_name/$timestamp"
++
++  if [[ "$target_dir" == logs/* && -d "$vis_dir" ]]; then
++    target_dir="$vis_dir"
++  fi
++
++  printf '%s\n' "$target_dir"
++}
++
++require_file() {
++  local file="$1"
++  if [[ -f "$file" ]]; then
++    mark_checked "$file"
++  else
++    add_failure "missing file: $file"
++  fi
++}
++
++check_pass_marker() {
++  local dir="$1"
++
++  if [[ -f "$dir/result.txt" ]]; then
++    mark_checked "$dir/result.txt"
++    if ! grep -q 'RESULT=PASS' "$dir/result.txt"; then
++      add_failure "missing RESULT=PASS in: $dir/result.txt"
++    fi
++    return
++  fi
++
++  if [[ -f "$dir/verify.log" ]]; then
++    mark_checked "$dir/verify.log"
++    if ! grep -q 'RESULT=PASS' "$dir/verify.log"; then
++      add_failure "missing RESULT=PASS in: $dir/verify.log"
++    fi
++    return
++  fi
++
++  add_failure "missing pass marker file: $dir/result.txt or $dir/verify.log"
++}
++
++check_csv_header() {
++  local csv_file="$1"
++  require_file "$csv_file"
++  [[ -f "$csv_file" ]] || return
++
++  local missing
++  missing="$(
++    awk -F',' '
++      NR == 1 {
++        saw_header = 1
++        for (i = 1; i <= NF; i++) {
++          field = $i
++          gsub(/\r/, "", field)
++          gsub(/^[[:space:]"]+|[[:space:]"]+$/, "", field)
++          seen[field] = 1
++        }
++
++        if (!seen["timestamp"] && !seen["t"]) {
++          print "timestamp-or-t"
++        }
++
++        required[1] = "x"
++        required[2] = "y"
++        required[3] = "z"
++        required[4] = "vx"
++        required[5] = "vy"
++        required[6] = "vz"
++
++        for (i = 1; i <= 6; i++) {
++          if (!seen[required[i]]) {
++            print required[i]
++          }
++        }
++        exit
++      }
++      END {
++        if (!saw_header) {
++          print "header"
++        }
++      }
++    ' "$csv_file"
++  )"
++
++  if [[ -n "$missing" ]]; then
++    while IFS= read -r field; do
++      [[ -n "$field" ]] && add_failure "missing CSV field in $csv_file: $field"
++    done <<< "$missing"
++  fi
++}
++
++check_standard_visualization_dir() {
++  local dir="$1"
++
++  check_csv_header "$dir/trajectory.csv"
++  require_file "$dir/trajectory_3d.png"
++  require_file "$dir/xy_path.png"
++  require_file "$dir/height_curve.png"
++  require_file "$dir/speed_curve.png"
++  require_file "$dir/tracking_error.png"
++  require_file "$dir/summary.md"
++  require_file "$dir/result.txt"
++  check_pass_marker "$dir"
++}
++
++check_legacy_log_dir() {
++  local dir="$1"
++  require_file "$dir/verify.log"
++  check_pass_marker "$dir"
++}
++
++main() {
++  if [[ "$#" -ne 1 ]]; then
++    usage
++    echo "CHECK=FAIL"
++    return 2
++  fi
++
++  local input_dir="$1"
++  if [[ ! -d "$input_dir" ]]; then
++    echo "input directory not found: $input_dir"
++    echo "CHECK=FAIL"
++    return 2
++  fi
++
++  local target_dir
++  target_dir="$(resolve_target_dir "$input_dir")"
++  echo "checking: $target_dir"
++
++  if [[ -f "$target_dir/trajectory.csv" || -f "$target_dir/result.txt" ]]; then
++    check_standard_visualization_dir "$target_dir"
++  elif [[ -f "$target_dir/verify.log" ]]; then
++    check_legacy_log_dir "$target_dir"
++  else
++    add_failure "unsupported output directory: $target_dir"
++  fi
++
++  if [[ "${#checked_files[@]}" -gt 0 ]]; then
++    echo "checked files:"
++    printf '  %s\n' "${checked_files[@]}"
++  fi
++
++  if [[ "${#failures[@]}" -gt 0 ]]; then
++    echo "failures:"
++    printf '  %s\n' "${failures[@]}"
++    echo "CHECK=FAIL"
++    return 1
++  fi
++
++  echo "CHECK=PASS"
++  return 0
++}
++
++main "$@"
+
+exec
+/bin/bash -lc "{
+  printf '"'$ chmod +x scripts/check_demo_outputs.sh'"\\n'
+  chmod +x scripts/check_demo_outputs.sh
+
+  printf '\\n"'$ bash -n scripts/check_demo_outputs.sh'"\\n'
+  bash -n scripts/check_demo_outputs.sh
+
+  printf '\\n"'$ ./scripts/check_demo_outputs.sh visualizations/demo01_hover/20260526_221722'"\\n'
+  ./scripts/check_demo_outputs.sh visualizations/demo01_hover/20260526_221722
+
+  printf '\\n"'$ ./scripts/check_demo_outputs.sh visualizations/demo02_waypoint_flight'"\\n'
+  ./scripts/check_demo_outputs.sh visualizations/demo02_waypoint_flight
+
+  printf '\\n"'$ ./scripts/check_demo_outputs.sh visualizations/demo03_circle_trajectory'"\\n'
+  ./scripts/check_demo_outputs.sh visualizations/demo03_circle_trajectory
+
+  printf '\\n"'$ ./scripts/check_demo_outputs.sh visualizations/demo04_external_setpoint'"\\n'
+  ./scripts/check_demo_outputs.sh visualizations/demo04_external_setpoint
+
+  printf '\\n"'$ ./scripts/check_demo_outputs.sh logs/demo04_external_setpoint/20260526_222502'"\\n'
+  ./scripts/check_demo_outputs.sh logs/demo04_external_setpoint/20260526_222502
+
+  printf '\\n"'$ ./scripts/check_demo_outputs.sh logs/offboard_hover/20260526_080357'"\\n'
+  ./scripts/check_demo_outputs.sh logs/offboard_hover/20260526_080357
+} > codex-logs/003-add-demo-regression-checks.log 2>&1
+sed -n '1,260p' codex-logs/003-add-demo-regression-checks.log" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+$ chmod +x scripts/check_demo_outputs.sh
+
+$ bash -n scripts/check_demo_outputs.sh
+
+$ ./scripts/check_demo_outputs.sh visualizations/demo01_hover/20260526_221722
+checking: visualizations/demo01_hover/20260526_221722
+checked files:
+  visualizations/demo01_hover/20260526_221722/trajectory.csv
+  visualizations/demo01_hover/20260526_221722/trajectory_3d.png
+  visualizations/demo01_hover/20260526_221722/xy_path.png
+  visualizations/demo01_hover/20260526_221722/height_curve.png
+  visualizations/demo01_hover/20260526_221722/speed_curve.png
+  visualizations/demo01_hover/20260526_221722/tracking_error.png
+  visualizations/demo01_hover/20260526_221722/summary.md
+  visualizations/demo01_hover/20260526_221722/result.txt
+CHECK=PASS
+
+$ ./scripts/check_demo_outputs.sh visualizations/demo02_waypoint_flight
+checking: visualizations/demo02_waypoint_flight/20260526_222121
+checked files:
+  visualizations/demo02_waypoint_flight/20260526_222121/trajectory.csv
+  visualizations/demo02_waypoint_flight/20260526_222121/trajectory_3d.png
+  visualizations/demo02_waypoint_flight/20260526_222121/xy_path.png
+  visualizations/demo02_waypoint_flight/20260526_222121/height_curve.png
+  visualizations/demo02_waypoint_flight/20260526_222121/speed_curve.png
+  visualizations/demo02_waypoint_flight/20260526_222121/tracking_error.png
+  visualizations/demo02_waypoint_flight/20260526_222121/summary.md
+  visualizations/demo02_waypoint_flight/20260526_222121/result.txt
+CHECK=PASS
+
+$ ./scripts/check_demo_outputs.sh visualizations/demo03_circle_trajectory
+checking: visualizations/demo03_circle_trajectory/20260526_222313
+checked files:
+  visualizations/demo03_circle_trajectory/20260526_222313/trajectory.csv
+  visualizations/demo03_circle_trajectory/20260526_222313/trajectory_3d.png
+  visualizations/demo03_circle_trajectory/20260526_222313/xy_path.png
+  visualizations/demo03_circle_trajectory/20260526_222313/height_curve.png
+  visualizations/demo03_circle_trajectory/20260526_222313/speed_curve.png
+  visualizations/demo03_circle_trajectory/20260526_222313/tracking_error.png
+  visualizations/demo03_circle_trajectory/20260526_222313/summary.md
+  visualizations/demo03_circle_trajectory/20260526_222313/result.txt
+CHECK=PASS
+
+$ ./scripts/check_demo_outputs.sh visualizations/demo04_external_setpoint
+checking: visualizations/demo04_external_setpoint/20260526_222502
+checked files:
+  visualizations/demo04_external_setpoint/20260526_222502/trajectory.csv
+  visualizations/demo04_external_setpoint/20260526_222502/trajectory_3d.png
+  visualizations/demo04_external_setpoint/20260526_222502/xy_path.png
+  visualizations/demo04_external_setpoint/20260526_222502/height_curve.png
+  visualizations/demo04_external_setpoint/20260526_222502/speed_curve.png
+  visualizations/demo04_external_setpoint/20260526_222502/tracking_error.png
+  visualizations/demo04_external_setpoint/20260526_222502/summary.md
+  visualizations/demo04_external_setpoint/20260526_222502/result.txt
+CHECK=PASS
+
+$ ./scripts/check_demo_outputs.sh logs/demo04_external_setpoint/20260526_222502
+checking: visualizations/demo04_external_setpoint/20260526_222502
+checked files:
+  visualizations/demo04_external_setpoint/20260526_222502/trajectory.csv
+  visualizations/demo04_external_setpoint/20260526_222502/trajectory_3d.png
+  visualizations/demo04_external_setpoint/20260526_222502/xy_path.png
+  visualizations/demo04_external_setpoint/20260526_222502/height_curve.png
+  visualizations/demo04_external_setpoint/20260526_222502/speed_curve.png
+  visualizations/demo04_external_setpoint/20260526_222502/tracking_error.png
+  visualizations/demo04_external_setpoint/20260526_222502/summary.md
+  visualizations/demo04_external_setpoint/20260526_222502/result.txt
+CHECK=PASS
+
+$ ./scripts/check_demo_outputs.sh logs/offboard_hover/20260526_080357
+checking: logs/offboard_hover/20260526_080357
+checked files:
+  logs/offboard_hover/20260526_080357/verify.log
+CHECK=PASS
+
+diff --git a/UAV_capture/px4_ros2_ws/docs/REGRESSION_CHECKS.md b/UAV_capture/px4_ros2_ws/docs/REGRESSION_CHECKS.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..ee752127c552d513faadad194a265bfba3532b9d
+--- /dev/null
++++ b/UAV_capture/px4_ros2_ws/docs/REGRESSION_CHECKS.md
+@@ -0,0 +1,72 @@
++# Demo Regression Checks
++
++This workspace provides a lightweight output checker for Demo 1-4 visualization
++results and legacy hover verification logs.
++
++## Script
++
++Run from the workspace root:
++
++```bash
++./scripts/check_demo_outputs.sh visualizations/demo01_hover/<timestamp>
++./scripts/check_demo_outputs.sh logs/offboard_hover/<timestamp>
++```
++
++The script prints `CHECK=PASS` and exits `0` when the checked output directory
++passes. It prints `CHECK=FAIL`, lists missing files or fields, and exits non-zero
++when a required check fails.
++
++If the argument is a demo root such as `visualizations/demo01_hover`, the script
++checks the newest timestamped child directory. If the argument is a current demo
++log directory such as `logs/demo02_waypoint_flight/<timestamp>` and the matching
++visualization directory exists, the script checks the visualization output.
++
++## Current Demo 1-4 Checks
++
++Current visualization directories are expected to contain:
++
++```text
++trajectory.csv
++trajectory_3d.png
++xy_path.png
++height_curve.png
++speed_curve.png
++tracking_error.png
++summary.md
++result.txt
++```
++
++The checker also requires `result.txt` to contain:
++
++```text
++RESULT=PASS
++```
++
++`trajectory.csv` must contain a header with `timestamp` or `t`, plus all of:
++
++```text
++x
++y
++z
++vx
++vy
++vz
++```
++
++## Legacy Hover Check
++
++Older hover experiment directories under `logs/offboard_hover/<timestamp>` may
++not contain visualization files. For those directories, the checker accepts
++`verify.log` when it contains:
++
++```text
++RESULT=PASS
++```
++
++## Known Limits
++
++These checks are regression smoke checks, not full flight-quality validation.
++They verify that standard artifacts exist, required CSV columns are present, and
++the recorded PASS marker is present. They do not recompute trajectory metrics,
++inspect image contents, validate MP4 playback, or prove that the vehicle followed
++the expected path.
+diff --git a/UAV_capture/px4_ros2_ws/scripts/check_demo_outputs.sh b/UAV_capture/px4_ros2_ws/scripts/check_demo_outputs.sh
+new file mode 100644
+index 0000000000000000000000000000000000000000..34f04c3769b63b53f37786210d082d93455d1a1f
+--- /dev/null
++++ b/UAV_capture/px4_ros2_ws/scripts/check_demo_outputs.sh
+@@ -0,0 +1,208 @@
++#!/usr/bin/env bash
++set -u
++
++failures=()
++checked_files=()
++
++usage() {
++  cat <<'EOF'
++Usage:
++  ./scripts/check_demo_outputs.sh <log-or-visualization-directory>
++
++Examples:
++  ./scripts/check_demo_outputs.sh logs/offboard_hover/<timestamp>
++  ./scripts/check_demo_outputs.sh visualizations/demo01_hover/<timestamp>
++EOF
++}
++
++add_failure() {
++  failures+=("$1")
++}
++
++mark_checked() {
++  local existing
++  for existing in "${checked_files[@]}"; do
++    [[ "$existing" == "$1" ]] && return
++  done
++  checked_files+=("$1")
++}
++
++has_standard_output_marker() {
++  local dir="$1"
++  [[ -f "$dir/trajectory.csv" || -f "$dir/result.txt" || -f "$dir/verify.log" ]]
++}
++
++latest_child_dir() {
++  local dir="$1"
++  find "$dir" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort | tail -n 1
++}
++
++resolve_target_dir() {
++  local input_dir="$1"
++  local target_dir="$input_dir"
++
++  if ! has_standard_output_marker "$target_dir"; then
++    local latest
++    latest="$(latest_child_dir "$target_dir")"
++    if [[ -n "$latest" ]]; then
++      target_dir="$latest"
++    fi
++  fi
++
++  local parent_dir demo_name timestamp vis_dir
++  parent_dir="$(dirname "$target_dir")"
++  demo_name="$(basename "$parent_dir")"
++  timestamp="$(basename "$target_dir")"
++  vis_dir="visualizations/$demo_name/$timestamp"
++
++  if [[ "$target_dir" == logs/* && -d "$vis_dir" ]]; then
++    target_dir="$vis_dir"
++  fi
++
++  printf '%s\n' "$target_dir"
++}
++
++require_file() {
++  local file="$1"
++  if [[ -f "$file" ]]; then
++    mark_checked "$file"
++  else
++    add_failure "missing file: $file"
++  fi
++}
++
++check_pass_marker() {
++  local dir="$1"
++
++  if [[ -f "$dir/result.txt" ]]; then
++    mark_checked "$dir/result.txt"
++    if ! grep -q 'RESULT=PASS' "$dir/result.txt"; then
++      add_failure "missing RESULT=PASS in: $dir/result.txt"
++    fi
++    return
++  fi
++
++  if [[ -f "$dir/verify.log" ]]; then
++    mark_checked "$dir/verify.log"
++    if ! grep -q 'RESULT=PASS' "$dir/verify.log"; then
++      add_failure "missing RESULT=PASS in: $dir/verify.log"
++    fi
++    return
++  fi
++
++  add_failure "missing pass marker file: $dir/result.txt or $dir/verify.log"
++}
++
++check_csv_header() {
++  local csv_file="$1"
++  require_file "$csv_file"
++  [[ -f "$csv_file" ]] || return
++
++  local missing
++  missing="$(
++    awk -F',' '
++      NR == 1 {
++        saw_header = 1
++        for (i = 1; i <= NF; i++) {
++          field = $i
++          gsub(/\r/, "", field)
++          gsub(/^[[:space:]"]+|[[:space:]"]+$/, "", field)
++          seen[field] = 1
++        }
++
++        if (!seen["timestamp"] && !seen["t"]) {
++          print "timestamp-or-t"
++        }
++
++        required[1] = "x"
++        required[2] = "y"
++        required[3] = "z"
++        required[4] = "vx"
++        required[5] = "vy"
++        required[6] = "vz"
++
++        for (i = 1; i <= 6; i++) {
++          if (!seen[required[i]]) {
++            print required[i]
++          }
++        }
++        exit
++      }
++      END {
++        if (!saw_header) {
++          print "header"
++        }
++      }
++    ' "$csv_file"
++  )"
++
++  if [[ -n "$missing" ]]; then
++    while IFS= read -r field; do
++      [[ -n "$field" ]] && add_failure "missing CSV field in $csv_file: $field"
++    done <<< "$missing"
++  fi
++}
++
++check_standard_visualization_dir() {
++  local dir="$1"
++
++  check_csv_header "$dir/trajectory.csv"
++  require_file "$dir/trajectory_3d.png"
++  require_file "$dir/xy_path.png"
++  require_file "$dir/height_curve.png"
++  require_file "$dir/speed_curve.png"
++  require_file "$dir/tracking_error.png"
++  require_file "$dir/summary.md"
++  require_file "$dir/result.txt"
++  check_pass_marker "$dir"
++}
++
++check_legacy_log_dir() {
++  local dir="$1"
++  require_file "$dir/verify.log"
++  check_pass_marker "$dir"
++}
++
++main() {
++  if [[ "$#" -ne 1 ]]; then
++    usage
++    echo "CHECK=FAIL"
++    return 2
++  fi
++
++  local input_dir="$1"
++  if [[ ! -d "$input_dir" ]]; then
++    echo "input directory not found: $input_dir"
++    echo "CHECK=FAIL"
++    return 2
++  fi
++
++  local target_dir
++  target_dir="$(resolve_target_dir "$input_dir")"
++  echo "checking: $target_dir"
++
++  if [[ -f "$target_dir/trajectory.csv" || -f "$target_dir/result.txt" ]]; then
++    check_standard_visualization_dir "$target_dir"
++  elif [[ -f "$target_dir/verify.log" ]]; then
++    check_legacy_log_dir "$target_dir"
++  else
++    add_failure "unsupported output directory: $target_dir"
++  fi
++
++  if [[ "${#checked_files[@]}" -gt 0 ]]; then
++    echo "checked files:"
++    printf '  %s\n' "${checked_files[@]}"
++  fi
++
++  if [[ "${#failures[@]}" -gt 0 ]]; then
++    echo "failures:"
++    printf '  %s\n' "${failures[@]}"
++    echo "CHECK=FAIL"
++    return 1
++  fi
++
++  echo "CHECK=PASS"
++  return 0
++}
++
++main "$@"
+
+codex
+验证日志已更新并显示所有检查项 `CHECK=PASS`。我再快速看一遍交付文件和权限，确认没有遗漏。
+exec
+/bin/bash -lc 'ls -l scripts/check_demo_outputs.sh docs/REGRESSION_CHECKS.md codex-logs/003-add-demo-regression-checks.log' in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+-rw-rw-r-- 1 clcwork clcwork 3906 May 27 00:25 codex-logs/003-add-demo-regression-checks.log
+-rw-rw-r-- 1 clcwork clcwork 1846 May 27 00:24 docs/REGRESSION_CHECKS.md
+-rwxrwxr-x 1 clcwork clcwork 4520 May 27 00:24 scripts/check_demo_outputs.sh
+
+exec
+/bin/bash -lc "sed -n '1,260p' scripts/check_demo_outputs.sh" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+#!/usr/bin/env bash
+set -u
+
+failures=()
+checked_files=()
+
+usage() {
+  cat <<'EOF'
+Usage:
+  ./scripts/check_demo_outputs.sh <log-or-visualization-directory>
+
+Examples:
+  ./scripts/check_demo_outputs.sh logs/offboard_hover/<timestamp>
+  ./scripts/check_demo_outputs.sh visualizations/demo01_hover/<timestamp>
+EOF
+}
+
+add_failure() {
+  failures+=("$1")
+}
+
+mark_checked() {
+  local existing
+  for existing in "${checked_files[@]}"; do
+    [[ "$existing" == "$1" ]] && return
+  done
+  checked_files+=("$1")
+}
+
+has_standard_output_marker() {
+  local dir="$1"
+  [[ -f "$dir/trajectory.csv" || -f "$dir/result.txt" || -f "$dir/verify.log" ]]
+}
+
+latest_child_dir() {
+  local dir="$1"
+  find "$dir" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort | tail -n 1
+}
+
+resolve_target_dir() {
+  local input_dir="$1"
+  local target_dir="$input_dir"
+
+  if ! has_standard_output_marker "$target_dir"; then
+    local latest
+    latest="$(latest_child_dir "$target_dir")"
+    if [[ -n "$latest" ]]; then
+      target_dir="$latest"
+    fi
+  fi
+
+  local parent_dir demo_name timestamp vis_dir
+  parent_dir="$(dirname "$target_dir")"
+  demo_name="$(basename "$parent_dir")"
+  timestamp="$(basename "$target_dir")"
+  vis_dir="visualizations/$demo_name/$timestamp"
+
+  if [[ "$target_dir" == logs/* && -d "$vis_dir" ]]; then
+    target_dir="$vis_dir"
+  fi
+
+  printf '%s\n' "$target_dir"
+}
+
+require_file() {
+  local file="$1"
+  if [[ -f "$file" ]]; then
+    mark_checked "$file"
+  else
+    add_failure "missing file: $file"
+  fi
+}
+
+check_pass_marker() {
+  local dir="$1"
+
+  if [[ -f "$dir/result.txt" ]]; then
+    mark_checked "$dir/result.txt"
+    if ! grep -q 'RESULT=PASS' "$dir/result.txt"; then
+      add_failure "missing RESULT=PASS in: $dir/result.txt"
+    fi
+    return
+  fi
+
+  if [[ -f "$dir/verify.log" ]]; then
+    mark_checked "$dir/verify.log"
+    if ! grep -q 'RESULT=PASS' "$dir/verify.log"; then
+      add_failure "missing RESULT=PASS in: $dir/verify.log"
+    fi
+    return
+  fi
+
+  add_failure "missing pass marker file: $dir/result.txt or $dir/verify.log"
+}
+
+check_csv_header() {
+  local csv_file="$1"
+  require_file "$csv_file"
+  [[ -f "$csv_file" ]] || return
+
+  local missing
+  missing="$(
+    awk -F',' '
+      NR == 1 {
+        saw_header = 1
+        for (i = 1; i <= NF; i++) {
+          field = $i
+          gsub(/\r/, "", field)
+          gsub(/^[[:space:]"]+|[[:space:]"]+$/, "", field)
+          seen[field] = 1
+        }
+
+        if (!seen["timestamp"] && !seen["t"]) {
+          print "timestamp-or-t"
+        }
+
+        required[1] = "x"
+        required[2] = "y"
+        required[3] = "z"
+        required[4] = "vx"
+        required[5] = "vy"
+        required[6] = "vz"
+
+        for (i = 1; i <= 6; i++) {
+          if (!seen[required[i]]) {
+            print required[i]
+          }
+        }
+        exit
+      }
+      END {
+        if (!saw_header) {
+          print "header"
+        }
+      }
+    ' "$csv_file"
+  )"
+
+  if [[ -n "$missing" ]]; then
+    while IFS= read -r field; do
+      [[ -n "$field" ]] && add_failure "missing CSV field in $csv_file: $field"
+    done <<< "$missing"
+  fi
+}
+
+check_standard_visualization_dir() {
+  local dir="$1"
+
+  check_csv_header "$dir/trajectory.csv"
+  require_file "$dir/trajectory_3d.png"
+  require_file "$dir/xy_path.png"
+  require_file "$dir/height_curve.png"
+  require_file "$dir/speed_curve.png"
+  require_file "$dir/tracking_error.png"
+  require_file "$dir/summary.md"
+  require_file "$dir/result.txt"
+  check_pass_marker "$dir"
+}
+
+check_legacy_log_dir() {
+  local dir="$1"
+  require_file "$dir/verify.log"
+  check_pass_marker "$dir"
+}
+
+main() {
+  if [[ "$#" -ne 1 ]]; then
+    usage
+    echo "CHECK=FAIL"
+    return 2
+  fi
+
+  local input_dir="$1"
+  if [[ ! -d "$input_dir" ]]; then
+    echo "input directory not found: $input_dir"
+    echo "CHECK=FAIL"
+    return 2
+  fi
+
+  local target_dir
+  target_dir="$(resolve_target_dir "$input_dir")"
+  echo "checking: $target_dir"
+
+  if [[ -f "$target_dir/trajectory.csv" || -f "$target_dir/result.txt" ]]; then
+    check_standard_visualization_dir "$target_dir"
+  elif [[ -f "$target_dir/verify.log" ]]; then
+    check_legacy_log_dir "$target_dir"
+  else
+    add_failure "unsupported output directory: $target_dir"
+  fi
+
+  if [[ "${#checked_files[@]}" -gt 0 ]]; then
+    echo "checked files:"
+    printf '  %s\n' "${checked_files[@]}"
+  fi
+
+  if [[ "${#failures[@]}" -gt 0 ]]; then
+    echo "failures:"
+    printf '  %s\n' "${failures[@]}"
+    echo "CHECK=FAIL"
+    return 1
+  fi
+
+  echo "CHECK=PASS"
+  return 0
+}
+
+main "$@"
+
+exec
+/bin/bash -lc "sed -n '1,220p' docs/REGRESSION_CHECKS.md" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+# Demo Regression Checks
+
+This workspace provides a lightweight output checker for Demo 1-4 visualization
+results and legacy hover verification logs.
+
+## Script
+
+Run from the workspace root:
+
+```bash
+./scripts/check_demo_outputs.sh visualizations/demo01_hover/<timestamp>
+./scripts/check_demo_outputs.sh logs/offboard_hover/<timestamp>
+```
+
+The script prints `CHECK=PASS` and exits `0` when the checked output directory
+passes. It prints `CHECK=FAIL`, lists missing files or fields, and exits non-zero
+when a required check fails.
+
+If the argument is a demo root such as `visualizations/demo01_hover`, the script
+checks the newest timestamped child directory. If the argument is a current demo
+log directory such as `logs/demo02_waypoint_flight/<timestamp>` and the matching
+visualization directory exists, the script checks the visualization output.
+
+## Current Demo 1-4 Checks
+
+Current visualization directories are expected to contain:
+
+```text
+trajectory.csv
+trajectory_3d.png
+xy_path.png
+height_curve.png
+speed_curve.png
+tracking_error.png
+summary.md
+result.txt
+```
+
+The checker also requires `result.txt` to contain:
+
+```text
+RESULT=PASS
+```
+
+`trajectory.csv` must contain a header with `timestamp` or `t`, plus all of:
+
+```text
+x
+y
+z
+vx
+vy
+vz
+```
+
+## Legacy Hover Check
+
+Older hover experiment directories under `logs/offboard_hover/<timestamp>` may
+not contain visualization files. For those directories, the checker accepts
+`verify.log` when it contains:
+
+```text
+RESULT=PASS
+```
+
+## Known Limits
+
+These checks are regression smoke checks, not full flight-quality validation.
+They verify that standard artifacts exist, required CSV columns are present, and
+the recorded PASS marker is present. They do not recompute trajectory metrics,
+inspect image contents, validate MP4 playback, or prove that the vehicle followed
+the expected path.
+
+diff --git a/UAV_capture/px4_ros2_ws/docs/REGRESSION_CHECKS.md b/UAV_capture/px4_ros2_ws/docs/REGRESSION_CHECKS.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..ee752127c552d513faadad194a265bfba3532b9d
+--- /dev/null
++++ b/UAV_capture/px4_ros2_ws/docs/REGRESSION_CHECKS.md
+@@ -0,0 +1,72 @@
++# Demo Regression Checks
++
++This workspace provides a lightweight output checker for Demo 1-4 visualization
++results and legacy hover verification logs.
++
++## Script
++
++Run from the workspace root:
++
++```bash
++./scripts/check_demo_outputs.sh visualizations/demo01_hover/<timestamp>
++./scripts/check_demo_outputs.sh logs/offboard_hover/<timestamp>
++```
++
++The script prints `CHECK=PASS` and exits `0` when the checked output directory
++passes. It prints `CHECK=FAIL`, lists missing files or fields, and exits non-zero
++when a required check fails.
++
++If the argument is a demo root such as `visualizations/demo01_hover`, the script
++checks the newest timestamped child directory. If the argument is a current demo
++log directory such as `logs/demo02_waypoint_flight/<timestamp>` and the matching
++visualization directory exists, the script checks the visualization output.
++
++## Current Demo 1-4 Checks
++
++Current visualization directories are expected to contain:
++
++```text
++trajectory.csv
++trajectory_3d.png
++xy_path.png
++height_curve.png
++speed_curve.png
++tracking_error.png
++summary.md
++result.txt
++```
++
++The checker also requires `result.txt` to contain:
++
++```text
++RESULT=PASS
++```
++
++`trajectory.csv` must contain a header with `timestamp` or `t`, plus all of:
++
++```text
++x
++y
++z
++vx
++vy
++vz
++```
++
++## Legacy Hover Check
++
++Older hover experiment directories under `logs/offboard_hover/<timestamp>` may
++not contain visualization files. For those directories, the checker accepts
++`verify.log` when it contains:
++
++```text
++RESULT=PASS
++```
++
++## Known Limits
++
++These checks are regression smoke checks, not full flight-quality validation.
++They verify that standard artifacts exist, required CSV columns are present, and
++the recorded PASS marker is present. They do not recompute trajectory metrics,
++inspect image contents, validate MP4 playback, or prove that the vehicle followed
++the expected path.
+diff --git a/UAV_capture/px4_ros2_ws/scripts/check_demo_outputs.sh b/UAV_capture/px4_ros2_ws/scripts/check_demo_outputs.sh
+new file mode 100644
+index 0000000000000000000000000000000000000000..34f04c3769b63b53f37786210d082d93455d1a1f
+--- /dev/null
++++ b/UAV_capture/px4_ros2_ws/scripts/check_demo_outputs.sh
+@@ -0,0 +1,208 @@
++#!/usr/bin/env bash
++set -u
++
++failures=()
++checked_files=()
++
++usage() {
++  cat <<'EOF'
++Usage:
++  ./scripts/check_demo_outputs.sh <log-or-visualization-directory>
++
++Examples:
++  ./scripts/check_demo_outputs.sh logs/offboard_hover/<timestamp>
++  ./scripts/check_demo_outputs.sh visualizations/demo01_hover/<timestamp>
++EOF
++}
++
++add_failure() {
++  failures+=("$1")
++}
++
++mark_checked() {
++  local existing
++  for existing in "${checked_files[@]}"; do
++    [[ "$existing" == "$1" ]] && return
++  done
++  checked_files+=("$1")
++}
++
++has_standard_output_marker() {
++  local dir="$1"
++  [[ -f "$dir/trajectory.csv" || -f "$dir/result.txt" || -f "$dir/verify.log" ]]
++}
++
++latest_child_dir() {
++  local dir="$1"
++  find "$dir" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort | tail -n 1
++}
++
++resolve_target_dir() {
++  local input_dir="$1"
++  local target_dir="$input_dir"
++
++  if ! has_standard_output_marker "$target_dir"; then
++    local latest
++    latest="$(latest_child_dir "$target_dir")"
++    if [[ -n "$latest" ]]; then
++      target_dir="$latest"
++    fi
++  fi
++
++  local parent_dir demo_name timestamp vis_dir
++  parent_dir="$(dirname "$target_dir")"
++  demo_name="$(basename "$parent_dir")"
++  timestamp="$(basename "$target_dir")"
++  vis_dir="visualizations/$demo_name/$timestamp"
++
++  if [[ "$target_dir" == logs/* && -d "$vis_dir" ]]; then
++    target_dir="$vis_dir"
++  fi
++
++  printf '%s\n' "$target_dir"
++}
++
++require_file() {
++  local file="$1"
++  if [[ -f "$file" ]]; then
++    mark_checked "$file"
++  else
++    add_failure "missing file: $file"
++  fi
++}
++
++check_pass_marker() {
++  local dir="$1"
++
++  if [[ -f "$dir/result.txt" ]]; then
++    mark_checked "$dir/result.txt"
++    if ! grep -q 'RESULT=PASS' "$dir/result.txt"; then
++      add_failure "missing RESULT=PASS in: $dir/result.txt"
++    fi
++    return
++  fi
++
++  if [[ -f "$dir/verify.log" ]]; then
++    mark_checked "$dir/verify.log"
++    if ! grep -q 'RESULT=PASS' "$dir/verify.log"; then
++      add_failure "missing RESULT=PASS in: $dir/verify.log"
++    fi
++    return
++  fi
++
++  add_failure "missing pass marker file: $dir/result.txt or $dir/verify.log"
++}
++
++check_csv_header() {
++  local csv_file="$1"
++  require_file "$csv_file"
++  [[ -f "$csv_file" ]] || return
++
++  local missing
++  missing="$(
++    awk -F',' '
++      NR == 1 {
++        saw_header = 1
++        for (i = 1; i <= NF; i++) {
++          field = $i
++          gsub(/\r/, "", field)
++          gsub(/^[[:space:]"]+|[[:space:]"]+$/, "", field)
++          seen[field] = 1
++        }
++
++        if (!seen["timestamp"] && !seen["t"]) {
++          print "timestamp-or-t"
++        }
++
++        required[1] = "x"
++        required[2] = "y"
++        required[3] = "z"
++        required[4] = "vx"
++        required[5] = "vy"
++        required[6] = "vz"
++
++        for (i = 1; i <= 6; i++) {
++          if (!seen[required[i]]) {
++            print required[i]
++          }
++        }
++        exit
++      }
++      END {
++        if (!saw_header) {
++          print "header"
++        }
++      }
++    ' "$csv_file"
++  )"
++
++  if [[ -n "$missing" ]]; then
++    while IFS= read -r field; do
++      [[ -n "$field" ]] && add_failure "missing CSV field in $csv_file: $field"
++    done <<< "$missing"
++  fi
++}
++
++check_standard_visualization_dir() {
++  local dir="$1"
++
++  check_csv_header "$dir/trajectory.csv"
++  require_file "$dir/trajectory_3d.png"
++  require_file "$dir/xy_path.png"
++  require_file "$dir/height_curve.png"
++  require_file "$dir/speed_curve.png"
++  require_file "$dir/tracking_error.png"
++  require_file "$dir/summary.md"
++  require_file "$dir/result.txt"
++  check_pass_marker "$dir"
++}
++
++check_legacy_log_dir() {
++  local dir="$1"
++  require_file "$dir/verify.log"
++  check_pass_marker "$dir"
++}
++
++main() {
++  if [[ "$#" -ne 1 ]]; then
++    usage
++    echo "CHECK=FAIL"
++    return 2
++  fi
++
++  local input_dir="$1"
++  if [[ ! -d "$input_dir" ]]; then
++    echo "input directory not found: $input_dir"
++    echo "CHECK=FAIL"
++    return 2
++  fi
++
++  local target_dir
++  target_dir="$(resolve_target_dir "$input_dir")"
++  echo "checking: $target_dir"
++
++  if [[ -f "$target_dir/trajectory.csv" || -f "$target_dir/result.txt" ]]; then
++    check_standard_visualization_dir "$target_dir"
++  elif [[ -f "$target_dir/verify.log" ]]; then
++    check_legacy_log_dir "$target_dir"
++  else
++    add_failure "unsupported output directory: $target_dir"
++  fi
++
++  if [[ "${#checked_files[@]}" -gt 0 ]]; then
++    echo "checked files:"
++    printf '  %s\n' "${checked_files[@]}"
++  fi
++
++  if [[ "${#failures[@]}" -gt 0 ]]; then
++    echo "failures:"
++    printf '  %s\n' "${failures[@]}"
++    echo "CHECK=FAIL"
++    return 1
++  fi
++
++  echo "CHECK=PASS"
++  return 0
++}
++
++main "$@"
+
+codex
+已完成 Task 003。
+
+检查脚本已添加到 [scripts/check_demo_outputs.sh](/home/clcwork/UAV_capture/px4_ros2_ws/scripts/check_demo_outputs.sh)，文档已添加到 [docs/REGRESSION_CHECKS.md](/home/clcwork/UAV_capture/px4_ros2_ws/docs/REGRESSION_CHECKS.md)，验证输出保存在 [codex-logs/003-add-demo-regression-checks.log](/home/clcwork/UAV_capture/px4_ros2_ws/codex-logs/003-add-demo-regression-checks.log)。
+
+**检查了哪些文件**
+- 当前 Demo 1-4 标准可视化输出：`trajectory.csv`、`trajectory_3d.png`、`xy_path.png`、`height_curve.png`、`speed_curve.png`、`tracking_error.png`、`summary.md`、`result.txt`
+- CSV 字段：`t` 或 `timestamp`，以及 `x`、`y`、`z`、`vx`、`vy`、`vz`
+- PASS 标记：`result.txt` 或旧 hover 日志的 `verify.log` 中的 `RESULT=PASS`
+
+**哪些 Demo 目前能通过**
+- Demo 01: `visualizations/demo01_hover/20260526_221722` PASS
+- Demo 02: `visualizations/demo02_waypoint_flight/20260526_222121` PASS
+- Demo 03: `visualizations/demo03_circle_trajectory/20260526_222313` PASS
+- Demo 04: `visualizations/demo04_external_setpoint/20260526_222502` PASS
+- 旧 hover: `logs/offboard_hover/20260526_080357` PASS
+
+**哪些检查仍是弱检查**
+- 不重新计算轨迹误差、速度或稳定性指标
+- 不检查 PNG 图像内容是否正确，只检查文件存在
+- 不验证 `trajectory.mp4` 是否存在或可播放
+- 未重新运行 PX4/Gazebo 实验，只检查已有输出目录
+
+**changed files**
+- `scripts/check_demo_outputs.sh`
+- `docs/REGRESSION_CHECKS.md`
+- `codex-logs/003-add-demo-regression-checks.log`
+
+**commands run**
+- `chmod +x scripts/check_demo_outputs.sh`
+- `bash -n scripts/check_demo_outputs.sh`
+- `./scripts/check_demo_outputs.sh visualizations/demo01_hover/20260526_221722`
+- `./scripts/check_demo_outputs.sh visualizations/demo02_waypoint_flight`
+- `./scripts/check_demo_outputs.sh visualizations/demo03_circle_trajectory`
+- `./scripts/check_demo_outputs.sh visualizations/demo04_external_setpoint`
+- `./scripts/check_demo_outputs.sh logs/demo04_external_setpoint/20260526_222502`
+- `./scripts/check_demo_outputs.sh logs/offboard_hover/20260526_080357`
+
+**test result**
+- PASS: shell syntax check passed
+- PASS: Demo 1-4 current standard visualization outputs passed
+- PASS: current demo log directory to visualization directory mapping passed
+- PASS: legacy hover `verify.log` compatibility passed
+
+**known risks**
+- This is a lightweight regression smoke check only; it depends on existing `RESULT=PASS` markers and artifact presence.
+diff --git a/UAV_capture/px4_ros2_ws/docs/REGRESSION_CHECKS.md b/UAV_capture/px4_ros2_ws/docs/REGRESSION_CHECKS.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..ee752127c552d513faadad194a265bfba3532b9d
+--- /dev/null
++++ b/UAV_capture/px4_ros2_ws/docs/REGRESSION_CHECKS.md
+@@ -0,0 +1,72 @@
++# Demo Regression Checks
++
++This workspace provides a lightweight output checker for Demo 1-4 visualization
++results and legacy hover verification logs.
++
++## Script
++
++Run from the workspace root:
++
++```bash
++./scripts/check_demo_outputs.sh visualizations/demo01_hover/<timestamp>
++./scripts/check_demo_outputs.sh logs/offboard_hover/<timestamp>
++```
++
++The script prints `CHECK=PASS` and exits `0` when the checked output directory
++passes. It prints `CHECK=FAIL`, lists missing files or fields, and exits non-zero
++when a required check fails.
++
++If the argument is a demo root such as `visualizations/demo01_hover`, the script
++checks the newest timestamped child directory. If the argument is a current demo
++log directory such as `logs/demo02_waypoint_flight/<timestamp>` and the matching
++visualization directory exists, the script checks the visualization output.
++
++## Current Demo 1-4 Checks
++
++Current visualization directories are expected to contain:
++
++```text
++trajectory.csv
++trajectory_3d.png
++xy_path.png
++height_curve.png
++speed_curve.png
++tracking_error.png
++summary.md
++result.txt
++```
++
++The checker also requires `result.txt` to contain:
++
++```text
++RESULT=PASS
++```
++
++`trajectory.csv` must contain a header with `timestamp` or `t`, plus all of:
++
++```text
++x
++y
++z
++vx
++vy
++vz
++```
++
++## Legacy Hover Check
++
++Older hover experiment directories under `logs/offboard_hover/<timestamp>` may
++not contain visualization files. For those directories, the checker accepts
++`verify.log` when it contains:
++
++```text
++RESULT=PASS
++```
++
++## Known Limits
++
++These checks are regression smoke checks, not full flight-quality validation.
++They verify that standard artifacts exist, required CSV columns are present, and
++the recorded PASS marker is present. They do not recompute trajectory metrics,
++inspect image contents, validate MP4 playback, or prove that the vehicle followed
++the expected path.
+diff --git a/UAV_capture/px4_ros2_ws/scripts/check_demo_outputs.sh b/UAV_capture/px4_ros2_ws/scripts/check_demo_outputs.sh
+new file mode 100644
+index 0000000000000000000000000000000000000000..34f04c3769b63b53f37786210d082d93455d1a1f
+--- /dev/null
++++ b/UAV_capture/px4_ros2_ws/scripts/check_demo_outputs.sh
+@@ -0,0 +1,208 @@
++#!/usr/bin/env bash
++set -u
++
++failures=()
++checked_files=()
++
++usage() {
++  cat <<'EOF'
++Usage:
++  ./scripts/check_demo_outputs.sh <log-or-visualization-directory>
++
++Examples:
++  ./scripts/check_demo_outputs.sh logs/offboard_hover/<timestamp>
++  ./scripts/check_demo_outputs.sh visualizations/demo01_hover/<timestamp>
++EOF
++}
++
++add_failure() {
++  failures+=("$1")
++}
++
++mark_checked() {
++  local existing
++  for existing in "${checked_files[@]}"; do
++    [[ "$existing" == "$1" ]] && return
++  done
++  checked_files+=("$1")
++}
++
++has_standard_output_marker() {
++  local dir="$1"
++  [[ -f "$dir/trajectory.csv" || -f "$dir/result.txt" || -f "$dir/verify.log" ]]
++}
++
++latest_child_dir() {
++  local dir="$1"
++  find "$dir" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort | tail -n 1
++}
++
++resolve_target_dir() {
++  local input_dir="$1"
++  local target_dir="$input_dir"
++
++  if ! has_standard_output_marker "$target_dir"; then
++    local latest
++    latest="$(latest_child_dir "$target_dir")"
++    if [[ -n "$latest" ]]; then
++      target_dir="$latest"
++    fi
++  fi
++
++  local parent_dir demo_name timestamp vis_dir
++  parent_dir="$(dirname "$target_dir")"
++  demo_name="$(basename "$parent_dir")"
++  timestamp="$(basename "$target_dir")"
++  vis_dir="visualizations/$demo_name/$timestamp"
++
++  if [[ "$target_dir" == logs/* && -d "$vis_dir" ]]; then
++    target_dir="$vis_dir"
++  fi
++
++  printf '%s\n' "$target_dir"
++}
++
++require_file() {
++  local file="$1"
++  if [[ -f "$file" ]]; then
++    mark_checked "$file"
++  else
++    add_failure "missing file: $file"
++  fi
++}
++
++check_pass_marker() {
++  local dir="$1"
++
++  if [[ -f "$dir/result.txt" ]]; then
++    mark_checked "$dir/result.txt"
++    if ! grep -q 'RESULT=PASS' "$dir/result.txt"; then
++      add_failure "missing RESULT=PASS in: $dir/result.txt"
++    fi
++    return
++  fi
++
++  if [[ -f "$dir/verify.log" ]]; then
++    mark_checked "$dir/verify.log"
++    if ! grep -q 'RESULT=PASS' "$dir/verify.log"; then
++      add_failure "missing RESULT=PASS in: $dir/verify.log"
++    fi
++    return
++  fi
++
++  add_failure "missing pass marker file: $dir/result.txt or $dir/verify.log"
++}
++
++check_csv_header() {
++  local csv_file="$1"
++  require_file "$csv_file"
++  [[ -f "$csv_file" ]] || return
++
++  local missing
++  missing="$(
++    awk -F',' '
++      NR == 1 {
++        saw_header = 1
++        for (i = 1; i <= NF; i++) {
++          field = $i
++          gsub(/\r/, "", field)
++          gsub(/^[[:space:]"]+|[[:space:]"]+$/, "", field)
++          seen[field] = 1
++        }
++
++        if (!seen["timestamp"] && !seen["t"]) {
++          print "timestamp-or-t"
++        }
++
++        required[1] = "x"
++        required[2] = "y"
++        required[3] = "z"
++        required[4] = "vx"
++        required[5] = "vy"
++        required[6] = "vz"
++
++        for (i = 1; i <= 6; i++) {
++          if (!seen[required[i]]) {
++            print required[i]
++          }
++        }
++        exit
++      }
++      END {
++        if (!saw_header) {
++          print "header"
++        }
++      }
++    ' "$csv_file"
++  )"
++
++  if [[ -n "$missing" ]]; then
++    while IFS= read -r field; do
++      [[ -n "$field" ]] && add_failure "missing CSV field in $csv_file: $field"
++    done <<< "$missing"
++  fi
++}
++
++check_standard_visualization_dir() {
++  local dir="$1"
++
++  check_csv_header "$dir/trajectory.csv"
++  require_file "$dir/trajectory_3d.png"
++  require_file "$dir/xy_path.png"
++  require_file "$dir/height_curve.png"
++  require_file "$dir/speed_curve.png"
++  require_file "$dir/tracking_error.png"
++  require_file "$dir/summary.md"
++  require_file "$dir/result.txt"
++  check_pass_marker "$dir"
++}
++
++check_legacy_log_dir() {
++  local dir="$1"
++  require_file "$dir/verify.log"
++  check_pass_marker "$dir"
++}
++
++main() {
++  if [[ "$#" -ne 1 ]]; then
++    usage
++    echo "CHECK=FAIL"
++    return 2
++  fi
++
++  local input_dir="$1"
++  if [[ ! -d "$input_dir" ]]; then
++    echo "input directory not found: $input_dir"
++    echo "CHECK=FAIL"
++    return 2
++  fi
++
++  local target_dir
++  target_dir="$(resolve_target_dir "$input_dir")"
++  echo "checking: $target_dir"
++
++  if [[ -f "$target_dir/trajectory.csv" || -f "$target_dir/result.txt" ]]; then
++    check_standard_visualization_dir "$target_dir"
++  elif [[ -f "$target_dir/verify.log" ]]; then
++    check_legacy_log_dir "$target_dir"
++  else
++    add_failure "unsupported output directory: $target_dir"
++  fi
++
++  if [[ "${#checked_files[@]}" -gt 0 ]]; then
++    echo "checked files:"
++    printf '  %s\n' "${checked_files[@]}"
++  fi
++
++  if [[ "${#failures[@]}" -gt 0 ]]; then
++    echo "failures:"
++    printf '  %s\n' "${failures[@]}"
++    echo "CHECK=FAIL"
++    return 1
++  fi
++
++  echo "CHECK=PASS"
++  return 0
++}
++
++main "$@"
+
+tokens used
+37,775
+已完成 Task 003。
+
+检查脚本已添加到 [scripts/check_demo_outputs.sh](/home/clcwork/UAV_capture/px4_ros2_ws/scripts/check_demo_outputs.sh)，文档已添加到 [docs/REGRESSION_CHECKS.md](/home/clcwork/UAV_capture/px4_ros2_ws/docs/REGRESSION_CHECKS.md)，验证输出保存在 [codex-logs/003-add-demo-regression-checks.log](/home/clcwork/UAV_capture/px4_ros2_ws/codex-logs/003-add-demo-regression-checks.log)。
+
+**检查了哪些文件**
+- 当前 Demo 1-4 标准可视化输出：`trajectory.csv`、`trajectory_3d.png`、`xy_path.png`、`height_curve.png`、`speed_curve.png`、`tracking_error.png`、`summary.md`、`result.txt`
+- CSV 字段：`t` 或 `timestamp`，以及 `x`、`y`、`z`、`vx`、`vy`、`vz`
+- PASS 标记：`result.txt` 或旧 hover 日志的 `verify.log` 中的 `RESULT=PASS`
+
+**哪些 Demo 目前能通过**
+- Demo 01: `visualizations/demo01_hover/20260526_221722` PASS
+- Demo 02: `visualizations/demo02_waypoint_flight/20260526_222121` PASS
+- Demo 03: `visualizations/demo03_circle_trajectory/20260526_222313` PASS
+- Demo 04: `visualizations/demo04_external_setpoint/20260526_222502` PASS
+- 旧 hover: `logs/offboard_hover/20260526_080357` PASS
+
+**哪些检查仍是弱检查**
+- 不重新计算轨迹误差、速度或稳定性指标
+- 不检查 PNG 图像内容是否正确，只检查文件存在
+- 不验证 `trajectory.mp4` 是否存在或可播放
+- 未重新运行 PX4/Gazebo 实验，只检查已有输出目录
+
+**changed files**
+- `scripts/check_demo_outputs.sh`
+- `docs/REGRESSION_CHECKS.md`
+- `codex-logs/003-add-demo-regression-checks.log`
+
+**commands run**
+- `chmod +x scripts/check_demo_outputs.sh`
+- `bash -n scripts/check_demo_outputs.sh`
+- `./scripts/check_demo_outputs.sh visualizations/demo01_hover/20260526_221722`
+- `./scripts/check_demo_outputs.sh visualizations/demo02_waypoint_flight`
+- `./scripts/check_demo_outputs.sh visualizations/demo03_circle_trajectory`
+- `./scripts/check_demo_outputs.sh visualizations/demo04_external_setpoint`
+- `./scripts/check_demo_outputs.sh logs/demo04_external_setpoint/20260526_222502`
+- `./scripts/check_demo_outputs.sh logs/offboard_hover/20260526_080357`
+
+**test result**
+- PASS: shell syntax check passed
+- PASS: Demo 1-4 current standard visualization outputs passed
+- PASS: current demo log directory to visualization directory mapping passed
+- PASS: legacy hover `verify.log` compatibility passed
+
+**known risks**
+- This is a lightweight regression smoke check only; it depends on existing `RESULT=PASS` markers and artifact presence.

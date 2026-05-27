@@ -1,0 +1,4 @@
++ chmod +x examples/publish_target_position.sh
++ mkdir -p docs examples
++ '[' -f examples/publish_target_position.sh ']'
++ bash -n examples/publish_target_position.sh

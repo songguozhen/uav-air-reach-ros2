@@ -1,0 +1,11 @@
+- ros_topic_name: "/vision/front/image_raw"
+  gz_topic_name: "/world/x500_arm_2dof_smoke/model/x500_arm_2dof/link/camera_link/sensor/camera/image"
+  ros_type_name: "sensor_msgs/msg/Image"
+  gz_type_name: "gz.msgs.Image"
+  direction: GZ_TO_ROS
+
+- ros_topic_name: "/vision/front/camera_info"
+  gz_topic_name: "/world/x500_arm_2dof_smoke/model/x500_arm_2dof/link/camera_link/sensor/camera/camera_info"
+  ros_type_name: "sensor_msgs/msg/CameraInfo"
+  gz_type_name: "gz.msgs.CameraInfo"
+  direction: GZ_TO_ROS

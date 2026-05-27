@@ -1,0 +1,39 @@
+$ ls docs
+PROJECT_STRUCTURE.md
+REGRESSION_CHECKS.md
+UAV_ARM_SIMULATION_PLAN.md
+UAV_CONTROL_API.md
+VISUALIZATION_GUIDE.md
+
+$ test -s docs/UAV_CONTROL_API.md
+
+$ test -s docs/VISUALIZATION_GUIDE.md
+
+$ test -s docs/REGRESSION_CHECKS.md
+
+$ grep -R "uav_control_bridge" -n docs TOOLS_AND_SCRIPTS_GUIDE.md scripts || true
+docs/UAV_CONTROL_API.md:8:Task 004 was an interface design task. The reusable `uav_control_bridge` node
+docs/UAV_CONTROL_API.md:49:| `/uav/target_position` | `geometry_msgs/msg/Point` | client -> UAV bridge | Implemented in `uav_control_bridge`; Demo 04 example also subscribes | Position-only target in local NED. |
+docs/UAV_CONTROL_API.md:51:| `/uav/current_position` | `geometry_msgs/msg/PointStamped` | UAV bridge -> clients | Implemented in `uav_control_bridge` | Current filtered local NED position. |
+docs/UAV_CONTROL_API.md:52:| `/uav/current_target` | `geometry_msgs/msg/PointStamped` | UAV bridge -> clients | Implemented in `uav_control_bridge` | Sanitized target currently being sent to PX4. |
+docs/UAV_CONTROL_API.md:53:| `/uav/reached_target` | `std_msgs/msg/Bool` | UAV bridge -> clients | Implemented in `uav_control_bridge` | `true` when the current target is reached within configured tolerances. |
+docs/UAV_CONTROL_API.md:54:| `/uav/control_state` | `std_msgs/msg/String` | UAV bridge -> clients | Implemented in `uav_control_bridge` | Human-readable control state such as `TRACKING`, `HOLDING`, or `INVALID_TARGET`. |
+docs/UAV_CONTROL_API.md:88:The `uav_control_bridge` node subscribes to this topic, rejects invalid or
+docs/UAV_CONTROL_API.md:170:The exact tolerances are parameters on `uav_control_bridge`:
+docs/UAV_CONTROL_API.md:241:The implemented `uav_control_bridge` exposes these safety parameters:
+docs/UAV_CONTROL_API.md:258:The current `uav_control_bridge` rejects commands outside these altitude, range,
+docs/UAV_CONTROL_API.md:273:ros2 run px4_offboard_hover uav_control_bridge --ros-args \
+docs/UAV_CONTROL_API.md:290:Run Demo 04 through `uav_control_bridge` from the workspace root:
+docs/UAV_CONTROL_API.md:299:`ros2 run px4_offboard_hover uav_control_bridge`, and publishes the square
+docs/UAV_CONTROL_API.md:378:Implemented in `uav_control_bridge`:
+docs/VISUALIZATION_GUIDE.md:66:`ros2 run px4_offboard_hover uav_control_bridge`, and publishes the existing
+docs/REGRESSION_CHECKS.md:78:This starts the stack, runs `uav_control_bridge`, publishes the existing square
+TOOLS_AND_SCRIPTS_GUIDE.md:395:- Demo04 External Setpoint：默认通过 `uav_control_bridge` 订阅 `/uav/target_position`，输出外部目标点变化与实际跟踪曲线；也保留 legacy 直连示例模式。
+TOOLS_AND_SCRIPTS_GUIDE.md:413:该模式会启动 `ros2 run px4_offboard_hover uav_control_bridge`，并把方形目标序列发布到 `/uav/target_position`。目标点使用 PX4 本地 NED 坐标，`z` 是 down 方向；2 m 正高度必须发布为 `z=-2.0`，不能发布为 `z=2.0`。
+TOOLS_AND_SCRIPTS_GUIDE.md:422:当前 `uav_control_bridge` 已实现的话题：
+scripts/stop_stack.sh:8:tmux kill-session -t px4_uav_control_bridge 2>/dev/null || true
+scripts/start_stack.sh:13:  tmux kill-session -t px4_uav_control_bridge 2>/dev/null || true
+scripts/run_demo04_external_setpoint.sh:25:    CONTROL_SESSION="px4_uav_control_bridge"
+scripts/run_demo04_external_setpoint.sh:26:    CONTROL_LOG="$LOG_DIR/uav_control_bridge.log"
+scripts/run_demo04_external_setpoint.sh:28:    CONTROL_RUNNER="ros2 run px4_offboard_hover uav_control_bridge --ros-args -p initial_x:=$INITIAL_X -p initial_y:=$INITIAL_Y -p initial_z:=$INITIAL_Z -p target_timeout:=$BRIDGE_TARGET_TIMEOUT -p target_jump_limit:=$BRIDGE_TARGET_JUMP_LIMIT -p max_altitude:=$BRIDGE_MAX_ALTITUDE -p min_altitude:=$BRIDGE_MIN_ALTITUDE -p max_horizontal_range:=$BRIDGE_MAX_HORIZONTAL_RANGE"
+scripts/run_demo04_external_setpoint.sh:70:tmux kill-session -t px4_uav_control_bridge 2>/dev/null || true

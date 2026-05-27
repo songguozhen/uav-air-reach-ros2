@@ -1,0 +1,93 @@
+Task 013 validation started: 2026-05-27 17:38:35 CST
+workspace: /home/clcwork/UAV_capture/px4_ros2_ws
+
+$ chmod +x src/aerial_manip_gazebo/scripts/smoke_load_x500_arm_2dof.sh
+
+$ test -s src/aerial_manip_gazebo/models/x500_arm_2dof/model.sdf
+
+$ test -s src/aerial_manip_gazebo/models/x500_arm_2dof/model.config
+
+$ bash -n src/aerial_manip_gazebo/scripts/smoke_load_x500_arm_2dof.sh
+
+$ python3 -m compileall src/aerial_manip_gazebo || true
+Listing 'src/aerial_manip_gazebo'...
+Listing 'src/aerial_manip_gazebo/config'...
+Listing 'src/aerial_manip_gazebo/launch'...
+Listing 'src/aerial_manip_gazebo/models'...
+Listing 'src/aerial_manip_gazebo/models/x500_arm_2dof'...
+Listing 'src/aerial_manip_gazebo/scripts'...
+Listing 'src/aerial_manip_gazebo/worlds'...
+
+$ gz sdf -k src/aerial_manip_gazebo/models/x500_arm_2dof/model.sdf
+[1;31mError [Utils.cc:176][0m Tried to use callback in sdf::findFile(), but the callback is empty.  Did you call sdf::setFindCallback()?Error Code 14: [/sdf/model[@name="x500_arm_2dof"]/include[0]/uri:/home/clcwork/UAV_capture/px4_ros2_ws/src/aerial_manip_gazebo/models/x500_arm_2dof/model.sdf:L5]: Msg: Unable to find uri[x500]
+Error Code 26: Msg: relative_to name[base_link] specified by link with name[arm_link_1] does not match a nested model, link, joint, or frame name in model with name[x500_arm_2dof].
+Error Code 26: Msg: relative_to name[base_link] specified by link with name[arm_link_2] does not match a nested model, link, joint, or frame name in model with name[x500_arm_2dof].
+Error Code 26: Msg: relative_to name[base_link] specified by joint with name[arm_shoulder_pitch_joint] does not match a nested model, link, joint, or frame name in model with name[x500_arm_2dof].
+Error Code 26: Msg: relative_to name[base_link] specified by joint with name[arm_elbow_pitch_joint] does not match a nested model, link, joint, or frame name in model with name[x500_arm_2dof].
+Error Code 28: Msg: PoseRelativeToGraph error, Vertex with name [x500_arm_2dof::arm_link_1] is disconnected; it should have 1 incoming edge in MODEL relative_to graph.
+Error Code 28: Msg: PoseRelativeToGraph error, Vertex with name [x500_arm_2dof::arm_link_2] is disconnected; it should have 1 incoming edge in MODEL relative_to graph.
+Error Code 28: Msg: PoseRelativeToGraph error, Vertex with name [x500_arm_2dof::arm_shoulder_pitch_joint] is disconnected; it should have 1 incoming edge in MODEL relative_to graph.
+Error Code 28: Msg: PoseRelativeToGraph error, Vertex with name [x500_arm_2dof::arm_elbow_pitch_joint] is disconnected; it should have 1 incoming edge in MODEL relative_to graph.
+Error Code 28: Msg: PoseRelativeToGraph unable to find path to source vertex when starting from vertex with id [6].
+Error Code 28: Msg: PoseRelativeToGraph unable to find path to source vertex when starting from vertex with id [3].
+Error Code 28: Msg: PoseRelativeToGraph unable to find path to source vertex when starting from vertex with id [4].
+Error Code 28: Msg: PoseRelativeToGraph unable to find path to source vertex when starting from vertex with id [5].
+Error Code 21: Msg: parent frame with name[base_link] specified by joint with name[arm_shoulder_pitch_joint] not found in model with name[x500_arm_2dof].
+Error Code 23: Msg: FrameAttachedToGraph unable to find unique frame with name [base_link] in graph.
+Error Code 28: Msg: PoseRelativeToGraph unable to find path to source vertex when starting from vertex with id [5].
+Error Code 28: Msg: PoseRelativeToGraph unable to find path to source vertex when starting from vertex with id [5].
+Error Code 28: Msg: PoseRelativeToGraph unable to find path to source vertex when starting from vertex with id [6].
+Error Code 28: Msg: PoseRelativeToGraph unable to find path to source vertex when starting from vertex with id [6].
+
+$ src/aerial_manip_gazebo/scripts/smoke_load_x500_arm_2dof.sh
+GZ_SIM_RESOURCE_PATH=/home/clcwork/UAV_capture/px4_ros2_ws/src/aerial_manip_gazebo/models:/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models
+Loading /home/clcwork/UAV_capture/px4_ros2_ws/src/aerial_manip_gazebo/worlds/x500_arm_2dof_smoke.sdf
+[1;33mWarning [Utils.cc:132][0m [/sdf/model[@name="x500_base"]/link[@name="base_link"]/sensor[@name="air_pressure_sensor"]/gz_frame_id:/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/x500_base/model.sdf:L219]: XML Element[gz_frame_id], child of element[sensor], not defined in SDF. Copying[gz_frame_id] as children of [sensor].
+[1;33mWarning [Utils.cc:132][0m [/sdf/model[@name="x500_base"]/link[@name="base_link"]/sensor[@name="magnetometer_sensor"]/gz_frame_id:/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/x500_base/model.sdf:L233]: XML Element[gz_frame_id], child of element[sensor], not defined in SDF. Copying[gz_frame_id] as children of [sensor].
+[1;33mWarning [Utils.cc:132][0m [/sdf/model[@name="x500_base"]/link[@name="base_link"]/sensor[@name="imu_sensor"]/gz_frame_id:/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/x500_base/model.sdf:L259]: XML Element[gz_frame_id], child of element[sensor], not defined in SDF. Copying[gz_frame_id] as children of [sensor].
+[1;33mWarning [Utils.cc:132][0m [/sdf/model[@name="x500_base"]/link[@name="base_link"]/sensor[@name="navsat_sensor"]/gz_frame_id:/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/x500_base/model.sdf:L311]: XML Element[gz_frame_id], child of element[sensor], not defined in SDF. Copying[gz_frame_id] as children of [sensor].
+[1;31m[Err] [SystemLoader.cc:92] [0m[1;31mFailed to load system plugin [[0m[1;31mMotorFailurePlugin[0m[1;31m] : Could not find shared library.[0m[1;31m[0m
+
+Task 013 validation finished: 2026-05-27 17:38:40 CST
+
+Task 013 validation rerun: 2026-05-27 17:40:05 CST
+
+$ test -s src/aerial_manip_gazebo/models/x500_arm_2dof/model.sdf
+
+$ test -s src/aerial_manip_gazebo/models/x500_arm_2dof/model.config
+
+$ bash -n src/aerial_manip_gazebo/scripts/smoke_load_x500_arm_2dof.sh
+
+$ python3 -m compileall src/aerial_manip_gazebo || true
+Listing 'src/aerial_manip_gazebo'...
+Listing 'src/aerial_manip_gazebo/config'...
+Listing 'src/aerial_manip_gazebo/launch'...
+Listing 'src/aerial_manip_gazebo/models'...
+Listing 'src/aerial_manip_gazebo/models/x500_arm_2dof'...
+Listing 'src/aerial_manip_gazebo/scripts'...
+Listing 'src/aerial_manip_gazebo/worlds'...
+
+$ colcon build --packages-select aerial_manip_gazebo
+Starting >>> aerial_manip_gazebo
+Finished <<< aerial_manip_gazebo [0.57s]
+
+Summary: 1 package finished [0.74s]
+
+$ src/aerial_manip_gazebo/scripts/smoke_load_x500_arm_2dof.sh
+GZ_SIM_RESOURCE_PATH=/home/clcwork/UAV_capture/px4_ros2_ws/src/aerial_manip_gazebo/models:/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models
+GZ_SIM_SYSTEM_PLUGIN_PATH=/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/gz_plugins
+Loading /home/clcwork/UAV_capture/px4_ros2_ws/src/aerial_manip_gazebo/worlds/x500_arm_2dof_smoke.sdf
+[1;33mWarning [Utils.cc:132][0m [/sdf/model[@name="x500_base"]/link[@name="base_link"]/sensor[@name="air_pressure_sensor"]/gz_frame_id:/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/x500_base/model.sdf:L219]: XML Element[gz_frame_id], child of element[sensor], not defined in SDF. Copying[gz_frame_id] as children of [sensor].
+[1;33mWarning [Utils.cc:132][0m [/sdf/model[@name="x500_base"]/link[@name="base_link"]/sensor[@name="magnetometer_sensor"]/gz_frame_id:/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/x500_base/model.sdf:L233]: XML Element[gz_frame_id], child of element[sensor], not defined in SDF. Copying[gz_frame_id] as children of [sensor].
+[1;33mWarning [Utils.cc:132][0m [/sdf/model[@name="x500_base"]/link[@name="base_link"]/sensor[@name="imu_sensor"]/gz_frame_id:/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/x500_base/model.sdf:L259]: XML Element[gz_frame_id], child of element[sensor], not defined in SDF. Copying[gz_frame_id] as children of [sensor].
+[1;33mWarning [Utils.cc:132][0m [/sdf/model[@name="x500_base"]/link[@name="base_link"]/sensor[@name="navsat_sensor"]/gz_frame_id:/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/x500_base/model.sdf:L311]: XML Element[gz_frame_id], child of element[sensor], not defined in SDF. Copying[gz_frame_id] as children of [sensor].
+
+Task 013 validation rerun finished: 2026-05-27 17:40:08 CST
+
+Final validation summary: 2026-05-27 17:40:32 CST
+FINAL_RESULT=PASS
+Required file checks: PASS
+bash -n smoke script: PASS
+python3 -m compileall src/aerial_manip_gazebo || true: PASS
+colcon build --packages-select aerial_manip_gazebo: PASS
+Gazebo load smoke test: PASS with upstream x500 gz_frame_id warnings only

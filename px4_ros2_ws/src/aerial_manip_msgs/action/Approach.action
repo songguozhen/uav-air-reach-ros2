@@ -1,0 +1,11 @@
+std_msgs/Header header
+geometry_msgs/PoseStamped target_pose
+float32 standoff_distance_m
+float32 timeout_sec
+---
+aerial_manip_msgs/TaskStatus status
+aerial_manip_msgs/SystemObservation final_observation
+---
+aerial_manip_msgs/TaskStatus status
+aerial_manip_msgs/SystemObservation current_observation
+float32 remaining_distance_m

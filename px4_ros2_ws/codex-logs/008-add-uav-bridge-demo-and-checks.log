@@ -1,0 +1,95 @@
+Task 008 validation
+2026-05-27T08:38:21+08:00
+workspace=/home/clcwork/UAV_capture/px4_ros2_ws
+
+$ chmod +x scripts/check_demo_outputs.sh scripts/run_demo01_hover.sh scripts/run_demo02_waypoint_flight.sh scripts/run_demo03_circle_trajectory.sh scripts/run_demo04_external_setpoint.sh scripts/run_hover_experiment.sh scripts/run_trajectory_recorder.sh scripts/start_stack.sh scripts/stop_stack.sh
+exit=0
+
+$ bash -c bash -n scripts/run_codex_queue.sh 2>/dev/null || true
+exit=0
+
+$ bash -n run_codex_queue.sh
+exit=0
+
+$ bash -n scripts/check_demo_outputs.sh
+exit=0
+
+$ bash -n scripts/run_demo04_external_setpoint.sh
+exit=0
+
+$ bash -n scripts/start_stack.sh
+exit=0
+
+$ bash -n scripts/stop_stack.sh
+exit=0
+
+$ env DRY_RUN=1 ./scripts/run_demo04_external_setpoint.sh
+DRY_RUN=1
+mode=bridge
+start_stack=/home/clcwork/UAV_capture/px4_ros2_ws/scripts/start_stack.sh
+trajectory_recorder=VIS_DIR="/home/clcwork/UAV_capture/px4_ros2_ws/visualizations/demo04_external_setpoint/20260527_083821" VIS_DURATION="120.0" VIS_TITLE="Demo 04 External Setpoint Bridge" VIS_DEMO_ID="demo04" AVG_ERROR_PASS="0.9" FINAL_ERROR_PASS="0.6" MAX_SPEED_PASS="3.0" "/home/clcwork/UAV_capture/px4_ros2_ws/scripts/run_trajectory_recorder.sh"
+control_session=px4_uav_control_bridge
+control_command=ros2 run px4_offboard_hover uav_control_bridge --ros-args -p initial_x:=0.0 -p initial_y:=0.0 -p initial_z:=-2.0 -p target_timeout:=25.0 -p target_jump_limit:=2.5 -p max_altitude:=5.0 -p min_altitude:=0.5 -p max_horizontal_range:=5.0
+target_topic=/uav/target_position geometry_msgs/msg/Point
+target_sequence=sleep "15" &&   ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 2.0, y: 0.0, z: -2.0}' && sleep "18" &&   ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 2.0, y: 2.0, z: -2.0}' && sleep "18" &&   ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 0.0, y: 2.0, z: -2.0}' && sleep "18" &&   ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 0.0, y: 0.0, z: -2.0}'
+logs=/home/clcwork/UAV_capture/px4_ros2_ws/logs/demo04_external_setpoint/20260527_083821
+visuals=/home/clcwork/UAV_capture/px4_ros2_ws/visualizations/demo04_external_setpoint/20260527_083821
+exit=0
+
+$ ./scripts/check_demo_outputs.sh visualizations/demo01_hover
+checking: visualizations/demo01_hover/20260526_221722
+checked files:
+  visualizations/demo01_hover/20260526_221722/trajectory.csv
+  visualizations/demo01_hover/20260526_221722/trajectory_3d.png
+  visualizations/demo01_hover/20260526_221722/xy_path.png
+  visualizations/demo01_hover/20260526_221722/height_curve.png
+  visualizations/demo01_hover/20260526_221722/speed_curve.png
+  visualizations/demo01_hover/20260526_221722/tracking_error.png
+  visualizations/demo01_hover/20260526_221722/summary.md
+  visualizations/demo01_hover/20260526_221722/result.txt
+CHECK=PASS
+exit=0
+
+$ ./scripts/check_demo_outputs.sh visualizations/demo02_waypoint_flight
+checking: visualizations/demo02_waypoint_flight/20260526_222121
+checked files:
+  visualizations/demo02_waypoint_flight/20260526_222121/trajectory.csv
+  visualizations/demo02_waypoint_flight/20260526_222121/trajectory_3d.png
+  visualizations/demo02_waypoint_flight/20260526_222121/xy_path.png
+  visualizations/demo02_waypoint_flight/20260526_222121/height_curve.png
+  visualizations/demo02_waypoint_flight/20260526_222121/speed_curve.png
+  visualizations/demo02_waypoint_flight/20260526_222121/tracking_error.png
+  visualizations/demo02_waypoint_flight/20260526_222121/summary.md
+  visualizations/demo02_waypoint_flight/20260526_222121/result.txt
+CHECK=PASS
+exit=0
+
+$ ./scripts/check_demo_outputs.sh visualizations/demo03_circle_trajectory
+checking: visualizations/demo03_circle_trajectory/20260526_222313
+checked files:
+  visualizations/demo03_circle_trajectory/20260526_222313/trajectory.csv
+  visualizations/demo03_circle_trajectory/20260526_222313/trajectory_3d.png
+  visualizations/demo03_circle_trajectory/20260526_222313/xy_path.png
+  visualizations/demo03_circle_trajectory/20260526_222313/height_curve.png
+  visualizations/demo03_circle_trajectory/20260526_222313/speed_curve.png
+  visualizations/demo03_circle_trajectory/20260526_222313/tracking_error.png
+  visualizations/demo03_circle_trajectory/20260526_222313/summary.md
+  visualizations/demo03_circle_trajectory/20260526_222313/result.txt
+CHECK=PASS
+exit=0
+
+$ ./scripts/check_demo_outputs.sh visualizations/demo04_external_setpoint
+checking: visualizations/demo04_external_setpoint/20260526_222502
+checked files:
+  visualizations/demo04_external_setpoint/20260526_222502/trajectory.csv
+  visualizations/demo04_external_setpoint/20260526_222502/trajectory_3d.png
+  visualizations/demo04_external_setpoint/20260526_222502/xy_path.png
+  visualizations/demo04_external_setpoint/20260526_222502/height_curve.png
+  visualizations/demo04_external_setpoint/20260526_222502/speed_curve.png
+  visualizations/demo04_external_setpoint/20260526_222502/tracking_error.png
+  visualizations/demo04_external_setpoint/20260526_222502/summary.md
+  visualizations/demo04_external_setpoint/20260526_222502/result.txt
+CHECK=PASS
+exit=0
+
+overall_status=0

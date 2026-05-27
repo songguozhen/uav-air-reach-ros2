@@ -1,0 +1,542 @@
+{
+  "generated_at": "2026-05-27T20:05:04+08:00",
+  "repository_path": "/home/clcwork/UAV_capture",
+  "workspace_path": "/home/clcwork/UAV_capture/px4_ros2_ws",
+  "queue_runner_path": "px4_ros2_ws/run_codex_queue.sh",
+  "task_count_by_status": {
+    "completed": 22,
+    "failed": 0,
+    "running": 0,
+    "pending": 0,
+    "unknown": 0
+  },
+  "tasks": [
+    {
+      "id": "001",
+      "task_file": "px4_ros2_ws/codex-tasks/001-audit-project-structure.md",
+      "title": "Task 001: Audit Project Structure",
+      "status": "completed",
+      "matched_log": "px4_ros2_ws/codex-logs/001-audit-project-structure-20260527_001912.log",
+      "done_marker": "px4_ros2_ws/codex-logs/001-audit-project-structure.done",
+      "goal": [
+        "理解当前 `px4_ros2_ws` 的目录结构。",
+        "找出已有 demo 脚本、可视化脚本、ROS2 包、日志目录。",
+        "生成项目结构摘要文档。"
+      ],
+      "implementation_summary": "审计 ROS2/PX4 工作区结构，建立项目主记录、路径和后续队列运行规则。",
+      "requirements_or_deliverables": [
+        "将命令输出保存到 `codex-logs/001-audit-project-structure.log`："
+      ],
+      "result": "- PASS。两个交付物存在且非空，文档覆盖 ROS2 包、demo 脚本、可视化输出和不可删除目录说明。",
+      "final_report": {
+        "changed files": "- `docs/PROJECT_STRUCTURE.md` - `codex-logs/001-audit-project-structure.log`",
+        "commands run": "- 任务要求的审计命令块：`pwd`、`find . -maxdepth 3 -type f | sort`、`find . -maxdepth 3 -type d | sort`、条件 `git status --short`、`ls scripts`、`ls src`、`ls logs` - 只读补充检查：`find src`、`find scripts`、`find visualizations`、`find logs`、查看 `setup.py`/`package.xml` - 验证：`test -s` 和 `grep` 检查交付物及关键内容",
+        "test result": "- PASS。两个交付物存在且非空，文档覆盖 ROS2 包、demo 脚本、可视化输出和不可删除目录说明。",
+        "known risks": "- 本任务只做结构审计和文档生成，未运行 PX4/Gazebo/ROS2 demo 或仿真实验。 - 工作区根目录不是 Git 仓库；`src/px4_msgs/` 自身含 `.git`。"
+      },
+      "key_errors": [],
+      "main_issue": "完成；未发现阻塞性错误。",
+      "next_action": "保留日志；如涉及仿真，按需运行 live PX4/Gazebo 验证。"
+    },
+    {
+      "id": "002",
+      "task_file": "px4_ros2_ws/codex-tasks/002-standardize-demo-visualization.md",
+      "title": "Task 002: Standardize Demo Visualization",
+      "status": "completed",
+      "matched_log": "px4_ros2_ws/codex-logs/002-standardize-demo-visualization-20260527_002105.log",
+      "done_marker": "px4_ros2_ws/codex-logs/002-standardize-demo-visualization.done",
+      "goal": [
+        "检查 Demo 1-4 是否都能生成：",
+        "`trajectory.csv`",
+        "`trajectory_3d.png`",
+        "`xy_path.png`"
+      ],
+      "implementation_summary": "标准化 Demo 轨迹可视化输出命名和检查方式，统一 trajectory、曲线图、视频和 summary/result 文件。",
+      "requirements_or_deliverables": [
+        "将命令输出保存到 `codex-logs/002-standardize-demo-visualization.log`："
+      ],
+      "result": "PASS. `compileall` succeeded, and latest Demo 1-4 visualization directories all contain the required CSV and PNG files. `logs/` currently has no PNG output; PNG artifacts are under `visualizations/`.",
+      "final_report": {},
+      "key_errors": [],
+      "main_issue": "完成；未发现阻塞性错误。",
+      "next_action": "保留日志；如涉及仿真，按需运行 live PX4/Gazebo 验证。"
+    },
+    {
+      "id": "003",
+      "task_file": "px4_ros2_ws/codex-tasks/003-add-demo-regression-checks.md",
+      "title": "Task 003: Add Demo Regression Checks",
+      "status": "completed",
+      "matched_log": "px4_ros2_ws/codex-logs/003-add-demo-regression-checks-20260527_002316.log",
+      "done_marker": "px4_ros2_ws/codex-logs/003-add-demo-regression-checks.done",
+      "goal": [
+        "增加轻量检查脚本 `scripts/check_demo_outputs.sh`。",
+        "检查最近一次实验输出中是否存在必要文件。",
+        "检查 `verify` 输出或 `result.txt` 里是否有 `RESULT=PASS`。",
+        "检查 `trajectory.csv` 是否存在且包含 `timestamp` 或 `t`、`x`、`y`、`z`、`vx`、`vy`、`vz` 等字段。"
+      ],
+      "implementation_summary": "增加 Demo 回归检查脚本，覆盖已有 Demo 输出目录的必需文件和结果文本。",
+      "requirements_or_deliverables": [
+        "将命令输出保存到 `codex-logs/003-add-demo-regression-checks.log`："
+      ],
+      "result": "PASS` markers and artifact presence.",
+      "final_report": {},
+      "key_errors": [],
+      "main_issue": "完成；未发现阻塞性错误。",
+      "next_action": "保留日志；如涉及仿真，按需运行 live PX4/Gazebo 验证。"
+    },
+    {
+      "id": "004",
+      "task_file": "px4_ros2_ws/codex-tasks/004-design-uav-control-api.md",
+      "title": "Task 004: Design UAV Control API",
+      "status": "completed",
+      "matched_log": "px4_ros2_ws/codex-logs/004-design-uav-control-api-20260527_002532.log",
+      "done_marker": "px4_ros2_ws/codex-logs/004-design-uav-control-api.done",
+      "goal": [
+        "设计 UAV Control API，使后续视觉模块、LeRobot、任务规划器可以通过统一 ROS2 topic 控制无人机。",
+        "重点是接口文档，不是大改代码。",
+        "输出 `docs/UAV_CONTROL_API.md`。"
+      ],
+      "implementation_summary": "设计 UAV 高层控制 API，明确 /uav/* 接口、安全边界和 NED 坐标转换约束。",
+      "requirements_or_deliverables": [
+        "将命令输出保存到 `codex-logs/004-design-uav-control-api.log`："
+      ],
+      "result": "PASS. `bash -n examples/publish_target_position.sh` 通过，日志已保存到 `codex-logs/004-design-uav-control-api.log`。",
+      "final_report": {
+        "changed files": "- [docs/UAV_CONTROL_API.md](/home/clcwork/UAV_capture/px4_ros2_ws/docs/UAV_CONTROL_API.md) - [examples/publish_target_position.sh](/home/clcwork/UAV_capture/px4_ros2_ws/examples/publish_target_position.sh) - [codex-logs/004-design-uav-control-api.log](/home/clcwork/UAV_capture/px4_ros2_ws/codex-logs/004-design-uav-control-api.log)",
+        "commands run": "- `chmod +x examples/publish_target_position.sh` - `mkdir -p docs examples` - `if [ -f examples/publish_target_position.sh ]; then bash -n examples/publish_target_position.sh; fi`",
+        "test result": "PASS. `bash -n examples/publish_target_position.sh` 通过，日志已保存到 `codex-logs/004-design-uav-control-api.log`。",
+        "known risks": "- 当前只有 `/uav/target_position` 已由 Demo04 实现，其他 topic 仍是 API 设计。 - 安全限制目前写入文档，尚未在 bridge/offboard 节点中强制执行。"
+      },
+      "key_errors": [],
+      "main_issue": "完成；未发现阻塞性错误。",
+      "next_action": "保留日志；如涉及仿真，按需运行 live PX4/Gazebo 验证。"
+    },
+    {
+      "id": "005",
+      "task_file": "px4_ros2_ws/codex-tasks/005-plan-uav-arm-simulation.md",
+      "title": "Task 005: Plan UAV Arm Simulation",
+      "status": "completed",
+      "matched_log": "px4_ros2_ws/codex-logs/005-plan-uav-arm-simulation-20260527_002806.log",
+      "done_marker": "px4_ros2_ws/codex-logs/005-plan-uav-arm-simulation.done",
+      "goal": [
+        "输出 `docs/UAV_ARM_SIMULATION_PLAN.md`。",
+        "不实现机械臂，只做技术规划。",
+        "规划从 x500 + 2-DOF/3-DOF arm 开始，而不是直接上复杂 6-DOF 机械臂。"
+      ],
+      "implementation_summary": "规划 UAV + 简化机械臂仿真路线，分阶段说明建模、控制、感知、数据和 LeRobot 接入。",
+      "requirements_or_deliverables": [
+        "将命令输出保存到 `codex-logs/005-plan-uav-arm-simulation.log`："
+      ],
+      "result": "PASS。文档和日志均存在且非空；日志已保存 `mkdir -p docs && ls docs` 的最终输出；文档覆盖 2-DOF/3-DOF、挂载位置、URDF/SDF、关节控制、三阶段任务、PX4/LeRobot 边界、风险清单和 Demo 05 定义。",
+      "final_report": {},
+      "key_errors": [],
+      "main_issue": "完成；未发现阻塞性错误。",
+      "next_action": "保留日志；如涉及仿真，按需运行 live PX4/Gazebo 验证。"
+    },
+    {
+      "id": "006",
+      "task_file": "px4_ros2_ws/codex-tasks/006-implement-uav-control-bridge.md",
+      "title": "Task 006: Implement UAV Control Bridge",
+      "status": "completed",
+      "matched_log": "px4_ros2_ws/codex-logs/006-implement-uav-control-bridge-20260527_082911.log",
+      "done_marker": "px4_ros2_ws/codex-logs/006-implement-uav-control-bridge.done",
+      "goal": [
+        "Add a reusable ROS 2 UAV control bridge node in `px4_offboard_hover`.",
+        "The bridge must subscribe to `/uav/target_position` and publish PX4 offboard setpoints through the existing `OffboardPositionControl` base class.",
+        "Keep Demo 01-04 behavior stable. Do not delete or overwrite existing logs or visualization results."
+      ],
+      "implementation_summary": "实现 UAV control bridge，通过高层目标点接口接入 PX4 Offboard，包含高度/范围/跳变/超时限制。",
+      "requirements_or_deliverables": [
+        "Save command output to `codex-logs/006-implement-uav-control-bridge.log`:"
+      ],
+      "result": "PASS. `compileall` succeeded, `colcon build --packages-select px4_offboard_hover` finished successfully, and `ros2 pkg executables` lists `px4_offboard_hover uav_control_bridge`.",
+      "final_report": {},
+      "key_errors": [],
+      "main_issue": "完成；未发现阻塞性错误。",
+      "next_action": "保留日志；如涉及仿真，按需运行 live PX4/Gazebo 验证。"
+    },
+    {
+      "id": "007",
+      "task_file": "px4_ros2_ws/codex-tasks/007-add-uav-state-feedback.md",
+      "title": "Task 007: Add UAV State Feedback",
+      "status": "completed",
+      "matched_log": "px4_ros2_ws/codex-logs/007-add-uav-state-feedback-20260527_083233.log",
+      "done_marker": "px4_ros2_ws/codex-logs/007-add-uav-state-feedback.done",
+      "goal": [
+        "Extend the UAV control bridge with high-level state feedback topics from `docs/UAV_CONTROL_API.md`.",
+        "Keep the interface simple and compatible with standard ROS 2 message types."
+      ],
+      "implementation_summary": "增加 UAV 状态反馈与安全状态输出，向外部模块提供可观察的飞行平台状态。",
+      "requirements_or_deliverables": [
+        "Save command output to `codex-logs/007-add-uav-state-feedback.log`:"
+      ],
+      "result": "PASS. `compileall` completed and `colcon build --packages-select px4_offboard_hover` finished successfully.",
+      "final_report": {},
+      "key_errors": [],
+      "main_issue": "完成；未发现阻塞性错误。",
+      "next_action": "保留日志；如涉及仿真，按需运行 live PX4/Gazebo 验证。"
+    },
+    {
+      "id": "008",
+      "task_file": "px4_ros2_ws/codex-tasks/008-add-uav-bridge-demo-and-checks.md",
+      "title": "Task 008: Add UAV Bridge Demo and Checks",
+      "status": "completed",
+      "matched_log": "px4_ros2_ws/codex-logs/008-add-uav-bridge-demo-and-checks-20260527_083508.log",
+      "done_marker": "px4_ros2_ws/codex-logs/008-add-uav-bridge-demo-and-checks.done",
+      "goal": [
+        "Add a runnable demo path that uses `uav_control_bridge` for the external setpoint workflow.",
+        "Preserve old Demo 04 behavior as much as possible, but prefer the bridge path for future runs."
+      ],
+      "implementation_summary": "增加 UAV bridge Demo 和回归检查，把 Demo 04 外部目标接口迁移到高层 bridge 验证路径。",
+      "requirements_or_deliverables": [
+        "Save command output to `codex-logs/008-add-uav-bridge-demo-and-checks.log`:"
+      ],
+      "result": "CHECK=PASS`.",
+      "final_report": {},
+      "key_errors": [],
+      "main_issue": "完成；未发现阻塞性错误。",
+      "next_action": "保留日志；如涉及仿真，按需运行 live PX4/Gazebo 验证。"
+    },
+    {
+      "id": "009",
+      "task_file": "px4_ros2_ws/codex-tasks/009-document-uav-bridge-usage.md",
+      "title": "Task 009: Document UAV Bridge Usage",
+      "status": "completed",
+      "matched_log": "px4_ros2_ws/codex-logs/009-document-uav-bridge-usage-20260527_083850.log",
+      "done_marker": "px4_ros2_ws/codex-logs/009-document-uav-bridge-usage.done",
+      "goal": [
+        "Make the implemented UAV bridge easy to operate and audit.",
+        "Update documentation only; do not add new runtime behavior in this task."
+      ],
+      "implementation_summary": "编写 UAV bridge 使用文档，记录话题、参数、安全限制、运行命令和验证方式。",
+      "requirements_or_deliverables": [
+        "Save command output to `codex-logs/009-document-uav-bridge-usage.log`:"
+      ],
+      "result": "PASS. Required command output was saved to `codex-logs/009-document-uav-bridge-usage.log`.",
+      "final_report": {},
+      "key_errors": [],
+      "main_issue": "完成；未发现阻塞性错误。",
+      "next_action": "保留日志；如涉及仿真，按需运行 live PX4/Gazebo 验证。"
+    },
+    {
+      "id": "010",
+      "task_file": "px4_ros2_ws/codex-tasks/010-download-stage2-materials.md",
+      "title": "Task 010: Download Stage 2 Materials",
+      "status": "completed",
+      "matched_log": "px4_ros2_ws/codex-logs/010-download-stage2-materials.log",
+      "done_marker": "px4_ros2_ws/codex-logs/010-download-stage2-materials.done",
+      "goal": [
+        "Populate `references/stage2/` with the official documents, key papers, and local PX4 model snapshots listed in `references/stage2/manifest.yaml`.",
+        "This task is documentation/materials only. Do not implement runtime behavior."
+      ],
+      "implementation_summary": "下载/整理第二阶段所需材料，并记录资料来源与本地路径。",
+      "requirements_or_deliverables": [
+        "Run `bash references/stage2/scripts/download_stage2_materials.sh` from the workspace root.",
+        "Preserve `manifest.yaml` and update it only if a URL or local filename must be corrected.",
+        "If a remote source blocks direct download, keep the manifest entry and record the failure in the log."
+      ],
+      "result": "Completed successfully; see matched log for detailed final report.",
+      "final_report": {},
+      "key_errors": [],
+      "main_issue": "完成；未发现阻塞性错误。",
+      "next_action": "保留日志；如涉及仿真，按需运行 live PX4/Gazebo 验证。"
+    },
+    {
+      "id": "011",
+      "task_file": "px4_ros2_ws/codex-tasks/011-audit-stage2-environment.md",
+      "title": "Task 011: Audit Stage 2 Environment",
+      "status": "completed",
+      "matched_log": "px4_ros2_ws/codex-logs/011-audit-stage2-environment-20260527_172517.log",
+      "done_marker": "px4_ros2_ws/codex-logs/011-audit-stage2-environment.done",
+      "goal": [
+        "Verify the local PX4/Gazebo/ROS 2/LeRobot environment before adding aerial manipulation packages.",
+        "Do not change runtime behavior in this task."
+      ],
+      "implementation_summary": "审计第二阶段环境，检查 ROS2、PX4/Gazebo、构建目录、依赖与可运行风险。",
+      "requirements_or_deliverables": [
+        "Check availability and versions for ROS 2, Gazebo, `ros_gz_bridge`, `gz_ros2_control`, `controller_manager`, and LeRobot.",
+        "Confirm local PX4 model files exist for `x500`, `x500_mono_cam`, `mono_cam`, and `arucotag`.",
+        "Record missing dependencies as risks instead of installing packages unless explicitly requested by a later task."
+      ],
+      "result": "- PASS: audit document and log were created. - WARN: Stage 2 environment is not fully ready for aerial manipulation integration.",
+      "final_report": {
+        "changed files": "- [docs/STAGE2_ENVIRONMENT_AUDIT.md](/home/clcwork/UAV_capture/px4_ros2_ws/docs/STAGE2_ENVIRONMENT_AUDIT.md) - [codex-logs/011-audit-stage2-environment.log](/home/clcwork/UAV_capture/px4_ros2_ws/codex-logs/011-audit-stage2-environment.log)",
+        "commands run": "- Required audit commands from task 011, saved to `codex-logs/011-audit-stage2-environment.log` - Extra probes: `ros2 pkg prefix ...`, `printenv ROS_DISTRO AMENT_PREFIX_PATH`, LeRobot check with `/home/clcwork/miniconda3/envs/lerobot/bin/python` - Deliverable validation: `test -s ...`, `grep ...`, `find ... -printf ...`",
+        "test result": "- PASS: audit document and log were created. - WARN: Stage 2 environment is not fully ready for aerial manipulation integration.",
+        "known risks": "- Missing from active ROS 2 Jazzy environment: `ros_gz_bridge`, `gz_ros2_control`, `controller_manager`, `joint_state_broadcaster`, `forward_command_controller`, `joint_trajectory_controller`. - LeRobot is available in the conda env as version `0.5.2`, but not importable from `/usr/bin/python3`. - No packages were installed, per task requirement."
+      },
+      "key_errors": [],
+      "main_issue": "完成；未发现阻塞性错误。",
+      "next_action": "保留日志；如涉及仿真，按需运行 live PX4/Gazebo 验证。"
+    },
+    {
+      "id": "012",
+      "task_file": "px4_ros2_ws/codex-tasks/012-create-aerial-manip-packages.md",
+      "title": "Task 012: Create Aerial Manipulation Package Skeleton",
+      "status": "completed",
+      "matched_log": "px4_ros2_ws/codex-logs/012-create-aerial-manip-packages-20260527_172821.log",
+      "done_marker": "px4_ros2_ws/codex-logs/012-create-aerial-manip-packages.done",
+      "goal": [
+        "Add the ROS 2 package skeleton for stage-2 aerial manipulation without implementing simulation behavior yet."
+      ],
+      "implementation_summary": "创建 aerial_manip_* ROS2 包骨架和消息/action 定义，为机械臂、视觉、策略、评估模块打基础。",
+      "requirements_or_deliverables": [
+        "Use `ament_cmake` for `aerial_manip_msgs`.",
+        "Use `ament_python` for Python node packages unless a package only installs launch/config/model assets.",
+        "Define only minimal interfaces needed by later tasks: platform state, arm command/state, system observation, task status, and approach action.",
+        "Keep existing `px4_offboard_hover` untouched except for package dependencies if strictly required."
+      ],
+      "result": "PASS: all six `aerial_manip_*` packages are visible to `colcon`.",
+      "final_report": {},
+      "key_errors": [],
+      "main_issue": "完成；未发现阻塞性错误。",
+      "next_action": "保留日志；如涉及仿真，按需运行 live PX4/Gazebo 验证。"
+    },
+    {
+      "id": "013",
+      "task_file": "px4_ros2_ws/codex-tasks/013-add-x500-arm-2dof-model.md",
+      "title": "Task 013: Add x500_arm_2dof Model",
+      "status": "completed",
+      "matched_log": "px4_ros2_ws/codex-logs/013-add-x500-arm-2dof-model-20260527_173347.log",
+      "done_marker": "px4_ros2_ws/codex-logs/013-add-x500-arm-2dof-model.done",
+      "goal": [
+        "Create a minimal `x500_arm_2dof` Gazebo model that reuses the official PX4 `x500` base and adds a lightweight two-joint arm."
+      ],
+      "implementation_summary": "添加 X500 + 简化 2-DOF 机械臂模型/烟测 world，保持模型轻量便于后续集成。",
+      "requirements_or_deliverables": [
+        "Follow the local `x500_mono_cam` include-merge pattern from `references/stage2/local_px4_models/x500_mono_cam/model.sdf`.",
+        "Add conservative link mass, inertia, collision geometry, joint limits, and damping.",
+        "Do not edit PX4-Autopilot model files.",
+        "Provide a launch or script entry point that attempts to load the model in Gazebo."
+      ],
+      "result": "passed.",
+      "final_report": {},
+      "key_errors": [
+        "- An exploratory `gz sdf -k` check failed because that utility did not resolve the bare `x500` include URI used by the required PX4 include-merge pattern. The actual `gz sim` load path passed."
+      ],
+      "main_issue": "完成；未发现阻塞性错误。",
+      "next_action": "保留日志；如涉及仿真，按需运行 live PX4/Gazebo 验证。"
+    },
+    {
+      "id": "014",
+      "task_file": "px4_ros2_ws/codex-tasks/014-add-arm-ros2-control-loop.md",
+      "title": "Task 014: Add Arm ros2_control Loop",
+      "status": "completed",
+      "matched_log": "px4_ros2_ws/codex-logs/014-add-arm-ros2-control-loop-20260527_174119.log",
+      "done_marker": "px4_ros2_ws/codex-logs/014-add-arm-ros2-control-loop.done",
+      "goal": [
+        "Wire the two arm joints into `ros2_control` through `gz_ros2_control`."
+      ],
+      "implementation_summary": "增加机械臂 ROS2 控制循环基础节点，发布/订阅 ArmCommand 与 ArmState。",
+      "requirements_or_deliverables": [
+        "Start with `joint_state_broadcaster` and a simple forward or position command controller.",
+        "Use controller names and joint names consistently across SDF, YAML, and launch files.",
+        "Keep command limits conservative."
+      ],
+      "result": "Completed successfully; see matched log for detailed final report.",
+      "final_report": {},
+      "key_errors": [],
+      "main_issue": "完成；未发现阻塞性错误。",
+      "next_action": "保留日志；如涉及仿真，按需运行 live PX4/Gazebo 验证。"
+    },
+    {
+      "id": "015",
+      "task_file": "px4_ros2_ws/codex-tasks/015-add-arm-control-bridge.md",
+      "title": "Task 015: Add arm_control_bridge",
+      "status": "completed",
+      "matched_log": "px4_ros2_ws/codex-logs/015-add-arm-control-bridge-20260527_183247.log",
+      "done_marker": "px4_ros2_ws/codex-logs/015-add-arm-control-bridge.done",
+      "goal": [
+        "Add a high-level arm bridge so external modules do not publish directly to low-level controller command topics."
+      ],
+      "implementation_summary": "实现 arm_control_bridge 高层接口，外部模块通过 /arm/* 目标与状态接入，不直接打到底层控制命令。",
+      "requirements_or_deliverables": [
+        "Provide high-level topics for target joints, current joint state, control state, and reached target.",
+        "Add joint limit, velocity limit, command timeout, and target jump checks.",
+        "Match the style and safety posture of `px4_offboard_hover/uav_control_bridge.py`."
+      ],
+      "result": "PASS: both ROS 2 packages built successfully.",
+      "final_report": {},
+      "key_errors": [],
+      "main_issue": "完成；未发现阻塞性错误。",
+      "next_action": "保留日志；如涉及仿真，按需运行 live PX4/Gazebo 验证。"
+    },
+    {
+      "id": "016",
+      "task_file": "px4_ros2_ws/codex-tasks/016-add-state-aggregator-and-tf-baseline.md",
+      "title": "Task 016: Add State Aggregator and TF Baseline",
+      "status": "completed",
+      "matched_log": "px4_ros2_ws/codex-logs/016-add-state-aggregator-and-tf-baseline-20260527_183659.log",
+      "done_marker": "px4_ros2_ws/codex-logs/016-add-state-aggregator-and-tf-baseline.done",
+      "goal": [
+        "Create a single state aggregation boundary for UAV, arm, and later vision state."
+      ],
+      "implementation_summary": "实现 state_aggregator 与 TF 基线，汇总 UAV、机械臂、目标观测为 SystemObservation。",
+      "requirements_or_deliverables": [
+        "Publish `/system/observation` and `/system/safety_status`.",
+        "Broadcast or document the intended ROS TF tree: `map -> uav/base_link -> uav/arm_base -> uav/ee_link -> uav/camera_link`.",
+        "Keep NED/ENU and FRD/FLU conversion logic centralized in this boundary or in the existing UAV bridge.",
+        "Do not change `/uav/*` topic semantics."
+      ],
+      "result": "PASS - Compile passed. - Colcon build passed. - `state_aggregator` starts and publishes `/system/observation`, `/system/safety_status`, and TF. - TF check captured: `map -> uav/base_link -> uav/arm_base -> uav/ee_link -> uav/camera_link`",
+      "final_report": {
+        "changed files": "- `src/aerial_manip_msgs/msg/SafetyStatus.msg` - `src/aerial_manip_msgs/CMakeLists.txt` - `src/aerial_manip_control/aerial_manip_control/state_aggregator.py` - `src/aerial_manip_control/setup.py` - `src/aerial_manip_control/package.xml` - `docs/STAGE2_FRAMES_AND_STATE.md` - `codex-logs/016-add-state-aggregator-and-tf-baseline.log`",
+        "commands run": "- `python3 -m compileall src/aerial_manip_control` - `colcon build --packages-select aerial_manip_msgs aerial_manip_control` - `ros2 run tf2_tools view_frames || true` - Extra smoke: `timeout 3s ros2 run aerial_manip_control state_aggregator` - Extra TF smoke with aggregator running briefly",
+        "test result": "PASS - Compile passed. - Colcon build passed. - `state_aggregator` starts and publishes `/system/observation`, `/system/safety_status`, and TF. - TF check captured: `map -> uav/base_link -> uav/arm_base -> uav/ee_link -> uav/camera_link`",
+        "known risks": "- UAV attitude is not yet available through the high-level `/uav/*` state path, so `map -> uav/base_link` currently uses identity rotation. - Fixed arm/camera offsets are parameter defaults and should later be replaced by URDF-derived transforms. Validation log: - `codex-logs/016-add-state-aggregator-and-tf-baseline.log`"
+      },
+      "key_errors": [],
+      "main_issue": "完成；未发现阻塞性错误。",
+      "next_action": "保留日志；如涉及仿真，按需运行 live PX4/Gazebo 验证。"
+    },
+    {
+      "id": "017",
+      "task_file": "px4_ros2_ws/codex-tasks/017-add-front-camera-and-ros-gz-bridge.md",
+      "title": "Task 017: Add Front Camera and ros_gz_bridge",
+      "status": "completed",
+      "matched_log": "px4_ros2_ws/codex-logs/017-add-front-camera-and-ros-gz-bridge-20260527_184228.log",
+      "done_marker": "px4_ros2_ws/codex-logs/017-add-front-camera-and-ros-gz-bridge.done",
+      "goal": [
+        "Add a front RGB camera to `x500_arm_2dof` and bridge its image stream into ROS 2."
+      ],
+      "implementation_summary": "增加前视相机与 ros_gz bridge 配置/launch，为视觉目标估计提供图像和相机信息通道。",
+      "requirements_or_deliverables": [
+        "Reuse the local `mono_cam` and `x500_mono_cam` references where practical.",
+        "Configure `ros_gz_bridge` through YAML for the image and camera info topics.",
+        "First version should use one RGB camera only."
+      ],
+      "result": "PASS: Gazebo camera publishers exist:",
+      "final_report": {},
+      "key_errors": [],
+      "main_issue": "完成；未发现阻塞性错误。",
+      "next_action": "保留日志；如涉及仿真，按需运行 live PX4/Gazebo 验证。"
+    },
+    {
+      "id": "018",
+      "task_file": "px4_ros2_ws/codex-tasks/018-add-tag-target-pose-estimation.md",
+      "title": "Task 018: Add Tag Target Pose Estimation",
+      "status": "completed",
+      "matched_log": "px4_ros2_ws/codex-logs/018-add-tag-target-pose-estimation-20260527_184819.log",
+      "done_marker": "px4_ros2_ws/codex-logs/018-add-tag-target-pose-estimation.done",
+      "goal": [
+        "Add a first verifiable target-pose pipeline using AprilTag or ArUco."
+      ],
+      "implementation_summary": "实现 tag_target_pose_node，基于前视相机/AprilTag 风格接口输出目标位姿。",
+      "requirements_or_deliverables": [
+        "Place a simple fiducial target in the simulation world.",
+        "Publish `/vision/target_pose` and `/vision/target_pose_in_uav_frame`.",
+        "Prefer an installed ROS 2 tag detector if available; otherwise provide a documented placeholder node and environment warning."
+      ],
+      "result": "PASS: generated marker texture is detectable as `DICT_4X4_50` id `23`.",
+      "final_report": {},
+      "key_errors": [],
+      "main_issue": "完成；未发现阻塞性错误。",
+      "next_action": "保留日志；如涉及仿真，按需运行 live PX4/Gazebo 验证。"
+    },
+    {
+      "id": "019",
+      "task_file": "px4_ros2_ws/codex-tasks/019-add-uav-arm-approach-coordinator.md",
+      "title": "Task 019: Add UAV-Arm Approach Coordinator",
+      "status": "completed",
+      "matched_log": "px4_ros2_ws/codex-logs/019-add-uav-arm-approach-coordinator-20260527_185331.log",
+      "done_marker": "px4_ros2_ws/codex-logs/019-add-uav-arm-approach-coordinator.done",
+      "goal": [
+        "Implement a rule-based coordinator for coarse UAV positioning plus local arm adjustment."
+      ],
+      "implementation_summary": "实现 UAV-arm approach coordinator，通过 Approach action 协调 UAV 目标和机械臂目标。",
+      "requirements_or_deliverables": [
+        "The coordinator may command only high-level `/uav/*` and `/arm/*` interfaces.",
+        "Do not publish directly to PX4 `/fmu/in/*` topics.",
+        "Add workspace thresholds, command rate limits, timeout handling, and a cancel/stop path."
+      ],
+      "result": "- PASS. Compile and selected package build succeeded. - PASS. Coordinator starts and advertises `/approach`. - PASS. Boundary check found command publishing only to `/uav/target_position` and `/arm/target_joints`; no PX4 `/fmu/in/*` publisher was added.",
+      "final_report": {
+        "changed files": "- [approach_coordinator.py](/home/clcwork/UAV_capture/px4_ros2_ws/src/aerial_manip_control/aerial_manip_control/approach_coordinator.py): new `/approach` action server, high-level `/uav/target_position` and `/arm/target_joints` command path, workspace limits, rate limits, timeout, cancel, and stop handling. - [setup.py](/home/clcwork/UAV_capture/px4_ros2_ws/src/aerial_manip_control/setup.py): added `approach_coordinator` console entry point. - [package.xml](/home/clcwork/UAV_capture/px4_ros2_ws/src/aerial_manip_control/package.xml): added `action_msgs` runtime dependency. - [STAGE2_COORDINATOR.md](/home/clcwork/UAV_capture/px4_ros2_ws/docs/STAGE2_COORDINATOR.md): documented interfaces, NED target semantics, safety limits, and stop behavior. - [019-add-uav-arm-approach-coordinator.log](/hom",
+        "commands run": "- `python3 -m compileall src/aerial_manip_control` - `colcon build --packages-select aerial_manip_msgs aerial_manip_control` - `source install/setup.bash && ros2 action list || true` - `source install/setup.bash && timeout 3s ros2 run aerial_manip_control approach_coordinator` - brief smoke check with node running: `ros2 action list` returned `/approach` - `grep -RInE '/fmu/in|target_position|target_joints|ActionServer|approach_coordinator' ...`",
+        "test result": "- PASS. Compile and selected package build succeeded. - PASS. Coordinator starts and advertises `/approach`. - PASS. Boundary check found command publishing only to `/uav/target_position` and `/arm/target_joints`; no PX4 `/fmu/in/*` publisher was added.",
+        "known risks": "- The coordinator is validated by build/startup smoke tests only; it has not yet been flown in Gazebo with the UAV bridge, arm bridge, and state aggregator all active. - The local arm adjustment is rule-based and simple; gains may need tuning once the arm controller/model behavior is exercised end to end."
+      },
+      "key_errors": [],
+      "main_issue": "完成；未发现阻塞性错误。",
+      "next_action": "保留日志；如涉及仿真，按需运行 live PX4/Gazebo 验证。"
+    },
+    {
+      "id": "020",
+      "task_file": "px4_ros2_ws/codex-tasks/020-add-episode-recorder-and-lerobot-export.md",
+      "title": "Task 020: Add Episode Recorder and LeRobot Export",
+      "status": "completed",
+      "matched_log": "px4_ros2_ws/codex-logs/020-add-episode-recorder-and-lerobot-export-20260527_185851.log",
+      "done_marker": "px4_ros2_ws/codex-logs/020-add-episode-recorder-and-lerobot-export.done",
+      "goal": [
+        "Record stage-2 episodes as both ROS evidence and LeRobot-ready learning data."
+      ],
+      "implementation_summary": "实现 episode_recorder 与 LeRobot 导出结构，记录 observation/action/reward/done 等训练样本。",
+      "requirements_or_deliverables": [
+        "Record `/system/observation`, image topics, high-level actions, task labels, and result status.",
+        "Keep raw evidence under `logs/<demo>/<timestamp>/`.",
+        "Export learning data under `datasets/air_reach_v1/`.",
+        "Do not require LeRobot import for basic recorder tests; fail gracefully if the package is missing."
+      ],
+      "result": "- PASS. Compile, help, smoke export, and focused `colcon build` all passed. - The exporter smoke test confirmed graceful operation with `lerobot_available=False`.",
+      "final_report": {
+        "changed files": "- `src/aerial_manip_eval/aerial_manip_eval/episode_recorder.py` - `src/aerial_manip_eval/setup.py` - `src/aerial_manip_eval/package.xml` - `tools/export_to_lerobot.py` - `docs/STAGE2_DATASET_SCHEMA.md` - `codex-logs/020-add-episode-recorder-and-lerobot-export.log`",
+        "commands run": "- `python3 -m compileall src/aerial_manip_policy src/aerial_manip_eval tools` - `python3 tools/export_to_lerobot.py --help || true` - temporary exporter smoke test with one synthetic episode under `/tmp` - `colcon build --packages-select aerial_manip_eval` - `chmod +x tools/export_to_lerobot.py`",
+        "test result": "- PASS. Compile, help, smoke export, and focused `colcon build` all passed. - The exporter smoke test confirmed graceful operation with `lerobot_available=False`.",
+        "known risks": "- Recorder runtime was not tested against live ROS image/observation topics. - The exporter currently writes a LeRobot-ready JSONL fallback layout, not an upstream LeRobot dataset object, when LeRobot is absent. - No persistent dataset was generated under `datasets/air_reach_v1/`; only the export script defaults to that path."
+      },
+      "key_errors": [],
+      "main_issue": "完成；未发现阻塞性错误。",
+      "next_action": "保留日志；如涉及仿真，按需运行 live PX4/Gazebo 验证。"
+    },
+    {
+      "id": "021",
+      "task_file": "px4_ros2_ws/codex-tasks/021-add-lerobot-baseline-training-and-policy-bridge.md",
+      "title": "Task 021: Add LeRobot Baseline Training and Policy Bridge",
+      "status": "completed",
+      "matched_log": "px4_ros2_ws/codex-logs/021-add-lerobot-baseline-training-and-policy-bridge-20260527_190347.log",
+      "done_marker": "px4_ros2_ws/codex-logs/021-add-lerobot-baseline-training-and-policy-bridge.done",
+      "goal": [
+        "Add the first LeRobot training and inference bridge around high-level actions."
+      ],
+      "implementation_summary": "增加 LeRobot baseline 训练脚本和 policy_bridge，策略只通过高层 UAV/arm 接口输出动作。",
+      "requirements_or_deliverables": [
+        "Start with an imitation-learning baseline or documented wrapper around LeRobot's available ACT/SmolVLA tooling.",
+        "Inference must output high-level action chunks only; it must not write PX4 `/fmu/in/*`.",
+        "Include timeout/fallback behavior if inference stalls or disconnects."
+      ],
+      "result": "PASS. Compile and focused `colcon build` passed. Console scripts install as `policy_bridge` and `train_lerobot_baseline`. The LeRobot availability check completed with `lerobot MISSING`, which is allowed by the required command and documented as an environment",
+      "final_report": {},
+      "key_errors": [],
+      "main_issue": "完成；未发现阻塞性错误。",
+      "next_action": "保留日志；如涉及仿真，按需运行 live PX4/Gazebo 验证。"
+    },
+    {
+      "id": "022",
+      "task_file": "px4_ros2_ws/codex-tasks/022-add-air-reach-demo-and-regression.md",
+      "title": "Task 022: Add Air Reach Demo and Regression",
+      "status": "completed",
+      "matched_log": "px4_ros2_ws/codex-logs/022-add-air-reach-demo-and-regression-20260527_190830.log",
+      "done_marker": "px4_ros2_ws/codex-logs/022-add-air-reach-demo-and-regression.done",
+      "goal": [
+        "Combine the stage-2 pieces into a repeatable \"air reach\" demo and PASS/FAIL regression."
+      ],
+      "implementation_summary": "实现 Demo 10 air-reach 干运行/回归，包含合成机械臂控制器、指标检查和结果输出。",
+      "requirements_or_deliverables": [
+        "Demo sequence: stable hover, tag detection, coordinated approach, near-target endpoint hold or light contact if contact sensing exists.",
+        "PASS/FAIL metrics must include flight error, joint limit violations, target visibility, task timeout, and final endpoint error.",
+        "Preserve existing Demo 01-04 scripts and outputs."
+      ],
+      "result": "PASS. Latest checker output: `CHECK=PASS`, dry-run mode, `max_flight_error_m=0.067`, `final_endpoint_error_m=0.051`, `target_visible_ratio=0.775`.",
+      "final_report": {
+        "changed files": "- [air_reach_demo.py](/home/clcwork/UAV_capture/px4_ros2_ws/src/aerial_manip_eval/aerial_manip_eval/air_reach_demo.py) - [demo10_dry_run.py](/home/clcwork/UAV_capture/px4_ros2_ws/src/aerial_manip_eval/aerial_manip_eval/demo10_dry_run.py) - [synthetic_arm_controller.py](/home/clcwork/UAV_capture/px4_ros2_ws/src/aerial_manip_eval/aerial_manip_eval/synthetic_arm_controller.py) - [setup.py](/home/clcwork/UAV_capture/px4_ros2_ws/src/aerial_manip_eval/setup.py) - [run_regression_demo_10.sh](/home/clcwork/UAV_capture/px4_ros2_ws/scripts/run_regression_demo_10.sh) - [check_demo_10.py](/home/clcwork/UAV_capture/px4_ros2_ws/scripts/check_demo_10.py) - [REGRESSION_CHECKS.md](/home/clcwork/UAV_capture/px4_ros2_ws/docs/REGRESSION_CHECKS.md) - [STAGE2_AIR_REACH_DEMO.md](/home/clcwork/UAV_capture/px4_ros",
+        "commands run": "- `bash -n scripts/run_regression_demo_10.sh` - `python3 -m py_compile scripts/check_demo_10.py` - `python3 -m compileall src/aerial_manip_eval scripts/check_demo_10.py` - `colcon build --packages-select aerial_manip_eval` - `bash scripts/run_regression_demo_10.sh || true` - `python3 scripts/check_demo_10.py logs/demo10_air_reach/20260527_191707`",
+        "test result": "PASS. Latest checker output: `CHECK=PASS`, dry-run mode, `max_flight_error_m=0.067`, `final_endpoint_error_m=0.051`, `target_visible_ratio=0.775`.",
+        "known risks": "live PX4/Gazebo Demo 10 was not run in this turn. The runner supports it with `DEMO10_MODE=live RESET_STACK=1`, but the validated artifact is the deterministic dry-run regression.",
+        "output paths": "- `/home/clcwork/UAV_capture/px4_ros2_ws/logs/demo10_air_reach/20260527_191707` - `/home/clcwork/UAV_capture/px4_ros2_ws/codex-logs/022-add-air-reach-demo-and-regression.log`"
+      },
+      "key_errors": [],
+      "main_issue": "完成；未发现阻塞性错误。",
+      "next_action": "保留日志；如涉及仿真，按需运行 live PX4/Gazebo 验证。"
+    }
+  ]
+}

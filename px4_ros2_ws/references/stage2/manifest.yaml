@@ -1,0 +1,106 @@
+generated_for: stage2_aerial_manipulation
+created_date: "2026-05-27"
+workspace: /home/clcwork/UAV_capture/px4_ros2_ws
+materials:
+  - title: PX4 ROS 2 User Guide
+    category: official
+    url: https://docs.px4.io/main/en/ros2/user_guide
+    local_path: official/px4_ros2_user_guide.html
+    used_by_tasks: [011, 016, 019, 022]
+    notes: PX4 ROS 2 architecture, uXRCE-DDS integration, timing behavior.
+  - title: PX4 uXRCE-DDS Bridge
+    category: official
+    url: https://docs.px4.io/main/en/middleware/uxrce_dds.html
+    local_path: official/px4_uxrce_dds.html
+    used_by_tasks: [011, 016, 022]
+    notes: PX4 DDS bridge setup and topic mapping constraints.
+  - title: PX4 Offboard Mode
+    category: official
+    url: https://docs.px4.io/main/en/flight_modes/offboard
+    local_path: official/px4_offboard_mode.html
+    used_by_tasks: [016, 019, 022]
+    notes: Offboard proof-of-life and command boundary reference.
+  - title: Gazebo Harmonic ROS 2 Overview
+    category: official
+    url: https://gazebosim.org/docs/harmonic/ros2_overview/
+    local_path: official/gazebo_harmonic_ros2_overview.html
+    used_by_tasks: [013, 017]
+    notes: ROS 2 integration options for Gazebo.
+  - title: Gazebo Harmonic Sensors
+    category: official
+    url: https://gazebosim.org/docs/harmonic/sensors/
+    local_path: official/gazebo_harmonic_sensors.html
+    used_by_tasks: [017, 018]
+    notes: Camera and sensor SDF reference.
+  - title: SDFormat Documentation
+    category: official
+    url: https://gazebosim.org/libs/sdformat
+    local_path: official/sdformat.html
+    used_by_tasks: [013, 017]
+    notes: SDF model, link, joint, and sensor reference.
+  - title: ros_gz_bridge Jazzy
+    category: official
+    url: https://docs.ros.org/en/ros2_packages/jazzy/api/ros_gz_bridge/
+    local_path: official/ros_gz_bridge_jazzy.html
+    used_by_tasks: [017]
+    notes: Gazebo Transport to ROS 2 bridge configuration.
+  - title: gz_ros2_control Jazzy
+    category: official
+    url: https://control.ros.org/jazzy/doc/gz_ros2_control/doc/index.html
+    local_path: official/gz_ros2_control_jazzy.html
+    used_by_tasks: [014]
+    notes: Gazebo Sim plugin and ros2_control wiring.
+  - title: LeRobotDataset v3
+    category: official
+    url: https://huggingface.co/docs/lerobot/lerobot-dataset-v3
+    local_path: official/lerobot_dataset_v3.html
+    used_by_tasks: [020, 021]
+    notes: Dataset storage layout and metadata model.
+  - title: LeRobot Async Inference
+    category: official
+    url: https://huggingface.co/docs/lerobot/main/en/async
+    local_path: official/lerobot_async_inference.html
+    used_by_tasks: [021]
+    notes: Policy server/client and action chunk timing.
+  - title: LeRobot SmolVLA
+    category: official
+    url: https://huggingface.co/docs/lerobot/main/en/smolvla
+    local_path: official/lerobot_smolvla.html
+    used_by_tasks: [021]
+    notes: Multi-camera, state, language, and action chunk policy reference.
+  - title: Flying Hand
+    category: paper
+    url: https://arxiv.org/pdf/2504.10334
+    local_path: papers/flying_hand_2504.10334.pdf
+    used_by_tasks: [015, 019, 021]
+    notes: End-effector-centric aerial manipulation and policy/control separation.
+  - title: AIR-VLA
+    category: paper
+    url: https://arxiv.org/pdf/2601.21602
+    local_path: papers/air_vla_2601.21602.pdf
+    used_by_tasks: [020, 021]
+    notes: VLA benchmark for aerial manipulation and dynamics gap discussion.
+  - title: Aerial Manipulation Literature Survey
+    category: paper
+    url: https://www.sciencedirect.com/science/article/pii/S0921889017305535
+    local_path: papers/aerial_manipulation_survey.html
+    used_by_tasks: [013, 019, 022]
+    notes: Broad risk background for UAV-manipulator coupling and task design.
+  - title: Local PX4 x500 model snapshot
+    category: local_px4_model
+    url: file:///home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/x500
+    local_path: local_px4_models/x500/
+    used_by_tasks: [013]
+    notes: Local source model copied for reference only.
+  - title: Local PX4 x500_mono_cam model snapshot
+    category: local_px4_model
+    url: file:///home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/x500_mono_cam
+    local_path: local_px4_models/x500_mono_cam/
+    used_by_tasks: [013, 017]
+    notes: Shows include merge and fixed camera joint pattern.
+  - title: Local PX4 mono_cam and arucotag snapshots
+    category: local_px4_model
+    url: file:///home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models
+    local_path: local_px4_models/
+    used_by_tasks: [017, 018]
+    notes: Sensor and target model references.

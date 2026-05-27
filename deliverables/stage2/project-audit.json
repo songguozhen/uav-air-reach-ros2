@@ -1,0 +1,17 @@
+{
+  "generated_at": "2026-05-27T17:23:17+08:00",
+  "repository_path": "/home/clcwork/UAV_capture",
+  "workspace_path": "/home/clcwork/UAV_capture/px4_ros2_ws",
+  "project_name": "UAV_capture — Stage 2 Aerial Manipulation",
+  "task_range": "010-022",
+  "overall_status": "Warning",
+  "counts": { "completed": 1, "pending": 12, "failed": 0 },
+  "environment": {
+    "ros2": "OK (jazzy)",
+    "gazebo": "OK (8.11.0)",
+    "ros_gz_bridge": "MISSING",
+    "gz_ros2_control": "MISSING",
+    "lerobot_conda": "OK",
+    "px4_models": "OK"
+  }
+}

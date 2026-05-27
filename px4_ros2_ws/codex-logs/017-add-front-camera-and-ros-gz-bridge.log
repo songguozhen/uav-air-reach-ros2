@@ -1,0 +1,101 @@
+Task 017 validation log
+2026-05-27 18:44:35 CST
+workspace=/home/clcwork/UAV_capture/px4_ros2_ws
+
+
+$ python3 -m compileall src/aerial_manip_vision
+Listing 'src/aerial_manip_vision'...
+Listing 'src/aerial_manip_vision/aerial_manip_vision'...
+Compiling 'src/aerial_manip_vision/aerial_manip_vision/__init__.py'...
+Listing 'src/aerial_manip_vision/resource'...
+Compiling 'src/aerial_manip_vision/setup.py'...
+
+$ source /opt/ros/jazzy/setup.bash && colcon build --packages-select aerial_manip_gazebo aerial_manip_vision
+Starting >>> aerial_manip_gazebo
+Starting >>> aerial_manip_vision
+Finished <<< aerial_manip_gazebo [0.27s]
+Finished <<< aerial_manip_vision [0.70s]
+
+Summary: 2 packages finished [0.82s]
+
+$ source /opt/ros/jazzy/setup.bash && timeout 10s ros2 topic hz /vision/front/image_raw || true
+WARNING: topic [/vision/front/image_raw] does not appear to be published yet
+
+$ source /opt/ros/jazzy/setup.bash && source install/setup.bash && ros2 pkg prefix ros_gz_bridge
+Package not found
+
+$ source /opt/ros/jazzy/setup.bash && source install/setup.bash && ros2 launch aerial_manip_gazebo front_camera_bridge.launch.py --show-args
+Arguments (pass arguments as '<name>:=<value>'):
+
+    'bridge_config':
+        YAML ros_gz_bridge configuration for the front camera.
+        (default: PathJoinSubstitution('FindPackageShare(pkg='aerial_manip_gazebo'), 'config', 'front_camera_bridge.yaml''))
+
+$ src/aerial_manip_gazebo/scripts/smoke_load_x500_arm_2dof.sh
+GZ_SIM_RESOURCE_PATH=/home/clcwork/UAV_capture/px4_ros2_ws/src/aerial_manip_gazebo/models:/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models
+GZ_SIM_SYSTEM_PLUGIN_PATH=/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/gz_plugins
+Loading /home/clcwork/UAV_capture/px4_ros2_ws/src/aerial_manip_gazebo/worlds/x500_arm_2dof_smoke.sdf
+[1;33mWarning [Utils.cc:132][0m [/sdf/model[@name="x500_base"]/link[@name="base_link"]/sensor[@name="air_pressure_sensor"]/gz_frame_id:/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/x500_base/model.sdf:L219]: XML Element[gz_frame_id], child of element[sensor], not defined in SDF. Copying[gz_frame_id] as children of [sensor].
+[1;33mWarning [Utils.cc:132][0m [/sdf/model[@name="x500_base"]/link[@name="base_link"]/sensor[@name="magnetometer_sensor"]/gz_frame_id:/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/x500_base/model.sdf:L233]: XML Element[gz_frame_id], child of element[sensor], not defined in SDF. Copying[gz_frame_id] as children of [sensor].
+[1;33mWarning [Utils.cc:132][0m [/sdf/model[@name="x500_base"]/link[@name="base_link"]/sensor[@name="imu_sensor"]/gz_frame_id:/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/x500_base/model.sdf:L259]: XML Element[gz_frame_id], child of element[sensor], not defined in SDF. Copying[gz_frame_id] as children of [sensor].
+[1;33mWarning [Utils.cc:132][0m [/sdf/model[@name="x500_base"]/link[@name="base_link"]/sensor[@name="navsat_sensor"]/gz_frame_id:/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/x500_base/model.sdf:L311]: XML Element[gz_frame_id], child of element[sensor], not defined in SDF. Copying[gz_frame_id] as children of [sensor].
+[1;33mWarning [Utils.cc:132][0m [/sdf/model[@name="mono_cam"]/link[@name="camera_link"]/sensor[@name="camera"]/gz_frame_id:/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/mono_cam/model.sdf:L51]: XML Element[gz_frame_id], child of element[sensor], not defined in SDF. Copying[gz_frame_id] as children of [sensor].
+
+$ bounded Gazebo topic listing for x500_arm_2dof_smoke
+/model/x500_arm_2dof/motor_failure/motor_number
+/world/x500_arm_2dof_smoke/clock
+/world/x500_arm_2dof_smoke/dynamic_pose/info
+/world/x500_arm_2dof_smoke/light_config
+/world/x500_arm_2dof_smoke/material_color
+/world/x500_arm_2dof_smoke/pose/info
+/world/x500_arm_2dof_smoke/scene/deletion
+/world/x500_arm_2dof_smoke/scene/info
+/world/x500_arm_2dof_smoke/state
+/world/x500_arm_2dof_smoke/stats
+/x500_arm_2dof/command/motor_speed
+
+Gazebo server output:
+[1;33mWarning [Utils.cc:132][0m [/sdf/model[@name="x500_base"]/link[@name="base_link"]/sensor[@name="air_pressure_sensor"]/gz_frame_id:/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/x500_base/model.sdf:L219]: XML Element[gz_frame_id], child of element[sensor], not defined in SDF. Copying[gz_frame_id] as children of [sensor].
+[1;33mWarning [Utils.cc:132][0m [/sdf/model[@name="x500_base"]/link[@name="base_link"]/sensor[@name="magnetometer_sensor"]/gz_frame_id:/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/x500_base/model.sdf:L233]: XML Element[gz_frame_id], child of element[sensor], not defined in SDF. Copying[gz_frame_id] as children of [sensor].
+[1;33mWarning [Utils.cc:132][0m [/sdf/model[@name="x500_base"]/link[@name="base_link"]/sensor[@name="imu_sensor"]/gz_frame_id:/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/x500_base/model.sdf:L259]: XML Element[gz_frame_id], child of element[sensor], not defined in SDF. Copying[gz_frame_id] as children of [sensor].
+[1;33mWarning [Utils.cc:132][0m [/sdf/model[@name="x500_base"]/link[@name="base_link"]/sensor[@name="navsat_sensor"]/gz_frame_id:/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/x500_base/model.sdf:L311]: XML Element[gz_frame_id], child of element[sensor], not defined in SDF. Copying[gz_frame_id] as children of [sensor].
+[1;33mWarning [Utils.cc:132][0m [/sdf/model[@name="mono_cam"]/link[@name="camera_link"]/sensor[@name="camera"]/gz_frame_id:/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/mono_cam/model.sdf:L51]: XML Element[gz_frame_id], child of element[sensor], not defined in SDF. Copying[gz_frame_id] as children of [sensor].
+
+$ source /opt/ros/jazzy/setup.bash && colcon build --packages-select aerial_manip_gazebo aerial_manip_vision
+Starting >>> aerial_manip_gazebo
+Starting >>> aerial_manip_vision
+Finished <<< aerial_manip_gazebo [0.14s]
+Finished <<< aerial_manip_vision [0.69s]
+
+Summary: 2 packages finished [0.80s]
+
+$ bounded Gazebo topic listing after enabling Sensors system
+/model/x500_arm_2dof/motor_failure/motor_number
+/world/x500_arm_2dof_smoke/clock
+/world/x500_arm_2dof_smoke/dynamic_pose/info
+/world/x500_arm_2dof_smoke/model/x500_arm_2dof/link/camera_link/sensor/camera/camera_info
+/world/x500_arm_2dof_smoke/model/x500_arm_2dof/link/camera_link/sensor/camera/image
+/world/x500_arm_2dof_smoke/pose/info
+/world/x500_arm_2dof_smoke/scene/deletion
+/world/x500_arm_2dof_smoke/scene/info
+/world/x500_arm_2dof_smoke/state
+/world/x500_arm_2dof_smoke/stats
+/x500_arm_2dof/command/motor_speed
+
+Gazebo server output:
+[1;33mWarning [Utils.cc:132][0m [/sdf/model[@name="x500_base"]/link[@name="base_link"]/sensor[@name="air_pressure_sensor"]/gz_frame_id:/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/x500_base/model.sdf:L219]: XML Element[gz_frame_id], child of element[sensor], not defined in SDF. Copying[gz_frame_id] as children of [sensor].
+[1;33mWarning [Utils.cc:132][0m [/sdf/model[@name="x500_base"]/link[@name="base_link"]/sensor[@name="magnetometer_sensor"]/gz_frame_id:/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/x500_base/model.sdf:L233]: XML Element[gz_frame_id], child of element[sensor], not defined in SDF. Copying[gz_frame_id] as children of [sensor].
+[1;33mWarning [Utils.cc:132][0m [/sdf/model[@name="x500_base"]/link[@name="base_link"]/sensor[@name="imu_sensor"]/gz_frame_id:/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/x500_base/model.sdf:L259]: XML Element[gz_frame_id], child of element[sensor], not defined in SDF. Copying[gz_frame_id] as children of [sensor].
+[1;33mWarning [Utils.cc:132][0m [/sdf/model[@name="x500_base"]/link[@name="base_link"]/sensor[@name="navsat_sensor"]/gz_frame_id:/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/x500_base/model.sdf:L311]: XML Element[gz_frame_id], child of element[sensor], not defined in SDF. Copying[gz_frame_id] as children of [sensor].
+[1;33mWarning [Utils.cc:132][0m [/sdf/model[@name="mono_cam"]/link[@name="camera_link"]/sensor[@name="camera"]/gz_frame_id:/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/mono_cam/model.sdf:L51]: XML Element[gz_frame_id], child of element[sensor], not defined in SDF. Copying[gz_frame_id] as children of [sensor].
+
+$ source /opt/ros/jazzy/setup.bash && timeout 10s ros2 topic hz /vision/front/image_raw || true
+WARNING: topic [/vision/front/image_raw] does not appear to be published yet
+
+$ bounded Gazebo topic info for front camera image
+Publishers [Address, Message Type]:
+  tcp://172.24.9.207:45039, gz.msgs.Image
+No subscribers on topic [/world/x500_arm_2dof_smoke/model/x500_arm_2dof/link/camera_link/sensor/camera/image]
+Publishers [Address, Message Type]:
+  tcp://172.24.9.207:45039, gz.msgs.CameraInfo
+No subscribers on topic [/world/x500_arm_2dof_smoke/model/x500_arm_2dof/link/camera_link/sensor/camera/camera_info]

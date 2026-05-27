@@ -1,0 +1,7 @@
+[submodule "px4_ws/PX4-Autopilot"]
+	path = px4_ws/PX4-Autopilot
+	url = https://github.com/PX4/PX4-Autopilot.git
+
+[submodule "px4_ros2_ws/src/px4_msgs"]
+	path = px4_ros2_ws/src/px4_msgs
+	url = https://github.com/PX4/px4_msgs.git

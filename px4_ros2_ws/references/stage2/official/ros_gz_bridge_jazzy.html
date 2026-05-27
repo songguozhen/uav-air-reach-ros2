@@ -1,0 +1,1024 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ros_gz_bridge &mdash; ros_gz_bridge: Jazzy 1.0.22 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=09ae080f"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Links" href="__links.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="#" class="icon icon-home">
+            ros_gz_bridge: Jazzy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="__links.html">Links</a><ul>
+<li class="toctree-l2"><a class="reference external" href="https://index.ros.org/p/ros_gz_bridge">Rosindex</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://github.com/gazebosim/ros_gz.git">Repository</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Python API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ros_gz_bridge.html">ros_gz_bridge package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ros_gz_bridge.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="ros_gz_bridge.actions.html">ros_gz_bridge.actions package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="ros_gz_bridge.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="ros_gz_bridge.mappings.html">ros_gz_bridge.mappings module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="ros_gz_bridge.html#module-contents">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="generated/index.html">C++ API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="generated/index.html#class-hierarchy">Class Hierarchy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/index.html#file-hierarchy">File Hierarchy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/index.html#full-c-api">Full C++ API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/index.html#namespaces">Namespaces</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/namespace_rclcpp.html">Namespace rclcpp</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/namespace_ros_gz_bridge.html">Namespace ros_gz_bridge</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="generated/index.html#classes-and-structs">Classes and Structs</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/structros__gz__bridge_1_1BridgeConfig.html">Struct BridgeConfig</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/classros__gz__bridge_1_1RosGzBridge.html">Class RosGzBridge</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="generated/index.html#enums">Enums</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/enum_bridge__config_8hpp_1abab542e6fa8d45d6d5e1b26f5ac2f593.html">Enum BridgeDirection</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="generated/index.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_actuator__msgs_8hpp_1a48301d94efafa3449e20ca22afad74d7.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::Actuators&amp;, actuator_msgs::msg::Actuators&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_builtin__interfaces_8hpp_1a8ad7cadc6f05cdbcb87f11c89c99c850.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::Time&amp;, builtin_interfaces::msg::Time&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_geometry__msgs_8hpp_1a573b590fe1f2df194bae7b96e1064acc.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::Quaternion&amp;, geometry_msgs::msg::Quaternion&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_geometry__msgs_8hpp_1a566ebb53c225d409340bd6d24b712ada.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::Vector3d&amp;, geometry_msgs::msg::Vector3&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_geometry__msgs_8hpp_1ad11bd8e276c89590512721dbc381f398.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::Vector3d&amp;, geometry_msgs::msg::Point&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_geometry__msgs_8hpp_1abfb907f18367d15effa28726411f8e23.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::Pose&amp;, geometry_msgs::msg::Pose&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_geometry__msgs_8hpp_1aa841b3577a5d8b4924215c3c4f92960a.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::Pose_V&amp;, geometry_msgs::msg::PoseArray&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_geometry__msgs_8hpp_1acd692dc30f61fb74684b6af21d6b713a.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::PoseWithCovariance&amp;, geometry_msgs::msg::PoseWithCovarianceStamped&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_geometry__msgs_8hpp_1a8b12fd75b9d0877b9f8c0312486ed7ba.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::PoseWithCovariance&amp;, geometry_msgs::msg::PoseWithCovariance&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_geometry__msgs_8hpp_1ad12dbbe73bcd4aaff8deb650364f8763.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::Pose&amp;, geometry_msgs::msg::PoseStamped&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_geometry__msgs_8hpp_1ac10c69486bd94c50454d69c0aa7a012e.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::Pose&amp;, geometry_msgs::msg::Transform&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_geometry__msgs_8hpp_1ad0e887b5727a21d7e6b40a823e478aca.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::Pose&amp;, geometry_msgs::msg::TransformStamped&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_geometry__msgs_8hpp_1ac959c538e2848448b787bbda601f45b3.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::Twist&amp;, geometry_msgs::msg::Twist&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_geometry__msgs_8hpp_1a3c6e670d4d2354e384e8960b6d6b99a0.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::Twist&amp;, geometry_msgs::msg::TwistStamped&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_geometry__msgs_8hpp_1af64cbc9a52d2d16011d6a7c7bd86202f.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::TwistWithCovariance&amp;, geometry_msgs::msg::TwistWithCovariance&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_geometry__msgs_8hpp_1ab7cf4187f1805d1b3c5ba24ad5868ddf.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::TwistWithCovariance&amp;, geometry_msgs::msg::TwistWithCovarianceStamped&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_geometry__msgs_8hpp_1abef1ba032ebe4ae5e7e5dcb3aade392c.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::Wrench&amp;, geometry_msgs::msg::Wrench&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_geometry__msgs_8hpp_1a0c506b5398d73b1017d8c3f9c945fd85.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::Wrench&amp;, geometry_msgs::msg::WrenchStamped&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_gps__msgs_8hpp_1a1b586a182cfc1fd21563d8c1eb75a9a5.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::NavSat&amp;, gps_msgs::msg::GPSFix&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_marine__acoustic__msgs_8hpp_1ab6c44652423c6364981ba22970c575d8.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::DVLVelocityTracking&amp;, marine_acoustic_msgs::msg::Dvl&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_nav__msgs_8hpp_1a80afdda48776ced7d087a9b5eb0afd92.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::Odometry&amp;, nav_msgs::msg::Odometry&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_nav__msgs_8hpp_1a9d1190c639a858d256ef04183fdeb5e4.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::OdometryWithCovariance&amp;, nav_msgs::msg::Odometry&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_rcl__interfaces_8hpp_1a932414925f78e5abc445d2c8cada98f6.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::Any&amp;, rcl_interfaces::msg::ParameterValue&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_ros__gz__interfaces_8hpp_1a51cd0e7b8d33227fc61b614fe87e2f7d.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::JointWrench&amp;, ros_gz_interfaces::msg::JointWrench&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_ros__gz__interfaces_8hpp_1a873200fc64de3c457b8b39c9d396fff6.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::Altimeter&amp;, ros_gz_interfaces::msg::Altimeter&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_ros__gz__interfaces_8hpp_1a375212bd7cac99f25a9f26535621f940.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::Entity&amp;, ros_gz_interfaces::msg::Entity&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_ros__gz__interfaces_8hpp_1adef0af3e89cdd7b4f76dde3a29344a52.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::EntityFactory&amp;, ros_gz_interfaces::msg::EntityFactory&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_ros__gz__interfaces_8hpp_1a4bd8bcb00b1657de8a0b3b4d5f004bf8.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::EntityWrench&amp;, ros_gz_interfaces::msg::EntityWrench&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_ros__gz__interfaces_8hpp_1a20fdc4f995ea1b0b84d3753003d9582a.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::Contact&amp;, ros_gz_interfaces::msg::Contact&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_ros__gz__interfaces_8hpp_1a3a7f99a3b9ba037cf2445e5f5f8b5e2c.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::Contacts&amp;, ros_gz_interfaces::msg::Contacts&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_ros__gz__interfaces_8hpp_1aaea31c9e5997530ac8722e10ee3f3d3f.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::Dataframe&amp;, ros_gz_interfaces::msg::Dataframe&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_ros__gz__interfaces_8hpp_1a1b2ca16f79b44f76d05b5e48f68b1599.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::GUICamera&amp;, ros_gz_interfaces::msg::GuiCamera&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_ros__gz__interfaces_8hpp_1a95de7a66a958c2f120f74a207ff83a25.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::Light&amp;, ros_gz_interfaces::msg::Light&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_ros__gz__interfaces_8hpp_1a0376fa521c0be567698019926e704ccc.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::MaterialColor&amp;, ros_gz_interfaces::msg::MaterialColor&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_ros__gz__interfaces_8hpp_1a1455d8760ab1ff21423009b1aef39650.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::SensorNoise&amp;, ros_gz_interfaces::msg::SensorNoise&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_ros__gz__interfaces_8hpp_1ac15a356c3c56699baafc0c89eff34ebf.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::StringMsg_V&amp;, ros_gz_interfaces::msg::StringVec&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_ros__gz__interfaces_8hpp_1acd56ce60489489f35e748a186de2ef7f.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::Param&amp;, ros_gz_interfaces::msg::ParamVec&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_ros__gz__interfaces_8hpp_1a83296e35e63369f5a03b0c58f8ff52c7.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::Param_V&amp;, ros_gz_interfaces::msg::ParamVec&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_ros__gz__interfaces_8hpp_1a0f96b314e3cd16d4ae9c604cc72436cb.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::TrackVisual&amp;, ros_gz_interfaces::msg::TrackVisual&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_ros__gz__interfaces_8hpp_1a5bc9f6a2e93fb3dbe12e39bb10133284.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::VideoRecord&amp;, ros_gz_interfaces::msg::VideoRecord&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_ros__gz__interfaces_8hpp_1a37149533b18f80e0f9916ef111ac89a7.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::WorldControl&amp;, ros_gz_interfaces::msg::WorldControl&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_ros__gz__interfaces_8hpp_1a21e568e649f644f745528b17f455084a.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::WorldReset&amp;, ros_gz_interfaces::msg::WorldReset&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_ros__gz__interfaces_8hpp_1a2e28436e4a6271893c82b4a4003d03c0.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::WorldStatistics&amp;, ros_gz_interfaces::msg::WorldStatistics&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_ros__gz__interfaces_8hpp_1ad3cccc5f20a44dd9bb54d62aa28a9ffa.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::Float_V&amp;, ros_gz_interfaces::msg::Float32Array&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_ros__gz__interfaces_8hpp_1add732f93511b561413077184b3a74bac.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::LogicalCameraImage&amp;, ros_gz_interfaces::msg::LogicalCameraImage&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_ros__gz__interfaces_8hpp_1a8d7378c703c41d73b07577770b6f4858.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::LogPlaybackStatistics&amp;, ros_gz_interfaces::msg::LogPlaybackStatistics&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_rosgraph__msgs_8hpp_1a646602508ca1f10528cfa9896ce2c313.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::Clock&amp;, rosgraph_msgs::msg::Clock&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_sensor__msgs_8hpp_1aca24f688f9f376f2b2cee17eed1445fd.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::Joy&amp;, sensor_msgs::msg::Joy&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_sensor__msgs_8hpp_1acf46168eab763711c2f966ee68e3b28e.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::FluidPressure&amp;, sensor_msgs::msg::FluidPressure&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_sensor__msgs_8hpp_1ac1bb1dff4821829a97f816707d881a06.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::Image&amp;, sensor_msgs::msg::Image&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_sensor__msgs_8hpp_1a7ffd99b7dd34eb406038c2bdca0acf4c.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::CameraInfo&amp;, sensor_msgs::msg::CameraInfo&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_sensor__msgs_8hpp_1ae47a633c4007c68210b8aae098cb11bd.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::IMU&amp;, sensor_msgs::msg::Imu&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_sensor__msgs_8hpp_1aa034728ee82da71cf16df2af0e93b648.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::Model&amp;, sensor_msgs::msg::JointState&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_sensor__msgs_8hpp_1a49efd0e7587026e8d721334c9d64fe95.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::LaserScan&amp;, sensor_msgs::msg::LaserScan&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_sensor__msgs_8hpp_1ab7d0c633feef63177c8dcf66ed056b67.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::Magnetometer&amp;, sensor_msgs::msg::MagneticField&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_sensor__msgs_8hpp_1a63ba5bfc33e4d648d9ca3c474b58d0ed.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::NavSat&amp;, sensor_msgs::msg::NavSatFix&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_sensor__msgs_8hpp_1a5aa7fe55e4f62819d847135d36aeadc0.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::PointCloudPacked&amp;, sensor_msgs::msg::PointCloud2&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_sensor__msgs_8hpp_1a02fac2b96b5bc99782798ad0e462e12b.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::BatteryState&amp;, sensor_msgs::msg::BatteryState&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_std__msgs_8hpp_1a0ea77739113d67b840858b4aed2c1568.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::Boolean&amp;, std_msgs::msg::Bool&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_std__msgs_8hpp_1afd91788a8635cd1f79e954f71c1acc81.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::Color&amp;, std_msgs::msg::ColorRGBA&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_std__msgs_8hpp_1af2b42120ff80998fd9fab0397f84fc4a.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::Empty&amp;, std_msgs::msg::Empty&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_std__msgs_8hpp_1a91416a18cdbec7a4566e806cb3c981d3.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::UInt32&amp;, std_msgs::msg::UInt32&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_std__msgs_8hpp_1ae578f0f95aed969a0945309f46403b1a.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::Float&amp;, std_msgs::msg::Float32&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_std__msgs_8hpp_1a9e5c39b508c43bc2bb391f9cac82d0cb.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::Double&amp;, std_msgs::msg::Float64&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_std__msgs_8hpp_1a37333361146656f3a465597f0611384f.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::Header&amp;, std_msgs::msg::Header&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_std__msgs_8hpp_1ac594a0ee0c20b5c2a9a4ecad76acab49.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::Int32&amp;, std_msgs::msg::Int32&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_std__msgs_8hpp_1a61d1d24ff68a20842f532855814df8f4.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::StringMsg&amp;, std_msgs::msg::String&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_tf2__msgs_8hpp_1ab30fc972d5a5fb2cf0f002f0b0e1d7bd.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::Pose_V&amp;, tf2_msgs::msg::TFMessage&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_trajectory__msgs_8hpp_1abd71f7a74996c12d3dec6919e78b8e13.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::JointTrajectoryPoint&amp;, trajectory_msgs::msg::JointTrajectoryPoint&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_trajectory__msgs_8hpp_1ace7940f46c2554456ad36cbdd91be7cf.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::JointTrajectory&amp;, trajectory_msgs::msg::JointTrajectory&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_vision__msgs_8hpp_1a9b399bcceccdf5c105e25e04e1564ec7.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::AnnotatedAxisAligned2DBox&amp;, vision_msgs::msg::Detection2D&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_vision__msgs_8hpp_1a77e10c6f8ed2e6c1afb76a59da51ae24.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::AnnotatedAxisAligned2DBox_V&amp;, vision_msgs::msg::Detection2DArray&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_vision__msgs_8hpp_1a15f7378e58a45c461c491ec758e04e30.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::AnnotatedOriented3DBox&amp;, vision_msgs::msg::Detection3D&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_vision__msgs_8hpp_1a2d3556617aaeed0d71f65eeff2465dee.html">Specialized Template Function ros_gz_bridge::convert_gz_to_ros(const gz::msgs::AnnotatedOriented3DBox_V&amp;, vision_msgs::msg::Detection3DArray&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_convert__decl_8hpp_1a79659ef265605c411ee3931796f28382.html">Template Function ros_gz_bridge::convert_gz_to_ros(const GZ_T&amp;, ROS_T&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_actuator__msgs_8hpp_1aad53adb1610b0024647b9dda0bd793cb.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const actuator_msgs::msg::Actuators&amp;, gz::msgs::Actuators&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_builtin__interfaces_8hpp_1aa206eb9e91272b64fd4a62fae6fab6a9.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const builtin_interfaces::msg::Time&amp;, gz::msgs::Time&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_geometry__msgs_8hpp_1a3e40d6f365ed9898140db9df4fbd2d8f.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const geometry_msgs::msg::Quaternion&amp;, gz::msgs::Quaternion&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_geometry__msgs_8hpp_1ac2e5b034392611b1c5b81858e2b8e592.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const geometry_msgs::msg::Vector3&amp;, gz::msgs::Vector3d&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_geometry__msgs_8hpp_1a38627186677c7ea030a08ab3262cb110.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const geometry_msgs::msg::Point&amp;, gz::msgs::Vector3d&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_geometry__msgs_8hpp_1a469328996890fe59eda54c9367a5ff6d.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const geometry_msgs::msg::Pose&amp;, gz::msgs::Pose&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_geometry__msgs_8hpp_1ae95f8912394310a7443473d226f2cb6d.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const geometry_msgs::msg::PoseArray&amp;, gz::msgs::Pose_V&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_geometry__msgs_8hpp_1a376b7c498501e314943288798bf6e2b1.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const geometry_msgs::msg::PoseWithCovariance&amp;, gz::msgs::PoseWithCovariance&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_geometry__msgs_8hpp_1a1ee0befb129197f8998605fb3bd49282.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const geometry_msgs::msg::PoseWithCovarianceStamped&amp;, gz::msgs::PoseWithCovariance&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_geometry__msgs_8hpp_1a47fac246c5d07f737de342d26466a8fa.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const geometry_msgs::msg::PoseStamped&amp;, gz::msgs::Pose&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_geometry__msgs_8hpp_1ab99019265916ddecf8cf356078ae56eb.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const geometry_msgs::msg::Transform&amp;, gz::msgs::Pose&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_geometry__msgs_8hpp_1acf8884526b7424b468e56329f8ea1de6.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const geometry_msgs::msg::TransformStamped&amp;, gz::msgs::Pose&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_geometry__msgs_8hpp_1acd0f422232e454f95e27dcbbc42c1d43.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const geometry_msgs::msg::Twist&amp;, gz::msgs::Twist&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_geometry__msgs_8hpp_1a3861bad517173929e1969252cbd5f548.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const geometry_msgs::msg::TwistStamped&amp;, gz::msgs::Twist&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_geometry__msgs_8hpp_1a10e4de653eb0f6b053fd9787a86a90d0.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const geometry_msgs::msg::TwistWithCovariance&amp;, gz::msgs::TwistWithCovariance&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_geometry__msgs_8hpp_1ac772b24c986dd67543ca2879dc9fbd51.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const geometry_msgs::msg::TwistWithCovarianceStamped&amp;, gz::msgs::TwistWithCovariance&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_geometry__msgs_8hpp_1af79c552db4fb670bf13305bda418b821.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const geometry_msgs::msg::Wrench&amp;, gz::msgs::Wrench&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_geometry__msgs_8hpp_1af3ad1f7e7ab748148d893ad52e58e21c.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const geometry_msgs::msg::WrenchStamped&amp;, gz::msgs::Wrench&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_gps__msgs_8hpp_1a23fefafd5b32377e2655dbd148ad4588.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const gps_msgs::msg::GPSFix&amp;, gz::msgs::NavSat&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_marine__acoustic__msgs_8hpp_1a21c2441d260e2a5c6f6539d62879ab74.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const marine_acoustic_msgs::msg::Dvl&amp;, gz::msgs::DVLVelocityTracking&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_nav__msgs_8hpp_1aa70a1c87be5af446384e2677df7be457.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const nav_msgs::msg::Odometry&amp;, gz::msgs::Odometry&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_nav__msgs_8hpp_1ac35a07b340c79a07b6c665798528138f.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const nav_msgs::msg::Odometry&amp;, gz::msgs::OdometryWithCovariance&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_rcl__interfaces_8hpp_1a4033fbac984c7315d9c1cc988b083b48.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const rcl_interfaces::msg::ParameterValue&amp;, gz::msgs::Any&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_ros__gz__interfaces_8hpp_1a345509379758dc71462bc86c50a08411.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const ros_gz_interfaces::msg::JointWrench&amp;, gz::msgs::JointWrench&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_ros__gz__interfaces_8hpp_1aace8c358934ecaaf801f4f36a8679aa0.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const ros_gz_interfaces::msg::Altimeter&amp;, gz::msgs::Altimeter&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_ros__gz__interfaces_8hpp_1a9e3146898f488e76028615bf1e0d219a.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const ros_gz_interfaces::msg::Entity&amp;, gz::msgs::Entity&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_ros__gz__interfaces_8hpp_1a9a49e411d32c6defba8bbea4c3f5e678.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const ros_gz_interfaces::msg::Entity&amp;, gz::msgs::Pose&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_ros__gz__interfaces_8hpp_1a3d0ea7d7546e7918283b757e62db2975.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const ros_gz_interfaces::msg::EntityFactory&amp;, gz::msgs::EntityFactory&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_ros__gz__interfaces_8hpp_1a4036c2b45a03197be95add3df76a5aa3.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const ros_gz_interfaces::msg::EntityWrench&amp;, gz::msgs::EntityWrench&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_ros__gz__interfaces_8hpp_1abec84c39945440b7a1ec1896c0fa96b3.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const ros_gz_interfaces::msg::Contact&amp;, gz::msgs::Contact&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_ros__gz__interfaces_8hpp_1a46c5466e4ecfc7ca19974974561c6a91.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const ros_gz_interfaces::msg::Contacts&amp;, gz::msgs::Contacts&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_ros__gz__interfaces_8hpp_1a4211c7f2891416fb3248e7dd55715f81.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const ros_gz_interfaces::msg::Dataframe&amp;, gz::msgs::Dataframe&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_ros__gz__interfaces_8hpp_1a4afa302df866a24d6083edad7a02e00c.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const ros_gz_interfaces::msg::GuiCamera&amp;, gz::msgs::GUICamera&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_ros__gz__interfaces_8hpp_1a1e09401dce4a824ba2d3bf5d4d9aef38.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const ros_gz_interfaces::msg::Light&amp;, gz::msgs::Light&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_ros__gz__interfaces_8hpp_1afc04a9a0a6646ae6d1be094d5e2ea101.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const ros_gz_interfaces::msg::MaterialColor&amp;, gz::msgs::MaterialColor&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_ros__gz__interfaces_8hpp_1a7a436c22ef4a67e8b1f9bdd121a1bdc8.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const ros_gz_interfaces::msg::SensorNoise&amp;, gz::msgs::SensorNoise&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_ros__gz__interfaces_8hpp_1a1a31b8bfcfddffaf49a33c98b2026b2c.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const ros_gz_interfaces::msg::StringVec&amp;, gz::msgs::StringMsg_V&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_ros__gz__interfaces_8hpp_1ae2e16545208bc4946e84e1e826f04a3c.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const ros_gz_interfaces::msg::ParamVec&amp;, gz::msgs::Param&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_ros__gz__interfaces_8hpp_1a8742837590e03877f02be29b9abc8e75.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const ros_gz_interfaces::msg::ParamVec&amp;, gz::msgs::Param_V&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_ros__gz__interfaces_8hpp_1a02e058ff8cea786a75e6945baeca9091.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const ros_gz_interfaces::msg::TrackVisual&amp;, gz::msgs::TrackVisual&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_ros__gz__interfaces_8hpp_1ad094010d4509cf1b134d233c6e5f9648.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const ros_gz_interfaces::msg::VideoRecord&amp;, gz::msgs::VideoRecord&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_ros__gz__interfaces_8hpp_1a9d5471938f0476876f48c8cd08061986.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const ros_gz_interfaces::msg::WorldControl&amp;, gz::msgs::WorldControl&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_ros__gz__interfaces_8hpp_1a4ea736961df7bacf26f6bc13d000cbc9.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const ros_gz_interfaces::msg::WorldReset&amp;, gz::msgs::WorldReset&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_ros__gz__interfaces_8hpp_1a2c83ee6dc8a7b6c7927fbd7ffd92957b.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const ros_gz_interfaces::msg::WorldStatistics&amp;, gz::msgs::WorldStatistics&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_ros__gz__interfaces_8hpp_1a7281948b39d32ae26dfa857971f45a65.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const ros_gz_interfaces::msg::Float32Array&amp;, gz::msgs::Float_V&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_ros__gz__interfaces_8hpp_1a8e5446536e4d9664a202640bc8545c89.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const ros_gz_interfaces::msg::LogicalCameraImage&amp;, gz::msgs::LogicalCameraImage&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_ros__gz__interfaces_8hpp_1a609fd23c221b2b44f34021574064a173.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const ros_gz_interfaces::msg::LogPlaybackStatistics&amp;, gz::msgs::LogPlaybackStatistics&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_rosgraph__msgs_8hpp_1af0fca163e9b84541378031817252614b.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const rosgraph_msgs::msg::Clock&amp;, gz::msgs::Clock&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_sensor__msgs_8hpp_1add5c1ab23d6e64260c0eefd159c650e3.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const sensor_msgs::msg::Joy&amp;, gz::msgs::Joy&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_sensor__msgs_8hpp_1a663a67317685b7e375f9d190d6b5d120.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const sensor_msgs::msg::FluidPressure&amp;, gz::msgs::FluidPressure&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_sensor__msgs_8hpp_1a8c688fbd13c8b92c26cd673527c506e8.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const sensor_msgs::msg::Image&amp;, gz::msgs::Image&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_sensor__msgs_8hpp_1a01092fae1b26cfd7aa8ece1a02c97c0a.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const sensor_msgs::msg::CameraInfo&amp;, gz::msgs::CameraInfo&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_sensor__msgs_8hpp_1a59b477934db5a765c6e18937d1387419.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const sensor_msgs::msg::Imu&amp;, gz::msgs::IMU&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_sensor__msgs_8hpp_1a027fbe248218503dfb8b6ead28efddd8.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const sensor_msgs::msg::JointState&amp;, gz::msgs::Model&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_sensor__msgs_8hpp_1a9fbb1588ca40cbe1ecd3a0be7cc3f072.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const sensor_msgs::msg::LaserScan&amp;, gz::msgs::LaserScan&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_sensor__msgs_8hpp_1a7b5fb978106eb965a8900b2a65110cb8.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const sensor_msgs::msg::MagneticField&amp;, gz::msgs::Magnetometer&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_sensor__msgs_8hpp_1adaf30497b4dabfce10b42379845d2880.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const sensor_msgs::msg::NavSatFix&amp;, gz::msgs::NavSat&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_sensor__msgs_8hpp_1a1838d56fa44172a454827be2686bd37f.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const sensor_msgs::msg::PointCloud2&amp;, gz::msgs::PointCloudPacked&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_sensor__msgs_8hpp_1a71427090968c70fa4124ba457147bb46.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const sensor_msgs::msg::BatteryState&amp;, gz::msgs::BatteryState&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_std__msgs_8hpp_1a80c90872022cda80be1d80ea0c1ecf5f.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const std_msgs::msg::Bool&amp;, gz::msgs::Boolean&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_std__msgs_8hpp_1a2d96abc34ec3f0a75643f35c11dc0283.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const std_msgs::msg::ColorRGBA&amp;, gz::msgs::Color&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_std__msgs_8hpp_1aa6f196151bb1b1fd97e007dcb912d9cb.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const std_msgs::msg::Empty&amp;, gz::msgs::Empty&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_std__msgs_8hpp_1ab329b3d02b1db28a24cb6e73efaac47e.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const std_msgs::msg::UInt32&amp;, gz::msgs::UInt32&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_std__msgs_8hpp_1a71f45f4b6f7050dd6eb81dcc90fe921a.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const std_msgs::msg::Float32&amp;, gz::msgs::Float&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_std__msgs_8hpp_1a9ed1d1a25ec5b495bf2c4cda869b1086.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const std_msgs::msg::Float64&amp;, gz::msgs::Double&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_std__msgs_8hpp_1a193435f50be3bbf47ef424597d027557.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const std_msgs::msg::Header&amp;, gz::msgs::Header&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_std__msgs_8hpp_1a456ad9210abcb2c836b5f0860bc1eea3.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const std_msgs::msg::Int32&amp;, gz::msgs::Int32&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_std__msgs_8hpp_1a0bc16cbb3b6d5fa4815be0d2be0fa9ec.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const std_msgs::msg::String&amp;, gz::msgs::StringMsg&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_tf2__msgs_8hpp_1a40089cb8eb6ad166ab1816dab52570c8.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const tf2_msgs::msg::TFMessage&amp;, gz::msgs::Pose_V&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_trajectory__msgs_8hpp_1ac93e254730f21b4a0d6b63c79715e855.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const trajectory_msgs::msg::JointTrajectoryPoint&amp;, gz::msgs::JointTrajectoryPoint&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_trajectory__msgs_8hpp_1ae0e5304f51193d2e31aceb8e226d0001.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const trajectory_msgs::msg::JointTrajectory&amp;, gz::msgs::JointTrajectory&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_vision__msgs_8hpp_1aa32f20ffb0c7be422e53340c16e7c9dc.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const vision_msgs::msg::Detection2D&amp;, gz::msgs::AnnotatedAxisAligned2DBox&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_vision__msgs_8hpp_1ac83a9a70d54196b633992f28e5769634.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const vision_msgs::msg::Detection2DArray&amp;, gz::msgs::AnnotatedAxisAligned2DBox_V&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_vision__msgs_8hpp_1ab774e050eb2af8b36ab5c806d73fa690.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const vision_msgs::msg::Detection3D&amp;, gz::msgs::AnnotatedOriented3DBox&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_vision__msgs_8hpp_1a734304539b37236ff0ff2a3ea111b34f.html">Specialized Template Function ros_gz_bridge::convert_ros_to_gz(const vision_msgs::msg::Detection3DArray&amp;, gz::msgs::AnnotatedOriented3DBox_V&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_convert__decl_8hpp_1a98acbfd7b25187c786429edc919799b7.html">Template Function ros_gz_bridge::convert_ros_to_gz(const ROS_T&amp;, GZ_T&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_bridge__config_8hpp_1a2c0c8e0e6a7218f293f1299345265404.html">Function ros_gz_bridge::parseQoS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_bridge__config_8hpp_1a4a705e919d93c528beeb87a8fda20690.html">Function ros_gz_bridge::readFromYamlFile</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/function_bridge__config_8hpp_1ad757c1b3ef93e01f6e54b87494038197.html">Function ros_gz_bridge::readFromYamlString</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="generated/index.html#variables">Variables</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/variable_bridge__config_8hpp_1a5c96f9113ce782f6ddc781f1fc39865f.html">Variable ros_gz_bridge::kDefaultDirection</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/variable_bridge__config_8hpp_1ab4a1af23c48af03ab61740ef5de052fc.html">Variable ros_gz_bridge::kDefaultLazy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/variable_bridge__config_8hpp_1ac6652574ba8f4471d47ccca3f279b462.html">Variable ros_gz_bridge::kDefaultPublisherQueue</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/variable_bridge__config_8hpp_1a82e339d7124a5115d7b0c29f77982b09.html">Variable ros_gz_bridge::kDefaultSubscriberQueue</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="generated/index.html#directories">Directories</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/dir_include.html">Directory include</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dir_include_ros_gz_bridge.html">Directory ros_gz_bridge</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dir_include_ros_gz_bridge_convert.html">Directory convert</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="generated/index.html#files">Files</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/file_include_ros_gz_bridge_convert_actuator_msgs.hpp.html">File actuator_msgs.hpp</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/file_include_ros_gz_bridge_bridge_config.hpp.html">File bridge_config.hpp</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/file_include_ros_gz_bridge_convert_builtin_interfaces.hpp.html">File builtin_interfaces.hpp</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/file_include_ros_gz_bridge_convert.hpp.html">File convert.hpp</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/file_include_ros_gz_bridge_convert_decl.hpp.html">File convert_decl.hpp</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/file_include_ros_gz_bridge_convert_geometry_msgs.hpp.html">File geometry_msgs.hpp</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/file_include_ros_gz_bridge_convert_gps_msgs.hpp.html">File gps_msgs.hpp</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/file_include_ros_gz_bridge_convert_marine_acoustic_msgs.hpp.html">File marine_acoustic_msgs.hpp</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/file_include_ros_gz_bridge_convert_nav_msgs.hpp.html">File nav_msgs.hpp</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/file_include_ros_gz_bridge_convert_rcl_interfaces.hpp.html">File rcl_interfaces.hpp</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/file_include_ros_gz_bridge_ros_gz_bridge.hpp.html">File ros_gz_bridge.hpp</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/file_include_ros_gz_bridge_convert_ros_gz_interfaces.hpp.html">File ros_gz_interfaces.hpp</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/file_include_ros_gz_bridge_convert_rosgraph_msgs.hpp.html">File rosgraph_msgs.hpp</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/file_include_ros_gz_bridge_convert_sensor_msgs.hpp.html">File sensor_msgs.hpp</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/file_include_ros_gz_bridge_convert_std_msgs.hpp.html">File std_msgs.hpp</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/file_include_ros_gz_bridge_convert_tf2_msgs.hpp.html">File tf2_msgs.hpp</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/file_include_ros_gz_bridge_convert_trajectory_msgs.hpp.html">File trajectory_msgs.hpp</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/file_include_ros_gz_bridge_convert_vision_msgs.hpp.html">File vision_msgs.hpp</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="__standards.html">Standard Documents</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="__README.html">README</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="__README.html#bridge-communication-between-ros-and-gazebo">Bridge communication between ROS and Gazebo</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="__README.html#example-1a-gazebo-transport-talker-and-ros-2-listener">Example 1a: Gazebo Transport talker and ROS 2 listener</a></li>
+<li class="toctree-l4"><a class="reference internal" href="__README.html#example-1b-ros-2-talker-and-gazebo-transport-listener">Example 1b: ROS 2 talker and Gazebo Transport listener</a></li>
+<li class="toctree-l4"><a class="reference internal" href="__README.html#example-2-run-the-bridge-and-exchange-images">Example 2: Run the bridge and exchange images</a></li>
+<li class="toctree-l4"><a class="reference internal" href="__README.html#example-3-static-bridge">Example 3: Static bridge</a></li>
+<li class="toctree-l4"><a class="reference internal" href="__README.html#example-4-service-bridge">Example 4: Service bridge</a></li>
+<li class="toctree-l4"><a class="reference internal" href="__README.html#example-5-configuring-the-bridge-via-yaml">Example 5: Configuring the Bridge via YAML</a></li>
+<li class="toctree-l4"><a class="reference internal" href="__README.html#example-6-configuring-the-bridge-via-xml-launch-file">Example 6: Configuring the Bridge via XML Launch file</a></li>
+<li class="toctree-l4"><a class="reference internal" href="__README.html#example-7-using-ros-namespace-with-the-bridge">Example 7: Using ROS namespace with the Bridge</a></li>
+<li class="toctree-l4"><a class="reference internal" href="__README.html#api">API</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="__PACKAGE.html">PACKAGE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="__CHANGELOG.html">CHANGELOG</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="__CHANGELOG.html#changelog-for-package-ros-gz-bridge">Changelog for package ros_gz_bridge</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="__CHANGELOG.html#id1">1.0.22 (2026-03-26)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="__CHANGELOG.html#id5">1.0.21 (2026-02-24)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="__CHANGELOG.html#id10">1.0.20 (2026-02-04)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="__CHANGELOG.html#id17">1.0.19 (2026-01-20)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="__CHANGELOG.html#id18">1.0.18 (2025-11-21)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="__CHANGELOG.html#id19">1.0.17 (2025-07-16)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="__CHANGELOG.html#id21">1.0.16 (2025-07-02)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="__CHANGELOG.html#id23">1.0.15 (2025-06-12)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="__CHANGELOG.html#id26">1.0.14 (2025-05-26)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="__CHANGELOG.html#id27">1.0.13 (2025-05-23)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="__CHANGELOG.html#id28">1.0.12 (2025-05-06)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="__CHANGELOG.html#id35">1.0.11 (2025-03-21)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="__CHANGELOG.html#id38">1.0.10 (2025-02-24)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="__CHANGELOG.html#id41">1.0.9 (2025-02-12)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="__CHANGELOG.html#id44">1.0.8 (2025-01-14)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="__CHANGELOG.html#id51">1.0.7 (2024-11-08)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="__CHANGELOG.html#id52">1.0.6 (2024-10-31)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="__CHANGELOG.html#id55">1.0.5 (2024-10-14)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="__CHANGELOG.html#id70">1.0.4 (2024-08-29)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="__CHANGELOG.html#id75">1.0.3 (2024-07-22)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="__CHANGELOG.html#id78">1.0.2 (2024-07-03)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="__CHANGELOG.html#id133">1.0.0 (2024-04-24)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="__CHANGELOG.html#id145">0.246.0 (2023-08-31)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="__CHANGELOG.html#id163">0.245.0 (2022-10-12)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="__CHANGELOG.html#id167">0.244.10 (2023-05-03)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="__CHANGELOG.html#id172">0.244.9 (2022-11-03)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="__CHANGELOG.html#id173">0.244.8 (2022-10-28)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="__CHANGELOG.html#id174">0.244.7 (2022-10-12)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="__CHANGELOG.html#id180">0.244.6 (2022-09-14)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="__CHANGELOG.html#id181">0.244.5 (2022-09-12)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="__CHANGELOG.html#id186">0.244.3 (2022-05-19)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="__CHANGELOG.html#id191">0.244.2 (2022-04-25)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="__CHANGELOG.html#id202">0.244.1 (2022-01-04)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="__CHANGELOG.html#id204">0.244.0 (2021-12-30)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="__CHANGELOG.html#id214">0.233.2 (2021-07-20)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="__CHANGELOG.html#id216">0.233.1 (2021-04-16)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="__CHANGELOG.html#id228">0.221.1 (2020-08-19)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="__CHANGELOG.html#id232">0.221.0 (2020-07-23)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="__CHANGELOG.html#id245">0.7.0 (2019-08-15)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="__CHANGELOG.html#id248">0.6.3 (2019-08-04)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="__CHANGELOG.html#id249">0.6.2 (2019-08-04)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="__CHANGELOG.html#id250">0.6.1 (2019-08-04)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="__CHANGELOG.html#id251">0.6.0 (2019-08-02)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="__CHANGELOG.html#id262">0.4.0 (2019-07-16)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="__CHANGELOG.html#id263">0.3.1 (2019-07-01)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="__CHANGELOG.html#id264">0.3.0 (2019-06-28)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="__CHANGELOG.html#id271">0.2.2 (2019-05-20)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="__CHANGELOG.html#id272">0.2.1 (2019-05-11)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="__CHANGELOG.html#id273">0.2.0 (2019-05-09)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="__CHANGELOG.html#id274">0.1.0 (2019-03-20)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="__ros_package_dependencies.html">ROS Package Dependencies</a><ul>
+<li class="toctree-l2"><a class="reference external" href="https://docs.ros.org/en/jazzy/p/actuator_msgs/">actuator_msgs</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://docs.ros.org/en/jazzy/p/geometry_msgs/">geometry_msgs</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://docs.ros.org/en/jazzy/p/gps_msgs/">gps_msgs</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://docs.ros.org/en/jazzy/p/launch/">launch</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://docs.ros.org/en/jazzy/p/launch_ros/">launch_ros</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://docs.ros.org/en/jazzy/p/marine_acoustic_msgs/">marine_acoustic_msgs</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://docs.ros.org/en/jazzy/p/nav_msgs/">nav_msgs</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://docs.ros.org/en/jazzy/p/rclcpp/">rclcpp</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://docs.ros.org/en/jazzy/p/rclcpp_components/">rclcpp_components</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://docs.ros.org/en/jazzy/p/ros_gz_interfaces/">ros_gz_interfaces</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://docs.ros.org/en/jazzy/p/rosgraph_msgs/">rosgraph_msgs</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://docs.ros.org/en/jazzy/p/sensor_msgs/">sensor_msgs</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://docs.ros.org/en/jazzy/p/std_msgs/">std_msgs</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://docs.ros.org/en/jazzy/p/tf2_msgs/">tf2_msgs</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://docs.ros.org/en/jazzy/p/trajectory_msgs/">trajectory_msgs</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://docs.ros.org/en/jazzy/p/vision_msgs/">vision_msgs</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://docs.ros.org/en/jazzy/p/yaml_cpp_vendor/">yaml_cpp_vendor</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://docs.ros.org/en/jazzy/p/gz_msgs_vendor/">gz_msgs_vendor</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://docs.ros.org/en/jazzy/p/gz_transport_vendor/">gz_transport_vendor</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="genindex.html">Index</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">ros_gz_bridge: Jazzy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">ros_gz_bridge</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="ros-gz-bridge">
+<h1>ros_gz_bridge<a class="headerlink" href="#ros-gz-bridge" title="Link to this heading"></a></h1>
+<p>Bridge communication between ROS and Gazebo Transport</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="__links.html">Links</a><ul>
+<li class="toctree-l2"><a class="reference external" href="https://index.ros.org/p/ros_gz_bridge">Rosindex</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://github.com/gazebosim/ros_gz.git">Repository</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Python API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ros_gz_bridge.html">ros_gz_bridge package</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="generated/index.html">C++ API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="generated/index.html#class-hierarchy">Class Hierarchy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/index.html#file-hierarchy">File Hierarchy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/index.html#full-c-api">Full C++ API</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="__standards.html">Standard Documents</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="__README.html">README</a></li>
+<li class="toctree-l2"><a class="reference internal" href="__PACKAGE.html">PACKAGE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="__CHANGELOG.html">CHANGELOG</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="__ros_package_dependencies.html">ROS Package Dependencies</a><ul>
+<li class="toctree-l2"><a class="reference external" href="https://docs.ros.org/en/jazzy/p/actuator_msgs/">actuator_msgs</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://docs.ros.org/en/jazzy/p/geometry_msgs/">geometry_msgs</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://docs.ros.org/en/jazzy/p/gps_msgs/">gps_msgs</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://docs.ros.org/en/jazzy/p/launch/">launch</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://docs.ros.org/en/jazzy/p/launch_ros/">launch_ros</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://docs.ros.org/en/jazzy/p/marine_acoustic_msgs/">marine_acoustic_msgs</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://docs.ros.org/en/jazzy/p/nav_msgs/">nav_msgs</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://docs.ros.org/en/jazzy/p/rclcpp/">rclcpp</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://docs.ros.org/en/jazzy/p/rclcpp_components/">rclcpp_components</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://docs.ros.org/en/jazzy/p/ros_gz_interfaces/">ros_gz_interfaces</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://docs.ros.org/en/jazzy/p/rosgraph_msgs/">rosgraph_msgs</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://docs.ros.org/en/jazzy/p/sensor_msgs/">sensor_msgs</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://docs.ros.org/en/jazzy/p/std_msgs/">std_msgs</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://docs.ros.org/en/jazzy/p/tf2_msgs/">tf2_msgs</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://docs.ros.org/en/jazzy/p/trajectory_msgs/">trajectory_msgs</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://docs.ros.org/en/jazzy/p/vision_msgs/">vision_msgs</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://docs.ros.org/en/jazzy/p/yaml_cpp_vendor/">yaml_cpp_vendor</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://docs.ros.org/en/jazzy/p/gz_msgs_vendor/">gz_msgs_vendor</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://docs.ros.org/en/jazzy/p/gz_transport_vendor/">gz_transport_vendor</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="readme">
+<h1>README<a class="headerlink" href="#readme" title="Link to this heading"></a></h1>
+<section id="bridge-communication-between-ros-and-gazebo">
+<h2>Bridge communication between ROS and Gazebo<a class="headerlink" href="#bridge-communication-between-ros-and-gazebo" title="Link to this heading"></a></h2>
+<p>This package provides a network bridge which enables the exchange of messages
+between ROS and Gazebo Transport.</p>
+<p>The following message types can be bridged for topics:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>ROS type</p></th>
+<th class="head text-center"><p>Gazebo Transport Type</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>actuator_msgs/msg/Actuators</p></td>
+<td class="text-center"><p>gz.msgs.Actuators</p></td>
+</tr>
+<tr class="row-odd"><td><p>builtin_interfaces/msg/Time</p></td>
+<td class="text-center"><p>gz.msgs.Time</p></td>
+</tr>
+<tr class="row-even"><td><p>geometry_msgs/msg/Point</p></td>
+<td class="text-center"><p>gz.msgs.Vector3d</p></td>
+</tr>
+<tr class="row-odd"><td><p>geometry_msgs/msg/Pose</p></td>
+<td class="text-center"><p>gz.msgs.Pose</p></td>
+</tr>
+<tr class="row-even"><td><p>geometry_msgs/msg/PoseArray</p></td>
+<td class="text-center"><p>gz.msgs.Pose_V</p></td>
+</tr>
+<tr class="row-odd"><td><p>geometry_msgs/msg/PoseStamped</p></td>
+<td class="text-center"><p>gz.msgs.Pose</p></td>
+</tr>
+<tr class="row-even"><td><p>geometry_msgs/msg/PoseWithCovariance</p></td>
+<td class="text-center"><p>gz.msgs.PoseWithCovariance</p></td>
+</tr>
+<tr class="row-odd"><td><p>geometry_msgs/msg/PoseWithCovarianceStamped</p></td>
+<td class="text-center"><p>gz.msgs.PoseWithCovariance</p></td>
+</tr>
+<tr class="row-even"><td><p>geometry_msgs/msg/Quaternion</p></td>
+<td class="text-center"><p>gz.msgs.Quaternion</p></td>
+</tr>
+<tr class="row-odd"><td><p>geometry_msgs/msg/Transform</p></td>
+<td class="text-center"><p>gz.msgs.Pose</p></td>
+</tr>
+<tr class="row-even"><td><p>geometry_msgs/msg/TransformStamped</p></td>
+<td class="text-center"><p>gz.msgs.Pose</p></td>
+</tr>
+<tr class="row-odd"><td><p>geometry_msgs/msg/Twist</p></td>
+<td class="text-center"><p>gz.msgs.Twist</p></td>
+</tr>
+<tr class="row-even"><td><p>geometry_msgs/msg/TwistStamped</p></td>
+<td class="text-center"><p>gz.msgs.Twist</p></td>
+</tr>
+<tr class="row-odd"><td><p>geometry_msgs/msg/TwistWithCovariance</p></td>
+<td class="text-center"><p>gz.msgs.TwistWithCovariance</p></td>
+</tr>
+<tr class="row-even"><td><p>geometry_msgs/msg/TwistWithCovarianceStamped</p></td>
+<td class="text-center"><p>gz.msgs.TwistWithCovariance</p></td>
+</tr>
+<tr class="row-odd"><td><p>geometry_msgs/msg/Vector3</p></td>
+<td class="text-center"><p>gz.msgs.Vector3d</p></td>
+</tr>
+<tr class="row-even"><td><p>geometry_msgs/msg/Wrench</p></td>
+<td class="text-center"><p>gz.msgs.Wrench</p></td>
+</tr>
+<tr class="row-odd"><td><p>geometry_msgs/msg/WrenchStamped</p></td>
+<td class="text-center"><p>gz.msgs.Wrench</p></td>
+</tr>
+<tr class="row-even"><td><p>gps_msgs/msg/GPSFix</p></td>
+<td class="text-center"><p>gz.msgs.NavSat</p></td>
+</tr>
+<tr class="row-odd"><td><p>marine_acoustic_msgs/msg/Dvl</p></td>
+<td class="text-center"><p>gz.msgs.DVLVelocityTracking</p></td>
+</tr>
+<tr class="row-even"><td><p>nav_msgs/msg/Odometry</p></td>
+<td class="text-center"><p>gz.msgs.Odometry</p></td>
+</tr>
+<tr class="row-odd"><td><p>nav_msgs/msg/Odometry</p></td>
+<td class="text-center"><p>gz.msgs.OdometryWithCovariance</p></td>
+</tr>
+<tr class="row-even"><td><p>rcl_interfaces/msg/ParameterValue</p></td>
+<td class="text-center"><p>gz.msgs.Any</p></td>
+</tr>
+<tr class="row-odd"><td><p>ros_gz_interfaces/msg/Altimeter</p></td>
+<td class="text-center"><p>gz.msgs.Altimeter</p></td>
+</tr>
+<tr class="row-even"><td><p>ros_gz_interfaces/msg/Contact</p></td>
+<td class="text-center"><p>gz.msgs.Contact</p></td>
+</tr>
+<tr class="row-odd"><td><p>ros_gz_interfaces/msg/Contacts</p></td>
+<td class="text-center"><p>gz.msgs.Contacts</p></td>
+</tr>
+<tr class="row-even"><td><p>ros_gz_interfaces/msg/Dataframe</p></td>
+<td class="text-center"><p>gz.msgs.Dataframe</p></td>
+</tr>
+<tr class="row-odd"><td><p>ros_gz_interfaces/msg/Entity</p></td>
+<td class="text-center"><p>gz.msgs.Entity</p></td>
+</tr>
+<tr class="row-even"><td><p>ros_gz_interfaces/msg/EntityWrench</p></td>
+<td class="text-center"><p>gz.msgs.EntityWrench</p></td>
+</tr>
+<tr class="row-odd"><td><p>ros_gz_interfaces/msg/Float32Array</p></td>
+<td class="text-center"><p>gz.msgs.Float_V</p></td>
+</tr>
+<tr class="row-even"><td><p>ros_gz_interfaces/msg/GuiCamera</p></td>
+<td class="text-center"><p>gz.msgs.GUICamera</p></td>
+</tr>
+<tr class="row-odd"><td><p>ros_gz_interfaces/msg/JointWrench</p></td>
+<td class="text-center"><p>gz.msgs.JointWrench</p></td>
+</tr>
+<tr class="row-even"><td><p>ros_gz_interfaces/msg/Light</p></td>
+<td class="text-center"><p>gz.msgs.Light</p></td>
+</tr>
+<tr class="row-odd"><td><p>ros_gz_interfaces/msg/LogicalCameraImage</p></td>
+<td class="text-center"><p>gz.msgs.LogicalCameraImage</p></td>
+</tr>
+<tr class="row-even"><td><p>ros_gz_interfaces/msg/LogPlaybackStatistics</p></td>
+<td class="text-center"><p>gz.msgs.LogPlaybackStatistics</p></td>
+</tr>
+<tr class="row-odd"><td><p>ros_gz_interfaces/msg/ParamVec</p></td>
+<td class="text-center"><p>gz.msgs.Param</p></td>
+</tr>
+<tr class="row-even"><td><p>ros_gz_interfaces/msg/ParamVec</p></td>
+<td class="text-center"><p>gz.msgs.Param_V</p></td>
+</tr>
+<tr class="row-odd"><td><p>ros_gz_interfaces/msg/SensorNoise</p></td>
+<td class="text-center"><p>gz.msgs.SensorNoise</p></td>
+</tr>
+<tr class="row-even"><td><p>ros_gz_interfaces/msg/StringVec</p></td>
+<td class="text-center"><p>gz.msgs.StringMsg_V</p></td>
+</tr>
+<tr class="row-odd"><td><p>ros_gz_interfaces/msg/TrackVisual</p></td>
+<td class="text-center"><p>gz.msgs.TrackVisual</p></td>
+</tr>
+<tr class="row-even"><td><p>ros_gz_interfaces/msg/VideoRecord</p></td>
+<td class="text-center"><p>gz.msgs.VideoRecord</p></td>
+</tr>
+<tr class="row-odd"><td><p>ros_gz_interfaces/msg/WorldStatistics</p></td>
+<td class="text-center"><p>gz.msgs.WorldStatistics</p></td>
+</tr>
+<tr class="row-even"><td><p>rosgraph_msgs/msg/Clock</p></td>
+<td class="text-center"><p>gz.msgs.Clock</p></td>
+</tr>
+<tr class="row-odd"><td><p>sensor_msgs/msg/BatteryState</p></td>
+<td class="text-center"><p>gz.msgs.BatteryState</p></td>
+</tr>
+<tr class="row-even"><td><p>sensor_msgs/msg/CameraInfo</p></td>
+<td class="text-center"><p>gz.msgs.CameraInfo</p></td>
+</tr>
+<tr class="row-odd"><td><p>sensor_msgs/msg/FluidPressure</p></td>
+<td class="text-center"><p>gz.msgs.FluidPressure</p></td>
+</tr>
+<tr class="row-even"><td><p>sensor_msgs/msg/Image</p></td>
+<td class="text-center"><p>gz.msgs.Image</p></td>
+</tr>
+<tr class="row-odd"><td><p>sensor_msgs/msg/Imu</p></td>
+<td class="text-center"><p>gz.msgs.IMU</p></td>
+</tr>
+<tr class="row-even"><td><p>sensor_msgs/msg/JointState</p></td>
+<td class="text-center"><p>gz.msgs.Model</p></td>
+</tr>
+<tr class="row-odd"><td><p>sensor_msgs/msg/Joy</p></td>
+<td class="text-center"><p>gz.msgs.Joy</p></td>
+</tr>
+<tr class="row-even"><td><p>sensor_msgs/msg/LaserScan</p></td>
+<td class="text-center"><p>gz.msgs.LaserScan</p></td>
+</tr>
+<tr class="row-odd"><td><p>sensor_msgs/msg/MagneticField</p></td>
+<td class="text-center"><p>gz.msgs.Magnetometer</p></td>
+</tr>
+<tr class="row-even"><td><p>sensor_msgs/msg/NavSatFix</p></td>
+<td class="text-center"><p>gz.msgs.NavSat</p></td>
+</tr>
+<tr class="row-odd"><td><p>sensor_msgs/msg/PointCloud2</p></td>
+<td class="text-center"><p>gz.msgs.PointCloudPacked</p></td>
+</tr>
+<tr class="row-even"><td><p>sensor_msgs/msg/Range</p></td>
+<td class="text-center"><p>gz.msgs.LaserScan</p></td>
+</tr>
+<tr class="row-odd"><td><p>std_msgs/msg/Bool</p></td>
+<td class="text-center"><p>gz.msgs.Boolean</p></td>
+</tr>
+<tr class="row-even"><td><p>std_msgs/msg/ColorRGBA</p></td>
+<td class="text-center"><p>gz.msgs.Color</p></td>
+</tr>
+<tr class="row-odd"><td><p>std_msgs/msg/Empty</p></td>
+<td class="text-center"><p>gz.msgs.Empty</p></td>
+</tr>
+<tr class="row-even"><td><p>std_msgs/msg/Float32</p></td>
+<td class="text-center"><p>gz.msgs.Float</p></td>
+</tr>
+<tr class="row-odd"><td><p>std_msgs/msg/Float64</p></td>
+<td class="text-center"><p>gz.msgs.Double</p></td>
+</tr>
+<tr class="row-even"><td><p>std_msgs/msg/Header</p></td>
+<td class="text-center"><p>gz.msgs.Header</p></td>
+</tr>
+<tr class="row-odd"><td><p>std_msgs/msg/Int32</p></td>
+<td class="text-center"><p>gz.msgs.Int32</p></td>
+</tr>
+<tr class="row-even"><td><p>std_msgs/msg/String</p></td>
+<td class="text-center"><p>gz.msgs.StringMsg</p></td>
+</tr>
+<tr class="row-odd"><td><p>std_msgs/msg/UInt32</p></td>
+<td class="text-center"><p>gz.msgs.UInt32</p></td>
+</tr>
+<tr class="row-even"><td><p>tf2_msgs/msg/TFMessage</p></td>
+<td class="text-center"><p>gz.msgs.Pose_V</p></td>
+</tr>
+<tr class="row-odd"><td><p>trajectory_msgs/msg/JointTrajectory</p></td>
+<td class="text-center"><p>gz.msgs.JointTrajectory</p></td>
+</tr>
+<tr class="row-even"><td><p>vision_msgs/msg/Detection2D</p></td>
+<td class="text-center"><p>gz.msgs.AnnotatedAxisAligned2DBox</p></td>
+</tr>
+<tr class="row-odd"><td><p>vision_msgs/msg/Detection2DArray</p></td>
+<td class="text-center"><p>gz.msgs.AnnotatedAxisAligned2DBox_V</p></td>
+</tr>
+<tr class="row-even"><td><p>vision_msgs/msg/Detection3D</p></td>
+<td class="text-center"><p>gz::msgs::AnnotatedOriented3DBox</p></td>
+</tr>
+<tr class="row-odd"><td><p>vision_msgs/msg/Detection3DArray</p></td>
+<td class="text-center"><p>gz::msgs::AnnotatedOriented3DBox_V</p></td>
+</tr>
+</tbody>
+</table>
+<p>And the following for services:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>ROS type</p></th>
+<th class="head text-center"><p>Gazebo request</p></th>
+<th class="head"><p>Gazebo response</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>ros_gz_interfaces/srv/ControlWorld</p></td>
+<td class="text-center"><p>gz.msgs.WorldControl</p></td>
+<td><p>gz.msgs.Boolean</p></td>
+</tr>
+</tbody>
+</table>
+<p>Run <code class="docutils literal notranslate"><span class="pre">ros2</span> <span class="pre">run</span> <span class="pre">ros_gz_bridge</span> <span class="pre">parameter_bridge</span> <span class="pre">-h</span></code> for instructions.</p>
+<p><strong>NOTE</strong>: If during startup, gazebo detects that there is another publisher on <code class="docutils literal notranslate"><span class="pre">/clock</span></code>, it will only create the fully qualified <code class="docutils literal notranslate"><span class="pre">/world/&lt;worldname&gt;/clock</span> <span class="pre">topic</span></code>.
+Gazebo would be the only <code class="docutils literal notranslate"><span class="pre">/clock</span></code> publisher, the sole source of clock information.</p>
+<p>You should create an unidirectional <code class="docutils literal notranslate"><span class="pre">/clock</span></code> bridge:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ros2<span class="w"> </span>run<span class="w"> </span>ros_gz_bridge<span class="w"> </span>parameter_bridge<span class="w"> </span>/clock@rosgraph_msgs/msg/Clock<span class="o">[</span>gz.msgs.Clock
+</pre></div>
+</div>
+<p>An alternative set-up can be using the bridge with the <code class="docutils literal notranslate"><span class="pre">override_timestamps_with_wall_time</span></code> ros parameter set to <code class="docutils literal notranslate"><span class="pre">true</span></code> (default=<code class="docutils literal notranslate"><span class="pre">false</span></code>). In this set-up,
+all header timestamps of the outgoing messages will be stamped with the wall time. This can be useful when the simulator has to communicate with an external system that requires wall times.</p>
+<section id="example-1a-gazebo-transport-talker-and-ros-2-listener">
+<h3>Example 1a: Gazebo Transport talker and ROS 2 listener<a class="headerlink" href="#example-1a-gazebo-transport-talker-and-ros-2-listener" title="Link to this heading"></a></h3>
+<p>Start the parameter bridge which will watch the specified topics.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Shell A:</span>
+<span class="o">.</span> <span class="o">~/</span><span class="n">bridge_ws</span><span class="o">/</span><span class="n">install</span><span class="o">/</span><span class="n">setup</span><span class="o">.</span><span class="n">bash</span>
+<span class="n">ros2</span> <span class="n">run</span> <span class="n">ros_gz_bridge</span> <span class="n">parameter_bridge</span> <span class="o">/</span><span class="n">chatter</span><span class="nd">@std_msgs</span><span class="o">/</span><span class="n">msg</span><span class="o">/</span><span class="n">String</span><span class="nd">@gz</span><span class="o">.</span><span class="n">msgs</span><span class="o">.</span><span class="n">StringMsg</span>
+</pre></div>
+</div>
+<p>Now we start the ROS listener.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Shell B:</span>
+<span class="o">.</span> <span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">ros</span><span class="o">/</span><span class="n">rolling</span><span class="o">/</span><span class="n">setup</span><span class="o">.</span><span class="n">bash</span>
+<span class="n">ros2</span> <span class="n">topic</span> <span class="n">echo</span> <span class="o">/</span><span class="n">chatter</span>
+</pre></div>
+</div>
+<p>Now we start the Gazebo Transport talker.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Shell C:</span>
+<span class="n">gz</span> <span class="n">topic</span> <span class="o">-</span><span class="n">t</span> <span class="o">/</span><span class="n">chatter</span> <span class="o">-</span><span class="n">m</span> <span class="n">gz</span><span class="o">.</span><span class="n">msgs</span><span class="o">.</span><span class="n">StringMsg</span> <span class="o">-</span><span class="n">p</span> <span class="s1">&#39;data:&quot;Hello&quot;&#39;</span>
+</pre></div>
+</div>
+</section>
+<section id="example-1b-ros-2-talker-and-gazebo-transport-listener">
+<h3>Example 1b: ROS 2 talker and Gazebo Transport listener<a class="headerlink" href="#example-1b-ros-2-talker-and-gazebo-transport-listener" title="Link to this heading"></a></h3>
+<p>Start the parameter bridge which will watch the specified topics.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Shell A:</span>
+<span class="o">.</span> <span class="o">~/</span><span class="n">bridge_ws</span><span class="o">/</span><span class="n">install</span><span class="o">/</span><span class="n">setup</span><span class="o">.</span><span class="n">bash</span>
+<span class="n">ros2</span> <span class="n">run</span> <span class="n">ros_gz_bridge</span> <span class="n">parameter_bridge</span> <span class="o">/</span><span class="n">chatter</span><span class="nd">@std_msgs</span><span class="o">/</span><span class="n">msg</span><span class="o">/</span><span class="n">String</span><span class="nd">@gz</span><span class="o">.</span><span class="n">msgs</span><span class="o">.</span><span class="n">StringMsg</span>
+</pre></div>
+</div>
+<p>Now we start the Gazebo Transport listener.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Shell B:</span>
+<span class="n">gz</span> <span class="n">topic</span> <span class="o">-</span><span class="n">e</span> <span class="o">-</span><span class="n">t</span> <span class="o">/</span><span class="n">chatter</span>
+</pre></div>
+</div>
+<p>Now we start the ROS talker.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Shell C:</span>
+<span class="o">.</span> <span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">ros</span><span class="o">/</span><span class="n">rolling</span><span class="o">/</span><span class="n">setup</span><span class="o">.</span><span class="n">bash</span>
+<span class="n">ros2</span> <span class="n">topic</span> <span class="n">pub</span> <span class="o">/</span><span class="n">chatter</span> <span class="n">std_msgs</span><span class="o">/</span><span class="n">msg</span><span class="o">/</span><span class="n">String</span> <span class="s2">&quot;data: &#39;Hi&#39;&quot;</span> <span class="o">--</span><span class="n">once</span>
+</pre></div>
+</div>
+</section>
+<section id="example-2-run-the-bridge-and-exchange-images">
+<h3>Example 2: Run the bridge and exchange images<a class="headerlink" href="#example-2-run-the-bridge-and-exchange-images" title="Link to this heading"></a></h3>
+<p>In this example, we’re going to generate Gazebo Transport images using
+Gazebo Sim, that will be converted into ROS images, and visualized with
+<code class="docutils literal notranslate"><span class="pre">rqt_image_viewer</span></code>.</p>
+<p>First we start Gazebo Sim (don’t forget to hit play, or Gazebo Sim won’t generate any images).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Shell A:</span>
+<span class="n">gz</span> <span class="n">sim</span> <span class="n">sensors_demo</span><span class="o">.</span><span class="n">sdf</span>
+</pre></div>
+</div>
+<p>Let’s see the topic where camera images are published.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Shell B:</span>
+<span class="n">gz</span> <span class="n">topic</span> <span class="o">-</span><span class="n">l</span> <span class="o">|</span> <span class="n">grep</span> <span class="n">image</span>
+<span class="o">/</span><span class="n">rgbd_camera</span><span class="o">/</span><span class="n">depth_image</span>
+<span class="o">/</span><span class="n">rgbd_camera</span><span class="o">/</span><span class="n">image</span>
+</pre></div>
+</div>
+<p>Then we start the parameter bridge with the previous topic.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Shell B:</span>
+<span class="o">.</span> <span class="o">~/</span><span class="n">bridge_ws</span><span class="o">/</span><span class="n">install</span><span class="o">/</span><span class="n">setup</span><span class="o">.</span><span class="n">bash</span>
+<span class="n">ros2</span> <span class="n">run</span> <span class="n">ros_gz_bridge</span> <span class="n">parameter_bridge</span> <span class="o">/</span><span class="n">rgbd_camera</span><span class="o">/</span><span class="n">image</span><span class="nd">@sensor_msgs</span><span class="o">/</span><span class="n">msg</span><span class="o">/</span><span class="n">Image</span><span class="nd">@gz</span><span class="o">.</span><span class="n">msgs</span><span class="o">.</span><span class="n">Image</span>
+</pre></div>
+</div>
+<p>Now we start the ROS GUI:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Shell C:</span>
+<span class="o">.</span> <span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">ros</span><span class="o">/</span><span class="n">rolling</span><span class="o">/</span><span class="n">setup</span><span class="o">.</span><span class="n">bash</span>
+<span class="n">ros2</span> <span class="n">run</span> <span class="n">rqt_image_view</span> <span class="n">rqt_image_view</span> <span class="o">/</span><span class="n">rgbd_camera</span><span class="o">/</span><span class="n">image</span>
+</pre></div>
+</div>
+<p>You should see the current images in <code class="docutils literal notranslate"><span class="pre">rqt_image_view</span></code> which are coming from
+Gazebo (published as Gazebo Msgs over Gazebo Transport).</p>
+<p>The screenshot shows all the shell windows and their expected content
+(it was taken using ROS 2 Galactic and Gazebo Fortress):</p>
+<p><img alt="Gazebo Transport images and ROS rqt" src="images/bridge_image_exchange.png" /></p>
+<section id="gz-to-ros-frame-id-override">
+<h4>GZ to ROS frame_id override<a class="headerlink" href="#gz-to-ros-frame-id-override" title="Link to this heading"></a></h4>
+<p>The bridge has a parameter named <code class="docutils literal notranslate"><span class="pre">override_frame_id</span></code> that allows users to
+override the <code class="docutils literal notranslate"><span class="pre">frame_id</span></code> of messages when bridging topics.</p>
+<p>As an example, for sensors like cameras, it is commonly expected that ROS image
+data are in a z-forward optical frame, see
+<a class="reference external" href="https://www.ros.org/reps/rep-0103.html">REP-0103</a>.
+When bridging GZ to ROS <code class="docutils literal notranslate"><span class="pre">Image</span></code> and <code class="docutils literal notranslate"><span class="pre">CameraInfo</span></code> topics, users
+typically create a new optical frame with an x to z-forward transformation,
+e.g. by using a static transform publisher. Users can then use the
+<code class="docutils literal notranslate"><span class="pre">override_frame_id</span></code> parameter to override the <code class="docutils literal notranslate"><span class="pre">Image</span></code> or <code class="docutils literal notranslate"><span class="pre">CameraInfo</span></code> messages’
+<code class="docutils literal notranslate"><span class="pre">frame_id</span></code> field to point to the optical frame.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>.<span class="w"> </span>~/bridge_ws/install/setup.bash
+ros2<span class="w"> </span>run<span class="w"> </span>ros_gz_bridge<span class="w"> </span>parameter_bridge<span class="w"> </span>/rgbd_camera/image@sensor_msgs/msg/Image@gz.msgs.Image<span class="w"> </span>--ros-args<span class="w"> </span>-p<span class="w"> </span>override_frame_id:<span class="o">=</span>my_custom_optical_frame
+</pre></div>
+</div>
+</section>
+</section>
+<section id="example-3-static-bridge">
+<h3>Example 3: Static bridge<a class="headerlink" href="#example-3-static-bridge" title="Link to this heading"></a></h3>
+<p>In this example, we’re going to run an executable that starts a bidirectional
+bridge for a specific topic and message type. We’ll use the <code class="docutils literal notranslate"><span class="pre">static_bridge</span></code>
+executable that is installed with the bridge.</p>
+<p>The example’s code can be found under <code class="docutils literal notranslate"><span class="pre">ros_gz_bridge/src/static_bridge.cpp</span></code>.
+In the code, it’s possible to see how the bridge is hardcoded to bridge string
+messages published on the <code class="docutils literal notranslate"><span class="pre">/chatter</span></code> topic.</p>
+<p>Let’s give it a try, starting with Gazebo -&gt; ROS 2.</p>
+<p>On terminal A, start the bridge:</p>
+<p><code class="docutils literal notranslate"><span class="pre">ros2</span> <span class="pre">run</span> <span class="pre">ros_gz_bridge</span> <span class="pre">static_bridge</span></code></p>
+<p>On terminal B, we start a ROS 2 listener:</p>
+<p><code class="docutils literal notranslate"><span class="pre">ros2</span> <span class="pre">topic</span> <span class="pre">echo</span> <span class="pre">/chatter</span> <span class="pre">std_msgs/msg/String</span></code></p>
+<p>And terminal C, publish an Gazebo message:</p>
+<p><code class="docutils literal notranslate"><span class="pre">gz</span> <span class="pre">topic</span> <span class="pre">-t</span> <span class="pre">/chatter</span> <span class="pre">-m</span> <span class="pre">gz.msgs.StringMsg</span> <span class="pre">-p</span> <span class="pre">'data:&quot;Hello&quot;'</span></code></p>
+<p>At this point, you should see the ROS 2 listener echoing the message.</p>
+<p>Now let’s try the other way around, ROS 2 -&gt; Gazebo.</p>
+<p>On terminal D, start an Gazebo listener:</p>
+<p><code class="docutils literal notranslate"><span class="pre">gz</span> <span class="pre">topic</span> <span class="pre">-e</span> <span class="pre">-t</span> <span class="pre">/chatter</span></code></p>
+<p>And on terminal E, publish a ROS 2 message:</p>
+<p><code class="docutils literal notranslate"><span class="pre">ros2</span> <span class="pre">topic</span> <span class="pre">pub</span> <span class="pre">/chatter</span> <span class="pre">std_msgs/msg/String</span> <span class="pre">'data:</span> <span class="pre">&quot;Hello&quot;'</span> <span class="pre">-1</span></code></p>
+<p>You should see the Gazebo listener echoing the message.</p>
+</section>
+<section id="example-4-service-bridge">
+<h3>Example 4: Service bridge<a class="headerlink" href="#example-4-service-bridge" title="Link to this heading"></a></h3>
+<p>It’s possible to make ROS service requests into Gazebo. Let’s try unpausing the simulation.</p>
+<p>On terminal A, start the service bridge:</p>
+<p><code class="docutils literal notranslate"><span class="pre">ros2</span> <span class="pre">run</span> <span class="pre">ros_gz_bridge</span> <span class="pre">parameter_bridge</span> <span class="pre">/world/shapes/control&#64;ros_gz_interfaces/srv/ControlWorld</span></code></p>
+<p>On terminal B, start Gazebo, it will be paused by default:</p>
+<p><code class="docutils literal notranslate"><span class="pre">gz</span> <span class="pre">sim</span> <span class="pre">shapes.sdf</span></code></p>
+<p>On terminal C, make a ROS request to unpause simulation:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ros2</span> <span class="n">service</span> <span class="n">call</span> <span class="o">/</span><span class="n">world</span><span class="o">/&lt;</span><span class="n">world_name</span><span class="o">&gt;/</span><span class="n">control</span> <span class="n">ros_gz_interfaces</span><span class="o">/</span><span class="n">srv</span><span class="o">/</span><span class="n">ControlWorld</span> <span class="s2">&quot;{world_control: {pause: false}}&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="example-5-configuring-the-bridge-via-yaml">
+<h3>Example 5: Configuring the Bridge via YAML<a class="headerlink" href="#example-5-configuring-the-bridge-via-yaml" title="Link to this heading"></a></h3>
+<p>When configuring many topics, it is easier to use a file-based configuration in a markup
+language. In this case, the <code class="docutils literal notranslate"><span class="pre">ros_gz</span></code> bridge supports using a YAML file to configure the
+various parameters.</p>
+<p>The configuration file must be a YAML array of maps.
+An example configuration for 5 bridges is below, showing the various ways that a
+bridge may be specified:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="w"> </span><span class="c1"># Set just topic name, applies to both</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">topic_name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;chatter&quot;</span>
+<span class="w">  </span><span class="nt">ros_type_name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;std_msgs/msg/String&quot;</span>
+<span class="w">  </span><span class="nt">gz_type_name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;gz.msgs.StringMsg&quot;</span>
+
+<span class="c1"># Set just ROS topic name, applies to both</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">ros_topic_name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;chatter_ros&quot;</span>
+<span class="w">  </span><span class="nt">ros_type_name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;std_msgs/msg/String&quot;</span>
+<span class="w">  </span><span class="nt">gz_type_name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;gz.msgs.StringMsg&quot;</span>
+
+<span class="c1"># Set just GZ topic name, applies to both</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">gz_topic_name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;chatter_gz&quot;</span>
+<span class="w">  </span><span class="nt">ros_type_name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;std_msgs/msg/String&quot;</span>
+<span class="w">  </span><span class="nt">gz_type_name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;gz.msgs.StringMsg&quot;</span>
+
+<span class="c1"># Set each topic name explicitly</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">ros_topic_name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;chatter_both_ros&quot;</span>
+<span class="w">  </span><span class="nt">gz_topic_name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;chatter_both_gz&quot;</span>
+<span class="w">  </span><span class="nt">ros_type_name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;std_msgs/msg/String&quot;</span>
+<span class="w">  </span><span class="nt">gz_type_name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;gz.msgs.StringMsg&quot;</span>
+
+<span class="c1"># Full set of configurations</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">ros_topic_name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;ros_chatter&quot;</span>
+<span class="w">  </span><span class="nt">gz_topic_name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;gz_chatter&quot;</span>
+<span class="w">  </span><span class="nt">ros_type_name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;std_msgs/msg/String&quot;</span>
+<span class="w">  </span><span class="nt">gz_type_name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;gz.msgs.StringMsg&quot;</span>
+<span class="w">  </span><span class="nt">subscriber_queue</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span><span class="w">       </span><span class="c1"># Default 10 if qos_profile is empty, otherwise not set by default</span>
+<span class="w">  </span><span class="nt">publisher_queue</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6</span><span class="w">        </span><span class="c1"># Default 10 if qos_profile is empty, otherwise not set by default</span>
+<span class="w">  </span><span class="nt">lazy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w">                </span><span class="c1"># Default &quot;false&quot;</span>
+<span class="w">  </span><span class="nt">direction</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">BIDIRECTIONAL</span><span class="w">  </span><span class="c1"># Default &quot;BIDIRECTIONAL&quot; - Bridge both directions</span>
+<span class="w">                            </span><span class="c1"># &quot;GZ_TO_ROS&quot; - Bridge Gz topic to ROS</span>
+<span class="w">                            </span><span class="c1"># &quot;ROS_TO_GZ&quot; - Bridge ROS topic to Gz</span>
+<span class="w">  </span><span class="nt">qos_profile</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SENSOR_DATA</span><span class="w">  </span><span class="c1"># Default is a default-constructed QoS with appropriate queue size</span>
+<span class="w">  </span><span class="nt">frame_id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;map&quot;</span><span class="w">           </span><span class="c1"># Optional: Override the frame_id in the ROS message header</span>
+</pre></div>
+</div>
+<p>To run the bridge node with the above configuration:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ros2<span class="w"> </span>run<span class="w"> </span>ros_gz_bridge<span class="w"> </span>parameter_bridge<span class="w"> </span>--ros-args<span class="w"> </span>-p<span class="w"> </span>config_file:<span class="o">=</span><span class="nv">$WORKSPACE</span>/ros_gz/ros_gz_bridge/test/config/full.yaml
+</pre></div>
+</div>
+</section>
+<section id="example-6-configuring-the-bridge-via-xml-launch-file">
+<h3>Example 6: Configuring the Bridge via XML Launch file<a class="headerlink" href="#example-6-configuring-the-bridge-via-xml-launch-file" title="Link to this heading"></a></h3>
+<p>Another way how many topics can be bridged easily is using the XML launch file tags.</p>
+<p>Use tag <code class="docutils literal notranslate"><span class="pre">&lt;ros_gz_bridge&gt;</span></code> and add <code class="docutils literal notranslate"><span class="pre">&lt;topic&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">&lt;service&gt;</span></code> subelements, one for each bridged topic/service:</p>
+<div class="highlight-XML notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;launch&gt;</span>
+<span class="w">  </span><span class="nt">&lt;arg</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;world_name&quot;</span><span class="w"> </span><span class="na">default=</span><span class="s">&quot;empty&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="w">  </span><span class="nt">&lt;arg</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;robot_name&quot;</span><span class="w"> </span><span class="na">default=</span><span class="s">&quot;robot&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="w">  </span><span class="nt">&lt;ros_gz_bridge</span><span class="w"> </span><span class="na">bridge_name=</span><span class="s">&quot;clock_bridge&quot;</span><span class="nt">&gt;</span>
+<span class="w">    </span><span class="nt">&lt;topic</span><span class="w"> </span><span class="na">ros_topic_name=</span><span class="s">&quot;/clock&quot;</span><span class="w"> </span><span class="na">gz_topic_name=</span><span class="s">&quot;/clock&quot;</span>
+<span class="w">           </span><span class="na">ros_type_name=</span><span class="s">&quot;rosgraph_msgs/msg/Clock&quot;</span><span class="w"> </span><span class="na">gz_type_name=</span><span class="s">&quot;gz.msgs.Clock&quot;</span>
+<span class="w">           </span><span class="na">lazy=</span><span class="s">&quot;False&quot;</span><span class="w"> </span><span class="na">direction=</span><span class="s">&quot;GZ_TO_ROS&quot;</span><span class="w"> </span><span class="na">qos_profile=</span><span class="s">&quot;CLOCK&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="w">  </span><span class="nt">&lt;/ros_gz_bridge&gt;</span>
+<span class="w">  </span><span class="nt">&lt;ros_gz_bridge</span><span class="w"> </span><span class="na">bridge_name=</span><span class="s">&quot;test_bridge&quot;</span><span class="nt">&gt;</span>
+<span class="w">    </span><span class="nt">&lt;topic</span><span class="w"> </span><span class="na">ros_topic_name=</span><span class="s">&quot;/camera/image&quot;</span><span class="w"> </span><span class="na">gz_topic_name=</span><span class="s">&quot;/world/$(var world_name)/model/$(var robot_name)/camera/sensor/image&quot;</span>
+<span class="w">           </span><span class="na">ros_type_name=</span><span class="s">&quot;sensor_msgs/msg/Image&quot;</span><span class="w"> </span><span class="na">gz_type_name=</span><span class="s">&quot;gz.msgs.Image&quot;</span>
+<span class="w">           </span><span class="na">lazy=</span><span class="s">&quot;True&quot;</span><span class="w"> </span><span class="na">direction=</span><span class="s">&quot;GZ_TO_ROS&quot;</span><span class="w"> </span><span class="na">frame_id=</span><span class="s">&quot;camera_optical_frame&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="w">    </span><span class="nt">&lt;service</span><span class="w"> </span><span class="na">service_name=</span><span class="s">&quot;/world/$(var world_name)/control&quot;</span>
+<span class="w">             </span><span class="na">ros_type_name=</span><span class="s">&quot;ros_gz_interfaces/srv/ControlWorld&quot;</span>
+<span class="w">             </span><span class="na">gz_req_type_name=</span><span class="s">&quot;gz.msgs.WorldControl&quot;</span><span class="w"> </span><span class="na">gz_rep_type_name=</span><span class="s">&quot;gz.msgs.Boolean&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="w">  </span><span class="nt">&lt;/ros_gz_bridge&gt;</span>
+<span class="nt">&lt;/launch&gt;</span>
+</pre></div>
+</div>
+<p>This approach has the benefit over YAML config files that world and robot names can be easily parametrized
+as shown in this example. YAML config does not support any substitutions.</p>
+<p>You can even combine this approach and YAML config. Just add config file to <code class="docutils literal notranslate"><span class="pre">&lt;ros_gz_bridge</span> <span class="pre">config_file=&quot;PATH/to/yaml&quot;&gt;</span></code>.
+Bridges from both the YAML file and the XML launch tags will be added.</p>
+</section>
+<section id="example-7-using-ros-namespace-with-the-bridge">
+<h3>Example 7: Using ROS namespace with the Bridge<a class="headerlink" href="#example-7-using-ros-namespace-with-the-bridge" title="Link to this heading"></a></h3>
+<p>When spawning multiple robots inside the same ROS environment, it is convenient to use namespaces to avoid overlapping topic names.
+There are three main types of namespaces: relative, global (<code class="docutils literal notranslate"><span class="pre">/</span></code>) and private (<code class="docutils literal notranslate"><span class="pre">~/</span></code>). For more information, refer to ROS documentation.
+Namespaces are applied to Gazebo topic both when specified as <code class="docutils literal notranslate"><span class="pre">topic_name</span></code> as well as <code class="docutils literal notranslate"><span class="pre">gz_topic_name</span></code>.</p>
+<p>By default, the Bridge will not apply ROS namespace on the Gazebo topics. To enable this feature, use parameter <code class="docutils literal notranslate"><span class="pre">expand_gz_topic_names</span></code>.
+Let’s test our topic with namespace:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Shell A:</span>
+.<span class="w"> </span>~/bridge_ws/install/setup.bash
+ros2<span class="w"> </span>run<span class="w"> </span>ros_gz_bridge<span class="w"> </span>parameter_bridge<span class="w"> </span>chatter@std_msgs/msg/String@ignition.msgs.StringMsg<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--ros-args<span class="w"> </span>-p<span class="w"> </span>expand_gz_topic_names:<span class="o">=</span><span class="nb">true</span><span class="w"> </span>-r<span class="w"> </span>__ns:<span class="o">=</span>/demo
+</pre></div>
+</div>
+<p>Now we start the Gazebo Transport listener.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Shell B:</span>
+gz<span class="w"> </span>topic<span class="w"> </span>-e<span class="w"> </span>-t<span class="w"> </span>/demo/chatter
+</pre></div>
+</div>
+<p>Now we start the ROS talker.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Shell C:</span>
+.<span class="w"> </span>/opt/ros/rolling/setup.bash
+ros2<span class="w"> </span>topic<span class="w"> </span>pub<span class="w"> </span>/demo/chatter<span class="w"> </span>std_msgs/msg/String<span class="w"> </span><span class="s2">&quot;data: &#39;Hi from inside of a namespace&#39;&quot;</span><span class="w"> </span>--once
+</pre></div>
+</div>
+<p>By changing <code class="docutils literal notranslate"><span class="pre">chatter</span></code> to <code class="docutils literal notranslate"><span class="pre">/chatter</span></code> or <code class="docutils literal notranslate"><span class="pre">~/chatter</span></code> you can obtain different results.</p>
+</section>
+<section id="api">
+<h3>API<a class="headerlink" href="#api" title="Link to this heading"></a></h3>
+<p>ROS 2 Parameters:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">subscription_heartbeat</span></code></p>
+<ul>
+<li><p>type: double</p></li>
+<li><p>default: 1000</p></li>
+<li><p>description: Period (ms) at which the node checks for new subscribers for
+lazy bridges.</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">config_file</span></code></p>
+<ul>
+<li><p>type: string</p></li>
+<li><p>default: “”</p></li>
+<li><p>description: YAML file to be loaded as the bridge configuration</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">expand_gz_topic_names</span></code></p>
+<ul>
+<li><p>type: bool</p></li>
+<li><p>default: false</p></li>
+<li><p>description: Enable or disable ROS namespace applied on GZ topics.</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">override_timestamps_with_wall_time</span></code></p>
+<ul>
+<li><p>type: bool</p></li>
+<li><p>default: false</p></li>
+<li><p>direction: GZ to ROS</p></li>
+<li><p>description: Override the header.stamp field of outgoing messages with
+wall time.</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">override_frame_id</span></code></p>
+<ul>
+<li><p>type: string</p></li>
+<li><p>default: “”</p></li>
+<li><p>direction: GZ to ROS</p></li>
+<li><p>description: Override the <code class="docutils literal notranslate"><span class="pre">header.frame_id</span></code> field with a new string value.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+<div class="toctree-wrapper compound">
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="__links.html" class="btn btn-neutral float-right" title="Links" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright The &lt;ros_gz_bridge&gt; Contributors. License: Apache 2.0.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

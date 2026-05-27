@@ -1,0 +1,21 @@
+{
+  "generated_at": "2026-05-27T17:23:17+08:00",
+  "workspace_path": "/home/clcwork/UAV_capture/px4_ros2_ws",
+  "task_range": "010-022",
+  "counts": { "completed": 1, "pending": 12, "failed": 0 },
+  "tasks": [
+    {"id": "010", "title": "Download Stage 2 Materials", "status": "completed", "log": "codex-logs/010-download-stage2-materials.log"},
+    {"id": "011", "title": "Audit Stage 2 Environment", "status": "pending", "log": null},
+    {"id": "012", "title": "Create Aerial Manip Packages", "status": "pending", "log": null},
+    {"id": "013", "title": "Add x500_arm_2dof Model", "status": "pending", "log": null},
+    {"id": "014", "title": "Add Arm ros2_control Loop", "status": "pending", "log": null},
+    {"id": "015", "title": "Add arm_control_bridge", "status": "pending", "log": null},
+    {"id": "016", "title": "State Aggregator and TF", "status": "pending", "log": null},
+    {"id": "017", "title": "Front Camera and ros_gz_bridge", "status": "pending", "log": null},
+    {"id": "018", "title": "Tag Target Pose Estimation", "status": "pending", "log": null},
+    {"id": "019", "title": "UAV-Arm Approach Coordinator", "status": "pending", "log": null},
+    {"id": "020", "title": "Episode Recorder and LeRobot Export", "status": "pending", "log": null},
+    {"id": "021", "title": "LeRobot Training and Policy Bridge", "status": "pending", "log": null},
+    {"id": "022", "title": "Air Reach Demo and Regression", "status": "pending", "log": null}
+  ]
+}

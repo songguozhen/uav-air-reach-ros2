@@ -1,0 +1,46 @@
+# Stage 2 material download
+START 2026-05-27T17:12:35+08:00
+DOWNLOAD https://docs.px4.io/main/en/ros2/user_guide -> /home/clcwork/UAV_capture/px4_ros2_ws/references/stage2/official/px4_ros2_user_guide.html
+DOWNLOAD https://docs.px4.io/main/en/middleware/uxrce_dds.html -> /home/clcwork/UAV_capture/px4_ros2_ws/references/stage2/official/px4_uxrce_dds.html
+DOWNLOAD https://docs.px4.io/main/en/flight_modes/offboard -> /home/clcwork/UAV_capture/px4_ros2_ws/references/stage2/official/px4_offboard_mode.html
+DOWNLOAD https://gazebosim.org/docs/harmonic/ros2_overview/ -> /home/clcwork/UAV_capture/px4_ros2_ws/references/stage2/official/gazebo_harmonic_ros2_overview.html
+DOWNLOAD https://gazebosim.org/docs/harmonic/sensors/ -> /home/clcwork/UAV_capture/px4_ros2_ws/references/stage2/official/gazebo_harmonic_sensors.html
+DOWNLOAD https://gazebosim.org/libs/sdformat -> /home/clcwork/UAV_capture/px4_ros2_ws/references/stage2/official/sdformat.html
+DOWNLOAD https://docs.ros.org/en/ros2_packages/jazzy/api/ros_gz_bridge/ -> /home/clcwork/UAV_capture/px4_ros2_ws/references/stage2/official/ros_gz_bridge_jazzy.html
+DOWNLOAD https://control.ros.org/jazzy/doc/gz_ros2_control/doc/index.html -> /home/clcwork/UAV_capture/px4_ros2_ws/references/stage2/official/gz_ros2_control_jazzy.html
+DOWNLOAD https://huggingface.co/docs/lerobot/lerobot-dataset-v3 -> /home/clcwork/UAV_capture/px4_ros2_ws/references/stage2/official/lerobot_dataset_v3.html
+DOWNLOAD https://huggingface.co/docs/lerobot/main/en/async -> /home/clcwork/UAV_capture/px4_ros2_ws/references/stage2/official/lerobot_async_inference.html
+DOWNLOAD https://huggingface.co/docs/lerobot/main/en/smolvla -> /home/clcwork/UAV_capture/px4_ros2_ws/references/stage2/official/lerobot_smolvla.html
+DOWNLOAD https://arxiv.org/pdf/2504.10334 -> /home/clcwork/UAV_capture/px4_ros2_ws/references/stage2/papers/flying_hand_2504.10334.pdf
+DOWNLOAD https://arxiv.org/pdf/2601.21602 -> /home/clcwork/UAV_capture/px4_ros2_ws/references/stage2/papers/air_vla_2601.21602.pdf
+DOWNLOAD https://www.sciencedirect.com/science/article/pii/S0921889017305535 -> /home/clcwork/UAV_capture/px4_ros2_ws/references/stage2/papers/aerial_manipulation_survey.html
+COPY /home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/x500 -> /home/clcwork/UAV_capture/px4_ros2_ws/references/stage2/local_px4_models/x500
+COPY /home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/x500_mono_cam -> /home/clcwork/UAV_capture/px4_ros2_ws/references/stage2/local_px4_models/x500_mono_cam
+COPY /home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/mono_cam -> /home/clcwork/UAV_capture/px4_ros2_ws/references/stage2/local_px4_models/mono_cam
+COPY /home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/arucotag -> /home/clcwork/UAV_capture/px4_ros2_ws/references/stage2/local_px4_models/arucotag
+FILES
+/home/clcwork/UAV_capture/px4_ros2_ws/references/stage2/README.md
+/home/clcwork/UAV_capture/px4_ros2_ws/references/stage2/local_px4_models/arucotag/model.config
+/home/clcwork/UAV_capture/px4_ros2_ws/references/stage2/local_px4_models/arucotag/model.sdf
+/home/clcwork/UAV_capture/px4_ros2_ws/references/stage2/local_px4_models/mono_cam/model.config
+/home/clcwork/UAV_capture/px4_ros2_ws/references/stage2/local_px4_models/mono_cam/model.sdf
+/home/clcwork/UAV_capture/px4_ros2_ws/references/stage2/local_px4_models/x500/model.config
+/home/clcwork/UAV_capture/px4_ros2_ws/references/stage2/local_px4_models/x500/model.sdf
+/home/clcwork/UAV_capture/px4_ros2_ws/references/stage2/local_px4_models/x500_mono_cam/model.config
+/home/clcwork/UAV_capture/px4_ros2_ws/references/stage2/local_px4_models/x500_mono_cam/model.sdf
+/home/clcwork/UAV_capture/px4_ros2_ws/references/stage2/manifest.yaml
+/home/clcwork/UAV_capture/px4_ros2_ws/references/stage2/official/gazebo_harmonic_ros2_overview.html
+/home/clcwork/UAV_capture/px4_ros2_ws/references/stage2/official/gazebo_harmonic_sensors.html
+/home/clcwork/UAV_capture/px4_ros2_ws/references/stage2/official/gz_ros2_control_jazzy.html
+/home/clcwork/UAV_capture/px4_ros2_ws/references/stage2/official/lerobot_async_inference.html
+/home/clcwork/UAV_capture/px4_ros2_ws/references/stage2/official/lerobot_dataset_v3.html
+/home/clcwork/UAV_capture/px4_ros2_ws/references/stage2/official/lerobot_smolvla.html
+/home/clcwork/UAV_capture/px4_ros2_ws/references/stage2/official/px4_offboard_mode.html
+/home/clcwork/UAV_capture/px4_ros2_ws/references/stage2/official/px4_ros2_user_guide.html
+/home/clcwork/UAV_capture/px4_ros2_ws/references/stage2/official/px4_uxrce_dds.html
+/home/clcwork/UAV_capture/px4_ros2_ws/references/stage2/official/ros_gz_bridge_jazzy.html
+/home/clcwork/UAV_capture/px4_ros2_ws/references/stage2/official/sdformat.html
+/home/clcwork/UAV_capture/px4_ros2_ws/references/stage2/papers/air_vla_2601.21602.pdf
+/home/clcwork/UAV_capture/px4_ros2_ws/references/stage2/papers/flying_hand_2504.10334.pdf
+/home/clcwork/UAV_capture/px4_ros2_ws/references/stage2/scripts/download_stage2_materials.sh
+END 2026-05-27T17:13:00+08:00

@@ -1,0 +1,2429 @@
+Reading prompt from stdin...
+OpenAI Codex v0.133.0
+--------
+workdir: /home/clcwork/UAV_capture/px4_ros2_ws
+model: gpt-5.5
+provider: openai
+approval: never
+sandbox: danger-full-access
+reasoning effort: high
+reasoning summaries: none
+session id: 019e651d-6887-79b2-9e59-bba1cfa35652
+--------
+user
+# Task 005: Plan UAV Arm Simulation
+
+## Task goal
+
+- 输出 `docs/UAV_ARM_SIMULATION_PLAN.md`。
+- 不实现机械臂，只做技术规划。
+- 规划从 x500 + 2-DOF/3-DOF arm 开始，而不是直接上复杂 6-DOF 机械臂。
+
+## Documentation requirements
+
+`docs/UAV_ARM_SIMULATION_PLAN.md` 必须包括：
+
+- 为什么先用 2-DOF/3-DOF 简化机械臂。
+- 机械臂应该挂载在无人机什么位置。
+- URDF/SDF 建模路线。
+- 关节控制方案：`ros2_control`、简单 joint command 或 Gazebo plugin。
+- 第一阶段任务：悬停状态下机械臂伸出。
+- 第二阶段任务：末端触碰固定目标。
+- 第三阶段任务：空中按钮按压。
+- 与 PX4 Offboard 的关系：PX4 保持平台稳定，机械臂执行局部操作。
+- 与 LeRobot 的关系：LeRobot 未来只学习机械臂末端操作策略，不直接控制 PX4 飞控。
+- 风险清单：质心变化、惯量扰动、坐标系、接触不稳定、仿真精度。
+- 最小 Demo 05 定义：Aerial Target Touch 或 Aerial Button Press。
+
+## Allowed changes
+
+- 只新增 `docs/UAV_ARM_SIMULATION_PLAN.md`。
+- 不改源码。
+
+## Required commands
+
+将命令输出保存到 `codex-logs/005-plan-uav-arm-simulation.log`：
+
+```bash
+mkdir -p docs
+ls docs
+```
+
+## Deliverables
+
+- `docs/UAV_ARM_SIMULATION_PLAN.md`
+- `codex-logs/005-plan-uav-arm-simulation.log`
+
+## Final report requirements
+
+最终报告必须说明：
+
+- Demo 05 推荐目标。
+- 技术路线。
+- 当前项目还缺哪些依赖。
+- `changed files`
+- `commands run`
+- `test result`
+- `known risks`
+
+codex
+我会先快速查看工作区结构和现有 `docs` 内容，确认只新增指定文档，然后把要求的命令输出写入任务日志。
+exec
+/bin/bash -lc 'git status --short' in /home/clcwork/UAV_capture/px4_ros2_ws
+ exited 128 in 0ms:
+fatal: not a git repository (or any of the parent directories): .git
+
+exec
+/bin/bash -lc "pwd && rg --files -g 'codex-tasks/**' -g 'docs/**' -g 'codex-logs/**' | sort | sed -n '1,120p'" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+/home/clcwork/UAV_capture/px4_ros2_ws
+/bin/bash: line 1: rg: command not found
+
+codex
+`rg` 不在这个环境里，且当前目录不是 git 仓库。我会用 `find` 做最小结构检查；任务要求只新增计划文档和日志，我不会碰源码。
+exec
+/bin/bash -lc "find . -maxdepth 2 -type d | sort | sed -n '1,120p'" in /home/clcwork/UAV_capture/px4_ros2_ws
+exec
+/bin/bash -lc "find . -maxdepth 3 \\( -path './docs/*' -o -path './codex-tasks/*' -o -path './codex-logs/*' \\) -type f | sort | sed -n '1,160p'" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+.
+./build
+./build/px4_msgs
+./build/px4_offboard_hover
+./codex-logs
+./codex-tasks
+./docs
+./examples
+./install
+./install/px4_msgs
+./install/px4_offboard_hover
+./log
+./log/build_2026-05-25_21-07-07
+./log/build_2026-05-25_21-24-09
+./log/build_2026-05-25_21-28-09
+./log/build_2026-05-26_08-20-16
+./log/build_2026-05-26_08-20-53
+./log/build_2026-05-26_08-39-39
+./log/build_2026-05-26_08-48-36
+./log/build_2026-05-26_09-01-34
+./log/build_2026-05-26_22-14-26
+./log/build_2026-05-26_22-16-18
+./log/build_2026-05-26_22-21-16
+./logs
+./logs/demo01_hover
+./logs/demo02_waypoint_flight
+./logs/demo03_circle_trajectory
+./logs/demo04_external_setpoint
+./logs/offboard_hover
+./scripts
+./src
+./src/px4_msgs
+./src/px4_offboard_hover
+./visualizations
+./visualizations/demo01_hover
+./visualizations/demo02_waypoint_flight
+./visualizations/demo03_circle_trajectory
+./visualizations/demo04_external_setpoint
+
+ succeeded in 0ms:
+./codex-logs/001-audit-project-structure-20260527_001340.log
+./codex-logs/001-audit-project-structure-20260527_001912.log
+./codex-logs/001-audit-project-structure.done
+./codex-logs/001-audit-project-structure.log
+./codex-logs/002-standardize-demo-visualization-20260527_002105.log
+./codex-logs/002-standardize-demo-visualization.done
+./codex-logs/002-standardize-demo-visualization.log
+./codex-logs/003-add-demo-regression-checks-20260527_002316.log
+./codex-logs/003-add-demo-regression-checks.done
+./codex-logs/003-add-demo-regression-checks.log
+./codex-logs/004-design-uav-control-api-20260527_002532.log
+./codex-logs/004-design-uav-control-api.done
+./codex-logs/004-design-uav-control-api.log
+./codex-logs/005-plan-uav-arm-simulation-20260527_002806.log
+./codex-logs/run-codex-queue-fix-20260527_001740.log
+./codex-tasks/001-audit-project-structure.md
+./codex-tasks/002-standardize-demo-visualization.md
+./codex-tasks/003-add-demo-regression-checks.md
+./codex-tasks/004-design-uav-control-api.md
+./codex-tasks/005-plan-uav-arm-simulation.md
+./docs/PROJECT_STRUCTURE.md
+./docs/REGRESSION_CHECKS.md
+./docs/UAV_CONTROL_API.md
+./docs/VISUALIZATION_GUIDE.md
+
+codex
+我看到已有 Demo 1-4 的文档和 task 文件，下一步会对齐现有文档风格来新增 `UAV_ARM_SIMULATION_PLAN.md`。先执行任务指定命令并把输出固定保存到指定日志。
+exec
+/bin/bash -lc "sed -n '1,180p' docs/UAV_CONTROL_API.md" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+# UAV Control API
+
+This document defines the planned high-level ROS 2 control API for the UAV
+simulation workspace. The goal is to give vision modules, LeRobot policies, and
+task planners one stable interface while keeping direct PX4 topics isolated
+inside a safety/bridge node.
+
+Task 004 is an interface design task. In the current codebase only
+`/uav/target_position` is implemented by Demo 04. The remaining topics below
+are recommended contracts for the next implementation step.
+
+## Coordinate Convention
+
+Use the PX4 local NED frame for all `/uav/*` position topics:
+
+| Axis | Meaning | Unit |
+| --- | --- | --- |
+| `x` | North / forward from local origin | m |
+| `y` | East / right from local origin | m |
+| `z` | Down from local origin | m |
+
+PX4 local position and `px4_msgs/msg/TrajectorySetpoint` also use NED, so the
+bridge can map most position fields directly.
+
+External modules often reason about height as positive altitude above the local
+origin. In that case:
+
+```text
+z_ned = -altitude
+altitude = -z_ned
+```
+
+Example: a target 2 m above the local origin is `altitude=2.0` and
+`z_ned=-2.0`.
+
+## Recommended Topics
+
+| Topic | Type | Direction | Status | Purpose |
+| --- | --- | --- | --- | --- |
+| `/uav/target_position` | `geometry_msgs/msg/Point` | client -> UAV bridge | Implemented in Demo 04 | Position-only target in local NED. |
+| `/uav/target_pose` | `geometry_msgs/msg/PoseStamped` | client -> UAV bridge | Future | Position plus desired yaw. Roll and pitch should be ignored by the bridge. |
+| `/uav/current_position` | `geometry_msgs/msg/PointStamped` | UAV bridge -> clients | Future | Current filtered local NED position. |
+| `/uav/current_target` | `geometry_msgs/msg/PointStamped` | UAV bridge -> clients | Future | Sanitized target currently being sent to PX4. |
+| `/uav/reached_target` | `std_msgs/msg/Bool` | UAV bridge -> clients | Future | `true` when the current target is reached within configured tolerances. |
+| `/uav/control_state` | `std_msgs/msg/String` | UAV bridge -> clients | Future | Human-readable control state such as `IDLE`, `TRACKING`, `REACHED`, `HOLDING`, `LANDING`, `E_STOP`, or `INVALID_TARGET`. |
+| `/uav/emergency_stop` | `std_msgs/msg/Bool` | client -> UAV bridge | Future | `true` requests an immediate safety stop action. |
+
+## Topic Details
+
+### `/uav/target_position`
+
+Type: `geometry_msgs/msg/Point`
+
+Fields:
+
+| Field | Meaning |
+| --- | --- |
+| `x` | Target north position in local NED, meters. |
+| `y` | Target east position in local NED, meters. |
+| `z` | Target down position in local NED, meters. Use `z=-altitude` for positive height commands. |
+
+This topic is the minimal high-level command surface. It is suitable for simple
+vision trackers, scripted waypoint tests, and LeRobot policies that only need to
+move the UAV platform to a local position.
+
+Current Demo 04 subscribes to this topic and forwards the NED point as a PX4
+position setpoint.
+
+### `/uav/target_pose`
+
+Type: `geometry_msgs/msg/PoseStamped`
+
+Recommended usage:
+
+- `header.frame_id`: `uav_local_ned`
+- `pose.position.x/y/z`: local NED target position.
+- `pose.orientation`: desired yaw only. The bridge should extract yaw and ignore
+  commanded roll/pitch so high-level clients cannot fight the flight controller.
+
+Use this topic when a module needs to control the UAV heading, camera direction,
+or approach orientation. If both `/uav/target_pose` and
+`/uav/target_position` are active, the bridge should define one priority rule,
+for example "latest valid command wins" or "pose has priority".
+
+### `/uav/current_position`
+
+Type: `geometry_msgs/msg/PointStamped`
+
+The bridge should publish the current vehicle local position after checking PX4
+validity flags. Source data should come from:
+
+```text
+/fmu/out/vehicle_local_position_v1
+```
+
+Mapping:
+
+```text
+point.x = VehicleLocalPosition.x
+point.y = VehicleLocalPosition.y
+point.z = VehicleLocalPosition.z
+```
+
+Clients that need positive altitude should compute `altitude=-point.z`.
+
+### `/uav/current_target`
+
+Type: `geometry_msgs/msg/PointStamped`
+
+Publish the target after validation, clamping, and slew limiting. This may differ
+from the raw `/uav/target_position` or `/uav/target_pose` command when a client
+requests an unsafe or too-large jump.
+
+### `/uav/reached_target`
+
+Type: `std_msgs/msg/Bool`
+
+Recommended logic:
+
+```text
+true when horizontal_error <= 0.30 m
+and vertical_error <= 0.20 m
+for at least 1.0 s
+```
+
+The exact tolerances should be parameters on the future bridge node.
+
+### `/uav/control_state`
+
+Type: `std_msgs/msg/String`
+
+Recommended states:
+
+| State | Meaning |
+| --- | --- |
+| `IDLE` | Bridge is running but no active target is available. |
+| `TRACKING` | Bridge is sending sanitized setpoints to PX4. |
+| `REACHED` | Current target has been reached within tolerance. |
+| `HOLDING` | Bridge is holding the last safe target. |
+| `LANDING` | Bridge requested landing. |
+| `E_STOP` | Emergency stop is active; normal target commands are ignored. |
+| `INVALID_TARGET` | Last command was rejected by validation. |
+
+### `/uav/emergency_stop`
+
+Type: `std_msgs/msg/Bool`
+
+When `data=true`, the bridge should immediately stop accepting new target
+commands and execute the configured safety action. In simulation, the default
+should be to hold the last safe setpoint or command land. Disarm should be a
+separate explicit option because disarming in the air can be destructive.
+
+When `data=false`, the bridge may clear the emergency state only if a configured
+operator or test policy allows it.
+
+## Mapping to PX4 TrajectorySetpoint
+
+The bridge node should be the only component that publishes:
+
+```text
+/fmu/in/offboard_control_mode
+/fmu/in/trajectory_setpoint
+/fmu/in/vehicle_command
+```
+
+For a valid `/uav/target_position` command:
+
+```text
+TrajectorySetpoint.timestamp = current ROS clock in microseconds
+TrajectorySetpoint.position = [target.x, target.y, target.z]
+TrajectorySetpoint.velocity = [NaN, NaN, NaN]
+TrajectorySetpoint.acceleration = [NaN, NaN, NaN]
+TrajectorySetpoint.jerk = [NaN, NaN, NaN]
+TrajectorySetpoint.yaw = configured yaw or yaw from /uav/target_pose
+TrajectorySetpoint.yawspeed = NaN
+```
+
+If a client command is expressed as positive altitude instead of NED `z`, convert
+before publishing to PX4:
+
+
+exec
+/bin/bash -lc 'mkdir -p codex-logs && { mkdir -p docs; ls docs; } > codex-logs/005-plan-uav-arm-simulation.log' in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+exec
+/bin/bash -lc "sed -n '1,220p' codex-tasks/005-plan-uav-arm-simulation.md" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+# Task 005: Plan UAV Arm Simulation
+
+## Task goal
+
+- 输出 `docs/UAV_ARM_SIMULATION_PLAN.md`。
+- 不实现机械臂，只做技术规划。
+- 规划从 x500 + 2-DOF/3-DOF arm 开始，而不是直接上复杂 6-DOF 机械臂。
+
+## Documentation requirements
+
+`docs/UAV_ARM_SIMULATION_PLAN.md` 必须包括：
+
+- 为什么先用 2-DOF/3-DOF 简化机械臂。
+- 机械臂应该挂载在无人机什么位置。
+- URDF/SDF 建模路线。
+- 关节控制方案：`ros2_control`、简单 joint command 或 Gazebo plugin。
+- 第一阶段任务：悬停状态下机械臂伸出。
+- 第二阶段任务：末端触碰固定目标。
+- 第三阶段任务：空中按钮按压。
+- 与 PX4 Offboard 的关系：PX4 保持平台稳定，机械臂执行局部操作。
+- 与 LeRobot 的关系：LeRobot 未来只学习机械臂末端操作策略，不直接控制 PX4 飞控。
+- 风险清单：质心变化、惯量扰动、坐标系、接触不稳定、仿真精度。
+- 最小 Demo 05 定义：Aerial Target Touch 或 Aerial Button Press。
+
+## Allowed changes
+
+- 只新增 `docs/UAV_ARM_SIMULATION_PLAN.md`。
+- 不改源码。
+
+## Required commands
+
+将命令输出保存到 `codex-logs/005-plan-uav-arm-simulation.log`：
+
+```bash
+mkdir -p docs
+ls docs
+```
+
+## Deliverables
+
+- `docs/UAV_ARM_SIMULATION_PLAN.md`
+- `codex-logs/005-plan-uav-arm-simulation.log`
+
+## Final report requirements
+
+最终报告必须说明：
+
+- Demo 05 推荐目标。
+- 技术路线。
+- 当前项目还缺哪些依赖。
+- `changed files`
+- `commands run`
+- `test result`
+- `known risks`
+
+codex
+现有文档是英文技术说明风格。我会新增一份同风格的规划文档，覆盖三阶段任务、PX4/LeRobot 边界、风险和 Demo 05 定义，不实现任何代码。
+exec
+/bin/bash -lc "sed -n '1,220p' docs/PROJECT_STRUCTURE.md" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+# px4_ros2_ws Project Structure
+
+This document summarizes the current structure of `/home/clcwork/UAV_capture/px4_ros2_ws` for Task 001. The raw audit command output is saved in `codex-logs/001-audit-project-structure.log`.
+
+## Workspace Overview
+
+Top-level workspace areas:
+
+| Path | Role | Notes |
+| --- | --- | --- |
+| `src/` | ROS 2 source packages | Main editable package area for this workspace. |
+| `scripts/` | Stack, demo, experiment, and recorder launch helpers | Prefer these scripts for PX4/Gazebo/Micro XRCE-DDS and demo runs. |
+| `logs/` | Experiment/runtime logs | Contains timestamped demo and hover logs. Do not delete. |
+| `visualizations/` | Generated visualization artifacts | Contains timestamped demo outputs such as CSV, plots, videos, summaries, and results. Do not delete or overwrite existing timestamped runs. |
+| `codex-tasks/` | Task definitions | Current task queue and requirements. |
+| `codex-logs/` | Codex task execution logs | Includes this task's audit log. |
+| `build/` | Colcon build output | Generated build artifacts. |
+| `install/` | Colcon install output | Generated install artifacts and setup files. |
+| `log/` | Colcon build logs | Generated build logs from previous `colcon` runs. |
+
+## ROS 2 Packages
+
+Current packages under `src/`:
+
+| Package | Build type | Purpose |
+| --- | --- | --- |
+| `px4_msgs` | `ament_cmake` | PX4 uORB-equivalent ROS message and service definitions. This directory contains many generated interface definitions under `msg/` and `srv/`, and should be treated as upstream PX4 message source unless a task explicitly requires changes. |
+| `px4_offboard_hover` | `ament_python` | Custom Python package for PX4 offboard demos, trajectory recording, and hover verification. |
+
+`px4_offboard_hover` Python modules currently include:
+
+- `hover.py`
+- `verify_hover.py`
+- `waypoint_flight.py`
+- `circle_trajectory.py`
+- `external_setpoint.py`
+- `trajectory_recorder.py`
+- `offboard_base.py`
+
+Installed console entry points from `px4_offboard_hover/setup.py`:
+
+- `hover`
+- `verify_hover`
+- `demo02_waypoint_flight`
+- `demo03_circle_trajectory`
+- `demo04_external_setpoint`
+- `trajectory_recorder`
+
+## Scripts
+
+Current files under `scripts/`:
+
+| Script | Purpose |
+| --- | --- |
+| `start_stack.sh` | Starts the PX4/Gazebo/Micro XRCE-DDS stack used by the demos. |
+| `stop_stack.sh` | Stops the running stack. |
+| `run_demo01_hover.sh` | Demo 01 Offboard Hover runner. |
+| `run_demo02_waypoint_flight.sh` | Demo 02 Waypoint Flight runner. |
+| `run_demo03_circle_trajectory.sh` | Demo 03 Circle Trajectory runner. |
+| `run_demo04_external_setpoint.sh` | Demo 04 External Setpoint Interface runner. |
+| `run_hover_experiment.sh` | Earlier/offboard hover experiment runner. |
+| `run_trajectory_recorder.sh` | Trajectory recorder helper used by demo visualization workflows. |
+
+These scripts are existing workflow entry points and were not modified during this audit.
+
+## Experiment Logs
+
+Runtime logs are stored under `logs/` by demo or experiment name:
+
+- `logs/demo01_hover/`
+- `logs/demo02_waypoint_flight/`
+- `logs/demo03_circle_trajectory/`
+- `logs/demo04_external_setpoint/`
+- `logs/offboard_hover/`
+
+Each demo directory contains timestamped runs. Observed log file names include:
+
+- `demo01.log`
+- `demo02.log`
+- `demo03.log`
+- `demo04.log`
+- `trajectory_recorder.log`
+- `target_sequence.log`
+- `hover.log`
+- `verify.log`
+- `agent_tail.log`
+- `px4_tail.log`
+
+These are experiment results and diagnostic logs. They should not be deleted, truncated, or overwritten unless a task explicitly requires it and the user confirms.
+
+## Visualization Outputs
+
+Visualization results are stored under `visualizations/<demo>/<timestamp>/`.
+
+Current demo visualization roots:
+
+- `visualizations/demo01_hover/`
+- `visualizations/demo02_waypoint_flight/`
+- `visualizations/demo03_circle_trajectory/`
+- `visualizations/demo04_external_setpoint/`
+
+Observed standard output files:
+
+- `trajectory.csv`
+- `trajectory_3d.png`
+- `xy_path.png`
+- `height_curve.png`
+- `speed_curve.png`
+- `tracking_error.png`
+- `trajectory.mp4`
+- `summary.md`
+- `result.txt`
+
+Some earlier runs also contain `trajectory.png` instead of the newer split plot names. Existing timestamped visualization directories are experiment results and should not be deleted or overwritten.
+
+## Source vs Generated vs Results
+
+Source/editable project areas:
+
+- `src/px4_offboard_hover/`
+- `scripts/`
+- `docs/`
+- `codex-tasks/`
+- Top-level project documents such as `BASIC_CONTROL_DEMOS.md`, `OFFBOARD_HOVER_EXPERIMENT.md`, and `TOOLS_AND_SCRIPTS_GUIDE.md`
+
+External/upstream or avoid-editing areas:
+
+- `src/px4_msgs/`: PX4 message/interface package. Avoid modifying unless the task explicitly requires it.
+
+Generated build areas:
+
+- `build/`
+- `install/`
+- `log/`
+
+Experiment/result areas that should not be deleted:
+
+- `logs/`
+- `visualizations/`
+- `codex-logs/`
+- Any timestamped run directory under `logs/` or `visualizations/`
+- Data artifacts such as `trajectory.csv`, plots, videos, summaries, and result files
+
+## Audit Notes
+
+- The workspace root itself is not a Git repository according to `git status`; however, `src/px4_msgs/` contains its own `.git` directory.
+- Demo 1-4 have existing runtime logs and visualization outputs.
+- The audit deliverable log for this task is `codex-logs/001-audit-project-structure.log`.
+
+exec
+/bin/bash -lc "find src -maxdepth 3 -type f | sort | sed -n '1,120p'" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+src/px4_msgs/.git/HEAD
+src/px4_msgs/.git/config
+src/px4_msgs/.git/description
+src/px4_msgs/.git/index
+src/px4_msgs/.git/packed-refs
+src/px4_msgs/.github/dependabot.yml
+src/px4_msgs/.gitignore
+src/px4_msgs/CMakeLists.txt
+src/px4_msgs/CONTRIBUTING.md
+src/px4_msgs/LICENSE
+src/px4_msgs/README.md
+src/px4_msgs/msg/ActionRequest.msg
+src/px4_msgs/msg/ActuatorArmed.msg
+src/px4_msgs/msg/ActuatorControlsStatus.msg
+src/px4_msgs/msg/ActuatorMotors.msg
+src/px4_msgs/msg/ActuatorOutputs.msg
+src/px4_msgs/msg/ActuatorServos.msg
+src/px4_msgs/msg/ActuatorServosTrim.msg
+src/px4_msgs/msg/ActuatorTest.msg
+src/px4_msgs/msg/AdcReport.msg
+src/px4_msgs/msg/Airspeed.msg
+src/px4_msgs/msg/AirspeedValidated.msg
+src/px4_msgs/msg/AirspeedWind.msg
+src/px4_msgs/msg/ArmingCheckReply.msg
+src/px4_msgs/msg/ArmingCheckRequest.msg
+src/px4_msgs/msg/AutotuneAttitudeControlStatus.msg
+src/px4_msgs/msg/AuxGlobalPosition.msg
+src/px4_msgs/msg/BatteryInfo.msg
+src/px4_msgs/msg/BatteryStatus.msg
+src/px4_msgs/msg/ButtonEvent.msg
+src/px4_msgs/msg/CameraCapture.msg
+src/px4_msgs/msg/CameraStatus.msg
+src/px4_msgs/msg/CameraTrigger.msg
+src/px4_msgs/msg/CanInterfaceStatus.msg
+src/px4_msgs/msg/CellularStatus.msg
+src/px4_msgs/msg/CollisionConstraints.msg
+src/px4_msgs/msg/ConfigOverrides.msg
+src/px4_msgs/msg/ControlAllocatorStatus.msg
+src/px4_msgs/msg/Cpuload.msg
+src/px4_msgs/msg/DatamanRequest.msg
+src/px4_msgs/msg/DatamanResponse.msg
+src/px4_msgs/msg/DebugArray.msg
+src/px4_msgs/msg/DebugKeyValue.msg
+src/px4_msgs/msg/DebugValue.msg
+src/px4_msgs/msg/DebugVect.msg
+src/px4_msgs/msg/DeviceInformation.msg
+src/px4_msgs/msg/DifferentialPressure.msg
+src/px4_msgs/msg/DistanceSensor.msg
+src/px4_msgs/msg/DistanceSensorModeChangeRequest.msg
+src/px4_msgs/msg/DronecanNodeStatus.msg
+src/px4_msgs/msg/Ekf2Timestamps.msg
+src/px4_msgs/msg/EscEepromRead.msg
+src/px4_msgs/msg/EscEepromWrite.msg
+src/px4_msgs/msg/EscReport.msg
+src/px4_msgs/msg/EscStatus.msg
+src/px4_msgs/msg/EstimatorAidSource1d.msg
+src/px4_msgs/msg/EstimatorAidSource2d.msg
+src/px4_msgs/msg/EstimatorAidSource3d.msg
+src/px4_msgs/msg/EstimatorBias.msg
+src/px4_msgs/msg/EstimatorBias3d.msg
+src/px4_msgs/msg/EstimatorEventFlags.msg
+src/px4_msgs/msg/EstimatorFusionControl.msg
+src/px4_msgs/msg/EstimatorGpsStatus.msg
+src/px4_msgs/msg/EstimatorInnovations.msg
+src/px4_msgs/msg/EstimatorSelectorStatus.msg
+src/px4_msgs/msg/EstimatorSensorBias.msg
+src/px4_msgs/msg/EstimatorStates.msg
+src/px4_msgs/msg/EstimatorStatus.msg
+src/px4_msgs/msg/EstimatorStatusFlags.msg
+src/px4_msgs/msg/Event.msg
+src/px4_msgs/msg/FailsafeFlags.msg
+src/px4_msgs/msg/FailureDetectorStatus.msg
+src/px4_msgs/msg/FigureEightStatus.msg
+src/px4_msgs/msg/FixedWingLateralGuidanceStatus.msg
+src/px4_msgs/msg/FixedWingLateralSetpoint.msg
+src/px4_msgs/msg/FixedWingLateralStatus.msg
+src/px4_msgs/msg/FixedWingLongitudinalSetpoint.msg
+src/px4_msgs/msg/FixedWingRunwayControl.msg
+src/px4_msgs/msg/FlightPhaseEstimation.msg
+src/px4_msgs/msg/FollowTarget.msg
+src/px4_msgs/msg/FollowTargetEstimator.msg
+src/px4_msgs/msg/FollowTargetStatus.msg
+src/px4_msgs/msg/FuelTankStatus.msg
+src/px4_msgs/msg/GainCompression.msg
+src/px4_msgs/msg/GeneratorStatus.msg
+src/px4_msgs/msg/GeofenceResult.msg
+src/px4_msgs/msg/GeofenceStatus.msg
+src/px4_msgs/msg/GimbalControls.msg
+src/px4_msgs/msg/GimbalDeviceAttitudeStatus.msg
+src/px4_msgs/msg/GimbalDeviceInformation.msg
+src/px4_msgs/msg/GimbalDeviceSetAttitude.msg
+src/px4_msgs/msg/GimbalManagerInformation.msg
+src/px4_msgs/msg/GimbalManagerSetAttitude.msg
+src/px4_msgs/msg/GimbalManagerSetManualControl.msg
+src/px4_msgs/msg/GimbalManagerStatus.msg
+src/px4_msgs/msg/GotoSetpoint.msg
+src/px4_msgs/msg/GpioConfig.msg
+src/px4_msgs/msg/GpioIn.msg
+src/px4_msgs/msg/GpioOut.msg
+src/px4_msgs/msg/GpioRequest.msg
+src/px4_msgs/msg/GpsDump.msg
+src/px4_msgs/msg/GpsInjectData.msg
+src/px4_msgs/msg/Gripper.msg
+src/px4_msgs/msg/HealthReport.msg
+src/px4_msgs/msg/HeaterStatus.msg
+src/px4_msgs/msg/HomePosition.msg
+src/px4_msgs/msg/HoverThrustEstimate.msg
+src/px4_msgs/msg/InputRc.msg
+src/px4_msgs/msg/InternalCombustionEngineControl.msg
+src/px4_msgs/msg/InternalCombustionEngineStatus.msg
+src/px4_msgs/msg/IridiumsbdStatus.msg
+src/px4_msgs/msg/IrlockReport.msg
+src/px4_msgs/msg/LandingGear.msg
+src/px4_msgs/msg/LandingGearWheel.msg
+src/px4_msgs/msg/LandingTargetInnovations.msg
+src/px4_msgs/msg/LandingTargetPose.msg
+src/px4_msgs/msg/LateralControlConfiguration.msg
+src/px4_msgs/msg/LaunchDetectionStatus.msg
+src/px4_msgs/msg/LedControl.msg
+src/px4_msgs/msg/LogMessage.msg
+
+exec
+/bin/bash -lc "find scripts -maxdepth 2 -type f | sort | sed -n '1,160p'" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+scripts/check_demo_outputs.sh
+scripts/run_demo01_hover.sh
+scripts/run_demo02_waypoint_flight.sh
+scripts/run_demo03_circle_trajectory.sh
+scripts/run_demo04_external_setpoint.sh
+scripts/run_hover_experiment.sh
+scripts/run_trajectory_recorder.sh
+scripts/start_stack.sh
+scripts/stop_stack.sh
+
+codex
+现有 `src/` 只有 `px4_msgs` 和 `px4_offboard_hover`，还没有机械臂模型、控制包或接触目标资产。文档里会明确把这些列为后续依赖，而不是在本任务里创建。
+apply patch
+patch: completed
+/home/clcwork/UAV_capture/px4_ros2_ws/docs/UAV_ARM_SIMULATION_PLAN.md
+diff --git a/UAV_capture/px4_ros2_ws/docs/UAV_ARM_SIMULATION_PLAN.md b/UAV_capture/px4_ros2_ws/docs/UAV_ARM_SIMULATION_PLAN.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..6c068dbbcedeb92d2626a9359ae8c45b8e5e8396
+--- /dev/null
++++ b/UAV_capture/px4_ros2_ws/docs/UAV_ARM_SIMULATION_PLAN.md
+@@ -0,0 +1,321 @@
++# UAV Arm Simulation Plan
++
++This document defines the planned direction for adding a lightweight UAV arm
++simulation to the existing PX4 ROS 2 workspace. This is a planning document
++only. It does not add URDF/SDF models, ROS 2 nodes, Gazebo plugins, launch
++files, or LeRobot integration.
++
++The starting platform should be the existing PX4 x500 simulation with a
++simplified 2-DOF or 3-DOF arm. The first goal is to prove stable aerial contact
++tasks without breaking Demo 01-04 behavior.
++
++## Why Start with a 2-DOF or 3-DOF Arm
++
++Aerial manipulation adds coupled dynamics between the multirotor and the arm.
++Starting with a full 6-DOF manipulator would combine too many unvalidated
++problems at once: mass distribution, inertia, joint control, contact modeling,
++end-effector planning, collision geometry, and flight-controller disturbance
++rejection.
++
++A 2-DOF or 3-DOF arm is the right first step because:
++
++| Benefit | Reason |
++| --- | --- |
++| Lower dynamics risk | Fewer links and lighter mass reduce center-of-mass shifts and torque disturbances on the x500 body. |
++| Easier debugging | Joint commands, transforms, collision geometry, and contact behavior can be inspected link by link. |
++| Smaller control surface | Early demos only need reach, extend, and touch motions, not full dexterous manipulation. |
++| Faster simulation iteration | Simple inertial properties and collision meshes are easier to tune in Gazebo. |
++| Cleaner LeRobot boundary | The learning problem can focus on end-effector operation before adding redundant arm kinematics. |
++
++Recommended initial arm shapes:
++
++- 2-DOF planar arm: shoulder pitch plus elbow pitch, with a small passive or
++  fixed end-effector pad.
++- 3-DOF lightweight arm: shoulder yaw, shoulder pitch, and elbow pitch, with the
++  same simple end-effector pad.
++
++The 2-DOF version should be attempted first unless the fixed target geometry
++requires lateral reach that cannot be provided by UAV yaw and position control.
++
++## Mounting Location
++
++The arm should mount near the underside of the x500 center body, close to the
++vehicle center of mass and away from the propeller disk.
++
++Recommended mount:
++
++```text
++x500 base_link
++  |
++  +-- arm_mount_link: underside center or slightly forward underside
++        |
++        +-- shoulder_link
++```
++
++Use an underside mount for the first model:
++
++- It keeps the arm clear of the propellers during extension.
++- It makes downward or forward-downward target contact easier to observe.
++- It reduces large roll or pitch moments compared with a side-mounted arm.
++- It leaves the top of the vehicle free for existing sensors or future payloads.
++
++If button-press tasks require a forward-facing end effector, the mount can be
++slightly forward of the x500 center body, but the offset should remain small.
++Any offset must be represented in the inertial model and documented as a
++parameter.
++
++Avoid side mounting in the first phase because it creates asymmetric inertia and
++a constant lateral disturbance that will make PX4 Offboard validation harder.
++
++## URDF and SDF Modeling Route
++
++The modeling route should keep the ROS description, Gazebo simulation, and PX4
++vehicle model boundaries clear.
++
++Recommended route:
++
++| Step | Output | Notes |
++| --- | --- | --- |
++| 1 | `x500_arm_description` package | New ROS 2 package for arm URDF/Xacro, meshes, and frame docs. |
++| 2 | Arm-only URDF/Xacro | Define links, joints, inertial values, visual geometry, and collision geometry without PX4 coupling. |
++| 3 | x500 attachment Xacro | Add an `arm_mount_link` and fixed joint from the x500 base frame to the arm base. |
++| 4 | Gazebo SDF export or include | Use SDF-compatible tags for joint dynamics, collision, and contact surfaces. |
++| 5 | World assets | Add fixed target and button models as separate Gazebo models, not embedded in the UAV model. |
++| 6 | TF validation | Verify `base_link -> arm_mount_link -> shoulder -> elbow -> ee_link` transforms before running contact demos. |
++
++The first arm model should use primitive shapes:
++
++- Cylinders or boxes for links.
++- Simple revolute joints with position limits.
++- A small rounded or box end-effector pad.
++- Conservative mass and inertia values.
++- Simple collision geometry that is close to, but slightly simpler than, the
++  visual geometry.
++
++Avoid high-detail meshes in the first iteration. They make contacts harder to
++debug and do not help validate the control architecture.
++
++## Joint Control Options
++
++Three joint-control approaches are viable. The recommended sequence is to start
++simple, then move toward `ros2_control` once the model and contact tasks are
++stable.
++
++| Option | Use When | Pros | Cons |
++| --- | --- | --- | --- |
++| Simple joint command node | First arm extension tests | Smallest implementation, easy scripted trajectories, low dependency cost. | Not a standard hardware/control abstraction. |
++| Gazebo joint control plugin | Early Gazebo-only demos | Direct simulation control, useful for fast contact experiments. | Can become simulator-specific and less reusable. |
++| `ros2_control` | Stable Demo 05 and future LeRobot policy work | Standard ROS 2 control path, controller switching, trajectory controllers. | More setup: controllers, transmissions, plugin config, launch wiring. |
++
++Recommended first implementation path:
++
++1. Use a simple ROS 2 joint command interface for the first no-contact extension
++   test.
++2. Add a Gazebo-compatible joint control path for repeatable simulation.
++3. Promote to `ros2_control` with a `joint_trajectory_controller` before using
++   learned policies or comparing multiple control strategies.
++
++The high-level arm command surface should be separate from PX4 topics. Candidate
++topics for later implementation:
++
++| Topic | Type | Purpose |
++| --- | --- | --- |
++| `/arm/joint_targets` | `sensor_msgs/msg/JointState` or trajectory message | Command shoulder/elbow target positions. |
++| `/arm/end_effector_target` | `geometry_msgs/msg/PoseStamped` | Optional Cartesian target for an IK or scripted controller. |
++| `/arm/contact_state` | `std_msgs/msg/Bool` or custom message | Report target or button contact. |
++
++## Stage 1: Hover with Arm Extension
++
++Goal: prove that the x500 can hold a stable Offboard hover while the arm moves
++through a conservative extension trajectory.
++
++Scenario:
++
++- Start the existing PX4/Gazebo/Micro XRCE-DDS stack.
++- Use the Demo 01-style Offboard hover behavior.
++- Keep the UAV at a fixed local NED target.
++- Command the arm from stowed pose to extended pose and back.
++- Do not include target contact in this stage.
++
++Success criteria:
++
++- Vehicle remains in Offboard mode during the arm motion.
++- Position tracking remains within an agreed hover tolerance.
++- Arm joints reach target positions without oscillation.
++- No collision occurs with the x500 body or propeller area.
++
++Primary data to record:
++
++- UAV local position and velocity.
++- Arm joint positions and commanded targets.
++- End-effector pose relative to `base_link`.
++- PX4 failsafe or mode changes, if any.
++
++## Stage 2: End-Effector Touches a Fixed Target
++
++Goal: validate controlled aerial contact with a passive fixed target.
++
++Scenario:
++
++- Place a fixed target pad in the Gazebo world.
++- Use PX4 Offboard to position the UAV near the target.
++- Keep the platform stable while the arm performs the final reach.
++- Detect contact through Gazebo contact reporting or end-effector proximity.
++
++Success criteria:
++
++- The end effector touches the target without destabilizing the vehicle.
++- The target touch is detected and logged.
++- Contact force or penetration remains bounded.
++- The UAV can return to a safe hover after contact.
++
++This stage should use a fixed target before a button because a passive target
++removes button travel, spring stiffness, and state-change logic from the first
++contact experiment.
++
++## Stage 3: Aerial Button Press
++
++Goal: extend fixed-target touch into a stateful operation where the arm presses
++a simulated button while the UAV remains stable.
++
++Scenario:
++
++- Add a button model with a simple prismatic axis or contact-triggered state.
++- Position the UAV near the button using PX4 Offboard.
++- Command the arm to press along the button normal.
++- Confirm press completion through button displacement, contact state, or a
++  Gazebo plugin event.
++
++Success criteria:
++
++- Button state changes from unpressed to pressed.
++- The press completes without PX4 failsafe, excessive vehicle drift, or arm
++  collision.
++- The system logs approach, contact, press, release, and retreat phases.
++
++This stage should become the first version of the aerial manipulation benchmark
++only after Stage 1 and Stage 2 are repeatable.
++
++## Relationship with PX4 Offboard
++
++PX4 Offboard should remain responsible for stabilizing and positioning the UAV
++platform. The arm should execute local manipulation commands only.
++
++Control boundary:
++
++| Component | Responsibility |
++| --- | --- |
++| PX4 | Attitude stabilization, motor control, estimator, failsafe behavior. |
++| Offboard bridge | High-level UAV position/yaw setpoints, target validation, emergency behavior. |
++| Arm controller | Joint targets, end-effector motion, contact sequence, arm limits. |
++| Task planner | Sequence such as hover, approach, extend, touch, retract, retreat. |
++
++The arm controller must not publish low-level PX4 actuator, motor, attitude, or
++rate commands. It may request UAV pose changes only through high-level topics
++such as `/uav/target_position` or the future `/uav/target_pose` interface
++defined for the workspace.
++
++PX4 should hold the platform stable while the arm executes local operations. If
++the arm motion causes excessive tracking error, the task should abort or retract
++the arm rather than trying to override PX4 internals.
++
++## Relationship with LeRobot
++
++LeRobot should be introduced after the scripted arm tasks are stable. Its role
++should be limited to learning or executing the local manipulation policy.
++
++Allowed future LeRobot control scope:
++
++- End-effector target selection.
++- Arm joint trajectory policy.
++- Contact timing and press depth policy.
++- Visual or state-based manipulation decisions.
++
++Disallowed LeRobot control scope:
++
++- Direct motor control.
++- PX4 attitude, rate, or actuator commands.
++- Bypassing the Offboard bridge safety checks.
++- Mixing flight-control stabilization with arm manipulation policy.
++
++The intended future architecture is:
++
++```text
++LeRobot policy
++  -> arm command topic or end-effector target
++  -> arm controller
++  -> simulated arm joints
++
++Task planner or safety bridge
++  -> /uav/target_position or /uav/target_pose
++  -> PX4 Offboard
++  -> stable x500 platform
++```
++
++This keeps the learning problem focused on manipulation and preserves PX4 as
++the flight-control authority.
++
++## Risks
++
++| Risk | Impact | Mitigation |
++| --- | --- | --- |
++| Center-of-mass change | Hover trim and tracking can degrade when the arm extends. | Start with a light underside arm, document mass properties, and compare hover error with stowed vs extended poses. |
++| Inertia disturbance | Fast joint motion can induce roll, pitch, or yaw disturbance. | Limit joint speed and acceleration; begin with slow scripted trajectories. |
++| Coordinate frames | NED, ENU, Gazebo, base link, and end-effector frames can be mixed incorrectly. | Define explicit frame names and validate TF before contact tests. |
++| Contact instability | Contact with the target or button can create bouncing, penetration, or solver instability. | Use simple collision shapes, conservative stiffness/damping, and bounded approach speeds. |
++| Simulation accuracy | Gazebo contact and lightweight arm dynamics may not match real hardware. | Treat Demo 05 as a simulation benchmark, not proof of real-world readiness. |
++| PX4 failsafe interaction | Contact disturbances or simulation pauses may trigger failsafe behavior. | Keep Offboard setpoints continuous and log mode/failsafe state during tests. |
++| Propeller/body collision | Bad joint limits or mount offsets can intersect the x500 model. | Add conservative joint limits and collision checks before enabling contact tasks. |
++
++## Minimum Demo 05 Definition
++
++Recommended Demo 05 target: **Aerial Target Touch**.
++
++Aerial Target Touch is the better minimum demo because it validates the core
++aerial manipulation stack before introducing button mechanics. It should prove:
++
++- x500 Offboard hover remains stable.
++- A 2-DOF or 3-DOF arm can extend from a safe stowed pose.
++- The end effector can touch a fixed target.
++- The system can log UAV trajectory, arm joints, end-effector pose, and contact
++  result.
++
++Demo 05 can later be upgraded to **Aerial Button Press** after the fixed-target
++touch is repeatable.
++
++Recommended Demo 05 output names should follow the existing stable naming
++pattern where applicable:
++
++- `trajectory.csv`
++- `trajectory_3d.png`
++- `xy_path.png`
++- `height_curve.png`
++- `speed_curve.png`
++- `tracking_error.png`
++- `trajectory.mp4`
++- `summary.md`
++- `result.txt`
++
++Additional Demo 05-specific outputs may include:
++
++- `arm_joints.csv`
++- `end_effector_pose.csv`
++- `contact_events.csv`
++- `contact_result.txt`
++
++## Current Missing Dependencies
++
++The current workspace does not yet contain the pieces required to run the arm
++simulation. The expected future additions are:
++
++- A new arm description package with URDF/Xacro and optional Gazebo SDF assets.
++- A combined x500 plus arm model or model include path.
++- Joint controller configuration, either simple command node, Gazebo plugin, or
++  `ros2_control`.
++- Gazebo target and button models.
++- Contact detection and logging.
++- Arm trajectory scripts or a task sequencer for Demo 05.
++- Optional IK or end-effector control utilities.
++- Future LeRobot environment wrappers and policy interfaces.
++
++None of these dependencies are implemented by this planning task.
+
+diff --git a/UAV_capture/px4_ros2_ws/docs/UAV_ARM_SIMULATION_PLAN.md b/UAV_capture/px4_ros2_ws/docs/UAV_ARM_SIMULATION_PLAN.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..6c068dbbcedeb92d2626a9359ae8c45b8e5e8396
+--- /dev/null
++++ b/UAV_capture/px4_ros2_ws/docs/UAV_ARM_SIMULATION_PLAN.md
+@@ -0,0 +1,321 @@
++# UAV Arm Simulation Plan
++
++This document defines the planned direction for adding a lightweight UAV arm
++simulation to the existing PX4 ROS 2 workspace. This is a planning document
++only. It does not add URDF/SDF models, ROS 2 nodes, Gazebo plugins, launch
++files, or LeRobot integration.
++
++The starting platform should be the existing PX4 x500 simulation with a
++simplified 2-DOF or 3-DOF arm. The first goal is to prove stable aerial contact
++tasks without breaking Demo 01-04 behavior.
++
++## Why Start with a 2-DOF or 3-DOF Arm
++
++Aerial manipulation adds coupled dynamics between the multirotor and the arm.
++Starting with a full 6-DOF manipulator would combine too many unvalidated
++problems at once: mass distribution, inertia, joint control, contact modeling,
++end-effector planning, collision geometry, and flight-controller disturbance
++rejection.
++
++A 2-DOF or 3-DOF arm is the right first step because:
++
++| Benefit | Reason |
++| --- | --- |
++| Lower dynamics risk | Fewer links and lighter mass reduce center-of-mass shifts and torque disturbances on the x500 body. |
++| Easier debugging | Joint commands, transforms, collision geometry, and contact behavior can be inspected link by link. |
++| Smaller control surface | Early demos only need reach, extend, and touch motions, not full dexterous manipulation. |
++| Faster simulation iteration | Simple inertial properties and collision meshes are easier to tune in Gazebo. |
++| Cleaner LeRobot boundary | The learning problem can focus on end-effector operation before adding redundant arm kinematics. |
++
++Recommended initial arm shapes:
++
++- 2-DOF planar arm: shoulder pitch plus elbow pitch, with a small passive or
++  fixed end-effector pad.
++- 3-DOF lightweight arm: shoulder yaw, shoulder pitch, and elbow pitch, with the
++  same simple end-effector pad.
++
++The 2-DOF version should be attempted first unless the fixed target geometry
++requires lateral reach that cannot be provided by UAV yaw and position control.
++
++## Mounting Location
++
++The arm should mount near the underside of the x500 center body, close to the
++vehicle center of mass and away from the propeller disk.
++
++Recommended mount:
++
++```text
++x500 base_link
++  |
++  +-- arm_mount_link: underside center or slightly forward underside
++        |
++        +-- shoulder_link
++```
++
++Use an underside mount for the first model:
++
++- It keeps the arm clear of the propellers during extension.
++- It makes downward or forward-downward target contact easier to observe.
++- It reduces large roll or pitch moments compared with a side-mounted arm.
++- It leaves the top of the vehicle free for existing sensors or future payloads.
++
++If button-press tasks require a forward-facing end effector, the mount can be
++slightly forward of the x500 center body, but the offset should remain small.
++Any offset must be represented in the inertial model and documented as a
++parameter.
++
++Avoid side mounting in the first phase because it creates asymmetric inertia and
++a constant lateral disturbance that will make PX4 Offboard validation harder.
++
++## URDF and SDF Modeling Route
++
++The modeling route should keep the ROS description, Gazebo simulation, and PX4
++vehicle model boundaries clear.
++
++Recommended route:
++
++| Step | Output | Notes |
++| --- | --- | --- |
++| 1 | `x500_arm_description` package | New ROS 2 package for arm URDF/Xacro, meshes, and frame docs. |
++| 2 | Arm-only URDF/Xacro | Define links, joints, inertial values, visual geometry, and collision geometry without PX4 coupling. |
++| 3 | x500 attachment Xacro | Add an `arm_mount_link` and fixed joint from the x500 base frame to the arm base. |
++| 4 | Gazebo SDF export or include | Use SDF-compatible tags for joint dynamics, collision, and contact surfaces. |
++| 5 | World assets | Add fixed target and button models as separate Gazebo models, not embedded in the UAV model. |
++| 6 | TF validation | Verify `base_link -> arm_mount_link -> shoulder -> elbow -> ee_link` transforms before running contact demos. |
++
++The first arm model should use primitive shapes:
++
++- Cylinders or boxes for links.
++- Simple revolute joints with position limits.
++- A small rounded or box end-effector pad.
++- Conservative mass and inertia values.
++- Simple collision geometry that is close to, but slightly simpler than, the
++  visual geometry.
++
++Avoid high-detail meshes in the first iteration. They make contacts harder to
++debug and do not help validate the control architecture.
++
++## Joint Control Options
++
++Three joint-control approaches are viable. The recommended sequence is to start
++simple, then move toward `ros2_control` once the model and contact tasks are
++stable.
++
++| Option | Use When | Pros | Cons |
++| --- | --- | --- | --- |
++| Simple joint command node | First arm extension tests | Smallest implementation, easy scripted trajectories, low dependency cost. | Not a standard hardware/control abstraction. |
++| Gazebo joint control plugin | Early Gazebo-only demos | Direct simulation control, useful for fast contact experiments. | Can become simulator-specific and less reusable. |
++| `ros2_control` | Stable Demo 05 and future LeRobot policy work | Standard ROS 2 control path, controller switching, trajectory controllers. | More setup: controllers, transmissions, plugin config, launch wiring. |
++
++Recommended first implementation path:
++
++1. Use a simple ROS 2 joint command interface for the first no-contact extension
++   test.
++2. Add a Gazebo-compatible joint control path for repeatable simulation.
++3. Promote to `ros2_control` with a `joint_trajectory_controller` before using
++   learned policies or comparing multiple control strategies.
++
++The high-level arm command surface should be separate from PX4 topics. Candidate
++topics for later implementation:
++
++| Topic | Type | Purpose |
++| --- | --- | --- |
++| `/arm/joint_targets` | `sensor_msgs/msg/JointState` or trajectory message | Command shoulder/elbow target positions. |
++| `/arm/end_effector_target` | `geometry_msgs/msg/PoseStamped` | Optional Cartesian target for an IK or scripted controller. |
++| `/arm/contact_state` | `std_msgs/msg/Bool` or custom message | Report target or button contact. |
++
++## Stage 1: Hover with Arm Extension
++
++Goal: prove that the x500 can hold a stable Offboard hover while the arm moves
++through a conservative extension trajectory.
++
++Scenario:
++
++- Start the existing PX4/Gazebo/Micro XRCE-DDS stack.
++- Use the Demo 01-style Offboard hover behavior.
++- Keep the UAV at a fixed local NED target.
++- Command the arm from stowed pose to extended pose and back.
++- Do not include target contact in this stage.
++
++Success criteria:
++
++- Vehicle remains in Offboard mode during the arm motion.
++- Position tracking remains within an agreed hover tolerance.
++- Arm joints reach target positions without oscillation.
++- No collision occurs with the x500 body or propeller area.
++
++Primary data to record:
++
++- UAV local position and velocity.
++- Arm joint positions and commanded targets.
++- End-effector pose relative to `base_link`.
++- PX4 failsafe or mode changes, if any.
++
++## Stage 2: End-Effector Touches a Fixed Target
++
++Goal: validate controlled aerial contact with a passive fixed target.
++
++Scenario:
++
++- Place a fixed target pad in the Gazebo world.
++- Use PX4 Offboard to position the UAV near the target.
++- Keep the platform stable while the arm performs the final reach.
++- Detect contact through Gazebo contact reporting or end-effector proximity.
++
++Success criteria:
++
++- The end effector touches the target without destabilizing the vehicle.
++- The target touch is detected and logged.
++- Contact force or penetration remains bounded.
++- The UAV can return to a safe hover after contact.
++
++This stage should use a fixed target before a button because a passive target
++removes button travel, spring stiffness, and state-change logic from the first
++contact experiment.
++
++## Stage 3: Aerial Button Press
++
++Goal: extend fixed-target touch into a stateful operation where the arm presses
++a simulated button while the UAV remains stable.
++
++Scenario:
++
++- Add a button model with a simple prismatic axis or contact-triggered state.
++- Position the UAV near the button using PX4 Offboard.
++- Command the arm to press along the button normal.
++- Confirm press completion through button displacement, contact state, or a
++  Gazebo plugin event.
++
++Success criteria:
++
++- Button state changes from unpressed to pressed.
++- The press completes without PX4 failsafe, excessive vehicle drift, or arm
++  collision.
++- The system logs approach, contact, press, release, and retreat phases.
++
++This stage should become the first version of the aerial manipulation benchmark
++only after Stage 1 and Stage 2 are repeatable.
++
++## Relationship with PX4 Offboard
++
++PX4 Offboard should remain responsible for stabilizing and positioning the UAV
++platform. The arm should execute local manipulation commands only.
++
++Control boundary:
++
++| Component | Responsibility |
++| --- | --- |
++| PX4 | Attitude stabilization, motor control, estimator, failsafe behavior. |
++| Offboard bridge | High-level UAV position/yaw setpoints, target validation, emergency behavior. |
++| Arm controller | Joint targets, end-effector motion, contact sequence, arm limits. |
++| Task planner | Sequence such as hover, approach, extend, touch, retract, retreat. |
++
++The arm controller must not publish low-level PX4 actuator, motor, attitude, or
++rate commands. It may request UAV pose changes only through high-level topics
++such as `/uav/target_position` or the future `/uav/target_pose` interface
++defined for the workspace.
++
++PX4 should hold the platform stable while the arm executes local operations. If
++the arm motion causes excessive tracking error, the task should abort or retract
++the arm rather than trying to override PX4 internals.
++
++## Relationship with LeRobot
++
++LeRobot should be introduced after the scripted arm tasks are stable. Its role
++should be limited to learning or executing the local manipulation policy.
++
++Allowed future LeRobot control scope:
++
++- End-effector target selection.
++- Arm joint trajectory policy.
++- Contact timing and press depth policy.
++- Visual or state-based manipulation decisions.
++
++Disallowed LeRobot control scope:
++
++- Direct motor control.
++- PX4 attitude, rate, or actuator commands.
++- Bypassing the Offboard bridge safety checks.
++- Mixing flight-control stabilization with arm manipulation policy.
++
++The intended future architecture is:
++
++```text
++LeRobot policy
++  -> arm command topic or end-effector target
++  -> arm controller
++  -> simulated arm joints
++
++Task planner or safety bridge
++  -> /uav/target_position or /uav/target_pose
++  -> PX4 Offboard
++  -> stable x500 platform
++```
++
++This keeps the learning problem focused on manipulation and preserves PX4 as
++the flight-control authority.
++
++## Risks
++
++| Risk | Impact | Mitigation |
++| --- | --- | --- |
++| Center-of-mass change | Hover trim and tracking can degrade when the arm extends. | Start with a light underside arm, document mass properties, and compare hover error with stowed vs extended poses. |
++| Inertia disturbance | Fast joint motion can induce roll, pitch, or yaw disturbance. | Limit joint speed and acceleration; begin with slow scripted trajectories. |
++| Coordinate frames | NED, ENU, Gazebo, base link, and end-effector frames can be mixed incorrectly. | Define explicit frame names and validate TF before contact tests. |
++| Contact instability | Contact with the target or button can create bouncing, penetration, or solver instability. | Use simple collision shapes, conservative stiffness/damping, and bounded approach speeds. |
++| Simulation accuracy | Gazebo contact and lightweight arm dynamics may not match real hardware. | Treat Demo 05 as a simulation benchmark, not proof of real-world readiness. |
++| PX4 failsafe interaction | Contact disturbances or simulation pauses may trigger failsafe behavior. | Keep Offboard setpoints continuous and log mode/failsafe state during tests. |
++| Propeller/body collision | Bad joint limits or mount offsets can intersect the x500 model. | Add conservative joint limits and collision checks before enabling contact tasks. |
++
++## Minimum Demo 05 Definition
++
++Recommended Demo 05 target: **Aerial Target Touch**.
++
++Aerial Target Touch is the better minimum demo because it validates the core
++aerial manipulation stack before introducing button mechanics. It should prove:
++
++- x500 Offboard hover remains stable.
++- A 2-DOF or 3-DOF arm can extend from a safe stowed pose.
++- The end effector can touch a fixed target.
++- The system can log UAV trajectory, arm joints, end-effector pose, and contact
++  result.
++
++Demo 05 can later be upgraded to **Aerial Button Press** after the fixed-target
++touch is repeatable.
++
++Recommended Demo 05 output names should follow the existing stable naming
++pattern where applicable:
++
++- `trajectory.csv`
++- `trajectory_3d.png`
++- `xy_path.png`
++- `height_curve.png`
++- `speed_curve.png`
++- `tracking_error.png`
++- `trajectory.mp4`
++- `summary.md`
++- `result.txt`
++
++Additional Demo 05-specific outputs may include:
++
++- `arm_joints.csv`
++- `end_effector_pose.csv`
++- `contact_events.csv`
++- `contact_result.txt`
++
++## Current Missing Dependencies
++
++The current workspace does not yet contain the pieces required to run the arm
++simulation. The expected future additions are:
++
++- A new arm description package with URDF/Xacro and optional Gazebo SDF assets.
++- A combined x500 plus arm model or model include path.
++- Joint controller configuration, either simple command node, Gazebo plugin, or
++  `ros2_control`.
++- Gazebo target and button models.
++- Contact detection and logging.
++- Arm trajectory scripts or a task sequencer for Demo 05.
++- Optional IK or end-effector control utilities.
++- Future LeRobot environment wrappers and policy interfaces.
++
++None of these dependencies are implemented by this planning task.
+
+codex
+文档已新增。现在做最小验证：确认文档和任务日志都存在且非空，并检查日志确实保存了 `ls docs` 的输出。
+exec
+/bin/bash -lc "test -s docs/UAV_ARM_SIMULATION_PLAN.md && printf 'doc exists and is non-empty\\n'" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+doc exists and is non-empty
+
+exec
+/bin/bash -lc "test -s codex-logs/005-plan-uav-arm-simulation.log && printf 'log exists and is non-empty\\n' && sed -n '1,80p' codex-logs/005-plan-uav-arm-simulation.log" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+log exists and is non-empty
+PROJECT_STRUCTURE.md
+REGRESSION_CHECKS.md
+UAV_CONTROL_API.md
+VISUALIZATION_GUIDE.md
+
+exec
+/bin/bash -lc 'grep -E "2-DOF|3-DOF|PX4 Offboard|LeRobot|Aerial Target Touch|Aerial Button Press|Center-of-mass|URDF|SDF|ros2_control" docs/UAV_ARM_SIMULATION_PLAN.md | wc -l' in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+36
+
+diff --git a/UAV_capture/px4_ros2_ws/docs/UAV_ARM_SIMULATION_PLAN.md b/UAV_capture/px4_ros2_ws/docs/UAV_ARM_SIMULATION_PLAN.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..6c068dbbcedeb92d2626a9359ae8c45b8e5e8396
+--- /dev/null
++++ b/UAV_capture/px4_ros2_ws/docs/UAV_ARM_SIMULATION_PLAN.md
+@@ -0,0 +1,321 @@
++# UAV Arm Simulation Plan
++
++This document defines the planned direction for adding a lightweight UAV arm
++simulation to the existing PX4 ROS 2 workspace. This is a planning document
++only. It does not add URDF/SDF models, ROS 2 nodes, Gazebo plugins, launch
++files, or LeRobot integration.
++
++The starting platform should be the existing PX4 x500 simulation with a
++simplified 2-DOF or 3-DOF arm. The first goal is to prove stable aerial contact
++tasks without breaking Demo 01-04 behavior.
++
++## Why Start with a 2-DOF or 3-DOF Arm
++
++Aerial manipulation adds coupled dynamics between the multirotor and the arm.
++Starting with a full 6-DOF manipulator would combine too many unvalidated
++problems at once: mass distribution, inertia, joint control, contact modeling,
++end-effector planning, collision geometry, and flight-controller disturbance
++rejection.
++
++A 2-DOF or 3-DOF arm is the right first step because:
++
++| Benefit | Reason |
++| --- | --- |
++| Lower dynamics risk | Fewer links and lighter mass reduce center-of-mass shifts and torque disturbances on the x500 body. |
++| Easier debugging | Joint commands, transforms, collision geometry, and contact behavior can be inspected link by link. |
++| Smaller control surface | Early demos only need reach, extend, and touch motions, not full dexterous manipulation. |
++| Faster simulation iteration | Simple inertial properties and collision meshes are easier to tune in Gazebo. |
++| Cleaner LeRobot boundary | The learning problem can focus on end-effector operation before adding redundant arm kinematics. |
++
++Recommended initial arm shapes:
++
++- 2-DOF planar arm: shoulder pitch plus elbow pitch, with a small passive or
++  fixed end-effector pad.
++- 3-DOF lightweight arm: shoulder yaw, shoulder pitch, and elbow pitch, with the
++  same simple end-effector pad.
++
++The 2-DOF version should be attempted first unless the fixed target geometry
++requires lateral reach that cannot be provided by UAV yaw and position control.
++
++## Mounting Location
++
++The arm should mount near the underside of the x500 center body, close to the
++vehicle center of mass and away from the propeller disk.
++
++Recommended mount:
++
++```text
++x500 base_link
++  |
++  +-- arm_mount_link: underside center or slightly forward underside
++        |
++        +-- shoulder_link
++```
++
++Use an underside mount for the first model:
++
++- It keeps the arm clear of the propellers during extension.
++- It makes downward or forward-downward target contact easier to observe.
++- It reduces large roll or pitch moments compared with a side-mounted arm.
++- It leaves the top of the vehicle free for existing sensors or future payloads.
++
++If button-press tasks require a forward-facing end effector, the mount can be
++slightly forward of the x500 center body, but the offset should remain small.
++Any offset must be represented in the inertial model and documented as a
++parameter.
++
++Avoid side mounting in the first phase because it creates asymmetric inertia and
++a constant lateral disturbance that will make PX4 Offboard validation harder.
++
++## URDF and SDF Modeling Route
++
++The modeling route should keep the ROS description, Gazebo simulation, and PX4
++vehicle model boundaries clear.
++
++Recommended route:
++
++| Step | Output | Notes |
++| --- | --- | --- |
++| 1 | `x500_arm_description` package | New ROS 2 package for arm URDF/Xacro, meshes, and frame docs. |
++| 2 | Arm-only URDF/Xacro | Define links, joints, inertial values, visual geometry, and collision geometry without PX4 coupling. |
++| 3 | x500 attachment Xacro | Add an `arm_mount_link` and fixed joint from the x500 base frame to the arm base. |
++| 4 | Gazebo SDF export or include | Use SDF-compatible tags for joint dynamics, collision, and contact surfaces. |
++| 5 | World assets | Add fixed target and button models as separate Gazebo models, not embedded in the UAV model. |
++| 6 | TF validation | Verify `base_link -> arm_mount_link -> shoulder -> elbow -> ee_link` transforms before running contact demos. |
++
++The first arm model should use primitive shapes:
++
++- Cylinders or boxes for links.
++- Simple revolute joints with position limits.
++- A small rounded or box end-effector pad.
++- Conservative mass and inertia values.
++- Simple collision geometry that is close to, but slightly simpler than, the
++  visual geometry.
++
++Avoid high-detail meshes in the first iteration. They make contacts harder to
++debug and do not help validate the control architecture.
++
++## Joint Control Options
++
++Three joint-control approaches are viable. The recommended sequence is to start
++simple, then move toward `ros2_control` once the model and contact tasks are
++stable.
++
++| Option | Use When | Pros | Cons |
++| --- | --- | --- | --- |
++| Simple joint command node | First arm extension tests | Smallest implementation, easy scripted trajectories, low dependency cost. | Not a standard hardware/control abstraction. |
++| Gazebo joint control plugin | Early Gazebo-only demos | Direct simulation control, useful for fast contact experiments. | Can become simulator-specific and less reusable. |
++| `ros2_control` | Stable Demo 05 and future LeRobot policy work | Standard ROS 2 control path, controller switching, trajectory controllers. | More setup: controllers, transmissions, plugin config, launch wiring. |
++
++Recommended first implementation path:
++
++1. Use a simple ROS 2 joint command interface for the first no-contact extension
++   test.
++2. Add a Gazebo-compatible joint control path for repeatable simulation.
++3. Promote to `ros2_control` with a `joint_trajectory_controller` before using
++   learned policies or comparing multiple control strategies.
++
++The high-level arm command surface should be separate from PX4 topics. Candidate
++topics for later implementation:
++
++| Topic | Type | Purpose |
++| --- | --- | --- |
++| `/arm/joint_targets` | `sensor_msgs/msg/JointState` or trajectory message | Command shoulder/elbow target positions. |
++| `/arm/end_effector_target` | `geometry_msgs/msg/PoseStamped` | Optional Cartesian target for an IK or scripted controller. |
++| `/arm/contact_state` | `std_msgs/msg/Bool` or custom message | Report target or button contact. |
++
++## Stage 1: Hover with Arm Extension
++
++Goal: prove that the x500 can hold a stable Offboard hover while the arm moves
++through a conservative extension trajectory.
++
++Scenario:
++
++- Start the existing PX4/Gazebo/Micro XRCE-DDS stack.
++- Use the Demo 01-style Offboard hover behavior.
++- Keep the UAV at a fixed local NED target.
++- Command the arm from stowed pose to extended pose and back.
++- Do not include target contact in this stage.
++
++Success criteria:
++
++- Vehicle remains in Offboard mode during the arm motion.
++- Position tracking remains within an agreed hover tolerance.
++- Arm joints reach target positions without oscillation.
++- No collision occurs with the x500 body or propeller area.
++
++Primary data to record:
++
++- UAV local position and velocity.
++- Arm joint positions and commanded targets.
++- End-effector pose relative to `base_link`.
++- PX4 failsafe or mode changes, if any.
++
++## Stage 2: End-Effector Touches a Fixed Target
++
++Goal: validate controlled aerial contact with a passive fixed target.
++
++Scenario:
++
++- Place a fixed target pad in the Gazebo world.
++- Use PX4 Offboard to position the UAV near the target.
++- Keep the platform stable while the arm performs the final reach.
++- Detect contact through Gazebo contact reporting or end-effector proximity.
++
++Success criteria:
++
++- The end effector touches the target without destabilizing the vehicle.
++- The target touch is detected and logged.
++- Contact force or penetration remains bounded.
++- The UAV can return to a safe hover after contact.
++
++This stage should use a fixed target before a button because a passive target
++removes button travel, spring stiffness, and state-change logic from the first
++contact experiment.
++
++## Stage 3: Aerial Button Press
++
++Goal: extend fixed-target touch into a stateful operation where the arm presses
++a simulated button while the UAV remains stable.
++
++Scenario:
++
++- Add a button model with a simple prismatic axis or contact-triggered state.
++- Position the UAV near the button using PX4 Offboard.
++- Command the arm to press along the button normal.
++- Confirm press completion through button displacement, contact state, or a
++  Gazebo plugin event.
++
++Success criteria:
++
++- Button state changes from unpressed to pressed.
++- The press completes without PX4 failsafe, excessive vehicle drift, or arm
++  collision.
++- The system logs approach, contact, press, release, and retreat phases.
++
++This stage should become the first version of the aerial manipulation benchmark
++only after Stage 1 and Stage 2 are repeatable.
++
++## Relationship with PX4 Offboard
++
++PX4 Offboard should remain responsible for stabilizing and positioning the UAV
++platform. The arm should execute local manipulation commands only.
++
++Control boundary:
++
++| Component | Responsibility |
++| --- | --- |
++| PX4 | Attitude stabilization, motor control, estimator, failsafe behavior. |
++| Offboard bridge | High-level UAV position/yaw setpoints, target validation, emergency behavior. |
++| Arm controller | Joint targets, end-effector motion, contact sequence, arm limits. |
++| Task planner | Sequence such as hover, approach, extend, touch, retract, retreat. |
++
++The arm controller must not publish low-level PX4 actuator, motor, attitude, or
++rate commands. It may request UAV pose changes only through high-level topics
++such as `/uav/target_position` or the future `/uav/target_pose` interface
++defined for the workspace.
++
++PX4 should hold the platform stable while the arm executes local operations. If
++the arm motion causes excessive tracking error, the task should abort or retract
++the arm rather than trying to override PX4 internals.
++
++## Relationship with LeRobot
++
++LeRobot should be introduced after the scripted arm tasks are stable. Its role
++should be limited to learning or executing the local manipulation policy.
++
++Allowed future LeRobot control scope:
++
++- End-effector target selection.
++- Arm joint trajectory policy.
++- Contact timing and press depth policy.
++- Visual or state-based manipulation decisions.
++
++Disallowed LeRobot control scope:
++
++- Direct motor control.
++- PX4 attitude, rate, or actuator commands.
++- Bypassing the Offboard bridge safety checks.
++- Mixing flight-control stabilization with arm manipulation policy.
++
++The intended future architecture is:
++
++```text
++LeRobot policy
++  -> arm command topic or end-effector target
++  -> arm controller
++  -> simulated arm joints
++
++Task planner or safety bridge
++  -> /uav/target_position or /uav/target_pose
++  -> PX4 Offboard
++  -> stable x500 platform
++```
++
++This keeps the learning problem focused on manipulation and preserves PX4 as
++the flight-control authority.
++
++## Risks
++
++| Risk | Impact | Mitigation |
++| --- | --- | --- |
++| Center-of-mass change | Hover trim and tracking can degrade when the arm extends. | Start with a light underside arm, document mass properties, and compare hover error with stowed vs extended poses. |
++| Inertia disturbance | Fast joint motion can induce roll, pitch, or yaw disturbance. | Limit joint speed and acceleration; begin with slow scripted trajectories. |
++| Coordinate frames | NED, ENU, Gazebo, base link, and end-effector frames can be mixed incorrectly. | Define explicit frame names and validate TF before contact tests. |
++| Contact instability | Contact with the target or button can create bouncing, penetration, or solver instability. | Use simple collision shapes, conservative stiffness/damping, and bounded approach speeds. |
++| Simulation accuracy | Gazebo contact and lightweight arm dynamics may not match real hardware. | Treat Demo 05 as a simulation benchmark, not proof of real-world readiness. |
++| PX4 failsafe interaction | Contact disturbances or simulation pauses may trigger failsafe behavior. | Keep Offboard setpoints continuous and log mode/failsafe state during tests. |
++| Propeller/body collision | Bad joint limits or mount offsets can intersect the x500 model. | Add conservative joint limits and collision checks before enabling contact tasks. |
++
++## Minimum Demo 05 Definition
++
++Recommended Demo 05 target: **Aerial Target Touch**.
++
++Aerial Target Touch is the better minimum demo because it validates the core
++aerial manipulation stack before introducing button mechanics. It should prove:
++
++- x500 Offboard hover remains stable.
++- A 2-DOF or 3-DOF arm can extend from a safe stowed pose.
++- The end effector can touch a fixed target.
++- The system can log UAV trajectory, arm joints, end-effector pose, and contact
++  result.
++
++Demo 05 can later be upgraded to **Aerial Button Press** after the fixed-target
++touch is repeatable.
++
++Recommended Demo 05 output names should follow the existing stable naming
++pattern where applicable:
++
++- `trajectory.csv`
++- `trajectory_3d.png`
++- `xy_path.png`
++- `height_curve.png`
++- `speed_curve.png`
++- `tracking_error.png`
++- `trajectory.mp4`
++- `summary.md`
++- `result.txt`
++
++Additional Demo 05-specific outputs may include:
++
++- `arm_joints.csv`
++- `end_effector_pose.csv`
++- `contact_events.csv`
++- `contact_result.txt`
++
++## Current Missing Dependencies
++
++The current workspace does not yet contain the pieces required to run the arm
++simulation. The expected future additions are:
++
++- A new arm description package with URDF/Xacro and optional Gazebo SDF assets.
++- A combined x500 plus arm model or model include path.
++- Joint controller configuration, either simple command node, Gazebo plugin, or
++  `ros2_control`.
++- Gazebo target and button models.
++- Contact detection and logging.
++- Arm trajectory scripts or a task sequencer for Demo 05.
++- Optional IK or end-effector control utilities.
++- Future LeRobot environment wrappers and policy interfaces.
++
++None of these dependencies are implemented by this planning task.
+
+codex
+因为文档是在第一次 `ls docs` 之后创建的，我会重新执行任务指定的两条命令并覆盖同名日志，让日志反映最终 `docs/` 状态。
+exec
+/bin/bash -lc "{ mkdir -p docs; ls docs; } > codex-logs/005-plan-uav-arm-simulation.log && sed -n '1,80p' codex-logs/005-plan-uav-arm-simulation.log" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+PROJECT_STRUCTURE.md
+REGRESSION_CHECKS.md
+UAV_ARM_SIMULATION_PLAN.md
+UAV_CONTROL_API.md
+VISUALIZATION_GUIDE.md
+
+diff --git a/UAV_capture/px4_ros2_ws/docs/UAV_ARM_SIMULATION_PLAN.md b/UAV_capture/px4_ros2_ws/docs/UAV_ARM_SIMULATION_PLAN.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..6c068dbbcedeb92d2626a9359ae8c45b8e5e8396
+--- /dev/null
++++ b/UAV_capture/px4_ros2_ws/docs/UAV_ARM_SIMULATION_PLAN.md
+@@ -0,0 +1,321 @@
++# UAV Arm Simulation Plan
++
++This document defines the planned direction for adding a lightweight UAV arm
++simulation to the existing PX4 ROS 2 workspace. This is a planning document
++only. It does not add URDF/SDF models, ROS 2 nodes, Gazebo plugins, launch
++files, or LeRobot integration.
++
++The starting platform should be the existing PX4 x500 simulation with a
++simplified 2-DOF or 3-DOF arm. The first goal is to prove stable aerial contact
++tasks without breaking Demo 01-04 behavior.
++
++## Why Start with a 2-DOF or 3-DOF Arm
++
++Aerial manipulation adds coupled dynamics between the multirotor and the arm.
++Starting with a full 6-DOF manipulator would combine too many unvalidated
++problems at once: mass distribution, inertia, joint control, contact modeling,
++end-effector planning, collision geometry, and flight-controller disturbance
++rejection.
++
++A 2-DOF or 3-DOF arm is the right first step because:
++
++| Benefit | Reason |
++| --- | --- |
++| Lower dynamics risk | Fewer links and lighter mass reduce center-of-mass shifts and torque disturbances on the x500 body. |
++| Easier debugging | Joint commands, transforms, collision geometry, and contact behavior can be inspected link by link. |
++| Smaller control surface | Early demos only need reach, extend, and touch motions, not full dexterous manipulation. |
++| Faster simulation iteration | Simple inertial properties and collision meshes are easier to tune in Gazebo. |
++| Cleaner LeRobot boundary | The learning problem can focus on end-effector operation before adding redundant arm kinematics. |
++
++Recommended initial arm shapes:
++
++- 2-DOF planar arm: shoulder pitch plus elbow pitch, with a small passive or
++  fixed end-effector pad.
++- 3-DOF lightweight arm: shoulder yaw, shoulder pitch, and elbow pitch, with the
++  same simple end-effector pad.
++
++The 2-DOF version should be attempted first unless the fixed target geometry
++requires lateral reach that cannot be provided by UAV yaw and position control.
++
++## Mounting Location
++
++The arm should mount near the underside of the x500 center body, close to the
++vehicle center of mass and away from the propeller disk.
++
++Recommended mount:
++
++```text
++x500 base_link
++  |
++  +-- arm_mount_link: underside center or slightly forward underside
++        |
++        +-- shoulder_link
++```
++
++Use an underside mount for the first model:
++
++- It keeps the arm clear of the propellers during extension.
++- It makes downward or forward-downward target contact easier to observe.
++- It reduces large roll or pitch moments compared with a side-mounted arm.
++- It leaves the top of the vehicle free for existing sensors or future payloads.
++
++If button-press tasks require a forward-facing end effector, the mount can be
++slightly forward of the x500 center body, but the offset should remain small.
++Any offset must be represented in the inertial model and documented as a
++parameter.
++
++Avoid side mounting in the first phase because it creates asymmetric inertia and
++a constant lateral disturbance that will make PX4 Offboard validation harder.
++
++## URDF and SDF Modeling Route
++
++The modeling route should keep the ROS description, Gazebo simulation, and PX4
++vehicle model boundaries clear.
++
++Recommended route:
++
++| Step | Output | Notes |
++| --- | --- | --- |
++| 1 | `x500_arm_description` package | New ROS 2 package for arm URDF/Xacro, meshes, and frame docs. |
++| 2 | Arm-only URDF/Xacro | Define links, joints, inertial values, visual geometry, and collision geometry without PX4 coupling. |
++| 3 | x500 attachment Xacro | Add an `arm_mount_link` and fixed joint from the x500 base frame to the arm base. |
++| 4 | Gazebo SDF export or include | Use SDF-compatible tags for joint dynamics, collision, and contact surfaces. |
++| 5 | World assets | Add fixed target and button models as separate Gazebo models, not embedded in the UAV model. |
++| 6 | TF validation | Verify `base_link -> arm_mount_link -> shoulder -> elbow -> ee_link` transforms before running contact demos. |
++
++The first arm model should use primitive shapes:
++
++- Cylinders or boxes for links.
++- Simple revolute joints with position limits.
++- A small rounded or box end-effector pad.
++- Conservative mass and inertia values.
++- Simple collision geometry that is close to, but slightly simpler than, the
++  visual geometry.
++
++Avoid high-detail meshes in the first iteration. They make contacts harder to
++debug and do not help validate the control architecture.
++
++## Joint Control Options
++
++Three joint-control approaches are viable. The recommended sequence is to start
++simple, then move toward `ros2_control` once the model and contact tasks are
++stable.
++
++| Option | Use When | Pros | Cons |
++| --- | --- | --- | --- |
++| Simple joint command node | First arm extension tests | Smallest implementation, easy scripted trajectories, low dependency cost. | Not a standard hardware/control abstraction. |
++| Gazebo joint control plugin | Early Gazebo-only demos | Direct simulation control, useful for fast contact experiments. | Can become simulator-specific and less reusable. |
++| `ros2_control` | Stable Demo 05 and future LeRobot policy work | Standard ROS 2 control path, controller switching, trajectory controllers. | More setup: controllers, transmissions, plugin config, launch wiring. |
++
++Recommended first implementation path:
++
++1. Use a simple ROS 2 joint command interface for the first no-contact extension
++   test.
++2. Add a Gazebo-compatible joint control path for repeatable simulation.
++3. Promote to `ros2_control` with a `joint_trajectory_controller` before using
++   learned policies or comparing multiple control strategies.
++
++The high-level arm command surface should be separate from PX4 topics. Candidate
++topics for later implementation:
++
++| Topic | Type | Purpose |
++| --- | --- | --- |
++| `/arm/joint_targets` | `sensor_msgs/msg/JointState` or trajectory message | Command shoulder/elbow target positions. |
++| `/arm/end_effector_target` | `geometry_msgs/msg/PoseStamped` | Optional Cartesian target for an IK or scripted controller. |
++| `/arm/contact_state` | `std_msgs/msg/Bool` or custom message | Report target or button contact. |
++
++## Stage 1: Hover with Arm Extension
++
++Goal: prove that the x500 can hold a stable Offboard hover while the arm moves
++through a conservative extension trajectory.
++
++Scenario:
++
++- Start the existing PX4/Gazebo/Micro XRCE-DDS stack.
++- Use the Demo 01-style Offboard hover behavior.
++- Keep the UAV at a fixed local NED target.
++- Command the arm from stowed pose to extended pose and back.
++- Do not include target contact in this stage.
++
++Success criteria:
++
++- Vehicle remains in Offboard mode during the arm motion.
++- Position tracking remains within an agreed hover tolerance.
++- Arm joints reach target positions without oscillation.
++- No collision occurs with the x500 body or propeller area.
++
++Primary data to record:
++
++- UAV local position and velocity.
++- Arm joint positions and commanded targets.
++- End-effector pose relative to `base_link`.
++- PX4 failsafe or mode changes, if any.
++
++## Stage 2: End-Effector Touches a Fixed Target
++
++Goal: validate controlled aerial contact with a passive fixed target.
++
++Scenario:
++
++- Place a fixed target pad in the Gazebo world.
++- Use PX4 Offboard to position the UAV near the target.
++- Keep the platform stable while the arm performs the final reach.
++- Detect contact through Gazebo contact reporting or end-effector proximity.
++
++Success criteria:
++
++- The end effector touches the target without destabilizing the vehicle.
++- The target touch is detected and logged.
++- Contact force or penetration remains bounded.
++- The UAV can return to a safe hover after contact.
++
++This stage should use a fixed target before a button because a passive target
++removes button travel, spring stiffness, and state-change logic from the first
++contact experiment.
++
++## Stage 3: Aerial Button Press
++
++Goal: extend fixed-target touch into a stateful operation where the arm presses
++a simulated button while the UAV remains stable.
++
++Scenario:
++
++- Add a button model with a simple prismatic axis or contact-triggered state.
++- Position the UAV near the button using PX4 Offboard.
++- Command the arm to press along the button normal.
++- Confirm press completion through button displacement, contact state, or a
++  Gazebo plugin event.
++
++Success criteria:
++
++- Button state changes from unpressed to pressed.
++- The press completes without PX4 failsafe, excessive vehicle drift, or arm
++  collision.
++- The system logs approach, contact, press, release, and retreat phases.
++
++This stage should become the first version of the aerial manipulation benchmark
++only after Stage 1 and Stage 2 are repeatable.
++
++## Relationship with PX4 Offboard
++
++PX4 Offboard should remain responsible for stabilizing and positioning the UAV
++platform. The arm should execute local manipulation commands only.
++
++Control boundary:
++
++| Component | Responsibility |
++| --- | --- |
++| PX4 | Attitude stabilization, motor control, estimator, failsafe behavior. |
++| Offboard bridge | High-level UAV position/yaw setpoints, target validation, emergency behavior. |
++| Arm controller | Joint targets, end-effector motion, contact sequence, arm limits. |
++| Task planner | Sequence such as hover, approach, extend, touch, retract, retreat. |
++
++The arm controller must not publish low-level PX4 actuator, motor, attitude, or
++rate commands. It may request UAV pose changes only through high-level topics
++such as `/uav/target_position` or the future `/uav/target_pose` interface
++defined for the workspace.
++
++PX4 should hold the platform stable while the arm executes local operations. If
++the arm motion causes excessive tracking error, the task should abort or retract
++the arm rather than trying to override PX4 internals.
++
++## Relationship with LeRobot
++
++LeRobot should be introduced after the scripted arm tasks are stable. Its role
++should be limited to learning or executing the local manipulation policy.
++
++Allowed future LeRobot control scope:
++
++- End-effector target selection.
++- Arm joint trajectory policy.
++- Contact timing and press depth policy.
++- Visual or state-based manipulation decisions.
++
++Disallowed LeRobot control scope:
++
++- Direct motor control.
++- PX4 attitude, rate, or actuator commands.
++- Bypassing the Offboard bridge safety checks.
++- Mixing flight-control stabilization with arm manipulation policy.
++
++The intended future architecture is:
++
++```text
++LeRobot policy
++  -> arm command topic or end-effector target
++  -> arm controller
++  -> simulated arm joints
++
++Task planner or safety bridge
++  -> /uav/target_position or /uav/target_pose
++  -> PX4 Offboard
++  -> stable x500 platform
++```
++
++This keeps the learning problem focused on manipulation and preserves PX4 as
++the flight-control authority.
++
++## Risks
++
++| Risk | Impact | Mitigation |
++| --- | --- | --- |
++| Center-of-mass change | Hover trim and tracking can degrade when the arm extends. | Start with a light underside arm, document mass properties, and compare hover error with stowed vs extended poses. |
++| Inertia disturbance | Fast joint motion can induce roll, pitch, or yaw disturbance. | Limit joint speed and acceleration; begin with slow scripted trajectories. |
++| Coordinate frames | NED, ENU, Gazebo, base link, and end-effector frames can be mixed incorrectly. | Define explicit frame names and validate TF before contact tests. |
++| Contact instability | Contact with the target or button can create bouncing, penetration, or solver instability. | Use simple collision shapes, conservative stiffness/damping, and bounded approach speeds. |
++| Simulation accuracy | Gazebo contact and lightweight arm dynamics may not match real hardware. | Treat Demo 05 as a simulation benchmark, not proof of real-world readiness. |
++| PX4 failsafe interaction | Contact disturbances or simulation pauses may trigger failsafe behavior. | Keep Offboard setpoints continuous and log mode/failsafe state during tests. |
++| Propeller/body collision | Bad joint limits or mount offsets can intersect the x500 model. | Add conservative joint limits and collision checks before enabling contact tasks. |
++
++## Minimum Demo 05 Definition
++
++Recommended Demo 05 target: **Aerial Target Touch**.
++
++Aerial Target Touch is the better minimum demo because it validates the core
++aerial manipulation stack before introducing button mechanics. It should prove:
++
++- x500 Offboard hover remains stable.
++- A 2-DOF or 3-DOF arm can extend from a safe stowed pose.
++- The end effector can touch a fixed target.
++- The system can log UAV trajectory, arm joints, end-effector pose, and contact
++  result.
++
++Demo 05 can later be upgraded to **Aerial Button Press** after the fixed-target
++touch is repeatable.
++
++Recommended Demo 05 output names should follow the existing stable naming
++pattern where applicable:
++
++- `trajectory.csv`
++- `trajectory_3d.png`
++- `xy_path.png`
++- `height_curve.png`
++- `speed_curve.png`
++- `tracking_error.png`
++- `trajectory.mp4`
++- `summary.md`
++- `result.txt`
++
++Additional Demo 05-specific outputs may include:
++
++- `arm_joints.csv`
++- `end_effector_pose.csv`
++- `contact_events.csv`
++- `contact_result.txt`
++
++## Current Missing Dependencies
++
++The current workspace does not yet contain the pieces required to run the arm
++simulation. The expected future additions are:
++
++- A new arm description package with URDF/Xacro and optional Gazebo SDF assets.
++- A combined x500 plus arm model or model include path.
++- Joint controller configuration, either simple command node, Gazebo plugin, or
++  `ros2_control`.
++- Gazebo target and button models.
++- Contact detection and logging.
++- Arm trajectory scripts or a task sequencer for Demo 05.
++- Optional IK or end-effector control utilities.
++- Future LeRobot environment wrappers and policy interfaces.
++
++None of these dependencies are implemented by this planning task.
+
+codex
+已完成 Task 005，只新增规划文档和任务日志，没有改源码。
+
+**Demo 05 推荐目标**
+推荐从 **Aerial Target Touch** 开始，而不是直接做 Aerial Button Press。原因是它先验证 x500 Offboard 悬停、2-DOF/3-DOF arm 伸出、末端接触固定目标和接触日志，等稳定后再升级到按钮按压。
+
+**技术路线**
+从 x500 + underside-mounted 2-DOF/3-DOF 简化机械臂开始；先做 arm-only URDF/Xacro，再做 x500 挂载集成；关节控制先用 simple joint command 或 Gazebo joint plugin，稳定后再迁移到 `ros2_control`。PX4 Offboard 只负责平台稳定和位置/yaw，高层机械臂控制只做局部末端操作。
+
+**当前还缺的依赖**
+缺 arm description 包、x500+arm 模型集成、关节控制配置、Gazebo target/button 模型、接触检测与日志、Demo 05 task sequencer，以及未来 LeRobot policy wrapper。
+
+**changed files**
+- [docs/UAV_ARM_SIMULATION_PLAN.md](/home/clcwork/UAV_capture/px4_ros2_ws/docs/UAV_ARM_SIMULATION_PLAN.md)
+- [codex-logs/005-plan-uav-arm-simulation.log](/home/clcwork/UAV_capture/px4_ros2_ws/codex-logs/005-plan-uav-arm-simulation.log)
+
+**commands run**
+- `find ...` 检查现有 docs/tasks/logs 和项目结构
+- `sed -n ...` 阅读 Task 005 和现有文档风格
+- `mkdir -p docs`
+- `ls docs`
+- `test -s docs/UAV_ARM_SIMULATION_PLAN.md`
+- `test -s codex-logs/005-plan-uav-arm-simulation.log`
+- `grep -E ... docs/UAV_ARM_SIMULATION_PLAN.md | wc -l`
+
+**test result**
+PASS。文档和日志均存在且非空；日志已保存 `mkdir -p docs && ls docs` 的最终输出；文档覆盖 2-DOF/3-DOF、挂载位置、URDF/SDF、关节控制、三阶段任务、PX4/LeRobot 边界、风险清单和 Demo 05 定义。
+
+**known risks**
+本任务只做技术规划，未验证 Gazebo 接触、PX4 悬停扰动、机械臂质量/惯量、坐标系 TF、`ros2_control` 可用性或 LeRobot 集成。
+diff --git a/UAV_capture/px4_ros2_ws/docs/UAV_ARM_SIMULATION_PLAN.md b/UAV_capture/px4_ros2_ws/docs/UAV_ARM_SIMULATION_PLAN.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..6c068dbbcedeb92d2626a9359ae8c45b8e5e8396
+--- /dev/null
++++ b/UAV_capture/px4_ros2_ws/docs/UAV_ARM_SIMULATION_PLAN.md
+@@ -0,0 +1,321 @@
++# UAV Arm Simulation Plan
++
++This document defines the planned direction for adding a lightweight UAV arm
++simulation to the existing PX4 ROS 2 workspace. This is a planning document
++only. It does not add URDF/SDF models, ROS 2 nodes, Gazebo plugins, launch
++files, or LeRobot integration.
++
++The starting platform should be the existing PX4 x500 simulation with a
++simplified 2-DOF or 3-DOF arm. The first goal is to prove stable aerial contact
++tasks without breaking Demo 01-04 behavior.
++
++## Why Start with a 2-DOF or 3-DOF Arm
++
++Aerial manipulation adds coupled dynamics between the multirotor and the arm.
++Starting with a full 6-DOF manipulator would combine too many unvalidated
++problems at once: mass distribution, inertia, joint control, contact modeling,
++end-effector planning, collision geometry, and flight-controller disturbance
++rejection.
++
++A 2-DOF or 3-DOF arm is the right first step because:
++
++| Benefit | Reason |
++| --- | --- |
++| Lower dynamics risk | Fewer links and lighter mass reduce center-of-mass shifts and torque disturbances on the x500 body. |
++| Easier debugging | Joint commands, transforms, collision geometry, and contact behavior can be inspected link by link. |
++| Smaller control surface | Early demos only need reach, extend, and touch motions, not full dexterous manipulation. |
++| Faster simulation iteration | Simple inertial properties and collision meshes are easier to tune in Gazebo. |
++| Cleaner LeRobot boundary | The learning problem can focus on end-effector operation before adding redundant arm kinematics. |
++
++Recommended initial arm shapes:
++
++- 2-DOF planar arm: shoulder pitch plus elbow pitch, with a small passive or
++  fixed end-effector pad.
++- 3-DOF lightweight arm: shoulder yaw, shoulder pitch, and elbow pitch, with the
++  same simple end-effector pad.
++
++The 2-DOF version should be attempted first unless the fixed target geometry
++requires lateral reach that cannot be provided by UAV yaw and position control.
++
++## Mounting Location
++
++The arm should mount near the underside of the x500 center body, close to the
++vehicle center of mass and away from the propeller disk.
++
++Recommended mount:
++
++```text
++x500 base_link
++  |
++  +-- arm_mount_link: underside center or slightly forward underside
++        |
++        +-- shoulder_link
++```
++
++Use an underside mount for the first model:
++
++- It keeps the arm clear of the propellers during extension.
++- It makes downward or forward-downward target contact easier to observe.
++- It reduces large roll or pitch moments compared with a side-mounted arm.
++- It leaves the top of the vehicle free for existing sensors or future payloads.
++
++If button-press tasks require a forward-facing end effector, the mount can be
++slightly forward of the x500 center body, but the offset should remain small.
++Any offset must be represented in the inertial model and documented as a
++parameter.
++
++Avoid side mounting in the first phase because it creates asymmetric inertia and
++a constant lateral disturbance that will make PX4 Offboard validation harder.
++
++## URDF and SDF Modeling Route
++
++The modeling route should keep the ROS description, Gazebo simulation, and PX4
++vehicle model boundaries clear.
++
++Recommended route:
++
++| Step | Output | Notes |
++| --- | --- | --- |
++| 1 | `x500_arm_description` package | New ROS 2 package for arm URDF/Xacro, meshes, and frame docs. |
++| 2 | Arm-only URDF/Xacro | Define links, joints, inertial values, visual geometry, and collision geometry without PX4 coupling. |
++| 3 | x500 attachment Xacro | Add an `arm_mount_link` and fixed joint from the x500 base frame to the arm base. |
++| 4 | Gazebo SDF export or include | Use SDF-compatible tags for joint dynamics, collision, and contact surfaces. |
++| 5 | World assets | Add fixed target and button models as separate Gazebo models, not embedded in the UAV model. |
++| 6 | TF validation | Verify `base_link -> arm_mount_link -> shoulder -> elbow -> ee_link` transforms before running contact demos. |
++
++The first arm model should use primitive shapes:
++
++- Cylinders or boxes for links.
++- Simple revolute joints with position limits.
++- A small rounded or box end-effector pad.
++- Conservative mass and inertia values.
++- Simple collision geometry that is close to, but slightly simpler than, the
++  visual geometry.
++
++Avoid high-detail meshes in the first iteration. They make contacts harder to
++debug and do not help validate the control architecture.
++
++## Joint Control Options
++
++Three joint-control approaches are viable. The recommended sequence is to start
++simple, then move toward `ros2_control` once the model and contact tasks are
++stable.
++
++| Option | Use When | Pros | Cons |
++| --- | --- | --- | --- |
++| Simple joint command node | First arm extension tests | Smallest implementation, easy scripted trajectories, low dependency cost. | Not a standard hardware/control abstraction. |
++| Gazebo joint control plugin | Early Gazebo-only demos | Direct simulation control, useful for fast contact experiments. | Can become simulator-specific and less reusable. |
++| `ros2_control` | Stable Demo 05 and future LeRobot policy work | Standard ROS 2 control path, controller switching, trajectory controllers. | More setup: controllers, transmissions, plugin config, launch wiring. |
++
++Recommended first implementation path:
++
++1. Use a simple ROS 2 joint command interface for the first no-contact extension
++   test.
++2. Add a Gazebo-compatible joint control path for repeatable simulation.
++3. Promote to `ros2_control` with a `joint_trajectory_controller` before using
++   learned policies or comparing multiple control strategies.
++
++The high-level arm command surface should be separate from PX4 topics. Candidate
++topics for later implementation:
++
++| Topic | Type | Purpose |
++| --- | --- | --- |
++| `/arm/joint_targets` | `sensor_msgs/msg/JointState` or trajectory message | Command shoulder/elbow target positions. |
++| `/arm/end_effector_target` | `geometry_msgs/msg/PoseStamped` | Optional Cartesian target for an IK or scripted controller. |
++| `/arm/contact_state` | `std_msgs/msg/Bool` or custom message | Report target or button contact. |
++
++## Stage 1: Hover with Arm Extension
++
++Goal: prove that the x500 can hold a stable Offboard hover while the arm moves
++through a conservative extension trajectory.
++
++Scenario:
++
++- Start the existing PX4/Gazebo/Micro XRCE-DDS stack.
++- Use the Demo 01-style Offboard hover behavior.
++- Keep the UAV at a fixed local NED target.
++- Command the arm from stowed pose to extended pose and back.
++- Do not include target contact in this stage.
++
++Success criteria:
++
++- Vehicle remains in Offboard mode during the arm motion.
++- Position tracking remains within an agreed hover tolerance.
++- Arm joints reach target positions without oscillation.
++- No collision occurs with the x500 body or propeller area.
++
++Primary data to record:
++
++- UAV local position and velocity.
++- Arm joint positions and commanded targets.
++- End-effector pose relative to `base_link`.
++- PX4 failsafe or mode changes, if any.
++
++## Stage 2: End-Effector Touches a Fixed Target
++
++Goal: validate controlled aerial contact with a passive fixed target.
++
++Scenario:
++
++- Place a fixed target pad in the Gazebo world.
++- Use PX4 Offboard to position the UAV near the target.
++- Keep the platform stable while the arm performs the final reach.
++- Detect contact through Gazebo contact reporting or end-effector proximity.
++
++Success criteria:
++
++- The end effector touches the target without destabilizing the vehicle.
++- The target touch is detected and logged.
++- Contact force or penetration remains bounded.
++- The UAV can return to a safe hover after contact.
++
++This stage should use a fixed target before a button because a passive target
++removes button travel, spring stiffness, and state-change logic from the first
++contact experiment.
++
++## Stage 3: Aerial Button Press
++
++Goal: extend fixed-target touch into a stateful operation where the arm presses
++a simulated button while the UAV remains stable.
++
++Scenario:
++
++- Add a button model with a simple prismatic axis or contact-triggered state.
++- Position the UAV near the button using PX4 Offboard.
++- Command the arm to press along the button normal.
++- Confirm press completion through button displacement, contact state, or a
++  Gazebo plugin event.
++
++Success criteria:
++
++- Button state changes from unpressed to pressed.
++- The press completes without PX4 failsafe, excessive vehicle drift, or arm
++  collision.
++- The system logs approach, contact, press, release, and retreat phases.
++
++This stage should become the first version of the aerial manipulation benchmark
++only after Stage 1 and Stage 2 are repeatable.
++
++## Relationship with PX4 Offboard
++
++PX4 Offboard should remain responsible for stabilizing and positioning the UAV
++platform. The arm should execute local manipulation commands only.
++
++Control boundary:
++
++| Component | Responsibility |
++| --- | --- |
++| PX4 | Attitude stabilization, motor control, estimator, failsafe behavior. |
++| Offboard bridge | High-level UAV position/yaw setpoints, target validation, emergency behavior. |
++| Arm controller | Joint targets, end-effector motion, contact sequence, arm limits. |
++| Task planner | Sequence such as hover, approach, extend, touch, retract, retreat. |
++
++The arm controller must not publish low-level PX4 actuator, motor, attitude, or
++rate commands. It may request UAV pose changes only through high-level topics
++such as `/uav/target_position` or the future `/uav/target_pose` interface
++defined for the workspace.
++
++PX4 should hold the platform stable while the arm executes local operations. If
++the arm motion causes excessive tracking error, the task should abort or retract
++the arm rather than trying to override PX4 internals.
++
++## Relationship with LeRobot
++
++LeRobot should be introduced after the scripted arm tasks are stable. Its role
++should be limited to learning or executing the local manipulation policy.
++
++Allowed future LeRobot control scope:
++
++- End-effector target selection.
++- Arm joint trajectory policy.
++- Contact timing and press depth policy.
++- Visual or state-based manipulation decisions.
++
++Disallowed LeRobot control scope:
++
++- Direct motor control.
++- PX4 attitude, rate, or actuator commands.
++- Bypassing the Offboard bridge safety checks.
++- Mixing flight-control stabilization with arm manipulation policy.
++
++The intended future architecture is:
++
++```text
++LeRobot policy
++  -> arm command topic or end-effector target
++  -> arm controller
++  -> simulated arm joints
++
++Task planner or safety bridge
++  -> /uav/target_position or /uav/target_pose
++  -> PX4 Offboard
++  -> stable x500 platform
++```
++
++This keeps the learning problem focused on manipulation and preserves PX4 as
++the flight-control authority.
++
++## Risks
++
++| Risk | Impact | Mitigation |
++| --- | --- | --- |
++| Center-of-mass change | Hover trim and tracking can degrade when the arm extends. | Start with a light underside arm, document mass properties, and compare hover error with stowed vs extended poses. |
++| Inertia disturbance | Fast joint motion can induce roll, pitch, or yaw disturbance. | Limit joint speed and acceleration; begin with slow scripted trajectories. |
++| Coordinate frames | NED, ENU, Gazebo, base link, and end-effector frames can be mixed incorrectly. | Define explicit frame names and validate TF before contact tests. |
++| Contact instability | Contact with the target or button can create bouncing, penetration, or solver instability. | Use simple collision shapes, conservative stiffness/damping, and bounded approach speeds. |
++| Simulation accuracy | Gazebo contact and lightweight arm dynamics may not match real hardware. | Treat Demo 05 as a simulation benchmark, not proof of real-world readiness. |
++| PX4 failsafe interaction | Contact disturbances or simulation pauses may trigger failsafe behavior. | Keep Offboard setpoints continuous and log mode/failsafe state during tests. |
++| Propeller/body collision | Bad joint limits or mount offsets can intersect the x500 model. | Add conservative joint limits and collision checks before enabling contact tasks. |
++
++## Minimum Demo 05 Definition
++
++Recommended Demo 05 target: **Aerial Target Touch**.
++
++Aerial Target Touch is the better minimum demo because it validates the core
++aerial manipulation stack before introducing button mechanics. It should prove:
++
++- x500 Offboard hover remains stable.
++- A 2-DOF or 3-DOF arm can extend from a safe stowed pose.
++- The end effector can touch a fixed target.
++- The system can log UAV trajectory, arm joints, end-effector pose, and contact
++  result.
++
++Demo 05 can later be upgraded to **Aerial Button Press** after the fixed-target
++touch is repeatable.
++
++Recommended Demo 05 output names should follow the existing stable naming
++pattern where applicable:
++
++- `trajectory.csv`
++- `trajectory_3d.png`
++- `xy_path.png`
++- `height_curve.png`
++- `speed_curve.png`
++- `tracking_error.png`
++- `trajectory.mp4`
++- `summary.md`
++- `result.txt`
++
++Additional Demo 05-specific outputs may include:
++
++- `arm_joints.csv`
++- `end_effector_pose.csv`
++- `contact_events.csv`
++- `contact_result.txt`
++
++## Current Missing Dependencies
++
++The current workspace does not yet contain the pieces required to run the arm
++simulation. The expected future additions are:
++
++- A new arm description package with URDF/Xacro and optional Gazebo SDF assets.
++- A combined x500 plus arm model or model include path.
++- Joint controller configuration, either simple command node, Gazebo plugin, or
++  `ros2_control`.
++- Gazebo target and button models.
++- Contact detection and logging.
++- Arm trajectory scripts or a task sequencer for Demo 05.
++- Optional IK or end-effector control utilities.
++- Future LeRobot environment wrappers and policy interfaces.
++
++None of these dependencies are implemented by this planning task.
+
+tokens used
+25,982
+已完成 Task 005，只新增规划文档和任务日志，没有改源码。
+
+**Demo 05 推荐目标**
+推荐从 **Aerial Target Touch** 开始，而不是直接做 Aerial Button Press。原因是它先验证 x500 Offboard 悬停、2-DOF/3-DOF arm 伸出、末端接触固定目标和接触日志，等稳定后再升级到按钮按压。
+
+**技术路线**
+从 x500 + underside-mounted 2-DOF/3-DOF 简化机械臂开始；先做 arm-only URDF/Xacro，再做 x500 挂载集成；关节控制先用 simple joint command 或 Gazebo joint plugin，稳定后再迁移到 `ros2_control`。PX4 Offboard 只负责平台稳定和位置/yaw，高层机械臂控制只做局部末端操作。
+
+**当前还缺的依赖**
+缺 arm description 包、x500+arm 模型集成、关节控制配置、Gazebo target/button 模型、接触检测与日志、Demo 05 task sequencer，以及未来 LeRobot policy wrapper。
+
+**changed files**
+- [docs/UAV_ARM_SIMULATION_PLAN.md](/home/clcwork/UAV_capture/px4_ros2_ws/docs/UAV_ARM_SIMULATION_PLAN.md)
+- [codex-logs/005-plan-uav-arm-simulation.log](/home/clcwork/UAV_capture/px4_ros2_ws/codex-logs/005-plan-uav-arm-simulation.log)
+
+**commands run**
+- `find ...` 检查现有 docs/tasks/logs 和项目结构
+- `sed -n ...` 阅读 Task 005 和现有文档风格
+- `mkdir -p docs`
+- `ls docs`
+- `test -s docs/UAV_ARM_SIMULATION_PLAN.md`
+- `test -s codex-logs/005-plan-uav-arm-simulation.log`
+- `grep -E ... docs/UAV_ARM_SIMULATION_PLAN.md | wc -l`
+
+**test result**
+PASS。文档和日志均存在且非空；日志已保存 `mkdir -p docs && ls docs` 的最终输出；文档覆盖 2-DOF/3-DOF、挂载位置、URDF/SDF、关节控制、三阶段任务、PX4/LeRobot 边界、风险清单和 Demo 05 定义。
+
+**known risks**
+本任务只做技术规划，未验证 Gazebo 接触、PX4 悬停扰动、机械臂质量/惯量、坐标系 TF、`ros2_control` 可用性或 LeRobot 集成。

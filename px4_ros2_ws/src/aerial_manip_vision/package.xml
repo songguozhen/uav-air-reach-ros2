@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>aerial_manip_vision</name>
+  <version>0.0.1</version>
+  <description>Python perception nodes for stage-2 aerial manipulation.</description>
+  <maintainer email="clcwork@example.com">clcwork</maintainer>
+  <license>Apache-2.0</license>
+
+  <buildtool_depend>ament_python</buildtool_depend>
+
+  <exec_depend>aerial_manip_msgs</exec_depend>
+  <exec_depend>cv_bridge</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>launch</exec_depend>
+  <exec_depend>launch_ros</exec_depend>
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>

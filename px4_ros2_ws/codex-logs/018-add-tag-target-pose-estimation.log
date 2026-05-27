@@ -1,0 +1,69 @@
+Task 018 validation log
+2026-05-27 18:52:28 CST
+
+$ python3 -m compileall src/aerial_manip_vision
+Listing 'src/aerial_manip_vision'...
+Listing 'src/aerial_manip_vision/aerial_manip_vision'...
+Compiling 'src/aerial_manip_vision/aerial_manip_vision/tag_target_pose_node.py'...
+Listing 'src/aerial_manip_vision/launch'...
+Compiling 'src/aerial_manip_vision/launch/tag_target_pose.launch.py'...
+Listing 'src/aerial_manip_vision/resource'...
+Compiling 'src/aerial_manip_vision/setup.py'...
+
+$ colcon build --packages-select aerial_manip_vision aerial_manip_gazebo
+Starting >>> aerial_manip_gazebo
+Starting >>> aerial_manip_vision
+Finished <<< aerial_manip_gazebo [0.15s]
+Finished <<< aerial_manip_vision [0.71s]
+
+Summary: 2 packages finished [0.83s]
+
+$ source install/setup.bash && ros2 launch aerial_manip_vision tag_target_pose.launch.py publish_placeholder:=true &
+
+$ ros2 topic echo /vision/target_pose --once || true
+header:
+  stamp:
+    sec: 1779879165
+    nanosec: 803463584
+  frame_id: uav/camera_link
+pose:
+  position:
+    x: -0.0
+    y: -0.258
+    z: 1.88
+  orientation:
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+---
+
+$ ros2 topic echo /vision/target_pose_in_uav_frame --once || true
+header:
+  stamp:
+    sec: 1779879167
+    nanosec: 303478326
+  frame_id: uav/base_link
+pose:
+  position:
+    x: 2.0
+    y: 0.0
+    z: 0.5
+  orientation:
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+---
+
+$ tag target launch log
+[INFO] [launch]: All log files can be found below /home/clcwork/.ros/log/2026-05-27-18-52-42-661510-clcwork-84186
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [tag_target_pose_node-1]: process started with pid [84190]
+[tag_target_pose_node-1] [INFO] [1779879163.310570211] [tag_target_pose_node]: Using OpenCV ArUco DICT_4X4_50 detector for marker id=23 size=0.500 m
+
+$ python3 marker texture detection check
+metric_marker_texture_ids= [23]
+metric_rejected_candidates= 2
+
+Environment note: OpenCV ArUco is available; ROS/Gazebo live image detection still depends on ros_gz_bridge availability. Placeholder topic smoke test passed.

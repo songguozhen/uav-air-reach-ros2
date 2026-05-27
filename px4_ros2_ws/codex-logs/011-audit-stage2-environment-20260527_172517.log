@@ -1,0 +1,1898 @@
+Reading prompt from stdin...
+OpenAI Codex v0.133.0
+--------
+workdir: /home/clcwork/UAV_capture/px4_ros2_ws
+model: gpt-5.5
+provider: openai
+approval: never
+sandbox: danger-full-access
+reasoning effort: high
+reasoning summaries: none
+session id: 019e68c0-a9d7-7bb3-b749-3caafa9ff700
+--------
+user
+# Required workspace rules
+
+# Codex Runbook
+
+This file is the required operating record for every Codex run in this
+workspace. Read it together with `AGENTS.md` before changing files or running
+simulation tasks.
+
+## Workspace
+
+Root workspace:
+
+```text
+/home/clcwork/UAV_capture/px4_ros2_ws
+```
+
+Related external paths:
+
+```text
+/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot
+/home/clcwork/Micro-XRCE-DDS-Agent/build
+/home/clcwork/miniconda3/envs/lerobot
+```
+
+This directory is not currently a git repository. Treat existing files,
+generated artifacts, logs, and user edits as persistent project state.
+
+## Current Project State
+
+Implemented ROS 2 package:
+
+```text
+src/px4_offboard_hover
+```
+
+Available PX4 offboard demos and tools:
+
+- Demo 01 hover: `scripts/run_demo01_hover.sh`
+- Demo 02 waypoint flight: `scripts/run_demo02_waypoint_flight.sh`
+- Demo 03 circle trajectory: `scripts/run_demo03_circle_trajectory.sh`
+- Demo 04 external setpoint / UAV bridge: `scripts/run_demo04_external_setpoint.sh`
+- Hover experiment: `scripts/run_hover_experiment.sh`
+- Trajectory recorder: `scripts/run_trajectory_recorder.sh`
+- Output checker: `scripts/check_demo_outputs.sh`
+- Stack startup and cleanup: `scripts/start_stack.sh`, `scripts/stop_stack.sh`
+
+Implemented UAV bridge:
+
+```text
+src/px4_offboard_hover/px4_offboard_hover/uav_control_bridge.py
+```
+
+The bridge exposes high-level UAV control topics:
+
+```text
+/uav/target_position      geometry_msgs/msg/Point
+/uav/current_position     geometry_msgs/msg/PointStamped
+/uav/current_target       geometry_msgs/msg/PointStamped
+/uav/reached_target       std_msgs/msg/Bool
+/uav/control_state        std_msgs/msg/String
+```
+
+External modules, including future vision, LeRobot, planner, and UAV-arm work,
+must use `/uav/*` topics by default. Do not publish directly to PX4
+`/fmu/in/*` topics from external modules unless a task explicitly requires it.
+
+Current bridge safety parameters include:
+
+```text
+initial_x
+initial_y
+initial_z
+yaw
+target_timeout
+max_altitude
+min_altitude
+max_horizontal_range
+target_jump_limit
+reach_xy_tolerance
+reach_z_tolerance
+reach_hold_time
+```
+
+Coordinate rule: `/uav/target_position` is local PX4 NED. Positive altitude is
+represented as negative `z`. For example, 2 m altitude is `z: -2.0`.
+
+Latest recorded full Demo 04 bridge simulation:
+
+```text
+timestamp: 20260527_085025
+visuals: visualizations/demo04_external_setpoint/20260527_085025
+logs: logs/demo04_external_setpoint/20260527_085025
+result: RESULT=PASS reason=ok
+checker: CHECK=PASS
+avg_error_3d_m: 0.20
+final_error_3d_m: 0.02
+final_position_ned: (-0.01, -0.01, -2.01)
+```
+
+The preceding run at `20260527_084530` failed because a stale Gazebo
+`default.sdf` server from an earlier day was still running. `RESET_STACK=1` and
+`scripts/stop_stack.sh` now clean this project Gazebo world process before
+reruns.
+
+## File Path Management
+
+Use these path rules consistently:
+
+- Use workspace-relative paths in commands and documentation when already under
+  `/home/clcwork/UAV_capture/px4_ros2_ws`.
+- Use absolute paths when referring to artifacts in final reports, cross-root
+  scripts, or external paths outside this workspace.
+- Keep source code under `src/`.
+- Keep reusable shell entry points under `scripts/`.
+- Keep task definitions under `codex-tasks/`.
+- Keep Codex execution logs and done markers under `codex-logs/`.
+- Keep project documentation under `docs/` or top-level Markdown files.
+- Keep simulation logs under `logs/<demo>/<timestamp>/`.
+- Keep visualization outputs under `visualizations/<demo>/<timestamp>/`.
+- Do not hand-edit generated build outputs under `build/`, `install/`, or
+  `log/build_*` unless the task is explicitly about generated artifacts.
+- Do not overwrite or delete existing timestamped `logs/` or
+  `visualizations/` directories.
+
+Stable generated Demo output names:
+
+```text
+trajectory.csv
+trajectory_3d.png
+xy_path.png
+height_curve.png
+speed_curve.png
+tracking_error.png
+trajectory.mp4
+summary.md
+result.txt
+```
+
+## Required Codex Run Procedure
+
+Every Codex run must follow this procedure:
+
+1. Confirm the working directory is the workspace root:
+
+   ```bash
+   cd /home/clcwork/UAV_capture/px4_ros2_ws
+   ```
+
+2. Read the governing files before planning edits:
+
+   ```text
+   AGENTS.md
+   codex.md
+   relevant codex-tasks/<task>.md
+   relevant docs/*.md or source files
+   ```
+
+3. Before editing, identify the exact files to touch and avoid unrelated
+   refactors.
+
+4. Preserve all existing user changes and generated results. Never run
+   destructive cleanup such as `git reset --hard`, broad `rm -rf`, or deleting
+   log/result directories unless the user explicitly asks.
+
+5. Use `apply_patch` for manual file edits. Use formatting/build tools only
+   after the target files are clear.
+
+6. Record the task execution in `codex-logs/`:
+
+   ```text
+   codex-logs/<task-stem>-<YYYYMMDD_HHMMSS>.log
+   codex-logs/<task-stem>.done
+   ```
+
+   `run_codex_queue.sh` creates these automatically. For manual one-off work,
+   create or preserve equivalent logs when practical.
+
+7. For shell script changes, run at least:
+
+   ```bash
+   bash -n <script>
+   ```
+
+8. For Python node changes, run at least one relevant Python check:
+
+   ```bash
+   python3 -m compileall src scripts
+   ```
+
+   Use `colcon build --packages-select <package>` when package metadata,
+   console entry points, dependencies, or ROS node code changed.
+
+9. For demo/output changes, run the relevant smoke checker:
+
+   ```bash
+   ./scripts/check_demo_outputs.sh visualizations/<demo>
+   ```
+
+10. For PX4/Gazebo simulation runs, prefer existing scripts. Use
+    `RESET_STACK=1` for reproducible runs, and call `scripts/stop_stack.sh`
+    before finishing unless the user explicitly wants the stack left running.
+
+11. If project state changes, update the appropriate Markdown record in the same
+    run. Examples:
+
+    ```text
+    codex.md
+    docs/REGRESSION_CHECKS.md
+    docs/UAV_CONTROL_API.md
+    docs/VISUALIZATION_GUIDE.md
+    TOOLS_AND_SCRIPTS_GUIDE.md
+    ```
+
+12. Final reports must include:
+
+    ```text
+    changed files
+    commands run
+    test result
+    known risks
+    output paths, when logs or visualizations were generated
+    ```
+
+## Codex Queue Requirements
+
+`run_codex_queue.sh` is the standard runner for queued task files. It must:
+
+- verify `AGENTS.md`, `codex.md`, `codex-tasks/`, and `codex-logs/` exist;
+- pass the contents of `codex.md` together with the task file to Codex;
+- write timestamped logs under `codex-logs/`;
+- create `.done` markers only after a task exits successfully;
+- support `--dry-run`, `--from <prefix>`, and `--task <file>`;
+- skip completed queued tasks unless `--task` is used.
+
+Before adding a new queued task, create a numbered Markdown file:
+
+```text
+codex-tasks/010-short-task-name.md
+```
+
+The task file should state:
+
+```text
+goal
+allowed files or directories
+required validation commands
+required documentation updates
+expected final report fields
+```
+
+## Current Validation Commands
+
+Known passing checks after the latest bridge work:
+
+```bash
+bash -n run_codex_queue.sh
+bash -n scripts/check_demo_outputs.sh
+bash -n scripts/run_demo04_external_setpoint.sh
+bash -n scripts/start_stack.sh
+bash -n scripts/stop_stack.sh
+python3 -m compileall src scripts
+colcon build --packages-select px4_offboard_hover
+./scripts/check_demo_outputs.sh visualizations/demo01_hover
+./scripts/check_demo_outputs.sh visualizations/demo02_waypoint_flight
+./scripts/check_demo_outputs.sh visualizations/demo03_circle_trajectory
+./scripts/check_demo_outputs.sh visualizations/demo04_external_setpoint
+```
+
+Latest full bridge simulation command:
+
+```bash
+./scripts/run_demo04_external_setpoint.sh
+./scripts/check_demo_outputs.sh visualizations/demo04_external_setpoint/20260527_085025
+```
+
+
+# Task file
+
+# Task 011: Audit Stage 2 Environment
+
+## Task goal
+
+- Verify the local PX4/Gazebo/ROS 2/LeRobot environment before adding aerial manipulation packages.
+- Do not change runtime behavior in this task.
+
+## Allowed changes
+
+- `docs/STAGE2_ENVIRONMENT_AUDIT.md`
+- `codex-logs/011-audit-stage2-environment.log`
+
+## Implementation requirements
+
+- Check availability and versions for ROS 2, Gazebo, `ros_gz_bridge`, `gz_ros2_control`, `controller_manager`, and LeRobot.
+- Confirm local PX4 model files exist for `x500`, `x500_mono_cam`, `mono_cam`, and `arucotag`.
+- Record missing dependencies as risks instead of installing packages unless explicitly requested by a later task.
+
+## Required commands
+
+Save output to `codex-logs/011-audit-stage2-environment.log`:
+
+```bash
+pwd
+ros2 --help >/dev/null && echo ROS2_OK
+gz sim --versions || true
+ros2 pkg list | grep -E 'ros_gz_bridge|gz_ros2_control|controller_manager|joint_state_broadcaster|forward_command_controller|joint_trajectory_controller' || true
+python3 - <<'PY' || true
+import importlib.util
+print("lerobot", "OK" if importlib.util.find_spec("lerobot") else "MISSING")
+PY
+test -s /home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/x500/model.sdf
+test -s /home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/x500_mono_cam/model.sdf
+```
+
+## Deliverables
+
+- Environment audit document with PASS/WARN items and concrete missing packages, if any.
+- `codex-logs/011-audit-stage2-environment.log`.
+
+## Final report requirements
+
+- `changed files`
+- `commands run`
+- `test result`
+- `known risks`
+
+codex
+I’ll use the project-audit-report skill lightly for the audit/report structure, then keep changes limited to the two allowed deliverables. First I’m reading the project rules and current task context before running checks.
+exec
+/bin/bash -lc "sed -n '1,320p' codex.md" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+# Codex Runbook
+
+This file is the required operating record for every Codex run in this
+workspace. Read it together with `AGENTS.md` before changing files or running
+simulation tasks.
+
+## Workspace
+
+Root workspace:
+
+```text
+/home/clcwork/UAV_capture/px4_ros2_ws
+```
+
+Related external paths:
+
+```text
+/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot
+/home/clcwork/Micro-XRCE-DDS-Agent/build
+/home/clcwork/miniconda3/envs/lerobot
+```
+
+This directory is not currently a git repository. Treat existing files,
+generated artifacts, logs, and user edits as persistent project state.
+
+## Current Project State
+
+Implemented ROS 2 package:
+
+```text
+src/px4_offboard_hover
+```
+
+Available PX4 offboard demos and tools:
+
+- Demo 01 hover: `scripts/run_demo01_hover.sh`
+- Demo 02 waypoint flight: `scripts/run_demo02_waypoint_flight.sh`
+- Demo 03 circle trajectory: `scripts/run_demo03_circle_trajectory.sh`
+- Demo 04 external setpoint / UAV bridge: `scripts/run_demo04_external_setpoint.sh`
+- Hover experiment: `scripts/run_hover_experiment.sh`
+- Trajectory recorder: `scripts/run_trajectory_recorder.sh`
+- Output checker: `scripts/check_demo_outputs.sh`
+- Stack startup and cleanup: `scripts/start_stack.sh`, `scripts/stop_stack.sh`
+
+Implemented UAV bridge:
+
+```text
+src/px4_offboard_hover/px4_offboard_hover/uav_control_bridge.py
+```
+
+The bridge exposes high-level UAV control topics:
+
+```text
+/uav/target_position      geometry_msgs/msg/Point
+/uav/current_position     geometry_msgs/msg/PointStamped
+/uav/current_target       geometry_msgs/msg/PointStamped
+/uav/reached_target       std_msgs/msg/Bool
+/uav/control_state        std_msgs/msg/String
+```
+
+External modules, including future vision, LeRobot, planner, and UAV-arm work,
+must use `/uav/*` topics by default. Do not publish directly to PX4
+`/fmu/in/*` topics from external modules unless a task explicitly requires it.
+
+Current bridge safety parameters include:
+
+```text
+initial_x
+initial_y
+initial_z
+yaw
+target_timeout
+max_altitude
+min_altitude
+max_horizontal_range
+target_jump_limit
+reach_xy_tolerance
+reach_z_tolerance
+reach_hold_time
+```
+
+Coordinate rule: `/uav/target_position` is local PX4 NED. Positive altitude is
+represented as negative `z`. For example, 2 m altitude is `z: -2.0`.
+
+Latest recorded full Demo 04 bridge simulation:
+
+```text
+timestamp: 20260527_085025
+visuals: visualizations/demo04_external_setpoint/20260527_085025
+logs: logs/demo04_external_setpoint/20260527_085025
+result: RESULT=PASS reason=ok
+checker: CHECK=PASS
+avg_error_3d_m: 0.20
+final_error_3d_m: 0.02
+final_position_ned: (-0.01, -0.01, -2.01)
+```
+
+The preceding run at `20260527_084530` failed because a stale Gazebo
+`default.sdf` server from an earlier day was still running. `RESET_STACK=1` and
+`scripts/stop_stack.sh` now clean this project Gazebo world process before
+reruns.
+
+## File Path Management
+
+Use these path rules consistently:
+
+- Use workspace-relative paths in commands and documentation when already under
+  `/home/clcwork/UAV_capture/px4_ros2_ws`.
+- Use absolute paths when referring to artifacts in final reports, cross-root
+  scripts, or external paths outside this workspace.
+- Keep source code under `src/`.
+- Keep reusable shell entry points under `scripts/`.
+- Keep task definitions under `codex-tasks/`.
+- Keep Codex execution logs and done markers under `codex-logs/`.
+- Keep project documentation under `docs/` or top-level Markdown files.
+- Keep simulation logs under `logs/<demo>/<timestamp>/`.
+- Keep visualization outputs under `visualizations/<demo>/<timestamp>/`.
+- Do not hand-edit generated build outputs under `build/`, `install/`, or
+  `log/build_*` unless the task is explicitly about generated artifacts.
+- Do not overwrite or delete existing timestamped `logs/` or
+  `visualizations/` directories.
+
+Stable generated Demo output names:
+
+```text
+trajectory.csv
+trajectory_3d.png
+xy_path.png
+height_curve.png
+speed_curve.png
+tracking_error.png
+trajectory.mp4
+summary.md
+result.txt
+```
+
+## Required Codex Run Procedure
+
+Every Codex run must follow this procedure:
+
+1. Confirm the working directory is the workspace root:
+
+   ```bash
+   cd /home/clcwork/UAV_capture/px4_ros2_ws
+   ```
+
+2. Read the governing files before planning edits:
+
+   ```text
+   AGENTS.md
+   codex.md
+   relevant codex-tasks/<task>.md
+   relevant docs/*.md or source files
+   ```
+
+3. Before editing, identify the exact files to touch and avoid unrelated
+   refactors.
+
+4. Preserve all existing user changes and generated results. Never run
+   destructive cleanup such as `git reset --hard`, broad `rm -rf`, or deleting
+   log/result directories unless the user explicitly asks.
+
+5. Use `apply_patch` for manual file edits. Use formatting/build tools only
+   after the target files are clear.
+
+6. Record the task execution in `codex-logs/`:
+
+   ```text
+   codex-logs/<task-stem>-<YYYYMMDD_HHMMSS>.log
+   codex-logs/<task-stem>.done
+   ```
+
+   `run_codex_queue.sh` creates these automatically. For manual one-off work,
+   create or preserve equivalent logs when practical.
+
+7. For shell script changes, run at least:
+
+   ```bash
+   bash -n <script>
+   ```
+
+8. For Python node changes, run at least one relevant Python check:
+
+   ```bash
+   python3 -m compileall src scripts
+   ```
+
+   Use `colcon build --packages-select <package>` when package metadata,
+   console entry points, dependencies, or ROS node code changed.
+
+9. For demo/output changes, run the relevant smoke checker:
+
+   ```bash
+   ./scripts/check_demo_outputs.sh visualizations/<demo>
+   ```
+
+10. For PX4/Gazebo simulation runs, prefer existing scripts. Use
+    `RESET_STACK=1` for reproducible runs, and call `scripts/stop_stack.sh`
+    before finishing unless the user explicitly wants the stack left running.
+
+11. If project state changes, update the appropriate Markdown record in the same
+    run. Examples:
+
+    ```text
+    codex.md
+    docs/REGRESSION_CHECKS.md
+    docs/UAV_CONTROL_API.md
+    docs/VISUALIZATION_GUIDE.md
+    TOOLS_AND_SCRIPTS_GUIDE.md
+    ```
+
+12. Final reports must include:
+
+    ```text
+    changed files
+    commands run
+    test result
+    known risks
+    output paths, when logs or visualizations were generated
+    ```
+
+## Codex Queue Requirements
+
+`run_codex_queue.sh` is the standard runner for queued task files. It must:
+
+- verify `AGENTS.md`, `codex.md`, `codex-tasks/`, and `codex-logs/` exist;
+- pass the contents of `codex.md` together with the task file to Codex;
+- write timestamped logs under `codex-logs/`;
+- create `.done` markers only after a task exits successfully;
+- support `--dry-run`, `--from <prefix>`, and `--task <file>`;
+- skip completed queued tasks unless `--task` is used.
+
+Before adding a new queued task, create a numbered Markdown file:
+
+```text
+codex-tasks/010-short-task-name.md
+```
+
+The task file should state:
+
+```text
+goal
+allowed files or directories
+required validation commands
+required documentation updates
+expected final report fields
+```
+
+## Current Validation Commands
+
+Known passing checks after the latest bridge work:
+
+```bash
+bash -n run_codex_queue.sh
+bash -n scripts/check_demo_outputs.sh
+bash -n scripts/run_demo04_external_setpoint.sh
+bash -n scripts/start_stack.sh
+bash -n scripts/stop_stack.sh
+python3 -m compileall src scripts
+colcon build --packages-select px4_offboard_hover
+./scripts/check_demo_outputs.sh visualizations/demo01_hover
+./scripts/check_demo_outputs.sh visualizations/demo02_waypoint_flight
+./scripts/check_demo_outputs.sh visualizations/demo03_circle_trajectory
+./scripts/check_demo_outputs.sh visualizations/demo04_external_setpoint
+```
+
+Latest full bridge simulation command:
+
+```bash
+./scripts/run_demo04_external_setpoint.sh
+./scripts/check_demo_outputs.sh visualizations/demo04_external_setpoint/20260527_085025
+```
+
+
+exec
+/bin/bash -lc pwd in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+/home/clcwork/UAV_capture/px4_ros2_ws
+
+exec
+/bin/bash -lc "sed -n '1,260p' AGENTS.md" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+# Codex project rules
+
+These rules apply to the ROS2/PX4/LeRobot UAV simulation workspace at:
+
+```text
+/home/clcwork/UAV_capture/px4_ros2_ws
+```
+
+## Scope and workflow
+
+- 每次 Codex 运行都必须先读取并遵守 `codex.md`。`codex.md` 是当前项目状态、路径管理、日志记录和每次运行流程的主记录。
+- 修改前先理解项目结构，不要盲目改文件。
+- 每个任务只做当前 `codex-tasks/` 中对应 task 文件里的要求，不主动扩大范围。
+- 优先修改当前 ROS2 工作区 `/home/clcwork/UAV_capture/px4_ros2_ws` 下的脚本、文档和自定义包。
+- 不要随意更改 PX4-Autopilot 源码，除非任务文件明确要求。
+- 不要破坏已成功通过的 Demo 1-4：
+  - Demo 01 Offboard Hover
+  - Demo 02 Waypoint Flight
+  - Demo 03 Circle Trajectory
+  - Demo 04 External Setpoint Interface
+- 如果需要长时间运行实验，优先使用已有脚本和 tmux，不要随意新建后台进程。
+- 对于 PX4/Gazebo/Micro XRCE-DDS 相关任务，优先使用已有 `start_stack.sh`、`stop_stack.sh`、`run_*_experiment.sh` 和 `run_demo*.sh` 脚本。
+
+## Safety rules
+
+- 不要删除用户数据、日志、实验结果、模型 checkpoint、rosbag、`trajectory.csv`、可视化图片或视频。
+- 不要删除或改动 `.env`、secrets、production 配置、SSH key、token、代理配置、系统级配置。
+- 不要运行破坏性命令，例如 `git reset --hard`、批量删除日志或清空实验目录，除非任务文件明确要求且用户确认。
+- 如果工作区已有未提交修改，必须保留并绕开无关修改，不要回滚用户改动。
+
+## Validation requirements
+
+- 修改代码后必须运行相关测试、检查脚本或最小可复现实验。
+- 修改 shell 脚本后必须确保可执行权限正确，并至少运行 `bash -n <script>`。
+- 修改 Python 节点后必须至少运行 `python3 -m compileall`、`python3 -m py_compile` 或相关 pytest。
+- 如果测试失败，先尝试修复；仍失败则在最终报告里写清楚原因。
+- 每次执行任务应把输出日志保存到 `codex-logs/`。
+
+## Demo and visualization rules
+
+- 对于可视化任务，优先复用现有 `trajectory.csv`、日志和 plotting/recorder 脚本，不要重复造轮子。
+- Demo 1-4 的展示输出应保持稳定命名：
+  - `trajectory.csv`
+  - `trajectory_3d.png`
+  - `xy_path.png`
+  - `height_curve.png`
+  - `speed_curve.png`
+  - `tracking_error.png`
+  - `trajectory.mp4`
+  - `summary.md`
+  - `result.txt`
+- 不要删除或覆盖已有 `visualizations/<demo>/<timestamp>/` 结果目录。
+
+## UAV high-level control bridge rules
+
+- 后续视觉、任务规划、LeRobot 和机械臂相关任务必须优先通过 `/uav/*` 高层 ROS2 topic 接入无人机控制。
+- 不要让外部模块直接发布 `/fmu/in/offboard_control_mode`、`/fmu/in/trajectory_setpoint` 或 `/fmu/in/vehicle_command`。
+- PX4 `/fmu/in/*` 发布逻辑应集中在一个可审计的 UAV bridge 或现有 Offboard 控制基类内。
+- 新增 UAV bridge 节点时必须至少包含：
+  - 参数化安全限制，例如最大高度、最小高度、最大水平范围、目标跳变限制和目标超时。
+  - 当前安全目标和控制状态输出。
+  - 明确的 NED 坐标系说明，正高度输入必须转换为 PX4 `z=-altitude` 后再发给 PX4。
+  - `python3 -m compileall` 或等价 Python 检查。
+- Demo 04 可以继续作为外部目标点接口示例，但新的回归任务应优先验证通过 UAV bridge 跑通的路径。
+
+## LeRobot and UAV-arm rules
+
+- 对于后续 LeRobot 接入任务，不要让 LeRobot 直接控制 PX4 底层电机或姿态，只允许通过高层接口或机械臂操作策略接入。
+- LeRobot、视觉模块或任务规划器应优先通过 `/uav/target_position` 等高层 ROS2 topic 接入。
+- 对于 UAV-arm 任务，先设计 2-DOF/3-DOF 简化机械臂仿真，不要直接引入复杂 6-DOF 重机械臂。
+- PX4 Offboard 保持飞行平台稳定，机械臂执行局部操作；不要把机械臂策略和 PX4 飞控底层控制混在一起。
+
+## Final report format
+
+每个任务结束时必须总结：
+
+- `changed files`: 改了哪些文件。
+- `commands run`: 跑了什么命令。
+- `test result`: 结果如何，PASS/FAIL。
+- `known risks`: 还有什么风险或未验证项。
+
+exec
+/bin/bash -lc "sed -n '1,220p' codex-tasks/011-audit-stage2-environment.md" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+# Task 011: Audit Stage 2 Environment
+
+## Task goal
+
+- Verify the local PX4/Gazebo/ROS 2/LeRobot environment before adding aerial manipulation packages.
+- Do not change runtime behavior in this task.
+
+## Allowed changes
+
+- `docs/STAGE2_ENVIRONMENT_AUDIT.md`
+- `codex-logs/011-audit-stage2-environment.log`
+
+## Implementation requirements
+
+- Check availability and versions for ROS 2, Gazebo, `ros_gz_bridge`, `gz_ros2_control`, `controller_manager`, and LeRobot.
+- Confirm local PX4 model files exist for `x500`, `x500_mono_cam`, `mono_cam`, and `arucotag`.
+- Record missing dependencies as risks instead of installing packages unless explicitly requested by a later task.
+
+## Required commands
+
+Save output to `codex-logs/011-audit-stage2-environment.log`:
+
+```bash
+pwd
+ros2 --help >/dev/null && echo ROS2_OK
+gz sim --versions || true
+ros2 pkg list | grep -E 'ros_gz_bridge|gz_ros2_control|controller_manager|joint_state_broadcaster|forward_command_controller|joint_trajectory_controller' || true
+python3 - <<'PY' || true
+import importlib.util
+print("lerobot", "OK" if importlib.util.find_spec("lerobot") else "MISSING")
+PY
+test -s /home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/x500/model.sdf
+test -s /home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/x500_mono_cam/model.sdf
+```
+
+## Deliverables
+
+- Environment audit document with PASS/WARN items and concrete missing packages, if any.
+- `codex-logs/011-audit-stage2-environment.log`.
+
+## Final report requirements
+
+- `changed files`
+- `commands run`
+- `test result`
+- `known risks`
+
+exec
+/bin/bash -lc "sed -n '1,220p' /home/clcwork/.codex/skills/project-audit-report/SKILL.md" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+---
+name: project-audit-report
+description: Audit the current repository and produce a truthful project status summary; use for 项目审计, 项目现状, 状态报告, UAV, PX4, ROS2, Python, C++, shell, and documentation projects.
+---
+
+# Project Audit Report
+
+Use this skill when asked to assess the current project, prepare status material, generate a project situation report, or feed a later HTML/dashboard deliverable.
+
+## Workflow
+
+1. Inspect the repository from the current working directory.
+2. Identify the project type and stack from evidence, not assumptions:
+   - ROS2: `package.xml`, `colcon`, `ament`, `rclcpp`, `rclpy`, `launch/`
+   - PX4: `PX4-Autopilot`, `px4`, `boards/`, `ROMFS/`, `Tools/`
+   - Python: `pyproject.toml`, `requirements.txt`, `setup.py`, `.py`
+   - C/C++: `CMakeLists.txt`, `src/`, `include/`, `.cpp`, `.hpp`, `.c`, `.h`
+   - Shell automation: `.sh`, queue runners, deploy scripts
+   - Docs: `README*`, `docs/`, `*.md`
+3. Scan the top-level and important nested directory structure. Prefer `rg --files`, `find`, `ls`, and exact file reads.
+4. Read only the files needed to establish facts:
+   - `README*`
+   - `package.xml`
+   - `CMakeLists.txt`
+   - `pyproject.toml`
+   - `requirements.txt`
+   - `setup.py`
+   - `scripts/`
+   - `codex-tasks/`, `codex-logs/`, and queue scripts when present
+5. Produce a concise audit with:
+   - Project name and repository path
+   - Detected stack
+   - Important modules and scripts
+   - Evidence of completed work
+   - Missing or unclear modules
+   - Build/test/documentation status if verifiable
+   - Risks and blockers
+   - Recommended next checks or commands
+
+## Output
+
+Write both outputs when the user asks for files or when another reporting skill will consume the audit:
+
+- `deliverables/project-summary.md`
+- `deliverables/project-audit.json`
+
+Create `deliverables/` if needed.
+
+## Rules
+
+- Do not invent completed work. If the evidence is missing, mark it as `Unknown` or `Needs verification`.
+- Separate facts from inferences.
+- Prefer exact filenames, commands, and paths.
+- Keep the JSON machine-readable and stable enough for a dashboard to consume.
+- Do not run expensive builds or long tests unless the user asks or the repo clearly expects it.
+
+codex
+The task is constrained to an audit document and one log file, so I’m not touching source, scripts, PX4, or runtime behavior. I’m checking whether the audit doc already exists and then I’ll capture the required environment probes into the fixed task log.
+exec
+/bin/bash -lc 'ls -la docs codex-logs' in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+codex-logs:
+total 1836
+drwxrwxr-x  2 clcwork clcwork   4096 May 27 17:25 .
+drwxrwxr-x 14 clcwork clcwork   4096 May 27 17:10 ..
+-rw-rw-r--  1 clcwork clcwork    251 May 27 00:13 001-audit-project-structure-20260527_001340.log
+-rw-rw-r--  1 clcwork clcwork  73556 May 27 00:21 001-audit-project-structure-20260527_001912.log
+-rw-rw-r--  1 clcwork clcwork      0 May 27 00:21 001-audit-project-structure.done
+-rw-rw-r--  1 clcwork clcwork   9400 May 27 00:20 001-audit-project-structure.log
+-rw-rw-r--  1 clcwork clcwork 109441 May 27 00:23 002-standardize-demo-visualization-20260527_002105.log
+-rw-rw-r--  1 clcwork clcwork      0 May 27 00:23 002-standardize-demo-visualization.done
+-rw-rw-r--  1 clcwork clcwork   3088 May 27 00:22 002-standardize-demo-visualization.log
+-rw-rw-r--  1 clcwork clcwork 112952 May 27 00:25 003-add-demo-regression-checks-20260527_002316.log
+-rw-rw-r--  1 clcwork clcwork      0 May 27 00:25 003-add-demo-regression-checks.done
+-rw-rw-r--  1 clcwork clcwork   3906 May 27 00:25 003-add-demo-regression-checks.log
+-rw-rw-r--  1 clcwork clcwork 136285 May 27 00:28 004-design-uav-control-api-20260527_002532.log
+-rw-rw-r--  1 clcwork clcwork      0 May 27 00:28 004-design-uav-control-api.done
+-rw-rw-r--  1 clcwork clcwork    167 May 27 00:27 004-design-uav-control-api.log
+-rw-rw-r--  1 clcwork clcwork 101194 May 27 00:30 005-plan-uav-arm-simulation-20260527_002806.log
+-rw-rw-r--  1 clcwork clcwork      0 May 27 00:30 005-plan-uav-arm-simulation.done
+-rw-rw-r--  1 clcwork clcwork    111 May 27 00:30 005-plan-uav-arm-simulation.log
+-rw-rw-r--  1 clcwork clcwork 400460 May 27 08:32 006-implement-uav-control-bridge-20260527_082911.log
+-rw-rw-r--  1 clcwork clcwork      0 May 27 08:32 006-implement-uav-control-bridge.done
+-rw-rw-r--  1 clcwork clcwork  52160 May 27 08:32 006-implement-uav-control-bridge.log
+-rw-rw-r--  1 clcwork clcwork 228099 May 27 08:35 007-add-uav-state-feedback-20260527_083233.log
+-rw-rw-r--  1 clcwork clcwork      0 May 27 08:35 007-add-uav-state-feedback.done
+-rw-rw-r--  1 clcwork clcwork   1366 May 27 08:34 007-add-uav-state-feedback.log
+-rw-rw-r--  1 clcwork clcwork 194650 May 27 08:38 008-add-uav-bridge-demo-and-checks-20260527_083508.log
+-rw-rw-r--  1 clcwork clcwork      0 May 27 08:38 008-add-uav-bridge-demo-and-checks.done
+-rw-rw-r--  1 clcwork clcwork   5155 May 27 08:38 008-add-uav-bridge-demo-and-checks.log
+-rw-rw-r--  1 clcwork clcwork 328292 May 27 08:42 009-document-uav-bridge-usage-20260527_083850.log
+-rw-rw-r--  1 clcwork clcwork      0 May 27 08:42 009-document-uav-bridge-usage.done
+-rw-rw-r--  1 clcwork clcwork   3889 May 27 08:42 009-document-uav-bridge-usage.log
+-rw-rw-r--  1 clcwork clcwork      0 May 27 17:13 010-download-stage2-materials.done
+-rw-rw-r--  1 clcwork clcwork   5055 May 27 17:13 010-download-stage2-materials.log
+-rw-rw-r--  1 clcwork clcwork  26660 May 27 17:25 011-audit-stage2-environment-20260527_172517.log
+-rw-rw-r--  1 clcwork clcwork   2089 May 27 00:17 run-codex-queue-fix-20260527_001740.log
+-rw-rw-r--  1 clcwork clcwork   4387 May 27 17:14 stage2-task-descriptions-zh.md
+
+docs:
+total 60
+drwxrwxr-x  2 clcwork clcwork  4096 May 27 00:29 .
+drwxrwxr-x 14 clcwork clcwork  4096 May 27 17:10 ..
+-rw-rw-r--  1 clcwork clcwork  5336 May 27 00:20 PROJECT_STRUCTURE.md
+-rw-rw-r--  1 clcwork clcwork  3969 May 27 08:53 REGRESSION_CHECKS.md
+-rw-rw-r--  1 clcwork clcwork 13644 May 27 00:29 UAV_ARM_SIMULATION_PLAN.md
+-rw-rw-r--  1 clcwork clcwork 14800 May 27 08:40 UAV_CONTROL_API.md
+-rw-rw-r--  1 clcwork clcwork  6961 May 27 08:42 VISUALIZATION_GUIDE.md
+
+exec
+/bin/bash -lc "rg --files -g 'package.xml' -g 'setup.py' -g 'CMakeLists.txt' -g '*.md' | sed -n '1,120p'" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+/bin/bash: line 1: rg: command not found
+
+exec
+/bin/bash -lc "test -f docs/STAGE2_ENVIRONMENT_AUDIT.md && sed -n '1,260p' docs/STAGE2_ENVIRONMENT_AUDIT.md || true" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+codex
+`docs/STAGE2_ENVIRONMENT_AUDIT.md` does not exist yet. I also found a prior timestamped queue log for task 011, but this task explicitly asks for the stable `codex-logs/011-audit-stage2-environment.log`, so I’ll write that path and leave the timestamped log alone.
+exec
+/bin/bash -lc "{
+  printf 'TASK=011-audit-stage2-environment\\n'
+  printf 'TIMESTAMP=%s\\n' \""'$(date +%Y%m%d_%H%M%S)"
+  printf '"'WORKSPACE=%s\\n' \"/home/clcwork/UAV_capture/px4_ros2_ws\"
+  printf '\\n## Required commands\\n'
+
+  printf '\\n"'$ pwd'"\\n'
+  pwd
+
+  printf '\\n"'$ ros2 --help >/dev/null && echo ROS2_OK'"\\n'
+  ros2 --help >/dev/null && echo ROS2_OK
+
+  printf '\\n"'$ gz sim --versions || true'"\\n'
+  gz sim --versions || true
+
+  printf '\\n"'$ ros2 pkg list | grep -E '"'\\''ros_gz_bridge|gz_ros2_control|controller_manager|joint_state_broadcaster|forward_command_controller|joint_trajectory_controller'\\'' || true\\n'
+  ros2 pkg list | grep -E 'ros_gz_bridge|gz_ros2_control|controller_manager|joint_state_broadcaster|forward_command_controller|joint_trajectory_controller' || true
+
+  printf '\\n"'$ python3 - <<'"'\\''PY'\\'' || true\\nimport importlib.util\\nprint(\"lerobot\", \"OK\" if importlib.util.find_spec(\"lerobot\") else \"MISSING\")\\nPY\\n'
+  python3 - <<'PY' || true
+import importlib.util
+print(\"lerobot\", \"OK\" if importlib.util.find_spec(\"lerobot\") else \"MISSING\")
+PY
+
+  printf '\\n"'$ test -s /home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/x500/model.sdf'"\\n'
+  test -s /home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/x500/model.sdf
+  printf 'x500 model.sdf exists and is non-empty\\n'
+
+  printf '\\n"'$ test -s /home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/x500_mono_cam/model.sdf'"\\n'
+  test -s /home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/x500_mono_cam/model.sdf
+  printf 'x500_mono_cam model.sdf exists and is non-empty\\n'
+
+  printf '\\n## Additional audit probes\\n'
+
+  printf '\\n"'$ command -v ros2 gz python3'"\\n'
+  command -v ros2 || true
+  command -v gz || true
+  command -v python3 || true
+
+  printf '\\n"'$ ros2 --version || true'"\\n'
+  ros2 --version || true
+
+  printf '\\n"'$ ros2 doctor --report | sed -n '"'\\''1,120p'\\'' || true\\n'
+  ros2 doctor --report | sed -n '1,120p' || true
+
+  printf '\\n"'$ python3 - <<'"'\\''PY'\\'' || true\\nimport importlib.metadata as md\\nfor name in [\"lerobot\", \"ros_gz_bridge\", \"gz_ros2_control\"]:\\n    try:\\n        print(name, md.version(name))\\n    except md.PackageNotFoundError:\\n        print(name, \"PY_DIST_MISSING\")\\nPY\\n'
+  python3 - <<'PY' || true
+import importlib.metadata as md
+for name in [\"lerobot\", \"ros_gz_bridge\", \"gz_ros2_control\"]:
+    try:
+        print(name, md.version(name))
+    except md.PackageNotFoundError:
+        print(name, \"PY_DIST_MISSING\")
+PY
+
+  printf '\\n"'$ /home/clcwork/miniconda3/envs/lerobot/bin/python - <<'"'\\''PY'\\'' || true\\nimport importlib.util\\nimport importlib.metadata as md\\nprint(\"conda_lerobot_python\", \"OK\")\\nprint(\"lerobot\", \"OK\" if importlib.util.find_spec(\"lerobot\") else \"MISSING\")\\ntry:\\n    print(\"lerobot_version\", md.version(\"lerobot\"))\\nexcept Exception as exc:\\n    print(\"lerobot_version\", type(exc).__name__)\\nPY\\n'
+  /home/clcwork/miniconda3/envs/lerobot/bin/python - <<'PY' || true
+import importlib.util
+import importlib.metadata as md
+print(\"conda_lerobot_python\", \"OK\")
+print(\"lerobot\", \"OK\" if importlib.util.find_spec(\"lerobot\") else \"MISSING\")
+try:
+    print(\"lerobot_version\", md.version(\"lerobot\"))
+except Exception as exc:
+    print(\"lerobot_version\", type(exc).__name__)
+PY
+
+  printf '\\n"'$ for model in x500 x500_mono_cam mono_cam arucotag; do test -s .../models/$model/model.sdf && echo "$model PASS" || echo "$model WARN_MISSING"; done'"\\n'
+  for model in x500 x500_mono_cam mono_cam arucotag; do
+    if test -s \"/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/"'$model/model.sdf"; then
+      echo "$model PASS /home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/$model/model.sdf"
+    else
+      echo "$model WARN_MISSING /home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/$model/model.sdf"
+    fi
+  done
+
+  printf '"'\\n"'$ find /home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models -maxdepth 2 -type f '"\\\\( -path \"*/mono_cam/model.sdf\" -o -path \"*/arucotag/model.sdf\" -o -path \"*/x500/model.sdf\" -o -path \"*/x500_mono_cam/model.sdf\" \\\\) -print\\n'
+  find /home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models -maxdepth 2 -type f \\( -path \"*/mono_cam/model.sdf\" -o -path \"*/arucotag/model.sdf\" -o -path \"*/x500/model.sdf\" -o -path \"*/x500_mono_cam/model.sdf\" \\) -print
+
+  printf '\\n"'$ dpkg-query -W ros-* 2>/dev/null | grep -E '"'\\''ros-gz-bridge|gz-ros2-control|controller-manager|joint-state-broadcaster|forward-command-controller|joint-trajectory-controller'\\'' || true\\n'
+  dpkg-query -W 'ros-*' 2>/dev/null | grep -E 'ros-gz-bridge|gz-ros2-control|controller-manager|joint-state-broadcaster|forward-command-controller|joint-trajectory-controller' || true
+} > codex-logs/011-audit-stage2-environment.log 2>&1" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 7727ms:
+codex
+The environment probe finished and wrote the stable log. I’m reading the captured output now to distinguish actual missing dependencies from things that are installed but not exposed through the current shell.
+exec
+/bin/bash -lc "sed -n '1,260p' codex-logs/011-audit-stage2-environment.log" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+TASK=011-audit-stage2-environment
+TIMESTAMP=20260527_172641
+WORKSPACE=/home/clcwork/UAV_capture/px4_ros2_ws
+
+## Required commands
+
+$ pwd
+/home/clcwork/UAV_capture/px4_ros2_ws
+
+$ ros2 --help >/dev/null && echo ROS2_OK
+ROS2_OK
+
+$ gz sim --versions || true
+8.11.0
+
+$ ros2 pkg list | grep -E 'ros_gz_bridge|gz_ros2_control|controller_manager|joint_state_broadcaster|forward_command_controller|joint_trajectory_controller' || true
+
+$ python3 - <<'PY' || true
+import importlib.util
+print("lerobot", "OK" if importlib.util.find_spec("lerobot") else "MISSING")
+PY
+lerobot MISSING
+
+$ test -s /home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/x500/model.sdf
+x500 model.sdf exists and is non-empty
+
+$ test -s /home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/x500_mono_cam/model.sdf
+x500_mono_cam model.sdf exists and is non-empty
+
+## Additional audit probes
+
+$ command -v ros2 gz python3
+/opt/ros/jazzy/bin/ros2
+/usr/bin/gz
+/usr/bin/python3
+
+$ ros2 --version || true
+usage: ros2 [-h] [--use-python-default-buffering]
+            Call `ros2 <command> -h` for more detailed usage. ...
+ros2: error: unrecognized arguments: --version
+
+$ ros2 doctor --report | sed -n '1,120p' || true
+
+   NETWORK CONFIGURATION
+inet         : 10.255.255.254
+inet4        : ['127.0.0.1', '10.255.255.254']
+inet6        : ['::1']
+netmask      : 255.255.255.255
+device       : lo
+flags        : 73<UP,LOOPBACK,RUNNING>
+mtu          : 65536
+inet         : 172.24.9.207
+inet4        : ['172.24.9.207']
+ether        : 00:15:5d:e1:72:42
+inet6        : ['fe80::215:5dff:fee1:7242%eth0']
+netmask      : 255.255.240.0
+device       : eth0
+flags        : 4163<UP,RUNNING,BROADCAST,MULTICAST>
+mtu          : 1360
+broadcast    : 172.24.15.255
+inet         : 100.110.103.116
+inet4        : ['100.110.103.116']
+inet6        : ['fd7a:115c:a1e0::2301:6782', 'fe80::74a6:5a3e:b569:1e4%tailscale0']
+netmask      : 255.255.255.255
+device       : tailscale0
+flags        : 4305<PTP,MULTICAST,RUNNING,UP,NOARP>
+mtu          : 1280
+
+   PACKAGE VERSIONS
+cv_bridge                                 : latest=4.1.0, local=4.1.0
+rqt_py_console                            : latest=1.2.3, local=1.2.3
+tf2_kdl                                   : latest=0.36.20, local=0.36.20
+ros_workspace                             : latest=1.0.3, local=1.0.3
+tf2_geometry_msgs                         : latest=0.36.20, local=0.36.20
+examples_rclpy_minimal_action_server      : latest=0.19.7, local=0.19.7
+sensor_msgs_py                            : latest=5.3.7, local=5.3.7
+map_msgs                                  : latest=2.4.1, local=2.4.1
+libyaml_vendor                            : latest=1.6.3, local=1.6.3
+joy                                       : latest=3.3.0, local=3.3.0
+ros_core                                  : latest=0.11.0, local=0.11.0
+trajectory_msgs                           : latest=5.3.7, local=5.3.7
+rclpy                                     : latest=7.1.11, local=7.1.11
+ament_cmake_test                          : latest=2.5.6, local=2.5.6
+type_description_interfaces               : latest=2.0.4, local=2.0.3
+rqt_reconfigure                           : latest=1.6.4, local=1.6.4
+rviz_common                               : latest=14.1.20, local=14.1.20
+tf2_tools                                 : latest=0.36.20, local=0.36.20
+ros2action                                : latest=0.32.9, local=0.32.9
+ros2multicast                             : latest=0.32.9, local=0.32.9
+ament_cmake_auto                          : latest=2.5.6, local=2.5.6
+rcl_logging_spdlog                        : latest=3.1.1, local=3.1.1
+unique_identifier_msgs                    : latest=2.5.0, local=2.5.0
+rcl_action                                : latest=9.2.9, local=9.2.9
+rqt_image_view                            : latest=1.3.0, local=1.3.0
+tf2                                       : latest=0.36.20, local=0.36.20
+rclcpp_action                             : latest=28.1.18, local=28.1.18
+rqt_graph                                 : latest=1.5.6, local=1.5.6
+libstatistics_collector                   : latest=1.7.4, local=1.7.4
+ament_lint_cmake                          : latest=0.17.5, local=0.17.5
+sdl2_vendor                               : latest=3.3.0, local=3.3.0
+ament_cmake_copyright                     : latest=0.17.5, local=0.17.5
+launch                                    : latest=3.4.10, local=3.4.10
+rcl_logging_interface                     : latest=3.1.1, local=3.1.1
+rqt_plot                                  : latest=1.4.5, local=1.4.5
+tf2_ros_py                                : latest=0.36.20, local=0.36.20
+rosidl_generator_py                       : latest=0.22.2, local=0.22.2
+examples_rclpy_minimal_client             : latest=0.19.7, local=0.19.7
+ros2component                             : latest=0.32.9, local=0.32.9
+std_msgs                                  : latest=5.3.7, local=5.3.7
+shape_msgs                                : latest=5.3.7, local=5.3.7
+desktop                                   : latest=0.11.0, local=0.11.0
+urdf_parser_plugin                        : latest=2.10.0, local=2.10.0
+ros_environment                           : latest=4.2.1, local=4.2.1
+examples_rclcpp_minimal_client            : latest=0.19.7, local=0.19.7
+examples_rclcpp_minimal_subscriber        : latest=0.19.7, local=0.19.7
+python_qt_binding                         : latest=2.2.2, local=2.2.2
+ament_cmake_lint_cmake                    : latest=0.17.5, local=0.17.5
+ament_cmake_export_include_directories    : latest=2.5.6, local=2.5.6
+ros2service                               : latest=0.32.9, local=0.32.9
+ament_pep257                              : latest=0.17.5, local=0.17.5
+rcl_interfaces                            : latest=2.0.4, local=2.0.3
+demo_nodes_cpp                            : latest=0.33.10, local=0.33.10
+turtlesim                                 : latest=1.8.3, local=1.8.3
+resource_retriever                        : latest=3.4.4, local=3.4.4
+yaml_cpp_vendor                           : latest=9.0.1, local=9.0.1
+ament_cmake_cppcheck                      : latest=0.17.5, local=0.17.5
+tf2_py                                    : latest=0.36.20, local=0.36.20
+lifecycle_msgs                            : latest=2.0.4, local=2.0.3
+rqt_shell                                 : latest=1.2.3, local=1.2.3
+image_transport                           : latest=5.1.7, local=5.1.7
+ament_cmake_export_link_flags             : latest=2.5.6, local=2.5.6
+logging_demo                              : latest=0.33.10, local=0.33.10
+ros2launch                                : latest=0.26.11, local=0.26.11
+launch_testing                            : latest=3.4.10, local=3.4.10
+ament_cmake_xmllint                       : latest=0.17.5, local=0.17.5
+ament_cmake_uncrustify                    : latest=0.17.5, local=0.17.5
+rclcpp_components                         : latest=28.1.18, local=28.1.18
+pluginlib                                 : latest=5.4.5, local=5.4.5
+examples_rclpy_minimal_publisher          : latest=0.19.7, local=0.19.7
+liblz4_vendor                             : latest=0.26.10, local=0.26.10
+quality_of_service_demo_cpp               : latest=0.33.10, local=0.33.10
+launch_xml                                : latest=3.4.10, local=3.4.10
+zstd_vendor                               : latest=0.26.10, local=0.26.10
+launch_ros                                : latest=0.26.11, local=0.26.11
+tracetools                                : latest=8.2.5, local=8.2.5
+ament_cmake                               : latest=2.5.6, local=2.5.6
+ament_cmake_ros                           : latest=0.12.0, local=0.12.0
+std_srvs                                  : latest=5.3.7, local=5.3.7
+composition_interfaces                    : latest=2.0.4, local=2.0.3
+image_tools                               : latest=0.33.10, local=0.33.10
+dummy_sensors                             : latest=0.33.10, local=0.33.10
+pcl_conversions                           : latest=2.6.4, local=2.6.4
+ament_cmake_include_directories           : latest=2.5.6, local=2.5.6
+qt_gui                                    : latest=2.7.6, local=2.7.6
+console_bridge_vendor                     : latest=1.7.1, local=1.7.1
+examples_rclcpp_minimal_timer             : latest=0.19.7, local=0.19.7
+tinyxml2_vendor                           : latest=0.9.2, local=0.9.2
+angles                                    : latest=1.16.1, local=1.16.1
+interactive_markers                       : latest=2.5.5, local=2.5.5
+rmw_cyclonedds_cpp                        : latest=2.2.3, local=2.2.3
+examples_rclpy_minimal_subscriber         : latest=0.19.7, local=0.19.7
+rosbag2_storage_sqlite3                   : latest=0.26.10, local=0.26.10
+
+$ python3 - <<'PY' || true
+import importlib.metadata as md
+for name in ["lerobot", "ros_gz_bridge", "gz_ros2_control"]:
+    try:
+        print(name, md.version(name))
+    except md.PackageNotFoundError:
+        print(name, "PY_DIST_MISSING")
+PY
+lerobot PY_DIST_MISSING
+ros_gz_bridge PY_DIST_MISSING
+gz_ros2_control PY_DIST_MISSING
+
+$ /home/clcwork/miniconda3/envs/lerobot/bin/python - <<'PY' || true
+import importlib.util
+import importlib.metadata as md
+print("conda_lerobot_python", "OK")
+print("lerobot", "OK" if importlib.util.find_spec("lerobot") else "MISSING")
+try:
+    print("lerobot_version", md.version("lerobot"))
+except Exception as exc:
+    print("lerobot_version", type(exc).__name__)
+PY
+conda_lerobot_python OK
+lerobot OK
+lerobot_version 0.5.2
+
+$ for model in x500 x500_mono_cam mono_cam arucotag; do test -s .../models/$model/model.sdf && echo "$model PASS" || echo "$model WARN_MISSING"; done
+x500 PASS /home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/x500/model.sdf
+x500_mono_cam PASS /home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/x500_mono_cam/model.sdf
+mono_cam PASS /home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/mono_cam/model.sdf
+arucotag PASS /home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/arucotag/model.sdf
+
+$ find /home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models -maxdepth 2 -type f \( -path "*/mono_cam/model.sdf" -o -path "*/arucotag/model.sdf" -o -path "*/x500/model.sdf" -o -path "*/x500_mono_cam/model.sdf" \) -print
+/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/x500/model.sdf
+/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/mono_cam/model.sdf
+/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/x500_mono_cam/model.sdf
+/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/arucotag/model.sdf
+
+$ dpkg-query -W ros-* 2>/dev/null | grep -E 'ros-gz-bridge|gz-ros2-control|controller-manager|joint-state-broadcaster|forward-command-controller|joint-trajectory-controller' || true
+
+codex
+The first pass shows ROS 2 and Gazebo are callable, Gazebo Sim is `8.11.0`, and all four PX4 model files exist. The ROS control/Gazebo bridge package grep returned empty, so I’m appending package-prefix and environment probes to make the warning concrete rather than relying on one grep.
+exec
+/bin/bash -lc "{
+  printf '\\n## Additional dependency detail\\n'
+
+  printf '\\n"'$ printenv ROS_DISTRO AMENT_PREFIX_PATH | sed -n '"'\\''1,5p'\\'' || true\\n'
+  printenv ROS_DISTRO AMENT_PREFIX_PATH | sed -n '1,5p' || true
+
+  printf '\\n"'$ for pkg in ros_gz_bridge gz_ros2_control controller_manager joint_state_broadcaster forward_command_controller joint_trajectory_controller; do ros2 pkg prefix "$pkg" >/dev/null 2>&1 && echo "$pkg PRESENT $(ros2 pkg prefix "$pkg")" || echo "$pkg MISSING"; done'"\\n'
+  for pkg in ros_gz_bridge gz_ros2_control controller_manager joint_state_broadcaster forward_command_controller joint_trajectory_controller; do
+    if ros2 pkg prefix \""'$pkg" >/dev/null 2>&1; then
+      echo "$pkg PRESENT $(ros2 pkg prefix "$pkg")"
+    else
+      echo "$pkg MISSING"
+    fi
+  done
+
+  printf '"'\\n"'$ ls -d /opt/ros/* 2>/dev/null || true'"\\n'
+  ls -d /opt/ros/* 2>/dev/null || true
+
+  printf '\\n"'$ gz --versions || true'"\\n'
+  gz --versions || true
+} >> codex-logs/011-audit-stage2-environment.log 2>&1" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 825ms:
+exec
+/bin/bash -lc 'tail -n 80 codex-logs/011-audit-stage2-environment.log' in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+        print(name, md.version(name))
+    except md.PackageNotFoundError:
+        print(name, "PY_DIST_MISSING")
+PY
+lerobot PY_DIST_MISSING
+ros_gz_bridge PY_DIST_MISSING
+gz_ros2_control PY_DIST_MISSING
+
+$ /home/clcwork/miniconda3/envs/lerobot/bin/python - <<'PY' || true
+import importlib.util
+import importlib.metadata as md
+print("conda_lerobot_python", "OK")
+print("lerobot", "OK" if importlib.util.find_spec("lerobot") else "MISSING")
+try:
+    print("lerobot_version", md.version("lerobot"))
+except Exception as exc:
+    print("lerobot_version", type(exc).__name__)
+PY
+conda_lerobot_python OK
+lerobot OK
+lerobot_version 0.5.2
+
+$ for model in x500 x500_mono_cam mono_cam arucotag; do test -s .../models/$model/model.sdf && echo "$model PASS" || echo "$model WARN_MISSING"; done
+x500 PASS /home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/x500/model.sdf
+x500_mono_cam PASS /home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/x500_mono_cam/model.sdf
+mono_cam PASS /home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/mono_cam/model.sdf
+arucotag PASS /home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/arucotag/model.sdf
+
+$ find /home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models -maxdepth 2 -type f \( -path "*/mono_cam/model.sdf" -o -path "*/arucotag/model.sdf" -o -path "*/x500/model.sdf" -o -path "*/x500_mono_cam/model.sdf" \) -print
+/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/x500/model.sdf
+/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/mono_cam/model.sdf
+/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/x500_mono_cam/model.sdf
+/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/arucotag/model.sdf
+
+$ dpkg-query -W ros-* 2>/dev/null | grep -E 'ros-gz-bridge|gz-ros2-control|controller-manager|joint-state-broadcaster|forward-command-controller|joint-trajectory-controller' || true
+
+## Additional dependency detail
+
+$ printenv ROS_DISTRO AMENT_PREFIX_PATH | sed -n '1,5p' || true
+jazzy
+/opt/ros/jazzy
+
+$ for pkg in ros_gz_bridge gz_ros2_control controller_manager joint_state_broadcaster forward_command_controller joint_trajectory_controller; do ros2 pkg prefix "$pkg" >/dev/null 2>&1 && echo "$pkg PRESENT $(ros2 pkg prefix "$pkg")" || echo "$pkg MISSING"; done
+ros_gz_bridge MISSING
+gz_ros2_control MISSING
+controller_manager MISSING
+joint_state_broadcaster MISSING
+forward_command_controller MISSING
+joint_trajectory_controller MISSING
+
+$ ls -d /opt/ros/* 2>/dev/null || true
+/opt/ros/jazzy
+
+$ gz --versions || true
+The 'gz' command provides a command line interface to the Gazebo Tools.
+
+  gz <command> [options]
+
+List of available commands:
+
+  help:          Print this help text.
+  fuel:          Manage simulation resources.
+  gui:           Launch graphical interfaces.
+  launch:        Run and manage executables and plugins.
+  log:           Record or playback topics.
+  model:         Print information about models.
+  msg:           Print information about messages.
+  param:         List, get or set parameters.
+  plugin:        Print information about plugins.
+  sdf:           Utilities for SDF files.
+  service:       Print information about services.
+  sim:           Run and manage the Gazebo Simulator.
+  topic:         Print information about topics.
+
+Options:
+
+  --force-version <VERSION>  Use a specific library version.
+  --versions                 Show the available versions.
+  --commands                 Show the available commands.
+Use 'gz help <command>' to print help for a command.
+
+codex
+I’ve got enough evidence to write the audit: ROS 2 Jazzy and Gazebo Sim are present, LeRobot is available in the named conda environment, but the ROS/Gazebo bridge and ros2_control packages are missing from the active ROS 2 environment. I’m creating only the requested Markdown report now.
+apply patch
+patch: completed
+/home/clcwork/UAV_capture/px4_ros2_ws/docs/STAGE2_ENVIRONMENT_AUDIT.md
+diff --git a/UAV_capture/px4_ros2_ws/docs/STAGE2_ENVIRONMENT_AUDIT.md b/UAV_capture/px4_ros2_ws/docs/STAGE2_ENVIRONMENT_AUDIT.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..05d780a442a40bfda9c8459f105ad1019adb4ce2
+--- /dev/null
++++ b/UAV_capture/px4_ros2_ws/docs/STAGE2_ENVIRONMENT_AUDIT.md
+@@ -0,0 +1,101 @@
++# Stage 2 Environment Audit
++
++Task: `011-audit-stage2-environment`
++
++Audit date: 2026-05-27
++
++Workspace:
++
++```text
++/home/clcwork/UAV_capture/px4_ros2_ws
++```
++
++Raw command log:
++
++```text
++codex-logs/011-audit-stage2-environment.log
++```
++
++## Summary
++
++Stage 2 can rely on the existing PX4 model assets, ROS 2 command-line tools,
++Gazebo Sim, and the dedicated LeRobot conda environment. The active ROS 2 Jazzy
++environment does not currently expose the ROS/Gazebo bridge or ros2_control
++controller packages needed for aerial manipulation integration.
++
++No packages were installed and no runtime behavior was changed during this
++audit.
++
++## PASS Items
++
++- Workspace root confirmed:
++  `/home/clcwork/UAV_capture/px4_ros2_ws`.
++- ROS 2 CLI is available:
++  `ros2 --help >/dev/null && echo ROS2_OK` returned `ROS2_OK`.
++- Active ROS distribution:
++  `ROS_DISTRO=jazzy`, with `/opt/ros/jazzy` on `AMENT_PREFIX_PATH`.
++- Gazebo Sim is available:
++  `gz sim --versions` returned `8.11.0`.
++- LeRobot is available in the project conda environment:
++  `/home/clcwork/miniconda3/envs/lerobot/bin/python` can import `lerobot`;
++  installed distribution version is `0.5.2`.
++- Required PX4 Gazebo model files exist and are non-empty:
++  - `/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/x500/model.sdf`
++  - `/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/x500_mono_cam/model.sdf`
++  - `/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/mono_cam/model.sdf`
++  - `/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/arucotag/model.sdf`
++
++## WARN Items
++
++- The active `/usr/bin/python3` environment cannot import `lerobot`.
++  Use `/home/clcwork/miniconda3/envs/lerobot/bin/python` or activate the
++  `lerobot` conda environment for LeRobot work.
++- The following ROS 2 packages are missing from the active ROS 2 Jazzy
++  environment:
++  - `ros_gz_bridge`
++  - `gz_ros2_control`
++  - `controller_manager`
++  - `joint_state_broadcaster`
++  - `forward_command_controller`
++  - `joint_trajectory_controller`
++- `dpkg-query` did not report installed Debian packages matching the required
++  ROS/Gazebo bridge or ros2_control controller packages.
++- `ros2 --version` is not supported by this ROS 2 CLI; version evidence is from
++  `ROS_DISTRO`, `/opt/ros/jazzy`, and `ros2 doctor --report`.
++
++## Concrete Missing Packages
++
++The following package names should be treated as missing for Stage 2 planning
++until a later task explicitly installs or vendors them:
++
++```text
++ros_gz_bridge
++gz_ros2_control
++controller_manager
++joint_state_broadcaster
++forward_command_controller
++joint_trajectory_controller
++```
++
++Likely Debian package names for ROS 2 Jazzy are:
++
++```text
++ros-jazzy-ros-gz-bridge
++ros-jazzy-gz-ros2-control
++ros-jazzy-controller-manager
++ros-jazzy-joint-state-broadcaster
++ros-jazzy-forward-command-controller
++ros-jazzy-joint-trajectory-controller
++```
++
++These were not installed in this task, per the task requirement to record
++missing dependencies as risks only.
++
++## Stage 2 Readiness
++
++Status: `WARN`
++
++PX4/Gazebo assets and base ROS 2/Gazebo tooling are present, and LeRobot exists
++in the dedicated conda environment. Stage 2 aerial manipulation packages should
++not assume ROS/Gazebo bridge or ros2_control controller availability until the
++missing ROS 2 packages are installed and rechecked.
+
+diff --git a/UAV_capture/px4_ros2_ws/docs/STAGE2_ENVIRONMENT_AUDIT.md b/UAV_capture/px4_ros2_ws/docs/STAGE2_ENVIRONMENT_AUDIT.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..05d780a442a40bfda9c8459f105ad1019adb4ce2
+--- /dev/null
++++ b/UAV_capture/px4_ros2_ws/docs/STAGE2_ENVIRONMENT_AUDIT.md
+@@ -0,0 +1,101 @@
++# Stage 2 Environment Audit
++
++Task: `011-audit-stage2-environment`
++
++Audit date: 2026-05-27
++
++Workspace:
++
++```text
++/home/clcwork/UAV_capture/px4_ros2_ws
++```
++
++Raw command log:
++
++```text
++codex-logs/011-audit-stage2-environment.log
++```
++
++## Summary
++
++Stage 2 can rely on the existing PX4 model assets, ROS 2 command-line tools,
++Gazebo Sim, and the dedicated LeRobot conda environment. The active ROS 2 Jazzy
++environment does not currently expose the ROS/Gazebo bridge or ros2_control
++controller packages needed for aerial manipulation integration.
++
++No packages were installed and no runtime behavior was changed during this
++audit.
++
++## PASS Items
++
++- Workspace root confirmed:
++  `/home/clcwork/UAV_capture/px4_ros2_ws`.
++- ROS 2 CLI is available:
++  `ros2 --help >/dev/null && echo ROS2_OK` returned `ROS2_OK`.
++- Active ROS distribution:
++  `ROS_DISTRO=jazzy`, with `/opt/ros/jazzy` on `AMENT_PREFIX_PATH`.
++- Gazebo Sim is available:
++  `gz sim --versions` returned `8.11.0`.
++- LeRobot is available in the project conda environment:
++  `/home/clcwork/miniconda3/envs/lerobot/bin/python` can import `lerobot`;
++  installed distribution version is `0.5.2`.
++- Required PX4 Gazebo model files exist and are non-empty:
++  - `/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/x500/model.sdf`
++  - `/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/x500_mono_cam/model.sdf`
++  - `/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/mono_cam/model.sdf`
++  - `/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/arucotag/model.sdf`
++
++## WARN Items
++
++- The active `/usr/bin/python3` environment cannot import `lerobot`.
++  Use `/home/clcwork/miniconda3/envs/lerobot/bin/python` or activate the
++  `lerobot` conda environment for LeRobot work.
++- The following ROS 2 packages are missing from the active ROS 2 Jazzy
++  environment:
++  - `ros_gz_bridge`
++  - `gz_ros2_control`
++  - `controller_manager`
++  - `joint_state_broadcaster`
++  - `forward_command_controller`
++  - `joint_trajectory_controller`
++- `dpkg-query` did not report installed Debian packages matching the required
++  ROS/Gazebo bridge or ros2_control controller packages.
++- `ros2 --version` is not supported by this ROS 2 CLI; version evidence is from
++  `ROS_DISTRO`, `/opt/ros/jazzy`, and `ros2 doctor --report`.
++
++## Concrete Missing Packages
++
++The following package names should be treated as missing for Stage 2 planning
++until a later task explicitly installs or vendors them:
++
++```text
++ros_gz_bridge
++gz_ros2_control
++controller_manager
++joint_state_broadcaster
++forward_command_controller
++joint_trajectory_controller
++```
++
++Likely Debian package names for ROS 2 Jazzy are:
++
++```text
++ros-jazzy-ros-gz-bridge
++ros-jazzy-gz-ros2-control
++ros-jazzy-controller-manager
++ros-jazzy-joint-state-broadcaster
++ros-jazzy-forward-command-controller
++ros-jazzy-joint-trajectory-controller
++```
++
++These were not installed in this task, per the task requirement to record
++missing dependencies as risks only.
++
++## Stage 2 Readiness
++
++Status: `WARN`
++
++PX4/Gazebo assets and base ROS 2/Gazebo tooling are present, and LeRobot exists
++in the dedicated conda environment. Stage 2 aerial manipulation packages should
++not assume ROS/Gazebo bridge or ros2_control controller availability until the
++missing ROS 2 packages are installed and rechecked.
+
+codex
+The audit document is in place. I’m doing a quick deliverable check now: file existence, key sections, and that the log still contains the required command outputs.
+exec
+/bin/bash -lc "grep -E 'ROS2_OK|8\\.11\\.0|lerobot|ros_gz_bridge MISSING|gz_ros2_control MISSING|controller_manager MISSING|x500 PASS|x500_mono_cam PASS|mono_cam PASS|arucotag PASS' codex-logs/011-audit-stage2-environment.log" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+$ ros2 --help >/dev/null && echo ROS2_OK
+ROS2_OK
+8.11.0
+print("lerobot", "OK" if importlib.util.find_spec("lerobot") else "MISSING")
+lerobot MISSING
+for name in ["lerobot", "ros_gz_bridge", "gz_ros2_control"]:
+lerobot PY_DIST_MISSING
+$ /home/clcwork/miniconda3/envs/lerobot/bin/python - <<'PY' || true
+print("conda_lerobot_python", "OK")
+print("lerobot", "OK" if importlib.util.find_spec("lerobot") else "MISSING")
+    print("lerobot_version", md.version("lerobot"))
+    print("lerobot_version", type(exc).__name__)
+conda_lerobot_python OK
+lerobot OK
+lerobot_version 0.5.2
+x500 PASS /home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/x500/model.sdf
+x500_mono_cam PASS /home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/x500_mono_cam/model.sdf
+mono_cam PASS /home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/mono_cam/model.sdf
+arucotag PASS /home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/arucotag/model.sdf
+ros_gz_bridge MISSING
+gz_ros2_control MISSING
+controller_manager MISSING
+
+exec
+/bin/bash -lc 'test -s docs/STAGE2_ENVIRONMENT_AUDIT.md && echo DOC_OK && test -s codex-logs/011-audit-stage2-environment.log && echo LOG_OK' in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+DOC_OK
+LOG_OK
+
+exec
+/bin/bash -lc "sed -n '1,220p' docs/STAGE2_ENVIRONMENT_AUDIT.md" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+# Stage 2 Environment Audit
+
+Task: `011-audit-stage2-environment`
+
+Audit date: 2026-05-27
+
+Workspace:
+
+```text
+/home/clcwork/UAV_capture/px4_ros2_ws
+```
+
+Raw command log:
+
+```text
+codex-logs/011-audit-stage2-environment.log
+```
+
+## Summary
+
+Stage 2 can rely on the existing PX4 model assets, ROS 2 command-line tools,
+Gazebo Sim, and the dedicated LeRobot conda environment. The active ROS 2 Jazzy
+environment does not currently expose the ROS/Gazebo bridge or ros2_control
+controller packages needed for aerial manipulation integration.
+
+No packages were installed and no runtime behavior was changed during this
+audit.
+
+## PASS Items
+
+- Workspace root confirmed:
+  `/home/clcwork/UAV_capture/px4_ros2_ws`.
+- ROS 2 CLI is available:
+  `ros2 --help >/dev/null && echo ROS2_OK` returned `ROS2_OK`.
+- Active ROS distribution:
+  `ROS_DISTRO=jazzy`, with `/opt/ros/jazzy` on `AMENT_PREFIX_PATH`.
+- Gazebo Sim is available:
+  `gz sim --versions` returned `8.11.0`.
+- LeRobot is available in the project conda environment:
+  `/home/clcwork/miniconda3/envs/lerobot/bin/python` can import `lerobot`;
+  installed distribution version is `0.5.2`.
+- Required PX4 Gazebo model files exist and are non-empty:
+  - `/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/x500/model.sdf`
+  - `/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/x500_mono_cam/model.sdf`
+  - `/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/mono_cam/model.sdf`
+  - `/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/arucotag/model.sdf`
+
+## WARN Items
+
+- The active `/usr/bin/python3` environment cannot import `lerobot`.
+  Use `/home/clcwork/miniconda3/envs/lerobot/bin/python` or activate the
+  `lerobot` conda environment for LeRobot work.
+- The following ROS 2 packages are missing from the active ROS 2 Jazzy
+  environment:
+  - `ros_gz_bridge`
+  - `gz_ros2_control`
+  - `controller_manager`
+  - `joint_state_broadcaster`
+  - `forward_command_controller`
+  - `joint_trajectory_controller`
+- `dpkg-query` did not report installed Debian packages matching the required
+  ROS/Gazebo bridge or ros2_control controller packages.
+- `ros2 --version` is not supported by this ROS 2 CLI; version evidence is from
+  `ROS_DISTRO`, `/opt/ros/jazzy`, and `ros2 doctor --report`.
+
+## Concrete Missing Packages
+
+The following package names should be treated as missing for Stage 2 planning
+until a later task explicitly installs or vendors them:
+
+```text
+ros_gz_bridge
+gz_ros2_control
+controller_manager
+joint_state_broadcaster
+forward_command_controller
+joint_trajectory_controller
+```
+
+Likely Debian package names for ROS 2 Jazzy are:
+
+```text
+ros-jazzy-ros-gz-bridge
+ros-jazzy-gz-ros2-control
+ros-jazzy-controller-manager
+ros-jazzy-joint-state-broadcaster
+ros-jazzy-forward-command-controller
+ros-jazzy-joint-trajectory-controller
+```
+
+These were not installed in this task, per the task requirement to record
+missing dependencies as risks only.
+
+## Stage 2 Readiness
+
+Status: `WARN`
+
+PX4/Gazebo assets and base ROS 2/Gazebo tooling are present, and LeRobot exists
+in the dedicated conda environment. Stage 2 aerial manipulation packages should
+not assume ROS/Gazebo bridge or ros2_control controller availability until the
+missing ROS 2 packages are installed and rechecked.
+
+exec
+/bin/bash -lc "find docs codex-logs -maxdepth 1 \\( -name 'STAGE2_ENVIRONMENT_AUDIT.md' -o -name '011-audit-stage2-environment.log' \\) -printf '%p %s bytes\\n'" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+docs/STAGE2_ENVIRONMENT_AUDIT.md 3324 bytes
+codex-logs/011-audit-stage2-environment.log 12455 bytes
+
+diff --git a/UAV_capture/px4_ros2_ws/docs/STAGE2_ENVIRONMENT_AUDIT.md b/UAV_capture/px4_ros2_ws/docs/STAGE2_ENVIRONMENT_AUDIT.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..05d780a442a40bfda9c8459f105ad1019adb4ce2
+--- /dev/null
++++ b/UAV_capture/px4_ros2_ws/docs/STAGE2_ENVIRONMENT_AUDIT.md
+@@ -0,0 +1,101 @@
++# Stage 2 Environment Audit
++
++Task: `011-audit-stage2-environment`
++
++Audit date: 2026-05-27
++
++Workspace:
++
++```text
++/home/clcwork/UAV_capture/px4_ros2_ws
++```
++
++Raw command log:
++
++```text
++codex-logs/011-audit-stage2-environment.log
++```
++
++## Summary
++
++Stage 2 can rely on the existing PX4 model assets, ROS 2 command-line tools,
++Gazebo Sim, and the dedicated LeRobot conda environment. The active ROS 2 Jazzy
++environment does not currently expose the ROS/Gazebo bridge or ros2_control
++controller packages needed for aerial manipulation integration.
++
++No packages were installed and no runtime behavior was changed during this
++audit.
++
++## PASS Items
++
++- Workspace root confirmed:
++  `/home/clcwork/UAV_capture/px4_ros2_ws`.
++- ROS 2 CLI is available:
++  `ros2 --help >/dev/null && echo ROS2_OK` returned `ROS2_OK`.
++- Active ROS distribution:
++  `ROS_DISTRO=jazzy`, with `/opt/ros/jazzy` on `AMENT_PREFIX_PATH`.
++- Gazebo Sim is available:
++  `gz sim --versions` returned `8.11.0`.
++- LeRobot is available in the project conda environment:
++  `/home/clcwork/miniconda3/envs/lerobot/bin/python` can import `lerobot`;
++  installed distribution version is `0.5.2`.
++- Required PX4 Gazebo model files exist and are non-empty:
++  - `/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/x500/model.sdf`
++  - `/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/x500_mono_cam/model.sdf`
++  - `/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/mono_cam/model.sdf`
++  - `/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/arucotag/model.sdf`
++
++## WARN Items
++
++- The active `/usr/bin/python3` environment cannot import `lerobot`.
++  Use `/home/clcwork/miniconda3/envs/lerobot/bin/python` or activate the
++  `lerobot` conda environment for LeRobot work.
++- The following ROS 2 packages are missing from the active ROS 2 Jazzy
++  environment:
++  - `ros_gz_bridge`
++  - `gz_ros2_control`
++  - `controller_manager`
++  - `joint_state_broadcaster`
++  - `forward_command_controller`
++  - `joint_trajectory_controller`
++- `dpkg-query` did not report installed Debian packages matching the required
++  ROS/Gazebo bridge or ros2_control controller packages.
++- `ros2 --version` is not supported by this ROS 2 CLI; version evidence is from
++  `ROS_DISTRO`, `/opt/ros/jazzy`, and `ros2 doctor --report`.
++
++## Concrete Missing Packages
++
++The following package names should be treated as missing for Stage 2 planning
++until a later task explicitly installs or vendors them:
++
++```text
++ros_gz_bridge
++gz_ros2_control
++controller_manager
++joint_state_broadcaster
++forward_command_controller
++joint_trajectory_controller
++```
++
++Likely Debian package names for ROS 2 Jazzy are:
++
++```text
++ros-jazzy-ros-gz-bridge
++ros-jazzy-gz-ros2-control
++ros-jazzy-controller-manager
++ros-jazzy-joint-state-broadcaster
++ros-jazzy-forward-command-controller
++ros-jazzy-joint-trajectory-controller
++```
++
++These were not installed in this task, per the task requirement to record
++missing dependencies as risks only.
++
++## Stage 2 Readiness
++
++Status: `WARN`
++
++PX4/Gazebo assets and base ROS 2/Gazebo tooling are present, and LeRobot exists
++in the dedicated conda environment. Stage 2 aerial manipulation packages should
++not assume ROS/Gazebo bridge or ros2_control controller availability until the
++missing ROS 2 packages are installed and rechecked.
+
+codex
+changed files:
+- [docs/STAGE2_ENVIRONMENT_AUDIT.md](/home/clcwork/UAV_capture/px4_ros2_ws/docs/STAGE2_ENVIRONMENT_AUDIT.md)
+- [codex-logs/011-audit-stage2-environment.log](/home/clcwork/UAV_capture/px4_ros2_ws/codex-logs/011-audit-stage2-environment.log)
+
+commands run:
+- Required audit commands from task 011, saved to `codex-logs/011-audit-stage2-environment.log`
+- Extra probes: `ros2 pkg prefix ...`, `printenv ROS_DISTRO AMENT_PREFIX_PATH`, LeRobot check with `/home/clcwork/miniconda3/envs/lerobot/bin/python`
+- Deliverable validation: `test -s ...`, `grep ...`, `find ... -printf ...`
+
+test result:
+- PASS: audit document and log were created.
+- WARN: Stage 2 environment is not fully ready for aerial manipulation integration.
+
+known risks:
+- Missing from active ROS 2 Jazzy environment: `ros_gz_bridge`, `gz_ros2_control`, `controller_manager`, `joint_state_broadcaster`, `forward_command_controller`, `joint_trajectory_controller`.
+- LeRobot is available in the conda env as version `0.5.2`, but not importable from `/usr/bin/python3`.
+- No packages were installed, per task requirement.
+diff --git a/UAV_capture/px4_ros2_ws/docs/STAGE2_ENVIRONMENT_AUDIT.md b/UAV_capture/px4_ros2_ws/docs/STAGE2_ENVIRONMENT_AUDIT.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..05d780a442a40bfda9c8459f105ad1019adb4ce2
+--- /dev/null
++++ b/UAV_capture/px4_ros2_ws/docs/STAGE2_ENVIRONMENT_AUDIT.md
+@@ -0,0 +1,101 @@
++# Stage 2 Environment Audit
++
++Task: `011-audit-stage2-environment`
++
++Audit date: 2026-05-27
++
++Workspace:
++
++```text
++/home/clcwork/UAV_capture/px4_ros2_ws
++```
++
++Raw command log:
++
++```text
++codex-logs/011-audit-stage2-environment.log
++```
++
++## Summary
++
++Stage 2 can rely on the existing PX4 model assets, ROS 2 command-line tools,
++Gazebo Sim, and the dedicated LeRobot conda environment. The active ROS 2 Jazzy
++environment does not currently expose the ROS/Gazebo bridge or ros2_control
++controller packages needed for aerial manipulation integration.
++
++No packages were installed and no runtime behavior was changed during this
++audit.
++
++## PASS Items
++
++- Workspace root confirmed:
++  `/home/clcwork/UAV_capture/px4_ros2_ws`.
++- ROS 2 CLI is available:
++  `ros2 --help >/dev/null && echo ROS2_OK` returned `ROS2_OK`.
++- Active ROS distribution:
++  `ROS_DISTRO=jazzy`, with `/opt/ros/jazzy` on `AMENT_PREFIX_PATH`.
++- Gazebo Sim is available:
++  `gz sim --versions` returned `8.11.0`.
++- LeRobot is available in the project conda environment:
++  `/home/clcwork/miniconda3/envs/lerobot/bin/python` can import `lerobot`;
++  installed distribution version is `0.5.2`.
++- Required PX4 Gazebo model files exist and are non-empty:
++  - `/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/x500/model.sdf`
++  - `/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/x500_mono_cam/model.sdf`
++  - `/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/mono_cam/model.sdf`
++  - `/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/arucotag/model.sdf`
++
++## WARN Items
++
++- The active `/usr/bin/python3` environment cannot import `lerobot`.
++  Use `/home/clcwork/miniconda3/envs/lerobot/bin/python` or activate the
++  `lerobot` conda environment for LeRobot work.
++- The following ROS 2 packages are missing from the active ROS 2 Jazzy
++  environment:
++  - `ros_gz_bridge`
++  - `gz_ros2_control`
++  - `controller_manager`
++  - `joint_state_broadcaster`
++  - `forward_command_controller`
++  - `joint_trajectory_controller`
++- `dpkg-query` did not report installed Debian packages matching the required
++  ROS/Gazebo bridge or ros2_control controller packages.
++- `ros2 --version` is not supported by this ROS 2 CLI; version evidence is from
++  `ROS_DISTRO`, `/opt/ros/jazzy`, and `ros2 doctor --report`.
++
++## Concrete Missing Packages
++
++The following package names should be treated as missing for Stage 2 planning
++until a later task explicitly installs or vendors them:
++
++```text
++ros_gz_bridge
++gz_ros2_control
++controller_manager
++joint_state_broadcaster
++forward_command_controller
++joint_trajectory_controller
++```
++
++Likely Debian package names for ROS 2 Jazzy are:
++
++```text
++ros-jazzy-ros-gz-bridge
++ros-jazzy-gz-ros2-control
++ros-jazzy-controller-manager
++ros-jazzy-joint-state-broadcaster
++ros-jazzy-forward-command-controller
++ros-jazzy-joint-trajectory-controller
++```
++
++These were not installed in this task, per the task requirement to record
++missing dependencies as risks only.
++
++## Stage 2 Readiness
++
++Status: `WARN`
++
++PX4/Gazebo assets and base ROS 2/Gazebo tooling are present, and LeRobot exists
++in the dedicated conda environment. Stage 2 aerial manipulation packages should
++not assume ROS/Gazebo bridge or ros2_control controller availability until the
++missing ROS 2 packages are installed and rechecked.
+
+tokens used
+32,773
+changed files:
+- [docs/STAGE2_ENVIRONMENT_AUDIT.md](/home/clcwork/UAV_capture/px4_ros2_ws/docs/STAGE2_ENVIRONMENT_AUDIT.md)
+- [codex-logs/011-audit-stage2-environment.log](/home/clcwork/UAV_capture/px4_ros2_ws/codex-logs/011-audit-stage2-environment.log)
+
+commands run:
+- Required audit commands from task 011, saved to `codex-logs/011-audit-stage2-environment.log`
+- Extra probes: `ros2 pkg prefix ...`, `printenv ROS_DISTRO AMENT_PREFIX_PATH`, LeRobot check with `/home/clcwork/miniconda3/envs/lerobot/bin/python`
+- Deliverable validation: `test -s ...`, `grep ...`, `find ... -printf ...`
+
+test result:
+- PASS: audit document and log were created.
+- WARN: Stage 2 environment is not fully ready for aerial manipulation integration.
+
+known risks:
+- Missing from active ROS 2 Jazzy environment: `ros_gz_bridge`, `gz_ros2_control`, `controller_manager`, `joint_state_broadcaster`, `forward_command_controller`, `joint_trajectory_controller`.
+- LeRobot is available in the conda env as version `0.5.2`, but not importable from `/usr/bin/python3`.
+- No packages were installed, per task requirement.

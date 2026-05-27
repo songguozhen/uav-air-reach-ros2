@@ -1,0 +1,2553 @@
+Reading prompt from stdin...
+OpenAI Codex v0.133.0
+--------
+workdir: /home/clcwork/UAV_capture/px4_ros2_ws
+model: gpt-5.5
+provider: openai
+approval: never
+sandbox: danger-full-access
+reasoning effort: high
+reasoning summaries: none
+session id: 019e6516-fa81-7ea2-9d8e-780ed9a6b160
+--------
+user
+# Task 002: Standardize Demo Visualization
+
+## Task goal
+
+- 检查 Demo 1-4 是否都能生成：
+  - `trajectory.csv`
+  - `trajectory_3d.png`
+  - `xy_path.png`
+  - `height_curve.png`
+  - `speed_curve.png`
+- 如果已有脚本能完成，不重复实现。
+- 如果命名不统一，只做轻量标准化。
+- 增加 `docs/VISUALIZATION_GUIDE.md`，说明如何查看和复制结果到 Mac。
+
+## Allowed changes
+
+- `scripts/` 下的可视化相关脚本。
+- `docs/VISUALIZATION_GUIDE.md`。
+- 不允许修改 `hover.py`、PX4 控制核心逻辑，除非只是为了增加非侵入式日志输出。
+- 不允许删除已有 `logs/`、`log/`、`visualizations/` 中的实验结果。
+
+## Required commands
+
+将命令输出保存到 `codex-logs/002-standardize-demo-visualization.log`：
+
+```bash
+source /opt/ros/jazzy/setup.bash
+source install/setup.bash
+python3 -m compileall src scripts
+# 至少对一个已有 logs 或 visualizations 目录运行可视化相关检查或脚本，验证能生成或已存在 PNG。
+find logs -name "*.png" | head
+find visualizations -name "*.png" | head
+```
+
+如果项目中已有可视化输出但没有独立离线重绘脚本，可以通过检查最近一次 `visualizations/<demo>/<timestamp>/` 中的 PNG 文件满足本任务验证目标，并在最终报告中说明。
+
+## Deliverables
+
+- `docs/VISUALIZATION_GUIDE.md`
+- 标准化后的可视化脚本，若有必要
+- `codex-logs/002-standardize-demo-visualization.log`
+
+## Final report requirements
+
+最终报告必须说明：
+
+- 每个 Demo 的输出文件命名。
+- Mac 端如何通过 `scp` 拉取结果。
+- 当前还缺哪些可视化指标。
+- `changed files`
+- `commands run`
+- `test result`
+- `known risks`
+
+codex
+我会先按项目规则梳理现有脚本和 task 文件相关结构，确认 Demo 1-4 的可视化产物来源，再决定是否只补文档或做最小脚本调整。
+exec
+/bin/bash -lc 'find codex-tasks -maxdepth 2 -type f -print 2>/dev/null | sort' in /home/clcwork/UAV_capture/px4_ros2_ws
+exec
+/bin/bash -lc "pwd && rg --files -g '"'!*PX4-Autopilot*'"' | sed -n '1,160p'" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+codex-tasks/001-audit-project-structure.md
+codex-tasks/002-standardize-demo-visualization.md
+codex-tasks/003-add-demo-regression-checks.md
+codex-tasks/004-design-uav-control-api.md
+codex-tasks/005-plan-uav-arm-simulation.md
+
+ succeeded in 0ms:
+/home/clcwork/UAV_capture/px4_ros2_ws
+/bin/bash: line 1: rg: command not found
+
+exec
+/bin/bash -lc 'find scripts -maxdepth 3 -type f -print | sort' in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+scripts/run_demo01_hover.sh
+scripts/run_demo02_waypoint_flight.sh
+scripts/run_demo03_circle_trajectory.sh
+scripts/run_demo04_external_setpoint.sh
+scripts/run_hover_experiment.sh
+scripts/run_trajectory_recorder.sh
+scripts/start_stack.sh
+scripts/stop_stack.sh
+
+exec
+/bin/bash -lc "find visualizations logs log -maxdepth 4 -type f \\( -name '*.png' -o -name 'trajectory.csv' -o -name 'summary.md' -o -name 'result.txt' \\) -print 2>/dev/null | sort | sed -n '1,240p'" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+visualizations/demo01_hover/20260526_221722/height_curve.png
+visualizations/demo01_hover/20260526_221722/result.txt
+visualizations/demo01_hover/20260526_221722/speed_curve.png
+visualizations/demo01_hover/20260526_221722/summary.md
+visualizations/demo01_hover/20260526_221722/tracking_error.png
+visualizations/demo01_hover/20260526_221722/trajectory.csv
+visualizations/demo01_hover/20260526_221722/trajectory_3d.png
+visualizations/demo01_hover/20260526_221722/xy_path.png
+visualizations/demo02_waypoint_flight/20260526_085827/summary.md
+visualizations/demo02_waypoint_flight/20260526_085827/trajectory.csv
+visualizations/demo02_waypoint_flight/20260526_085827/trajectory.png
+visualizations/demo02_waypoint_flight/20260526_090144/summary.md
+visualizations/demo02_waypoint_flight/20260526_090144/trajectory.csv
+visualizations/demo02_waypoint_flight/20260526_090144/trajectory.png
+visualizations/demo02_waypoint_flight/20260526_221833/height_curve.png
+visualizations/demo02_waypoint_flight/20260526_221833/result.txt
+visualizations/demo02_waypoint_flight/20260526_221833/speed_curve.png
+visualizations/demo02_waypoint_flight/20260526_221833/summary.md
+visualizations/demo02_waypoint_flight/20260526_221833/tracking_error.png
+visualizations/demo02_waypoint_flight/20260526_221833/trajectory.csv
+visualizations/demo02_waypoint_flight/20260526_221833/trajectory_3d.png
+visualizations/demo02_waypoint_flight/20260526_221833/xy_path.png
+visualizations/demo02_waypoint_flight/20260526_222121/height_curve.png
+visualizations/demo02_waypoint_flight/20260526_222121/result.txt
+visualizations/demo02_waypoint_flight/20260526_222121/speed_curve.png
+visualizations/demo02_waypoint_flight/20260526_222121/summary.md
+visualizations/demo02_waypoint_flight/20260526_222121/tracking_error.png
+visualizations/demo02_waypoint_flight/20260526_222121/trajectory.csv
+visualizations/demo02_waypoint_flight/20260526_222121/trajectory_3d.png
+visualizations/demo02_waypoint_flight/20260526_222121/xy_path.png
+visualizations/demo03_circle_trajectory/20260526_090359/summary.md
+visualizations/demo03_circle_trajectory/20260526_090359/trajectory.csv
+visualizations/demo03_circle_trajectory/20260526_090359/trajectory.png
+visualizations/demo03_circle_trajectory/20260526_222313/height_curve.png
+visualizations/demo03_circle_trajectory/20260526_222313/result.txt
+visualizations/demo03_circle_trajectory/20260526_222313/speed_curve.png
+visualizations/demo03_circle_trajectory/20260526_222313/summary.md
+visualizations/demo03_circle_trajectory/20260526_222313/tracking_error.png
+visualizations/demo03_circle_trajectory/20260526_222313/trajectory.csv
+visualizations/demo03_circle_trajectory/20260526_222313/trajectory_3d.png
+visualizations/demo03_circle_trajectory/20260526_222313/xy_path.png
+visualizations/demo04_external_setpoint/20260526_090546/summary.md
+visualizations/demo04_external_setpoint/20260526_090546/trajectory.csv
+visualizations/demo04_external_setpoint/20260526_090546/trajectory.png
+visualizations/demo04_external_setpoint/20260526_222502/height_curve.png
+visualizations/demo04_external_setpoint/20260526_222502/result.txt
+visualizations/demo04_external_setpoint/20260526_222502/speed_curve.png
+visualizations/demo04_external_setpoint/20260526_222502/summary.md
+visualizations/demo04_external_setpoint/20260526_222502/tracking_error.png
+visualizations/demo04_external_setpoint/20260526_222502/trajectory.csv
+visualizations/demo04_external_setpoint/20260526_222502/trajectory_3d.png
+visualizations/demo04_external_setpoint/20260526_222502/xy_path.png
+
+codex
+`rg` 这个环境里不可用，我改用 `find`/`grep`。初步看最近的 Demo 1-4 结果目录已经有统一的 5 个目标文件，接下来我会确认这些文件是由哪个脚本生成的，以及是否需要补一个轻量检查入口。
+exec
+/bin/bash -lc "sed -n '1,240p' codex-tasks/002-standardize-demo-visualization.md" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+# Task 002: Standardize Demo Visualization
+
+## Task goal
+
+- 检查 Demo 1-4 是否都能生成：
+  - `trajectory.csv`
+  - `trajectory_3d.png`
+  - `xy_path.png`
+  - `height_curve.png`
+  - `speed_curve.png`
+- 如果已有脚本能完成，不重复实现。
+- 如果命名不统一，只做轻量标准化。
+- 增加 `docs/VISUALIZATION_GUIDE.md`，说明如何查看和复制结果到 Mac。
+
+## Allowed changes
+
+- `scripts/` 下的可视化相关脚本。
+- `docs/VISUALIZATION_GUIDE.md`。
+- 不允许修改 `hover.py`、PX4 控制核心逻辑，除非只是为了增加非侵入式日志输出。
+- 不允许删除已有 `logs/`、`log/`、`visualizations/` 中的实验结果。
+
+## Required commands
+
+将命令输出保存到 `codex-logs/002-standardize-demo-visualization.log`：
+
+```bash
+source /opt/ros/jazzy/setup.bash
+source install/setup.bash
+python3 -m compileall src scripts
+# 至少对一个已有 logs 或 visualizations 目录运行可视化相关检查或脚本，验证能生成或已存在 PNG。
+find logs -name "*.png" | head
+find visualizations -name "*.png" | head
+```
+
+如果项目中已有可视化输出但没有独立离线重绘脚本，可以通过检查最近一次 `visualizations/<demo>/<timestamp>/` 中的 PNG 文件满足本任务验证目标，并在最终报告中说明。
+
+## Deliverables
+
+- `docs/VISUALIZATION_GUIDE.md`
+- 标准化后的可视化脚本，若有必要
+- `codex-logs/002-standardize-demo-visualization.log`
+
+## Final report requirements
+
+最终报告必须说明：
+
+- 每个 Demo 的输出文件命名。
+- Mac 端如何通过 `scp` 拉取结果。
+- 当前还缺哪些可视化指标。
+- `changed files`
+- `commands run`
+- `test result`
+- `known risks`
+
+exec
+/bin/bash -lc "sed -n '1,220p' scripts/run_demo01_hover.sh" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+#!/usr/bin/env bash
+set -euo pipefail
+
+WS_DIR="${WS_DIR:-/home/clcwork/UAV_capture/px4_ros2_ws}"
+ALTITUDE="${ALTITUDE:-2.0}"
+VIS_DURATION="${VIS_DURATION:-30.0}"
+HOVER_DURATION="${HOVER_DURATION:-35.0}"
+STAMP="$(date +%Y%m%d_%H%M%S)"
+LOG_DIR="$WS_DIR/logs/demo01_hover/$STAMP"
+VIS_DIR="$WS_DIR/visualizations/demo01_hover/$STAMP"
+export RESET_STACK="${RESET_STACK:-1}"
+
+mkdir -p "$LOG_DIR" "$VIS_DIR"
+"$WS_DIR/scripts/start_stack.sh"
+
+tmux kill-session -t px4_trajectory_recorder 2>/dev/null || true
+tmux new-session -d -s px4_trajectory_recorder \
+  "VIS_DIR=\"$VIS_DIR\" VIS_DURATION=\"$VIS_DURATION\" VIS_TITLE=\"Demo 01 Hover\" VIS_DEMO_ID=\"demo01\" AVG_ERROR_PASS=\"0.8\" HEIGHT_ERROR_PASS=\"0.35\" MAX_SPEED_PASS=\"3.0\" \"$WS_DIR/scripts/run_trajectory_recorder.sh\" 2>&1 | tee \"$LOG_DIR/trajectory_recorder.log\""
+
+tmux kill-session -t px4_offboard_hover 2>/dev/null || true
+tmux new-session -d -s px4_offboard_hover \
+  "cd \"$WS_DIR\" && set +u && source /opt/ros/jazzy/setup.bash && source install/setup.bash && set -u && ros2 run px4_offboard_hover hover --ros-args -p altitude:=$ALTITUDE -p hover_duration:=$HOVER_DURATION -p land_on_exit:=true 2>&1 | tee \"$LOG_DIR/demo01.log\""
+
+echo "demo01 session=px4_offboard_hover"
+echo "visualizer session=px4_trajectory_recorder"
+echo "visual outputs will be written after ${VIS_DURATION}s"
+echo "logs=$LOG_DIR"
+echo "visuals=$VIS_DIR"
+while tmux has-session -t px4_trajectory_recorder 2>/dev/null; do
+  sleep 2
+done
+echo "trajectory_csv=$VIS_DIR/trajectory.csv"
+echo "trajectory_3d=$VIS_DIR/trajectory_3d.png"
+echo "xy_path=$VIS_DIR/xy_path.png"
+echo "height_curve=$VIS_DIR/height_curve.png"
+echo "speed_curve=$VIS_DIR/speed_curve.png"
+echo "tracking_error=$VIS_DIR/tracking_error.png"
+echo "video=$VIS_DIR/trajectory.mp4"
+echo "summary=$VIS_DIR/summary.md"
+echo "result=$VIS_DIR/result.txt"
+cat "$VIS_DIR/result.txt" 2>/dev/null || true
+
+exec
+/bin/bash -lc "sed -n '1,260p' scripts/run_trajectory_recorder.sh" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+#!/usr/bin/env bash
+set -euo pipefail
+
+WS_DIR="${WS_DIR:-/home/clcwork/UAV_capture/px4_ros2_ws}"
+VIS_DIR="${VIS_DIR:?VIS_DIR is required}"
+VIS_DURATION="${VIS_DURATION:-90.0}"
+VIS_TITLE="${VIS_TITLE:-PX4 Trajectory}"
+VIS_DEMO_ID="${VIS_DEMO_ID:-generic}"
+VIS_FPS="${VIS_FPS:-12}"
+MAKE_VIDEO="${MAKE_VIDEO:-true}"
+MAX_SPEED_PASS="${MAX_SPEED_PASS:-3.0}"
+AVG_ERROR_PASS="${AVG_ERROR_PASS:-0.9}"
+MAX_ERROR_PASS="${MAX_ERROR_PASS:-2.0}"
+HEIGHT_ERROR_PASS="${HEIGHT_ERROR_PASS:-0.35}"
+FINAL_ERROR_PASS="${FINAL_ERROR_PASS:-0.6}"
+MIN_SAMPLES_PASS="${MIN_SAMPLES_PASS:-40}"
+CONDA_ENV_DIR="${CONDA_ENV_DIR:-/home/clcwork/miniconda3/envs/lerobot}"
+
+mkdir -p "$VIS_DIR"
+cd "$WS_DIR"
+export PATH="$CONDA_ENV_DIR/bin:$PATH"
+set +u
+source /opt/ros/jazzy/setup.bash
+source "$WS_DIR/install/setup.bash"
+set -u
+
+echo "conda_env_dir=$CONDA_ENV_DIR"
+echo "ffmpeg=$(command -v ffmpeg || true)"
+
+ros2 run px4_offboard_hover trajectory_recorder --ros-args \
+  -p output_dir:="$VIS_DIR" \
+  -p duration:="$VIS_DURATION" \
+  -p title:="$VIS_TITLE" \
+  -p demo_id:="$VIS_DEMO_ID" \
+  -p fps:="$VIS_FPS" \
+  -p make_video:="$MAKE_VIDEO" \
+  -p max_speed_pass:="$MAX_SPEED_PASS" \
+  -p avg_error_pass:="$AVG_ERROR_PASS" \
+  -p max_error_pass:="$MAX_ERROR_PASS" \
+  -p height_error_pass:="$HEIGHT_ERROR_PASS" \
+  -p final_error_pass:="$FINAL_ERROR_PASS" \
+  -p min_samples_pass:="$MIN_SAMPLES_PASS"
+
+exec
+/bin/bash -lc "for f in scripts/run_demo02_waypoint_flight.sh scripts/run_demo03_circle_trajectory.sh scripts/run_demo04_external_setpoint.sh; do printf '\\n### %s\\n' \""'$f"; sed -n '"'1,220p' \""'$f"; done' in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+
+### scripts/run_demo02_waypoint_flight.sh
+#!/usr/bin/env bash
+set -euo pipefail
+
+WS_DIR="${WS_DIR:-/home/clcwork/UAV_capture/px4_ros2_ws}"
+VIS_DURATION="${VIS_DURATION:-80.0}"
+STAMP="$(date +%Y%m%d_%H%M%S)"
+LOG_DIR="$WS_DIR/logs/demo02_waypoint_flight/$STAMP"
+VIS_DIR="$WS_DIR/visualizations/demo02_waypoint_flight/$STAMP"
+export RESET_STACK="${RESET_STACK:-1}"
+
+mkdir -p "$LOG_DIR" "$VIS_DIR"
+"$WS_DIR/scripts/start_stack.sh"
+
+tmux kill-session -t px4_trajectory_recorder 2>/dev/null || true
+tmux new-session -d -s px4_trajectory_recorder \
+  "VIS_DIR=\"$VIS_DIR\" VIS_DURATION=\"$VIS_DURATION\" VIS_TITLE=\"Demo 02 Waypoint Flight\" VIS_DEMO_ID=\"demo02\" AVG_ERROR_PASS=\"0.8\" MAX_SPEED_PASS=\"3.0\" \"$WS_DIR/scripts/run_trajectory_recorder.sh\" 2>&1 | tee \"$LOG_DIR/trajectory_recorder.log\""
+
+tmux kill-session -t px4_demo02_waypoint_flight 2>/dev/null || true
+tmux new-session -d -s px4_demo02_waypoint_flight \
+  "cd \"$WS_DIR\" && set +u && source /opt/ros/jazzy/setup.bash && source install/setup.bash && set -u && ros2 run px4_offboard_hover demo02_waypoint_flight --ros-args -p land_on_exit:=true 2>&1 | tee \"$LOG_DIR/demo02.log\""
+
+echo "demo02 session=px4_demo02_waypoint_flight"
+echo "visualizer session=px4_trajectory_recorder"
+echo "visual outputs will be written after ${VIS_DURATION}s"
+echo "logs=$LOG_DIR"
+echo "visuals=$VIS_DIR"
+while tmux has-session -t px4_trajectory_recorder 2>/dev/null; do
+  sleep 2
+done
+echo "trajectory_csv=$VIS_DIR/trajectory.csv"
+echo "trajectory_3d=$VIS_DIR/trajectory_3d.png"
+echo "xy_path=$VIS_DIR/xy_path.png"
+echo "height_curve=$VIS_DIR/height_curve.png"
+echo "speed_curve=$VIS_DIR/speed_curve.png"
+echo "tracking_error=$VIS_DIR/tracking_error.png"
+echo "video=$VIS_DIR/trajectory.mp4"
+echo "summary=$VIS_DIR/summary.md"
+echo "result=$VIS_DIR/result.txt"
+cat "$VIS_DIR/result.txt" 2>/dev/null || true
+
+### scripts/run_demo03_circle_trajectory.sh
+#!/usr/bin/env bash
+set -euo pipefail
+
+WS_DIR="${WS_DIR:-/home/clcwork/UAV_capture/px4_ros2_ws}"
+RADIUS="${RADIUS:-1.5}"
+ALTITUDE="${ALTITUDE:-2.0}"
+DURATION="${DURATION:-60.0}"
+VIS_DURATION="${VIS_DURATION:-75.0}"
+ANGULAR_SPEED="${ANGULAR_SPEED:-0.35}"
+STAMP="$(date +%Y%m%d_%H%M%S)"
+LOG_DIR="$WS_DIR/logs/demo03_circle_trajectory/$STAMP"
+VIS_DIR="$WS_DIR/visualizations/demo03_circle_trajectory/$STAMP"
+export RESET_STACK="${RESET_STACK:-1}"
+
+mkdir -p "$LOG_DIR" "$VIS_DIR"
+"$WS_DIR/scripts/start_stack.sh"
+
+tmux kill-session -t px4_trajectory_recorder 2>/dev/null || true
+tmux new-session -d -s px4_trajectory_recorder \
+  "VIS_DIR=\"$VIS_DIR\" VIS_DURATION=\"$VIS_DURATION\" VIS_TITLE=\"Demo 03 Circle Trajectory\" VIS_DEMO_ID=\"demo03\" AVG_ERROR_PASS=\"0.8\" HEIGHT_ERROR_PASS=\"0.35\" MAX_SPEED_PASS=\"3.0\" \"$WS_DIR/scripts/run_trajectory_recorder.sh\" 2>&1 | tee \"$LOG_DIR/trajectory_recorder.log\""
+
+tmux kill-session -t px4_demo03_circle_trajectory 2>/dev/null || true
+tmux new-session -d -s px4_demo03_circle_trajectory \
+  "cd \"$WS_DIR\" && set +u && source /opt/ros/jazzy/setup.bash && source install/setup.bash && set -u && ros2 run px4_offboard_hover demo03_circle_trajectory --ros-args -p radius:=$RADIUS -p altitude:=$ALTITUDE -p duration:=$DURATION -p angular_speed:=$ANGULAR_SPEED -p land_on_exit:=true 2>&1 | tee \"$LOG_DIR/demo03.log\""
+
+echo "demo03 session=px4_demo03_circle_trajectory"
+echo "visualizer session=px4_trajectory_recorder"
+echo "visual outputs will be written after ${VIS_DURATION}s"
+echo "logs=$LOG_DIR"
+echo "visuals=$VIS_DIR"
+while tmux has-session -t px4_trajectory_recorder 2>/dev/null; do
+  sleep 2
+done
+echo "trajectory_csv=$VIS_DIR/trajectory.csv"
+echo "trajectory_3d=$VIS_DIR/trajectory_3d.png"
+echo "xy_path=$VIS_DIR/xy_path.png"
+echo "height_curve=$VIS_DIR/height_curve.png"
+echo "speed_curve=$VIS_DIR/speed_curve.png"
+echo "tracking_error=$VIS_DIR/tracking_error.png"
+echo "video=$VIS_DIR/trajectory.mp4"
+echo "summary=$VIS_DIR/summary.md"
+echo "result=$VIS_DIR/result.txt"
+cat "$VIS_DIR/result.txt" 2>/dev/null || true
+
+### scripts/run_demo04_external_setpoint.sh
+#!/usr/bin/env bash
+set -euo pipefail
+
+WS_DIR="${WS_DIR:-/home/clcwork/UAV_capture/px4_ros2_ws}"
+INITIAL_X="${INITIAL_X:-0.0}"
+INITIAL_Y="${INITIAL_Y:-0.0}"
+INITIAL_Z="${INITIAL_Z:--2.0}"
+VIS_DURATION="${VIS_DURATION:-120.0}"
+TARGET_START_DELAY="${TARGET_START_DELAY:-15}"
+TARGET_HOLD="${TARGET_HOLD:-18}"
+STAMP="$(date +%Y%m%d_%H%M%S)"
+LOG_DIR="$WS_DIR/logs/demo04_external_setpoint/$STAMP"
+VIS_DIR="$WS_DIR/visualizations/demo04_external_setpoint/$STAMP"
+export RESET_STACK="${RESET_STACK:-1}"
+
+mkdir -p "$LOG_DIR" "$VIS_DIR"
+"$WS_DIR/scripts/start_stack.sh"
+
+tmux kill-session -t px4_trajectory_recorder 2>/dev/null || true
+tmux new-session -d -s px4_trajectory_recorder \
+  "VIS_DIR=\"$VIS_DIR\" VIS_DURATION=\"$VIS_DURATION\" VIS_TITLE=\"Demo 04 External Setpoint Interface\" VIS_DEMO_ID=\"demo04\" AVG_ERROR_PASS=\"0.9\" FINAL_ERROR_PASS=\"0.6\" MAX_SPEED_PASS=\"3.0\" \"$WS_DIR/scripts/run_trajectory_recorder.sh\" 2>&1 | tee \"$LOG_DIR/trajectory_recorder.log\""
+
+tmux kill-session -t px4_demo04_external_setpoint 2>/dev/null || true
+tmux new-session -d -s px4_demo04_external_setpoint \
+  "cd \"$WS_DIR\" && set +u && source /opt/ros/jazzy/setup.bash && source install/setup.bash && set -u && ros2 run px4_offboard_hover demo04_external_setpoint --ros-args -p initial_x:=$INITIAL_X -p initial_y:=$INITIAL_Y -p initial_z:=$INITIAL_Z 2>&1 | tee \"$LOG_DIR/demo04.log\""
+
+tmux kill-session -t px4_demo04_target_sequence 2>/dev/null || true
+tmux new-session -d -s px4_demo04_target_sequence \
+  "cd \"$WS_DIR\" && set +u && source /opt/ros/jazzy/setup.bash && source install/setup.bash && set -u && sleep \"$TARGET_START_DELAY\" && \
+  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 2.0, y: 0.0, z: -2.0}' && sleep \"$TARGET_HOLD\" && \
+  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 2.0, y: 2.0, z: -2.0}' && sleep \"$TARGET_HOLD\" && \
+  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 0.0, y: 2.0, z: -2.0}' && sleep \"$TARGET_HOLD\" && \
+  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 0.0, y: 0.0, z: -2.0}' 2>&1 | tee \"$LOG_DIR/target_sequence.log\""
+
+echo "demo04 session=px4_demo04_external_setpoint"
+echo "visualizer session=px4_trajectory_recorder"
+echo "target sequence session=px4_demo04_target_sequence"
+echo "target topic=/uav/target_position geometry_msgs/msg/Point"
+echo "visual outputs will be written after ${VIS_DURATION}s"
+echo "logs=$LOG_DIR"
+echo "visuals=$VIS_DIR"
+while tmux has-session -t px4_trajectory_recorder 2>/dev/null; do
+  sleep 2
+done
+echo "trajectory_csv=$VIS_DIR/trajectory.csv"
+echo "trajectory_3d=$VIS_DIR/trajectory_3d.png"
+echo "xy_path=$VIS_DIR/xy_path.png"
+echo "height_curve=$VIS_DIR/height_curve.png"
+echo "speed_curve=$VIS_DIR/speed_curve.png"
+echo "tracking_error=$VIS_DIR/tracking_error.png"
+echo "video=$VIS_DIR/trajectory.mp4"
+echo "summary=$VIS_DIR/summary.md"
+echo "result=$VIS_DIR/result.txt"
+cat "$VIS_DIR/result.txt" 2>/dev/null || true
+
+codex
+Demo wrapper 都调用同一个 `scripts/run_trajectory_recorder.sh`，并且运行结束时打印的文件名已经统一。现在我去看 recorder 节点本身，确认它确实生成这些 PNG，而不是 wrapper 只是声明路径。
+exec
+/bin/bash -lc 'find docs -maxdepth 2 -type f -print 2>/dev/null | sort' in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+docs/PROJECT_STRUCTURE.md
+
+exec
+/bin/bash -lc 'find visualizations -mindepth 2 -maxdepth 2 -type d | sort' in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+visualizations/demo01_hover/20260526_221722
+visualizations/demo02_waypoint_flight/20260526_085827
+visualizations/demo02_waypoint_flight/20260526_090144
+visualizations/demo02_waypoint_flight/20260526_221833
+visualizations/demo02_waypoint_flight/20260526_222121
+visualizations/demo03_circle_trajectory/20260526_090359
+visualizations/demo03_circle_trajectory/20260526_222313
+visualizations/demo04_external_setpoint/20260526_090546
+visualizations/demo04_external_setpoint/20260526_222502
+
+exec
+/bin/bash -lc "find src -maxdepth 5 -type f | sort | sed -n '1,240p'" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+src/px4_msgs/.git/HEAD
+src/px4_msgs/.git/config
+src/px4_msgs/.git/description
+src/px4_msgs/.git/hooks/applypatch-msg.sample
+src/px4_msgs/.git/hooks/commit-msg.sample
+src/px4_msgs/.git/hooks/fsmonitor-watchman.sample
+src/px4_msgs/.git/hooks/post-update.sample
+src/px4_msgs/.git/hooks/pre-applypatch.sample
+src/px4_msgs/.git/hooks/pre-commit.sample
+src/px4_msgs/.git/hooks/pre-merge-commit.sample
+src/px4_msgs/.git/hooks/pre-push.sample
+src/px4_msgs/.git/hooks/pre-rebase.sample
+src/px4_msgs/.git/hooks/pre-receive.sample
+src/px4_msgs/.git/hooks/prepare-commit-msg.sample
+src/px4_msgs/.git/hooks/push-to-checkout.sample
+src/px4_msgs/.git/hooks/sendemail-validate.sample
+src/px4_msgs/.git/hooks/update.sample
+src/px4_msgs/.git/index
+src/px4_msgs/.git/info/exclude
+src/px4_msgs/.git/logs/HEAD
+src/px4_msgs/.git/objects/pack/pack-c93484e903090574ab83ef5b96489befbdeae8cf.idx
+src/px4_msgs/.git/objects/pack/pack-c93484e903090574ab83ef5b96489befbdeae8cf.pack
+src/px4_msgs/.git/objects/pack/pack-c93484e903090574ab83ef5b96489befbdeae8cf.rev
+src/px4_msgs/.git/packed-refs
+src/px4_msgs/.git/refs/heads/main
+src/px4_msgs/.github/dependabot.yml
+src/px4_msgs/.github/workflows/build.yml
+src/px4_msgs/.gitignore
+src/px4_msgs/CMakeLists.txt
+src/px4_msgs/CONTRIBUTING.md
+src/px4_msgs/LICENSE
+src/px4_msgs/README.md
+src/px4_msgs/msg/ActionRequest.msg
+src/px4_msgs/msg/ActuatorArmed.msg
+src/px4_msgs/msg/ActuatorControlsStatus.msg
+src/px4_msgs/msg/ActuatorMotors.msg
+src/px4_msgs/msg/ActuatorOutputs.msg
+src/px4_msgs/msg/ActuatorServos.msg
+src/px4_msgs/msg/ActuatorServosTrim.msg
+src/px4_msgs/msg/ActuatorTest.msg
+src/px4_msgs/msg/AdcReport.msg
+src/px4_msgs/msg/Airspeed.msg
+src/px4_msgs/msg/AirspeedValidated.msg
+src/px4_msgs/msg/AirspeedWind.msg
+src/px4_msgs/msg/ArmingCheckReply.msg
+src/px4_msgs/msg/ArmingCheckRequest.msg
+src/px4_msgs/msg/AutotuneAttitudeControlStatus.msg
+src/px4_msgs/msg/AuxGlobalPosition.msg
+src/px4_msgs/msg/BatteryInfo.msg
+src/px4_msgs/msg/BatteryStatus.msg
+src/px4_msgs/msg/ButtonEvent.msg
+src/px4_msgs/msg/CameraCapture.msg
+src/px4_msgs/msg/CameraStatus.msg
+src/px4_msgs/msg/CameraTrigger.msg
+src/px4_msgs/msg/CanInterfaceStatus.msg
+src/px4_msgs/msg/CellularStatus.msg
+src/px4_msgs/msg/CollisionConstraints.msg
+src/px4_msgs/msg/ConfigOverrides.msg
+src/px4_msgs/msg/ControlAllocatorStatus.msg
+src/px4_msgs/msg/Cpuload.msg
+src/px4_msgs/msg/DatamanRequest.msg
+src/px4_msgs/msg/DatamanResponse.msg
+src/px4_msgs/msg/DebugArray.msg
+src/px4_msgs/msg/DebugKeyValue.msg
+src/px4_msgs/msg/DebugValue.msg
+src/px4_msgs/msg/DebugVect.msg
+src/px4_msgs/msg/DeviceInformation.msg
+src/px4_msgs/msg/DifferentialPressure.msg
+src/px4_msgs/msg/DistanceSensor.msg
+src/px4_msgs/msg/DistanceSensorModeChangeRequest.msg
+src/px4_msgs/msg/DronecanNodeStatus.msg
+src/px4_msgs/msg/Ekf2Timestamps.msg
+src/px4_msgs/msg/EscEepromRead.msg
+src/px4_msgs/msg/EscEepromWrite.msg
+src/px4_msgs/msg/EscReport.msg
+src/px4_msgs/msg/EscStatus.msg
+src/px4_msgs/msg/EstimatorAidSource1d.msg
+src/px4_msgs/msg/EstimatorAidSource2d.msg
+src/px4_msgs/msg/EstimatorAidSource3d.msg
+src/px4_msgs/msg/EstimatorBias.msg
+src/px4_msgs/msg/EstimatorBias3d.msg
+src/px4_msgs/msg/EstimatorEventFlags.msg
+src/px4_msgs/msg/EstimatorFusionControl.msg
+src/px4_msgs/msg/EstimatorGpsStatus.msg
+src/px4_msgs/msg/EstimatorInnovations.msg
+src/px4_msgs/msg/EstimatorSelectorStatus.msg
+src/px4_msgs/msg/EstimatorSensorBias.msg
+src/px4_msgs/msg/EstimatorStates.msg
+src/px4_msgs/msg/EstimatorStatus.msg
+src/px4_msgs/msg/EstimatorStatusFlags.msg
+src/px4_msgs/msg/Event.msg
+src/px4_msgs/msg/FailsafeFlags.msg
+src/px4_msgs/msg/FailureDetectorStatus.msg
+src/px4_msgs/msg/FigureEightStatus.msg
+src/px4_msgs/msg/FixedWingLateralGuidanceStatus.msg
+src/px4_msgs/msg/FixedWingLateralSetpoint.msg
+src/px4_msgs/msg/FixedWingLateralStatus.msg
+src/px4_msgs/msg/FixedWingLongitudinalSetpoint.msg
+src/px4_msgs/msg/FixedWingRunwayControl.msg
+src/px4_msgs/msg/FlightPhaseEstimation.msg
+src/px4_msgs/msg/FollowTarget.msg
+src/px4_msgs/msg/FollowTargetEstimator.msg
+src/px4_msgs/msg/FollowTargetStatus.msg
+src/px4_msgs/msg/FuelTankStatus.msg
+src/px4_msgs/msg/GainCompression.msg
+src/px4_msgs/msg/GeneratorStatus.msg
+src/px4_msgs/msg/GeofenceResult.msg
+src/px4_msgs/msg/GeofenceStatus.msg
+src/px4_msgs/msg/GimbalControls.msg
+src/px4_msgs/msg/GimbalDeviceAttitudeStatus.msg
+src/px4_msgs/msg/GimbalDeviceInformation.msg
+src/px4_msgs/msg/GimbalDeviceSetAttitude.msg
+src/px4_msgs/msg/GimbalManagerInformation.msg
+src/px4_msgs/msg/GimbalManagerSetAttitude.msg
+src/px4_msgs/msg/GimbalManagerSetManualControl.msg
+src/px4_msgs/msg/GimbalManagerStatus.msg
+src/px4_msgs/msg/GotoSetpoint.msg
+src/px4_msgs/msg/GpioConfig.msg
+src/px4_msgs/msg/GpioIn.msg
+src/px4_msgs/msg/GpioOut.msg
+src/px4_msgs/msg/GpioRequest.msg
+src/px4_msgs/msg/GpsDump.msg
+src/px4_msgs/msg/GpsInjectData.msg
+src/px4_msgs/msg/Gripper.msg
+src/px4_msgs/msg/HealthReport.msg
+src/px4_msgs/msg/HeaterStatus.msg
+src/px4_msgs/msg/HomePosition.msg
+src/px4_msgs/msg/HoverThrustEstimate.msg
+src/px4_msgs/msg/InputRc.msg
+src/px4_msgs/msg/InternalCombustionEngineControl.msg
+src/px4_msgs/msg/InternalCombustionEngineStatus.msg
+src/px4_msgs/msg/IridiumsbdStatus.msg
+src/px4_msgs/msg/IrlockReport.msg
+src/px4_msgs/msg/LandingGear.msg
+src/px4_msgs/msg/LandingGearWheel.msg
+src/px4_msgs/msg/LandingTargetInnovations.msg
+src/px4_msgs/msg/LandingTargetPose.msg
+src/px4_msgs/msg/LateralControlConfiguration.msg
+src/px4_msgs/msg/LaunchDetectionStatus.msg
+src/px4_msgs/msg/LedControl.msg
+src/px4_msgs/msg/LogMessage.msg
+src/px4_msgs/msg/LoggerStatus.msg
+src/px4_msgs/msg/LongitudinalControlConfiguration.msg
+src/px4_msgs/msg/MagWorkerData.msg
+src/px4_msgs/msg/MagnetometerBiasEstimate.msg
+src/px4_msgs/msg/ManualControlSetpoint.msg
+src/px4_msgs/msg/ManualControlSwitches.msg
+src/px4_msgs/msg/MavlinkLog.msg
+src/px4_msgs/msg/MavlinkTunnel.msg
+src/px4_msgs/msg/MessageFormatRequest.msg
+src/px4_msgs/msg/MessageFormatResponse.msg
+src/px4_msgs/msg/Mission.msg
+src/px4_msgs/msg/MissionResult.msg
+src/px4_msgs/msg/ModeCompleted.msg
+src/px4_msgs/msg/MountOrientation.msg
+src/px4_msgs/msg/NavigatorMissionItem.msg
+src/px4_msgs/msg/NavigatorStatus.msg
+src/px4_msgs/msg/NeuralControl.msg
+src/px4_msgs/msg/NormalizedUnsignedSetpoint.msg
+src/px4_msgs/msg/ObstacleDistance.msg
+src/px4_msgs/msg/OffboardControlMode.msg
+src/px4_msgs/msg/OnboardComputerStatus.msg
+src/px4_msgs/msg/OpenDroneIdArmStatus.msg
+src/px4_msgs/msg/OpenDroneIdOperatorId.msg
+src/px4_msgs/msg/OpenDroneIdSelfId.msg
+src/px4_msgs/msg/OpenDroneIdSystem.msg
+src/px4_msgs/msg/OrbTest.msg
+src/px4_msgs/msg/OrbTestLarge.msg
+src/px4_msgs/msg/OrbTestMedium.msg
+src/px4_msgs/msg/OrbitStatus.msg
+src/px4_msgs/msg/ParameterResetRequest.msg
+src/px4_msgs/msg/ParameterSetUsedRequest.msg
+src/px4_msgs/msg/ParameterSetValueRequest.msg
+src/px4_msgs/msg/ParameterSetValueResponse.msg
+src/px4_msgs/msg/ParameterUpdate.msg
+src/px4_msgs/msg/Ping.msg
+src/px4_msgs/msg/PositionControllerLandingStatus.msg
+src/px4_msgs/msg/PositionControllerStatus.msg
+src/px4_msgs/msg/PositionSetpoint.msg
+src/px4_msgs/msg/PositionSetpointTriplet.msg
+src/px4_msgs/msg/PowerButtonState.msg
+src/px4_msgs/msg/PowerMonitor.msg
+src/px4_msgs/msg/PpsCapture.msg
+src/px4_msgs/msg/PurePursuitStatus.msg
+src/px4_msgs/msg/PwmInput.msg
+src/px4_msgs/msg/Px4ioStatus.msg
+src/px4_msgs/msg/QshellReq.msg
+src/px4_msgs/msg/QshellRetval.msg
+src/px4_msgs/msg/RadioStatus.msg
+src/px4_msgs/msg/RangingBeacon.msg
+src/px4_msgs/msg/RaptorInput.msg
+src/px4_msgs/msg/RaptorStatus.msg
+src/px4_msgs/msg/RateCtrlStatus.msg
+src/px4_msgs/msg/RcChannels.msg
+src/px4_msgs/msg/RcParameterMap.msg
+src/px4_msgs/msg/RegisterExtComponentReply.msg
+src/px4_msgs/msg/RegisterExtComponentRequest.msg
+src/px4_msgs/msg/RoverAttitudeSetpoint.msg
+src/px4_msgs/msg/RoverAttitudeStatus.msg
+src/px4_msgs/msg/RoverPositionSetpoint.msg
+src/px4_msgs/msg/RoverRateSetpoint.msg
+src/px4_msgs/msg/RoverRateStatus.msg
+src/px4_msgs/msg/RoverSpeedSetpoint.msg
+src/px4_msgs/msg/RoverSpeedStatus.msg
+src/px4_msgs/msg/RoverSteeringSetpoint.msg
+src/px4_msgs/msg/RoverThrottleSetpoint.msg
+src/px4_msgs/msg/Rpm.msg
+src/px4_msgs/msg/RtlStatus.msg
+src/px4_msgs/msg/RtlTimeEstimate.msg
+src/px4_msgs/msg/SatelliteInfo.msg
+src/px4_msgs/msg/SensorAccel.msg
+src/px4_msgs/msg/SensorAccelFifo.msg
+src/px4_msgs/msg/SensorAirflow.msg
+src/px4_msgs/msg/SensorBaro.msg
+src/px4_msgs/msg/SensorCombined.msg
+src/px4_msgs/msg/SensorCorrection.msg
+src/px4_msgs/msg/SensorGnssRelative.msg
+src/px4_msgs/msg/SensorGnssStatus.msg
+src/px4_msgs/msg/SensorGps.msg
+src/px4_msgs/msg/SensorGyro.msg
+src/px4_msgs/msg/SensorGyroFft.msg
+src/px4_msgs/msg/SensorGyroFifo.msg
+src/px4_msgs/msg/SensorHygrometer.msg
+src/px4_msgs/msg/SensorMag.msg
+src/px4_msgs/msg/SensorOpticalFlow.msg
+src/px4_msgs/msg/SensorPreflightMag.msg
+src/px4_msgs/msg/SensorSelection.msg
+src/px4_msgs/msg/SensorTemp.msg
+src/px4_msgs/msg/SensorUwb.msg
+src/px4_msgs/msg/SensorsStatus.msg
+src/px4_msgs/msg/SensorsStatusImu.msg
+src/px4_msgs/msg/SystemPower.msg
+src/px4_msgs/msg/TakeoffStatus.msg
+src/px4_msgs/msg/TaskStackInfo.msg
+src/px4_msgs/msg/TecsStatus.msg
+src/px4_msgs/msg/TelemetryStatus.msg
+src/px4_msgs/msg/TiltrotorExtraControls.msg
+src/px4_msgs/msg/TimesyncStatus.msg
+src/px4_msgs/msg/TrajectorySetpoint.msg
+src/px4_msgs/msg/TrajectorySetpoint6dof.msg
+
+exec
+/bin/bash -lc "grep -R \"trajectory_3d\\|height_curve\\|speed_curve\\|xy_path\\|tracking_error\\|trajectory.csv\" -n src scripts 2>/dev/null | sed -n '1,240p'" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+src/px4_msgs/msg/EstimatorStatus.msg:4:float32[3] output_tracking_error # return a vector containing the output predictor angular, velocity and position tracking error magnitudes (rad), (m/s), (m)
+src/px4_offboard_hover/px4_offboard_hover/trajectory_recorder.py:55:        self.csv_path = self.output_dir / "trajectory.csv"
+src/px4_offboard_hover/px4_offboard_hover/trajectory_recorder.py:136:        self.write_xy_path()
+src/px4_offboard_hover/px4_offboard_hover/trajectory_recorder.py:138:        self.write_height_curve()
+src/px4_offboard_hover/px4_offboard_hover/trajectory_recorder.py:139:        self.write_speed_curve()
+src/px4_offboard_hover/px4_offboard_hover/trajectory_recorder.py:140:        self.write_tracking_error()
+src/px4_offboard_hover/px4_offboard_hover/trajectory_recorder.py:190:    def write_xy_path(self) -> None:
+src/px4_offboard_hover/px4_offboard_hover/trajectory_recorder.py:217:        fig.savefig(self.output_dir / "xy_path.png", dpi=160)
+src/px4_offboard_hover/px4_offboard_hover/trajectory_recorder.py:238:        fig.savefig(self.output_dir / "trajectory_3d.png", dpi=160)
+src/px4_offboard_hover/px4_offboard_hover/trajectory_recorder.py:241:    def write_height_curve(self) -> None:
+src/px4_offboard_hover/px4_offboard_hover/trajectory_recorder.py:255:        fig.savefig(self.output_dir / "height_curve.png", dpi=160)
+src/px4_offboard_hover/px4_offboard_hover/trajectory_recorder.py:258:    def write_speed_curve(self) -> None:
+src/px4_offboard_hover/px4_offboard_hover/trajectory_recorder.py:270:        fig.savefig(self.output_dir / "speed_curve.png", dpi=160)
+src/px4_offboard_hover/px4_offboard_hover/trajectory_recorder.py:273:    def write_tracking_error(self) -> None:
+src/px4_offboard_hover/px4_offboard_hover/trajectory_recorder.py:294:        fig.savefig(self.output_dir / "tracking_error.png", dpi=160)
+src/px4_offboard_hover/px4_offboard_hover/trajectory_recorder.py:451:                return False, "waypoint_tracking_error_high"
+src/px4_offboard_hover/px4_offboard_hover/trajectory_recorder.py:467:                return False, "external_tracking_error_high"
+src/px4_offboard_hover/px4_offboard_hover/trajectory_recorder.py:470:                return False, "tracking_error_high"
+src/px4_offboard_hover/px4_offboard_hover/trajectory_recorder.py:510:            "- trajectory.csv",
+src/px4_offboard_hover/px4_offboard_hover/trajectory_recorder.py:511:            "- trajectory_3d.png",
+src/px4_offboard_hover/px4_offboard_hover/trajectory_recorder.py:512:            "- xy_path.png",
+src/px4_offboard_hover/px4_offboard_hover/trajectory_recorder.py:513:            "- height_curve.png",
+src/px4_offboard_hover/px4_offboard_hover/trajectory_recorder.py:514:            "- speed_curve.png",
+src/px4_offboard_hover/px4_offboard_hover/trajectory_recorder.py:515:            "- tracking_error.png",
+scripts/run_demo01_hover.sh:32:echo "trajectory_csv=$VIS_DIR/trajectory.csv"
+scripts/run_demo01_hover.sh:33:echo "trajectory_3d=$VIS_DIR/trajectory_3d.png"
+scripts/run_demo01_hover.sh:34:echo "xy_path=$VIS_DIR/xy_path.png"
+scripts/run_demo01_hover.sh:35:echo "height_curve=$VIS_DIR/height_curve.png"
+scripts/run_demo01_hover.sh:36:echo "speed_curve=$VIS_DIR/speed_curve.png"
+scripts/run_demo01_hover.sh:37:echo "tracking_error=$VIS_DIR/tracking_error.png"
+scripts/run_demo03_circle_trajectory.sh:34:echo "trajectory_csv=$VIS_DIR/trajectory.csv"
+scripts/run_demo03_circle_trajectory.sh:35:echo "trajectory_3d=$VIS_DIR/trajectory_3d.png"
+scripts/run_demo03_circle_trajectory.sh:36:echo "xy_path=$VIS_DIR/xy_path.png"
+scripts/run_demo03_circle_trajectory.sh:37:echo "height_curve=$VIS_DIR/height_curve.png"
+scripts/run_demo03_circle_trajectory.sh:38:echo "speed_curve=$VIS_DIR/speed_curve.png"
+scripts/run_demo03_circle_trajectory.sh:39:echo "tracking_error=$VIS_DIR/tracking_error.png"
+scripts/run_demo02_waypoint_flight.sh:30:echo "trajectory_csv=$VIS_DIR/trajectory.csv"
+scripts/run_demo02_waypoint_flight.sh:31:echo "trajectory_3d=$VIS_DIR/trajectory_3d.png"
+scripts/run_demo02_waypoint_flight.sh:32:echo "xy_path=$VIS_DIR/xy_path.png"
+scripts/run_demo02_waypoint_flight.sh:33:echo "height_curve=$VIS_DIR/height_curve.png"
+scripts/run_demo02_waypoint_flight.sh:34:echo "speed_curve=$VIS_DIR/speed_curve.png"
+scripts/run_demo02_waypoint_flight.sh:35:echo "tracking_error=$VIS_DIR/tracking_error.png"
+scripts/run_demo04_external_setpoint.sh:45:echo "trajectory_csv=$VIS_DIR/trajectory.csv"
+scripts/run_demo04_external_setpoint.sh:46:echo "trajectory_3d=$VIS_DIR/trajectory_3d.png"
+scripts/run_demo04_external_setpoint.sh:47:echo "xy_path=$VIS_DIR/xy_path.png"
+scripts/run_demo04_external_setpoint.sh:48:echo "height_curve=$VIS_DIR/height_curve.png"
+scripts/run_demo04_external_setpoint.sh:49:echo "speed_curve=$VIS_DIR/speed_curve.png"
+scripts/run_demo04_external_setpoint.sh:50:echo "tracking_error=$VIS_DIR/tracking_error.png"
+
+exec
+/bin/bash -lc "sed -n '1,220p' docs/PROJECT_STRUCTURE.md" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+# px4_ros2_ws Project Structure
+
+This document summarizes the current structure of `/home/clcwork/UAV_capture/px4_ros2_ws` for Task 001. The raw audit command output is saved in `codex-logs/001-audit-project-structure.log`.
+
+## Workspace Overview
+
+Top-level workspace areas:
+
+| Path | Role | Notes |
+| --- | --- | --- |
+| `src/` | ROS 2 source packages | Main editable package area for this workspace. |
+| `scripts/` | Stack, demo, experiment, and recorder launch helpers | Prefer these scripts for PX4/Gazebo/Micro XRCE-DDS and demo runs. |
+| `logs/` | Experiment/runtime logs | Contains timestamped demo and hover logs. Do not delete. |
+| `visualizations/` | Generated visualization artifacts | Contains timestamped demo outputs such as CSV, plots, videos, summaries, and results. Do not delete or overwrite existing timestamped runs. |
+| `codex-tasks/` | Task definitions | Current task queue and requirements. |
+| `codex-logs/` | Codex task execution logs | Includes this task's audit log. |
+| `build/` | Colcon build output | Generated build artifacts. |
+| `install/` | Colcon install output | Generated install artifacts and setup files. |
+| `log/` | Colcon build logs | Generated build logs from previous `colcon` runs. |
+
+## ROS 2 Packages
+
+Current packages under `src/`:
+
+| Package | Build type | Purpose |
+| --- | --- | --- |
+| `px4_msgs` | `ament_cmake` | PX4 uORB-equivalent ROS message and service definitions. This directory contains many generated interface definitions under `msg/` and `srv/`, and should be treated as upstream PX4 message source unless a task explicitly requires changes. |
+| `px4_offboard_hover` | `ament_python` | Custom Python package for PX4 offboard demos, trajectory recording, and hover verification. |
+
+`px4_offboard_hover` Python modules currently include:
+
+- `hover.py`
+- `verify_hover.py`
+- `waypoint_flight.py`
+- `circle_trajectory.py`
+- `external_setpoint.py`
+- `trajectory_recorder.py`
+- `offboard_base.py`
+
+Installed console entry points from `px4_offboard_hover/setup.py`:
+
+- `hover`
+- `verify_hover`
+- `demo02_waypoint_flight`
+- `demo03_circle_trajectory`
+- `demo04_external_setpoint`
+- `trajectory_recorder`
+
+## Scripts
+
+Current files under `scripts/`:
+
+| Script | Purpose |
+| --- | --- |
+| `start_stack.sh` | Starts the PX4/Gazebo/Micro XRCE-DDS stack used by the demos. |
+| `stop_stack.sh` | Stops the running stack. |
+| `run_demo01_hover.sh` | Demo 01 Offboard Hover runner. |
+| `run_demo02_waypoint_flight.sh` | Demo 02 Waypoint Flight runner. |
+| `run_demo03_circle_trajectory.sh` | Demo 03 Circle Trajectory runner. |
+| `run_demo04_external_setpoint.sh` | Demo 04 External Setpoint Interface runner. |
+| `run_hover_experiment.sh` | Earlier/offboard hover experiment runner. |
+| `run_trajectory_recorder.sh` | Trajectory recorder helper used by demo visualization workflows. |
+
+These scripts are existing workflow entry points and were not modified during this audit.
+
+## Experiment Logs
+
+Runtime logs are stored under `logs/` by demo or experiment name:
+
+- `logs/demo01_hover/`
+- `logs/demo02_waypoint_flight/`
+- `logs/demo03_circle_trajectory/`
+- `logs/demo04_external_setpoint/`
+- `logs/offboard_hover/`
+
+Each demo directory contains timestamped runs. Observed log file names include:
+
+- `demo01.log`
+- `demo02.log`
+- `demo03.log`
+- `demo04.log`
+- `trajectory_recorder.log`
+- `target_sequence.log`
+- `hover.log`
+- `verify.log`
+- `agent_tail.log`
+- `px4_tail.log`
+
+These are experiment results and diagnostic logs. They should not be deleted, truncated, or overwritten unless a task explicitly requires it and the user confirms.
+
+## Visualization Outputs
+
+Visualization results are stored under `visualizations/<demo>/<timestamp>/`.
+
+Current demo visualization roots:
+
+- `visualizations/demo01_hover/`
+- `visualizations/demo02_waypoint_flight/`
+- `visualizations/demo03_circle_trajectory/`
+- `visualizations/demo04_external_setpoint/`
+
+Observed standard output files:
+
+- `trajectory.csv`
+- `trajectory_3d.png`
+- `xy_path.png`
+- `height_curve.png`
+- `speed_curve.png`
+- `tracking_error.png`
+- `trajectory.mp4`
+- `summary.md`
+- `result.txt`
+
+Some earlier runs also contain `trajectory.png` instead of the newer split plot names. Existing timestamped visualization directories are experiment results and should not be deleted or overwritten.
+
+## Source vs Generated vs Results
+
+Source/editable project areas:
+
+- `src/px4_offboard_hover/`
+- `scripts/`
+- `docs/`
+- `codex-tasks/`
+- Top-level project documents such as `BASIC_CONTROL_DEMOS.md`, `OFFBOARD_HOVER_EXPERIMENT.md`, and `TOOLS_AND_SCRIPTS_GUIDE.md`
+
+External/upstream or avoid-editing areas:
+
+- `src/px4_msgs/`: PX4 message/interface package. Avoid modifying unless the task explicitly requires it.
+
+Generated build areas:
+
+- `build/`
+- `install/`
+- `log/`
+
+Experiment/result areas that should not be deleted:
+
+- `logs/`
+- `visualizations/`
+- `codex-logs/`
+- Any timestamped run directory under `logs/` or `visualizations/`
+- Data artifacts such as `trajectory.csv`, plots, videos, summaries, and result files
+
+## Audit Notes
+
+- The workspace root itself is not a Git repository according to `git status`; however, `src/px4_msgs/` contains its own `.git` directory.
+- Demo 1-4 have existing runtime logs and visualization outputs.
+- The audit deliverable log for this task is `codex-logs/001-audit-project-structure.log`.
+
+exec
+/bin/bash -lc "sed -n '1,560p' src/px4_offboard_hover/px4_offboard_hover/trajectory_recorder.py" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+import csv
+import math
+import shutil
+import time
+from pathlib import Path
+from typing import Dict, List, Optional, Tuple
+
+import matplotlib
+
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+from matplotlib import animation
+from px4_msgs.msg import TrajectorySetpoint, VehicleLocalPosition
+import rclpy
+from rclpy.node import Node
+from rclpy.qos import DurabilityPolicy, HistoryPolicy, QoSProfile, ReliabilityPolicy
+
+Position = Tuple[float, float, float]
+Sample = Tuple[float, float, float, float, float, float, float, float, float, float]
+
+
+class TrajectoryRecorder(Node):
+    def __init__(self) -> None:
+        super().__init__("px4_trajectory_recorder")
+
+        self.declare_parameter("output_dir", "logs/trajectory")
+        self.declare_parameter("duration", 90.0)
+        self.declare_parameter("title", "PX4 trajectory")
+        self.declare_parameter("demo_id", "generic")
+        self.declare_parameter("fps", 12)
+        self.declare_parameter("make_video", True)
+        self.declare_parameter("max_speed_pass", 3.0)
+        self.declare_parameter("avg_error_pass", 0.9)
+        self.declare_parameter("max_error_pass", 2.0)
+        self.declare_parameter("height_error_pass", 0.35)
+        self.declare_parameter("final_error_pass", 0.6)
+        self.declare_parameter("min_samples_pass", 40)
+
+        self.output_dir = Path(str(self.get_parameter("output_dir").value))
+        self.duration = float(self.get_parameter("duration").value)
+        self.title = str(self.get_parameter("title").value)
+        self.demo_id = str(self.get_parameter("demo_id").value)
+        self.fps = int(self.get_parameter("fps").value)
+        self.make_video = bool(self.get_parameter("make_video").value)
+        self.thresholds = {
+            "max_speed_pass": float(self.get_parameter("max_speed_pass").value),
+            "avg_error_pass": float(self.get_parameter("avg_error_pass").value),
+            "max_error_pass": float(self.get_parameter("max_error_pass").value),
+            "height_error_pass": float(self.get_parameter("height_error_pass").value),
+            "final_error_pass": float(self.get_parameter("final_error_pass").value),
+            "min_samples_pass": int(self.get_parameter("min_samples_pass").value),
+        }
+
+        self.output_dir.mkdir(parents=True, exist_ok=True)
+        self.csv_path = self.output_dir / "trajectory.csv"
+        self.start_time = time.time()
+        self.latest_target: Optional[Position] = None
+        self.samples: List[Sample] = []
+
+        px4_out_qos = QoSProfile(
+            reliability=ReliabilityPolicy.BEST_EFFORT,
+            durability=DurabilityPolicy.TRANSIENT_LOCAL,
+            history=HistoryPolicy.KEEP_LAST,
+            depth=10,
+        )
+        px4_in_qos = QoSProfile(
+            reliability=ReliabilityPolicy.BEST_EFFORT,
+            durability=DurabilityPolicy.VOLATILE,
+            history=HistoryPolicy.KEEP_LAST,
+            depth=10,
+        )
+        self.create_subscription(
+            VehicleLocalPosition,
+            "/fmu/out/vehicle_local_position_v1",
+            self.position_callback,
+            px4_out_qos,
+        )
+        self.create_subscription(
+            TrajectorySetpoint,
+            "/fmu/in/trajectory_setpoint",
+            self.target_callback,
+            px4_in_qos,
+        )
+        self.timer = self.create_timer(0.5, self.timer_callback)
+        self.get_logger().info(
+            f"Recording {self.demo_id} for {self.duration:.1f}s into {self.output_dir}"
+        )
+
+    def target_callback(self, msg: TrajectorySetpoint) -> None:
+        if len(msg.position) >= 3:
+            self.latest_target = (
+                float(msg.position[0]),
+                float(msg.position[1]),
+                float(msg.position[2]),
+            )
+
+    def position_callback(self, msg: VehicleLocalPosition) -> None:
+        if not msg.xy_valid or not msg.z_valid:
+            return
+
+        elapsed = time.time() - self.start_time
+        target = self.latest_target or (math.nan, math.nan, math.nan)
+        self.samples.append(
+            (
+                elapsed,
+                float(msg.x),
+                float(msg.y),
+                float(msg.z),
+                float(msg.vx),
+                float(msg.vy),
+                float(msg.vz),
+                target[0],
+                target[1],
+                target[2],
+            )
+        )
+
+    def timer_callback(self) -> None:
+        if time.time() - self.start_time < self.duration:
+            return
+
+        self.write_outputs()
+        self.destroy_timer(self.timer)
+        if rclpy.ok():
+            rclpy.shutdown()
+
+    def write_outputs(self) -> None:
+        metrics = self.compute_metrics()
+        self.write_csv()
+        if not self.samples:
+            self.write_result(False, "no_samples")
+            self.write_summary(metrics, None)
+            self.get_logger().warn("No samples recorded; skipped visualization")
+            return
+
+        self.write_xy_path()
+        self.write_3d_path()
+        self.write_height_curve()
+        self.write_speed_curve()
+        self.write_tracking_error()
+        video_path = self.write_animation() if self.make_video else None
+        passed, reason = self.evaluate_pass_fail(metrics)
+        self.write_result(passed, reason)
+        self.write_summary(metrics, video_path, passed, reason)
+        self.get_logger().info(f"Visualization written to {self.output_dir}")
+
+    def write_csv(self) -> None:
+        with self.csv_path.open("w", newline="", encoding="utf-8") as f:
+            writer = csv.writer(f)
+            writer.writerow(
+                [
+                    "t",
+                    "x",
+                    "y",
+                    "z",
+                    "vx",
+                    "vy",
+                    "vz",
+                    "speed_mps",
+                    "target_x",
+                    "target_y",
+                    "target_z",
+                    "error_xy_m",
+                    "error_z_m",
+                    "error_3d_m",
+                ]
+            )
+            for sample in self.samples:
+                speed = self.speed(sample)
+                err_xy, err_z, err_3d = self.error_components(sample)
+                writer.writerow(
+                    [
+                        f"{sample[0]:.3f}",
+                        f"{sample[1]:.4f}",
+                        f"{sample[2]:.4f}",
+                        f"{sample[3]:.4f}",
+                        f"{sample[4]:.4f}",
+                        f"{sample[5]:.4f}",
+                        f"{sample[6]:.4f}",
+                        f"{speed:.4f}",
+                        self.float_cell(sample[7]),
+                        self.float_cell(sample[8]),
+                        self.float_cell(sample[9]),
+                        self.float_cell(err_xy),
+                        self.float_cell(err_z),
+                        self.float_cell(err_3d),
+                    ]
+                )
+
+    def write_xy_path(self) -> None:
+        x = [s[1] for s in self.samples]
+        y = [s[2] for s in self.samples]
+        tx, ty, _ = self.target_series()
+
+        fig, ax = plt.subplots(figsize=(8, 7), constrained_layout=True)
+        ax.set_title(f"{self.title} - XY path")
+        ax.plot(x, y, color="#1764ab", linewidth=2.2, label="actual")
+        if tx and ty:
+            ax.plot(tx, ty, color="#d1495b", linestyle="--", linewidth=1.7, label="target")
+            target_points = self.unique_target_points()
+            if target_points:
+                ax.scatter(
+                    [p[0] for p in target_points],
+                    [p[1] for p in target_points],
+                    color="#d1495b",
+                    s=42,
+                    zorder=4,
+                    label="target points",
+                )
+        ax.scatter(x[0], y[0], color="#2a9d8f", s=58, zorder=5, label="start")
+        ax.scatter(x[-1], y[-1], color="#111111", s=58, zorder=5, label="end")
+        ax.set_xlabel("x forward (m)")
+        ax.set_ylabel("y right (m)")
+        ax.axis("equal")
+        ax.grid(True, alpha=0.3)
+        ax.legend(loc="best")
+        fig.savefig(self.output_dir / "xy_path.png", dpi=160)
+        plt.close(fig)
+
+    def write_3d_path(self) -> None:
+        x = [s[1] for s in self.samples]
+        y = [s[2] for s in self.samples]
+        alt = [-s[3] for s in self.samples]
+        tx, ty, tz = self.target_series()
+
+        fig = plt.figure(figsize=(9, 7), constrained_layout=True)
+        ax = fig.add_subplot(111, projection="3d")
+        ax.set_title(f"{self.title} - 3D trajectory")
+        ax.plot(x, y, alt, color="#1764ab", linewidth=2.0, label="actual")
+        if tx and ty and tz:
+            ax.plot(tx, ty, [-z for z in tz], color="#d1495b", linestyle="--", linewidth=1.5, label="target")
+        ax.scatter([x[0]], [y[0]], [alt[0]], color="#2a9d8f", s=45, label="start")
+        ax.scatter([x[-1]], [y[-1]], [alt[-1]], color="#111111", s=45, label="end")
+        ax.set_xlabel("x forward (m)")
+        ax.set_ylabel("y right (m)")
+        ax.set_zlabel("altitude (m)")
+        ax.legend(loc="best")
+        fig.savefig(self.output_dir / "trajectory_3d.png", dpi=160)
+        plt.close(fig)
+
+    def write_height_curve(self) -> None:
+        t = [s[0] for s in self.samples]
+        altitude = [-s[3] for s in self.samples]
+        _, _, tz = self.target_series()
+
+        fig, ax = plt.subplots(figsize=(9, 5), constrained_layout=True)
+        ax.set_title(f"{self.title} - height")
+        ax.plot(t, altitude, color="#1764ab", linewidth=2.0, label="actual altitude")
+        if tz:
+            ax.plot(t[: len(tz)], [-z for z in tz], color="#d1495b", linestyle="--", linewidth=1.5, label="target altitude")
+        ax.set_xlabel("time (s)")
+        ax.set_ylabel("altitude (m)")
+        ax.grid(True, alpha=0.3)
+        ax.legend(loc="best")
+        fig.savefig(self.output_dir / "height_curve.png", dpi=160)
+        plt.close(fig)
+
+    def write_speed_curve(self) -> None:
+        t = [s[0] for s in self.samples]
+        speed = [self.speed(s) for s in self.samples]
+
+        fig, ax = plt.subplots(figsize=(9, 5), constrained_layout=True)
+        ax.set_title(f"{self.title} - speed")
+        ax.plot(t, speed, color="#1764ab", linewidth=2.0, label="speed")
+        ax.axhline(self.thresholds["max_speed_pass"], color="#d1495b", linestyle="--", linewidth=1.3, label="PASS limit")
+        ax.set_xlabel("time (s)")
+        ax.set_ylabel("speed (m/s)")
+        ax.grid(True, alpha=0.3)
+        ax.legend(loc="best")
+        fig.savefig(self.output_dir / "speed_curve.png", dpi=160)
+        plt.close(fig)
+
+    def write_tracking_error(self) -> None:
+        t = [s[0] for s in self.samples]
+        err_xy = []
+        err_3d = []
+        err_z = []
+        for sample in self.samples:
+            xy, z, err = self.error_components(sample)
+            err_xy.append(xy)
+            err_z.append(abs(z) if not math.isnan(z) else math.nan)
+            err_3d.append(err)
+
+        fig, ax = plt.subplots(figsize=(9, 5), constrained_layout=True)
+        ax.set_title(f"{self.title} - tracking error")
+        ax.plot(t, err_3d, color="#1764ab", linewidth=2.0, label="3D error")
+        ax.plot(t, err_xy, color="#2a9d8f", linewidth=1.5, label="XY error")
+        ax.plot(t, err_z, color="#7a5195", linewidth=1.3, label="height error")
+        ax.axhline(self.thresholds["avg_error_pass"], color="#d1495b", linestyle="--", linewidth=1.3, label="avg PASS limit")
+        ax.set_xlabel("time (s)")
+        ax.set_ylabel("error (m)")
+        ax.grid(True, alpha=0.3)
+        ax.legend(loc="best")
+        fig.savefig(self.output_dir / "tracking_error.png", dpi=160)
+        plt.close(fig)
+
+    def write_animation(self) -> Optional[Path]:
+        if len(self.samples) < 2:
+            return None
+
+        step = max(1, len(self.samples) // 160)
+        frames = list(range(0, len(self.samples), step))
+        x = [s[1] for s in self.samples]
+        y = [s[2] for s in self.samples]
+        tx, ty, _ = self.target_series()
+
+        fig, ax = plt.subplots(figsize=(7, 7), constrained_layout=True)
+        ax.set_title(self.title)
+        ax.set_xlabel("x forward (m)")
+        ax.set_ylabel("y right (m)")
+        ax.grid(True, alpha=0.3)
+        ax.axis("equal")
+        margin = 0.75
+        all_x = x + tx
+        all_y = y + ty
+        ax.set_xlim(min(all_x) - margin, max(all_x) + margin)
+        ax.set_ylim(min(all_y) - margin, max(all_y) + margin)
+
+        actual_line, = ax.plot([], [], color="#1764ab", linewidth=2.2, label="actual")
+        target_line, = ax.plot([], [], color="#d1495b", linestyle="--", linewidth=1.5, label="target")
+        current_dot = ax.scatter([], [], color="#111111", s=70, zorder=4)
+        ax.legend(loc="best")
+
+        def update(frame_index: int):
+            actual_line.set_data(x[: frame_index + 1], y[: frame_index + 1])
+            if tx and ty:
+                target_line.set_data(tx[: frame_index + 1], ty[: frame_index + 1])
+            current_dot.set_offsets([[x[frame_index], y[frame_index]]])
+            return actual_line, target_line, current_dot
+
+        ani = animation.FuncAnimation(fig, update, frames=frames, interval=1000 / self.fps, blit=True)
+        if shutil.which("ffmpeg"):
+            output = self.output_dir / "trajectory.mp4"
+            ani.save(output, writer="ffmpeg", fps=self.fps, dpi=130)
+        else:
+            output = self.output_dir / "trajectory.gif"
+            ani.save(output, writer="pillow", fps=self.fps, dpi=110)
+        plt.close(fig)
+        return output
+
+    def compute_metrics(self) -> Dict[str, float]:
+        metrics: Dict[str, float] = {
+            "samples": float(len(self.samples)),
+            "duration_s": 0.0,
+            "path_length_m": 0.0,
+            "max_speed_mps": 0.0,
+            "avg_speed_mps": 0.0,
+            "avg_error_3d_m": math.nan,
+            "max_error_3d_m": math.nan,
+            "avg_error_xy_m": math.nan,
+            "avg_height_error_m": math.nan,
+            "final_error_3d_m": math.nan,
+            "target_point_count": float(len(self.unique_target_points())),
+            "circle_radius_avg_m": math.nan,
+            "circle_radius_error_avg_m": math.nan,
+            "stable_avg_error_3d_m": math.nan,
+            "stable_avg_height_error_m": math.nan,
+            "stable_max_speed_mps": math.nan,
+            "flight_avg_error_3d_m": math.nan,
+            "flight_avg_error_xy_m": math.nan,
+            "flight_avg_height_error_m": math.nan,
+            "flight_circle_radius_error_avg_m": math.nan,
+        }
+        if not self.samples:
+            return metrics
+
+        metrics["duration_s"] = self.samples[-1][0]
+        speeds = [self.speed(sample) for sample in self.samples]
+        metrics["max_speed_mps"] = max(speeds)
+        metrics["avg_speed_mps"] = sum(speeds) / len(speeds)
+        for prev, cur in zip(self.samples, self.samples[1:]):
+            metrics["path_length_m"] += math.dist(prev[1:4], cur[1:4])
+
+        errors_3d = []
+        errors_xy = []
+        errors_z = []
+        for sample in self.samples:
+            err_xy, err_z, err_3d = self.error_components(sample)
+            if not math.isnan(err_3d):
+                errors_3d.append(err_3d)
+            if not math.isnan(err_xy):
+                errors_xy.append(err_xy)
+            if not math.isnan(err_z):
+                errors_z.append(abs(err_z))
+        if errors_3d:
+            metrics["avg_error_3d_m"] = sum(errors_3d) / len(errors_3d)
+            metrics["max_error_3d_m"] = max(errors_3d)
+            metrics["final_error_3d_m"] = errors_3d[-1]
+        if errors_xy:
+            metrics["avg_error_xy_m"] = sum(errors_xy) / len(errors_xy)
+        if errors_z:
+            metrics["avg_height_error_m"] = sum(errors_z) / len(errors_z)
+
+        stable = self.stable_samples()
+        flight = self.flight_samples()
+        if self.demo_id == "demo03":
+            circle_samples = flight or stable or self.samples
+            radii = [math.hypot(s[7], s[8]) for s in circle_samples if self.has_target(s)]
+            actual_radii = [math.hypot(s[1], s[2]) for s in circle_samples]
+            if radii and actual_radii:
+                radius = sum(radii) / len(radii)
+                metrics["circle_radius_avg_m"] = sum(actual_radii) / len(actual_radii)
+                metrics["circle_radius_error_avg_m"] = sum(abs(r - radius) for r in actual_radii) / len(actual_radii)
+                metrics["flight_circle_radius_error_avg_m"] = metrics["circle_radius_error_avg_m"]
+        if stable:
+            stable_errors = [self.error_components(s) for s in stable if self.has_target(s)]
+            stable_3d = [e[2] for e in stable_errors if not math.isnan(e[2])]
+            stable_z = [abs(e[1]) for e in stable_errors if not math.isnan(e[1])]
+            stable_speed = [self.speed(s) for s in stable]
+            if stable_3d:
+                metrics["stable_avg_error_3d_m"] = sum(stable_3d) / len(stable_3d)
+            if stable_z:
+                metrics["stable_avg_height_error_m"] = sum(stable_z) / len(stable_z)
+            if stable_speed:
+                metrics["stable_max_speed_mps"] = max(stable_speed)
+        if flight:
+            flight_errors = [self.error_components(s) for s in flight if self.has_target(s)]
+            flight_3d = [e[2] for e in flight_errors if not math.isnan(e[2])]
+            flight_xy = [e[0] for e in flight_errors if not math.isnan(e[0])]
+            flight_z = [abs(e[1]) for e in flight_errors if not math.isnan(e[1])]
+            if flight_3d:
+                metrics["flight_avg_error_3d_m"] = sum(flight_3d) / len(flight_3d)
+            if flight_xy:
+                metrics["flight_avg_error_xy_m"] = sum(flight_xy) / len(flight_xy)
+            if flight_z:
+                metrics["flight_avg_height_error_m"] = sum(flight_z) / len(flight_z)
+        return metrics
+
+    def evaluate_pass_fail(self, metrics: Dict[str, float]) -> Tuple[bool, str]:
+        if metrics["samples"] < self.thresholds["min_samples_pass"]:
+            return False, "too_few_samples"
+        if metrics["max_speed_mps"] > self.thresholds["max_speed_pass"]:
+            return False, "max_speed_exceeded"
+        if math.isnan(metrics["avg_error_3d_m"]):
+            return False, "no_target_samples"
+
+        demo = self.demo_id
+        if demo == "demo01":
+            if metrics["stable_max_speed_mps"] > self.thresholds["max_speed_pass"]:
+                return False, "stable_speed_exceeded"
+            if metrics["stable_avg_height_error_m"] > self.thresholds["height_error_pass"]:
+                return False, "height_not_stable"
+            if metrics["stable_avg_error_3d_m"] > self.thresholds["avg_error_pass"]:
+                return False, "hover_error_high"
+        elif demo == "demo02":
+            if metrics["target_point_count"] < 4:
+                return False, "waypoints_not_observed"
+            if math.isnan(metrics["flight_avg_error_3d_m"]):
+                return False, "no_airborne_tracking_samples"
+            if metrics["flight_avg_error_3d_m"] > self.thresholds["avg_error_pass"]:
+                return False, "waypoint_tracking_error_high"
+        elif demo == "demo03":
+            if math.isnan(metrics["flight_circle_radius_error_avg_m"]):
+                return False, "no_airborne_circle_samples"
+            if metrics["flight_circle_radius_error_avg_m"] > 0.6:
+                return False, "circle_radius_error_high"
+            if math.isnan(metrics["flight_avg_height_error_m"]):
+                return False, "no_airborne_height_samples"
+            if metrics["flight_avg_height_error_m"] > self.thresholds["height_error_pass"]:
+                return False, "circle_height_error_high"
+        elif demo == "demo04":
+            if metrics["target_point_count"] < 4:
+                return False, "external_targets_not_observed"
+            if metrics["final_error_3d_m"] > self.thresholds["final_error_pass"]:
+                return False, "final_target_error_high"
+            if metrics["avg_error_3d_m"] > self.thresholds["avg_error_pass"]:
+                return False, "external_tracking_error_high"
+        else:
+            if metrics["avg_error_3d_m"] > self.thresholds["avg_error_pass"]:
+                return False, "tracking_error_high"
+
+        return True, "ok"
+
+    def write_summary(
+        self,
+        metrics: Dict[str, float],
+        video_path: Optional[Path],
+        passed: bool = False,
+        reason: str = "no_samples",
+    ) -> None:
+        lines = [
+            f"# {self.title}",
+            "",
+            f"RESULT={'PASS' if passed else 'FAIL'}",
+            f"reason={reason}",
+            "",
+            f"- demo_id: {self.demo_id}",
+            f"- samples: {int(metrics['samples'])}",
+            f"- duration_s: {metrics['duration_s']:.2f}",
+            f"- path_length_m: {metrics['path_length_m']:.2f}",
+            f"- max_speed_mps: {metrics['max_speed_mps']:.2f}",
+            f"- avg_speed_mps: {metrics['avg_speed_mps']:.2f}",
+            f"- avg_error_3d_m: {self.metric_cell(metrics['avg_error_3d_m'])}",
+            f"- max_error_3d_m: {self.metric_cell(metrics['max_error_3d_m'])}",
+            f"- avg_error_xy_m: {self.metric_cell(metrics['avg_error_xy_m'])}",
+            f"- avg_height_error_m: {self.metric_cell(metrics['avg_height_error_m'])}",
+            f"- final_error_3d_m: {self.metric_cell(metrics['final_error_3d_m'])}",
+            f"- stable_avg_error_3d_m: {self.metric_cell(metrics['stable_avg_error_3d_m'])}",
+            f"- stable_avg_height_error_m: {self.metric_cell(metrics['stable_avg_height_error_m'])}",
+            f"- stable_max_speed_mps: {self.metric_cell(metrics['stable_max_speed_mps'])}",
+            f"- flight_avg_error_3d_m: {self.metric_cell(metrics['flight_avg_error_3d_m'])}",
+            f"- flight_avg_error_xy_m: {self.metric_cell(metrics['flight_avg_error_xy_m'])}",
+            f"- flight_avg_height_error_m: {self.metric_cell(metrics['flight_avg_height_error_m'])}",
+            f"- flight_circle_radius_error_avg_m: {self.metric_cell(metrics['flight_circle_radius_error_avg_m'])}",
+            f"- target_point_count: {int(metrics['target_point_count'])}",
+            f"- final_position_ned: {self.final_position_text()}",
+            "",
+            "## Outputs",
+            "",
+            "- trajectory.csv",
+            "- trajectory_3d.png",
+            "- xy_path.png",
+            "- height_curve.png",
+            "- speed_curve.png",
+            "- tracking_error.png",
+        ]
+        if video_path:
+            lines.append(f"- {video_path.name}")
+        lines.append("- result.txt")
+        (self.output_dir / "summary.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+    def write_result(self, passed: bool, reason: str) -> None:
+        text = f"RESULT={'PASS' if passed else 'FAIL'} reason={reason}\n"
+        (self.output_dir / "result.txt").write_text(text, encoding="utf-8")
+
+    def target_series(self) -> Tuple[List[float], List[float], List[float]]:
+        tx: List[float] = []
+        ty: List[float] = []
+        tz: List[float] = []
+        for sample in self.samples:
+            if self.has_target(sample):
+                tx.append(sample[7])
+                ty.append(sample[8])
+                tz.append(sample[9])
+        return tx, ty, tz
+
+    def unique_target_points(self) -> List[Position]:
+        points: List[Position] = []
+        last: Optional[Position] = None
+        for sample in self.samples:
+            if not self.has_target(sample):
+                continue
+            point = (round(sample[7], 2), round(sample[8], 2), round(sample[9], 2))
+            if point != last:
+                points.append(point)
+                last = point
+        return points
+
+    def stable_samples(self) -> List[Sample]:
+        if len(self.samples) < 3:
+            return self.samples
+        start = len(self.samples) // 2
+        return self.samples[start:]
+
+    def flight_samples(self) -> List[Sample]:
+        samples = []
+        for sample in self.samples:
+            if not self.has_target(sample):
+                continue
+            target_altitude = -sample[9]
+
+exec
+/bin/bash -lc 'git status --short' in /home/clcwork/UAV_capture/px4_ros2_ws
+ exited 128 in 0ms:
+fatal: not a git repository (or any of the parent directories): .git
+
+exec
+/bin/bash -lc "find visualizations -mindepth 2 -maxdepth 2 -type d | sort | while read -r d; do printf '%s: ' \""'$d"; for f in trajectory.csv trajectory_3d.png xy_path.png height_curve.png speed_curve.png; do [ -f "$d/$f" ] && printf '"'%s ' \""'$f"; done; printf '"'\\n'; done" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+visualizations/demo01_hover/20260526_221722: trajectory.csv trajectory_3d.png xy_path.png height_curve.png speed_curve.png 
+visualizations/demo02_waypoint_flight/20260526_085827: trajectory.csv 
+visualizations/demo02_waypoint_flight/20260526_090144: trajectory.csv 
+visualizations/demo02_waypoint_flight/20260526_221833: trajectory.csv trajectory_3d.png xy_path.png height_curve.png speed_curve.png 
+visualizations/demo02_waypoint_flight/20260526_222121: trajectory.csv trajectory_3d.png xy_path.png height_curve.png speed_curve.png 
+visualizations/demo03_circle_trajectory/20260526_090359: trajectory.csv 
+visualizations/demo03_circle_trajectory/20260526_222313: trajectory.csv trajectory_3d.png xy_path.png height_curve.png speed_curve.png 
+visualizations/demo04_external_setpoint/20260526_090546: trajectory.csv 
+visualizations/demo04_external_setpoint/20260526_222502: trajectory.csv trajectory_3d.png xy_path.png height_curve.png speed_curve.png 
+
+codex
+Recorder 节点确认会写 `trajectory.csv`、`xy_path.png`、`trajectory_3d.png`、`height_curve.png`、`speed_curve.png`，wrapper 也已经统一打印这些名字。这里不需要改控制逻辑或重写绘图脚本，我只补文档，并用现有结果目录做验证。
+apply patch
+patch: completed
+/home/clcwork/UAV_capture/px4_ros2_ws/docs/VISUALIZATION_GUIDE.md
+diff --git a/UAV_capture/px4_ros2_ws/docs/VISUALIZATION_GUIDE.md b/UAV_capture/px4_ros2_ws/docs/VISUALIZATION_GUIDE.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..bd050bcdadf1fb286ac175140172c80e7a64e85c
+--- /dev/null
++++ b/UAV_capture/px4_ros2_ws/docs/VISUALIZATION_GUIDE.md
+@@ -0,0 +1,129 @@
++# Demo Visualization Guide
++
++This guide covers the standard visualization outputs for Demo 1-4 in
++`/home/clcwork/UAV_capture/px4_ros2_ws`.
++
++## Standard Output Layout
++
++Demo visualizations are written to timestamped directories:
++
++```text
++visualizations/<demo>/<YYYYMMDD_HHMMSS>/
++```
++
++The current standard files are:
++
++| File | Purpose |
++| --- | --- |
++| `trajectory.csv` | Raw time series: position, velocity, speed, target position, and tracking error. |
++| `trajectory_3d.png` | 3D actual and target trajectory. |
++| `xy_path.png` | Top-down XY path with start/end markers. |
++| `height_curve.png` | Altitude over time with target altitude when available. |
++| `speed_curve.png` | Speed over time with the configured pass limit. |
++| `tracking_error.png` | 3D, XY, and height tracking error over time. |
++| `trajectory.mp4` | Optional XY animation when `ffmpeg` is available. |
++| `summary.md` | Metrics and generated output list. |
++| `result.txt` | PASS/FAIL status and reason. |
++
++Older visualization directories may contain only `trajectory.png` plus
++`trajectory.csv`. Do not rename, delete, or overwrite those historical results.
++
++## Demo Output Names
++
++Each current demo runner uses `scripts/run_trajectory_recorder.sh`, which starts
++the `trajectory_recorder` ROS 2 node and writes the same standard file names.
++
++| Demo | Runner | Visualization root | Standard files |
++| --- | --- | --- | --- |
++| Demo 01 Offboard Hover | `scripts/run_demo01_hover.sh` | `visualizations/demo01_hover/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
++| Demo 02 Waypoint Flight | `scripts/run_demo02_waypoint_flight.sh` | `visualizations/demo02_waypoint_flight/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
++| Demo 03 Circle Trajectory | `scripts/run_demo03_circle_trajectory.sh` | `visualizations/demo03_circle_trajectory/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
++| Demo 04 External Setpoint Interface | `scripts/run_demo04_external_setpoint.sh` | `visualizations/demo04_external_setpoint/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
++
++## Generate New Results
++
++Run demos from the workspace root:
++
++```bash
++cd /home/clcwork/UAV_capture/px4_ros2_ws
++source /opt/ros/jazzy/setup.bash
++source install/setup.bash
++
++./scripts/run_demo01_hover.sh
++./scripts/run_demo02_waypoint_flight.sh
++./scripts/run_demo03_circle_trajectory.sh
++./scripts/run_demo04_external_setpoint.sh
++```
++
++Each runner creates a new timestamped directory under `logs/<demo>/` and
++`visualizations/<demo>/`. The runner prints the exact output paths after the
++trajectory recorder finishes.
++
++## Check Existing Results
++
++List available PNG outputs:
++
++```bash
++find visualizations -name "*.png" | sort
++```
++
++Check the newest directory for each demo:
++
++```bash
++for demo in demo01_hover demo02_waypoint_flight demo03_circle_trajectory demo04_external_setpoint; do
++  latest="$(find "visualizations/$demo" -mindepth 1 -maxdepth 1 -type d | sort | tail -n 1)"
++  echo "$demo -> $latest"
++  ls "$latest"/trajectory.csv \
++     "$latest"/trajectory_3d.png \
++     "$latest"/xy_path.png \
++     "$latest"/height_curve.png \
++     "$latest"/speed_curve.png
++done
++```
++
++## View Results Locally
++
++Open PNG files from the timestamped visualization directory with an image viewer:
++
++```bash
++xdg-open visualizations/demo01_hover/<timestamp>/trajectory_3d.png
++xdg-open visualizations/demo01_hover/<timestamp>/xy_path.png
++xdg-open visualizations/demo01_hover/<timestamp>/height_curve.png
++xdg-open visualizations/demo01_hover/<timestamp>/speed_curve.png
++```
++
++Read metrics and status:
++
++```bash
++cat visualizations/demo01_hover/<timestamp>/summary.md
++cat visualizations/demo01_hover/<timestamp>/result.txt
++```
++
++## Copy Results To Mac
++
++From the Mac terminal, copy one timestamped result directory:
++
++```bash
++scp -r <linux_user>@<linux_host>:/home/clcwork/UAV_capture/px4_ros2_ws/visualizations/demo01_hover/<timestamp> ~/Desktop/px4_demo01_hover_<timestamp>
++```
++
++Copy all Demo 1-4 visualization results:
++
++```bash
++scp -r <linux_user>@<linux_host>:/home/clcwork/UAV_capture/px4_ros2_ws/visualizations ~/Desktop/px4_visualizations
++```
++
++Replace `<linux_user>` and `<linux_host>` with the SSH user and host for the
++Linux machine. If SSH uses a non-default port, add `-P <port>` after `scp`.
++
++## Current Missing Metrics
++
++The current recorder covers position, velocity magnitude, target position,
++tracking error, summary PASS/FAIL, and optional animation. It does not currently
++plot or summarize:
++
++- attitude, yaw, or yaw-rate tracking;
++- acceleration or jerk;
++- battery, estimator, actuator, or failsafe status;
++- per-waypoint arrival time and dwell time;
++- rosbag-based replay or offline redraw from a saved bag.
+
+diff --git a/UAV_capture/px4_ros2_ws/docs/VISUALIZATION_GUIDE.md b/UAV_capture/px4_ros2_ws/docs/VISUALIZATION_GUIDE.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..bd050bcdadf1fb286ac175140172c80e7a64e85c
+--- /dev/null
++++ b/UAV_capture/px4_ros2_ws/docs/VISUALIZATION_GUIDE.md
+@@ -0,0 +1,129 @@
++# Demo Visualization Guide
++
++This guide covers the standard visualization outputs for Demo 1-4 in
++`/home/clcwork/UAV_capture/px4_ros2_ws`.
++
++## Standard Output Layout
++
++Demo visualizations are written to timestamped directories:
++
++```text
++visualizations/<demo>/<YYYYMMDD_HHMMSS>/
++```
++
++The current standard files are:
++
++| File | Purpose |
++| --- | --- |
++| `trajectory.csv` | Raw time series: position, velocity, speed, target position, and tracking error. |
++| `trajectory_3d.png` | 3D actual and target trajectory. |
++| `xy_path.png` | Top-down XY path with start/end markers. |
++| `height_curve.png` | Altitude over time with target altitude when available. |
++| `speed_curve.png` | Speed over time with the configured pass limit. |
++| `tracking_error.png` | 3D, XY, and height tracking error over time. |
++| `trajectory.mp4` | Optional XY animation when `ffmpeg` is available. |
++| `summary.md` | Metrics and generated output list. |
++| `result.txt` | PASS/FAIL status and reason. |
++
++Older visualization directories may contain only `trajectory.png` plus
++`trajectory.csv`. Do not rename, delete, or overwrite those historical results.
++
++## Demo Output Names
++
++Each current demo runner uses `scripts/run_trajectory_recorder.sh`, which starts
++the `trajectory_recorder` ROS 2 node and writes the same standard file names.
++
++| Demo | Runner | Visualization root | Standard files |
++| --- | --- | --- | --- |
++| Demo 01 Offboard Hover | `scripts/run_demo01_hover.sh` | `visualizations/demo01_hover/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
++| Demo 02 Waypoint Flight | `scripts/run_demo02_waypoint_flight.sh` | `visualizations/demo02_waypoint_flight/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
++| Demo 03 Circle Trajectory | `scripts/run_demo03_circle_trajectory.sh` | `visualizations/demo03_circle_trajectory/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
++| Demo 04 External Setpoint Interface | `scripts/run_demo04_external_setpoint.sh` | `visualizations/demo04_external_setpoint/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
++
++## Generate New Results
++
++Run demos from the workspace root:
++
++```bash
++cd /home/clcwork/UAV_capture/px4_ros2_ws
++source /opt/ros/jazzy/setup.bash
++source install/setup.bash
++
++./scripts/run_demo01_hover.sh
++./scripts/run_demo02_waypoint_flight.sh
++./scripts/run_demo03_circle_trajectory.sh
++./scripts/run_demo04_external_setpoint.sh
++```
++
++Each runner creates a new timestamped directory under `logs/<demo>/` and
++`visualizations/<demo>/`. The runner prints the exact output paths after the
++trajectory recorder finishes.
++
++## Check Existing Results
++
++List available PNG outputs:
++
++```bash
++find visualizations -name "*.png" | sort
++```
++
++Check the newest directory for each demo:
++
++```bash
++for demo in demo01_hover demo02_waypoint_flight demo03_circle_trajectory demo04_external_setpoint; do
++  latest="$(find "visualizations/$demo" -mindepth 1 -maxdepth 1 -type d | sort | tail -n 1)"
++  echo "$demo -> $latest"
++  ls "$latest"/trajectory.csv \
++     "$latest"/trajectory_3d.png \
++     "$latest"/xy_path.png \
++     "$latest"/height_curve.png \
++     "$latest"/speed_curve.png
++done
++```
++
++## View Results Locally
++
++Open PNG files from the timestamped visualization directory with an image viewer:
++
++```bash
++xdg-open visualizations/demo01_hover/<timestamp>/trajectory_3d.png
++xdg-open visualizations/demo01_hover/<timestamp>/xy_path.png
++xdg-open visualizations/demo01_hover/<timestamp>/height_curve.png
++xdg-open visualizations/demo01_hover/<timestamp>/speed_curve.png
++```
++
++Read metrics and status:
++
++```bash
++cat visualizations/demo01_hover/<timestamp>/summary.md
++cat visualizations/demo01_hover/<timestamp>/result.txt
++```
++
++## Copy Results To Mac
++
++From the Mac terminal, copy one timestamped result directory:
++
++```bash
++scp -r <linux_user>@<linux_host>:/home/clcwork/UAV_capture/px4_ros2_ws/visualizations/demo01_hover/<timestamp> ~/Desktop/px4_demo01_hover_<timestamp>
++```
++
++Copy all Demo 1-4 visualization results:
++
++```bash
++scp -r <linux_user>@<linux_host>:/home/clcwork/UAV_capture/px4_ros2_ws/visualizations ~/Desktop/px4_visualizations
++```
++
++Replace `<linux_user>` and `<linux_host>` with the SSH user and host for the
++Linux machine. If SSH uses a non-default port, add `-P <port>` after `scp`.
++
++## Current Missing Metrics
++
++The current recorder covers position, velocity magnitude, target position,
++tracking error, summary PASS/FAIL, and optional animation. It does not currently
++plot or summarize:
++
++- attitude, yaw, or yaw-rate tracking;
++- acceleration or jerk;
++- battery, estimator, actuator, or failsafe status;
++- per-waypoint arrival time and dwell time;
++- rosbag-based replay or offline redraw from a saved bag.
+
+codex
+文档已补上，脚本未改，因为现有 recorder 已经统一产物命名。现在我运行任务要求的编译和结果检查，并把完整输出写入 `codex-logs/002-standardize-demo-visualization.log`。
+exec
+/bin/bash -lc 'mkdir -p codex-logs
+{
+  echo "# Task 002 validation log"
+  echo "timestamp=$(date -Is)"
+  echo "workspace=$(pwd)"
+  echo
+  echo "## source /opt/ros/jazzy/setup.bash"
+  source /opt/ros/jazzy/setup.bash
+  echo "OK"
+  echo
+  echo "## source install/setup.bash"
+  source install/setup.bash
+  echo "OK"
+  echo
+  echo "## python3 -m compileall src scripts"
+  python3 -m compileall src scripts
+  echo
+  echo "## verify latest standard visualization outputs"
+  for demo in demo01_hover demo02_waypoint_flight demo03_circle_trajectory demo04_external_setpoint; do
+    latest="$(find "visualizations/$demo" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort | tail -n 1)"
+    echo "$demo latest=$latest"
+    for f in trajectory.csv trajectory_3d.png xy_path.png height_curve.png speed_curve.png; do
+      if [ -f "$latest/$f" ]; then
+        echo "  OK $f"
+      else
+        echo "  MISSING $f"
+      fi
+    done
+  done
+  echo
+  echo "## find logs -name '"\\\"*.png\\\" | head\"
+  find logs -name \"*.png\" | head
+  echo
+  echo \"## find visualizations -name \\\"*.png\\\" | head\"
+  find visualizations -name \"*.png\" | head
+} 2>&1 | tee codex-logs/002-standardize-demo-visualization.log" in /home/clcwork/UAV_capture/px4_ros2_ws
+diff --git a/UAV_capture/px4_ros2_ws/docs/VISUALIZATION_GUIDE.md b/UAV_capture/px4_ros2_ws/docs/VISUALIZATION_GUIDE.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..bd050bcdadf1fb286ac175140172c80e7a64e85c
+--- /dev/null
++++ b/UAV_capture/px4_ros2_ws/docs/VISUALIZATION_GUIDE.md
+@@ -0,0 +1,129 @@
++# Demo Visualization Guide
++
++This guide covers the standard visualization outputs for Demo 1-4 in
++`/home/clcwork/UAV_capture/px4_ros2_ws`.
++
++## Standard Output Layout
++
++Demo visualizations are written to timestamped directories:
++
++```text
++visualizations/<demo>/<YYYYMMDD_HHMMSS>/
++```
++
++The current standard files are:
++
++| File | Purpose |
++| --- | --- |
++| `trajectory.csv` | Raw time series: position, velocity, speed, target position, and tracking error. |
++| `trajectory_3d.png` | 3D actual and target trajectory. |
++| `xy_path.png` | Top-down XY path with start/end markers. |
++| `height_curve.png` | Altitude over time with target altitude when available. |
++| `speed_curve.png` | Speed over time with the configured pass limit. |
++| `tracking_error.png` | 3D, XY, and height tracking error over time. |
++| `trajectory.mp4` | Optional XY animation when `ffmpeg` is available. |
++| `summary.md` | Metrics and generated output list. |
++| `result.txt` | PASS/FAIL status and reason. |
++
++Older visualization directories may contain only `trajectory.png` plus
++`trajectory.csv`. Do not rename, delete, or overwrite those historical results.
++
++## Demo Output Names
++
++Each current demo runner uses `scripts/run_trajectory_recorder.sh`, which starts
++the `trajectory_recorder` ROS 2 node and writes the same standard file names.
++
++| Demo | Runner | Visualization root | Standard files |
++| --- | --- | --- | --- |
++| Demo 01 Offboard Hover | `scripts/run_demo01_hover.sh` | `visualizations/demo01_hover/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
++| Demo 02 Waypoint Flight | `scripts/run_demo02_waypoint_flight.sh` | `visualizations/demo02_waypoint_flight/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
++| Demo 03 Circle Trajectory | `scripts/run_demo03_circle_trajectory.sh` | `visualizations/demo03_circle_trajectory/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
++| Demo 04 External Setpoint Interface | `scripts/run_demo04_external_setpoint.sh` | `visualizations/demo04_external_setpoint/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
++
++## Generate New Results
++
++Run demos from the workspace root:
++
++```bash
++cd /home/clcwork/UAV_capture/px4_ros2_ws
++source /opt/ros/jazzy/setup.bash
++source install/setup.bash
++
++./scripts/run_demo01_hover.sh
++./scripts/run_demo02_waypoint_flight.sh
++./scripts/run_demo03_circle_trajectory.sh
++./scripts/run_demo04_external_setpoint.sh
++```
++
++Each runner creates a new timestamped directory under `logs/<demo>/` and
++`visualizations/<demo>/`. The runner prints the exact output paths after the
++trajectory recorder finishes.
++
++## Check Existing Results
++
++List available PNG outputs:
++
++```bash
++find visualizations -name "*.png" | sort
++```
++
++Check the newest directory for each demo:
++
++```bash
++for demo in demo01_hover demo02_waypoint_flight demo03_circle_trajectory demo04_external_setpoint; do
++  latest="$(find "visualizations/$demo" -mindepth 1 -maxdepth 1 -type d | sort | tail -n 1)"
++  echo "$demo -> $latest"
++  ls "$latest"/trajectory.csv \
++     "$latest"/trajectory_3d.png \
++     "$latest"/xy_path.png \
++     "$latest"/height_curve.png \
++     "$latest"/speed_curve.png
++done
++```
++
++## View Results Locally
++
++Open PNG files from the timestamped visualization directory with an image viewer:
++
++```bash
++xdg-open visualizations/demo01_hover/<timestamp>/trajectory_3d.png
++xdg-open visualizations/demo01_hover/<timestamp>/xy_path.png
++xdg-open visualizations/demo01_hover/<timestamp>/height_curve.png
++xdg-open visualizations/demo01_hover/<timestamp>/speed_curve.png
++```
++
++Read metrics and status:
++
++```bash
++cat visualizations/demo01_hover/<timestamp>/summary.md
++cat visualizations/demo01_hover/<timestamp>/result.txt
++```
++
++## Copy Results To Mac
++
++From the Mac terminal, copy one timestamped result directory:
++
++```bash
++scp -r <linux_user>@<linux_host>:/home/clcwork/UAV_capture/px4_ros2_ws/visualizations/demo01_hover/<timestamp> ~/Desktop/px4_demo01_hover_<timestamp>
++```
++
++Copy all Demo 1-4 visualization results:
++
++```bash
++scp -r <linux_user>@<linux_host>:/home/clcwork/UAV_capture/px4_ros2_ws/visualizations ~/Desktop/px4_visualizations
++```
++
++Replace `<linux_user>` and `<linux_host>` with the SSH user and host for the
++Linux machine. If SSH uses a non-default port, add `-P <port>` after `scp`.
++
++## Current Missing Metrics
++
++The current recorder covers position, velocity magnitude, target position,
++tracking error, summary PASS/FAIL, and optional animation. It does not currently
++plot or summarize:
++
++- attitude, yaw, or yaw-rate tracking;
++- acceleration or jerk;
++- battery, estimator, actuator, or failsafe status;
++- per-waypoint arrival time and dwell time;
++- rosbag-based replay or offline redraw from a saved bag.
+
+ succeeded in 197ms:
+OK
+
+## python3 -m compileall src scripts
+Listing 'src'...
+Listing 'src/px4_msgs'...
+Listing 'src/px4_msgs/.git'...
+Listing 'src/px4_msgs/.git/branches'...
+Listing 'src/px4_msgs/.git/hooks'...
+Listing 'src/px4_msgs/.git/info'...
+Listing 'src/px4_msgs/.git/logs'...
+Listing 'src/px4_msgs/.git/logs/refs'...
+Listing 'src/px4_msgs/.git/logs/refs/heads'...
+Listing 'src/px4_msgs/.git/logs/refs/remotes'...
+Listing 'src/px4_msgs/.git/logs/refs/remotes/origin'...
+Listing 'src/px4_msgs/.git/objects'...
+Listing 'src/px4_msgs/.git/objects/info'...
+Listing 'src/px4_msgs/.git/objects/pack'...
+Listing 'src/px4_msgs/.git/refs'...
+Listing 'src/px4_msgs/.git/refs/heads'...
+Listing 'src/px4_msgs/.git/refs/remotes'...
+Listing 'src/px4_msgs/.git/refs/remotes/origin'...
+Listing 'src/px4_msgs/.git/refs/tags'...
+Listing 'src/px4_msgs/.github'...
+Listing 'src/px4_msgs/.github/workflows'...
+Listing 'src/px4_msgs/msg'...
+Listing 'src/px4_msgs/srv'...
+Listing 'src/px4_offboard_hover'...
+Listing 'src/px4_offboard_hover/px4_offboard_hover'...
+Listing 'src/px4_offboard_hover/resource'...
+Compiling 'src/px4_offboard_hover/setup.py'...
+Listing 'scripts'...
+
+## verify latest standard visualization outputs
+demo01_hover latest=visualizations/demo01_hover/20260526_221722
+  OK trajectory.csv
+  OK trajectory_3d.png
+  OK xy_path.png
+  OK height_curve.png
+  OK speed_curve.png
+demo02_waypoint_flight latest=visualizations/demo02_waypoint_flight/20260526_222121
+  OK trajectory.csv
+  OK trajectory_3d.png
+  OK xy_path.png
+  OK height_curve.png
+  OK speed_curve.png
+demo03_circle_trajectory latest=visualizations/demo03_circle_trajectory/20260526_222313
+  OK trajectory.csv
+  OK trajectory_3d.png
+  OK xy_path.png
+  OK height_curve.png
+  OK speed_curve.png
+demo04_external_setpoint latest=visualizations/demo04_external_setpoint/20260526_222502
+  OK trajectory.csv
+  OK trajectory_3d.png
+  OK xy_path.png
+  OK height_curve.png
+  OK speed_curve.png
+
+## find logs -name "*.png" | head
+
+## find visualizations -name "*.png" | head
+visualizations/demo04_external_setpoint/20260526_222502/xy_path.png
+visualizations/demo04_external_setpoint/20260526_222502/tracking_error.png
+visualizations/demo04_external_setpoint/20260526_222502/height_curve.png
+visualizations/demo04_external_setpoint/20260526_222502/trajectory_3d.png
+visualizations/demo04_external_setpoint/20260526_222502/speed_curve.png
+visualizations/demo04_external_setpoint/20260526_090546/trajectory.png
+visualizations/demo02_waypoint_flight/20260526_085827/trajectory.png
+visualizations/demo02_waypoint_flight/20260526_221833/xy_path.png
+visualizations/demo02_waypoint_flight/20260526_221833/tracking_error.png
+visualizations/demo02_waypoint_flight/20260526_221833/height_curve.png
+
+codex
+验证完成：`compileall` 通过，最近一次 Demo 1-4 的可视化目录都存在 5 个标准目标文件。`find logs -name "*.png"` 没有结果，PNG 都集中在 `visualizations/`，这个也写进了任务日志。
+exec
+/bin/bash -lc "find src scripts -type d -name '__pycache__' -print | sort | sed -n '1,80p'
+find src scripts -type f -name '*.pyc' -print | sort | sed -n '1,120p'
+ls -l docs/VISUALIZATION_GUIDE.md codex-logs/002-standardize-demo-visualization.log" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+src/px4_offboard_hover/__pycache__
+src/px4_offboard_hover/px4_offboard_hover/__pycache__
+src/px4_offboard_hover/__pycache__/setup.cpython-312.pyc
+src/px4_offboard_hover/px4_offboard_hover/__pycache__/__init__.cpython-312.pyc
+src/px4_offboard_hover/px4_offboard_hover/__pycache__/circle_trajectory.cpython-312.pyc
+src/px4_offboard_hover/px4_offboard_hover/__pycache__/external_setpoint.cpython-312.pyc
+src/px4_offboard_hover/px4_offboard_hover/__pycache__/hover.cpython-312.pyc
+src/px4_offboard_hover/px4_offboard_hover/__pycache__/offboard_base.cpython-312.pyc
+src/px4_offboard_hover/px4_offboard_hover/__pycache__/trajectory_recorder.cpython-312.pyc
+src/px4_offboard_hover/px4_offboard_hover/__pycache__/verify_hover.cpython-312.pyc
+src/px4_offboard_hover/px4_offboard_hover/__pycache__/waypoint_flight.cpython-312.pyc
+-rw-rw-r-- 1 clcwork clcwork 2897 May 27 00:22 codex-logs/002-standardize-demo-visualization.log
+-rw-rw-r-- 1 clcwork clcwork 4853 May 27 00:22 docs/VISUALIZATION_GUIDE.md
+
+diff --git a/UAV_capture/px4_ros2_ws/docs/VISUALIZATION_GUIDE.md b/UAV_capture/px4_ros2_ws/docs/VISUALIZATION_GUIDE.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..bd050bcdadf1fb286ac175140172c80e7a64e85c
+--- /dev/null
++++ b/UAV_capture/px4_ros2_ws/docs/VISUALIZATION_GUIDE.md
+@@ -0,0 +1,129 @@
++# Demo Visualization Guide
++
++This guide covers the standard visualization outputs for Demo 1-4 in
++`/home/clcwork/UAV_capture/px4_ros2_ws`.
++
++## Standard Output Layout
++
++Demo visualizations are written to timestamped directories:
++
++```text
++visualizations/<demo>/<YYYYMMDD_HHMMSS>/
++```
++
++The current standard files are:
++
++| File | Purpose |
++| --- | --- |
++| `trajectory.csv` | Raw time series: position, velocity, speed, target position, and tracking error. |
++| `trajectory_3d.png` | 3D actual and target trajectory. |
++| `xy_path.png` | Top-down XY path with start/end markers. |
++| `height_curve.png` | Altitude over time with target altitude when available. |
++| `speed_curve.png` | Speed over time with the configured pass limit. |
++| `tracking_error.png` | 3D, XY, and height tracking error over time. |
++| `trajectory.mp4` | Optional XY animation when `ffmpeg` is available. |
++| `summary.md` | Metrics and generated output list. |
++| `result.txt` | PASS/FAIL status and reason. |
++
++Older visualization directories may contain only `trajectory.png` plus
++`trajectory.csv`. Do not rename, delete, or overwrite those historical results.
++
++## Demo Output Names
++
++Each current demo runner uses `scripts/run_trajectory_recorder.sh`, which starts
++the `trajectory_recorder` ROS 2 node and writes the same standard file names.
++
++| Demo | Runner | Visualization root | Standard files |
++| --- | --- | --- | --- |
++| Demo 01 Offboard Hover | `scripts/run_demo01_hover.sh` | `visualizations/demo01_hover/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
++| Demo 02 Waypoint Flight | `scripts/run_demo02_waypoint_flight.sh` | `visualizations/demo02_waypoint_flight/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
++| Demo 03 Circle Trajectory | `scripts/run_demo03_circle_trajectory.sh` | `visualizations/demo03_circle_trajectory/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
++| Demo 04 External Setpoint Interface | `scripts/run_demo04_external_setpoint.sh` | `visualizations/demo04_external_setpoint/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
++
++## Generate New Results
++
++Run demos from the workspace root:
++
++```bash
++cd /home/clcwork/UAV_capture/px4_ros2_ws
++source /opt/ros/jazzy/setup.bash
++source install/setup.bash
++
++./scripts/run_demo01_hover.sh
++./scripts/run_demo02_waypoint_flight.sh
++./scripts/run_demo03_circle_trajectory.sh
++./scripts/run_demo04_external_setpoint.sh
++```
++
++Each runner creates a new timestamped directory under `logs/<demo>/` and
++`visualizations/<demo>/`. The runner prints the exact output paths after the
++trajectory recorder finishes.
++
++## Check Existing Results
++
++List available PNG outputs:
++
++```bash
++find visualizations -name "*.png" | sort
++```
++
++Check the newest directory for each demo:
++
++```bash
++for demo in demo01_hover demo02_waypoint_flight demo03_circle_trajectory demo04_external_setpoint; do
++  latest="$(find "visualizations/$demo" -mindepth 1 -maxdepth 1 -type d | sort | tail -n 1)"
++  echo "$demo -> $latest"
++  ls "$latest"/trajectory.csv \
++     "$latest"/trajectory_3d.png \
++     "$latest"/xy_path.png \
++     "$latest"/height_curve.png \
++     "$latest"/speed_curve.png
++done
++```
++
++## View Results Locally
++
++Open PNG files from the timestamped visualization directory with an image viewer:
++
++```bash
++xdg-open visualizations/demo01_hover/<timestamp>/trajectory_3d.png
++xdg-open visualizations/demo01_hover/<timestamp>/xy_path.png
++xdg-open visualizations/demo01_hover/<timestamp>/height_curve.png
++xdg-open visualizations/demo01_hover/<timestamp>/speed_curve.png
++```
++
++Read metrics and status:
++
++```bash
++cat visualizations/demo01_hover/<timestamp>/summary.md
++cat visualizations/demo01_hover/<timestamp>/result.txt
++```
++
++## Copy Results To Mac
++
++From the Mac terminal, copy one timestamped result directory:
++
++```bash
++scp -r <linux_user>@<linux_host>:/home/clcwork/UAV_capture/px4_ros2_ws/visualizations/demo01_hover/<timestamp> ~/Desktop/px4_demo01_hover_<timestamp>
++```
++
++Copy all Demo 1-4 visualization results:
++
++```bash
++scp -r <linux_user>@<linux_host>:/home/clcwork/UAV_capture/px4_ros2_ws/visualizations ~/Desktop/px4_visualizations
++```
++
++Replace `<linux_user>` and `<linux_host>` with the SSH user and host for the
++Linux machine. If SSH uses a non-default port, add `-P <port>` after `scp`.
++
++## Current Missing Metrics
++
++The current recorder covers position, velocity magnitude, target position,
++tracking error, summary PASS/FAIL, and optional animation. It does not currently
++plot or summarize:
++
++- attitude, yaw, or yaw-rate tracking;
++- acceleration or jerk;
++- battery, estimator, actuator, or failsafe status;
++- per-waypoint arrival time and dwell time;
++- rosbag-based replay or offline redraw from a saved bag.
+
+exec
+/bin/bash -lc '{
+  echo
+  echo "## artifact files"
+  ls -l docs/VISUALIZATION_GUIDE.md codex-logs/002-standardize-demo-visualization.log
+} 2>&1 | tee -a codex-logs/002-standardize-demo-visualization.log' in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+
+## artifact files
+-rw-rw-r-- 1 clcwork clcwork 2916 May 27 00:22 codex-logs/002-standardize-demo-visualization.log
+-rw-rw-r-- 1 clcwork clcwork 4853 May 27 00:22 docs/VISUALIZATION_GUIDE.md
+
+diff --git a/UAV_capture/px4_ros2_ws/docs/VISUALIZATION_GUIDE.md b/UAV_capture/px4_ros2_ws/docs/VISUALIZATION_GUIDE.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..bd050bcdadf1fb286ac175140172c80e7a64e85c
+--- /dev/null
++++ b/UAV_capture/px4_ros2_ws/docs/VISUALIZATION_GUIDE.md
+@@ -0,0 +1,129 @@
++# Demo Visualization Guide
++
++This guide covers the standard visualization outputs for Demo 1-4 in
++`/home/clcwork/UAV_capture/px4_ros2_ws`.
++
++## Standard Output Layout
++
++Demo visualizations are written to timestamped directories:
++
++```text
++visualizations/<demo>/<YYYYMMDD_HHMMSS>/
++```
++
++The current standard files are:
++
++| File | Purpose |
++| --- | --- |
++| `trajectory.csv` | Raw time series: position, velocity, speed, target position, and tracking error. |
++| `trajectory_3d.png` | 3D actual and target trajectory. |
++| `xy_path.png` | Top-down XY path with start/end markers. |
++| `height_curve.png` | Altitude over time with target altitude when available. |
++| `speed_curve.png` | Speed over time with the configured pass limit. |
++| `tracking_error.png` | 3D, XY, and height tracking error over time. |
++| `trajectory.mp4` | Optional XY animation when `ffmpeg` is available. |
++| `summary.md` | Metrics and generated output list. |
++| `result.txt` | PASS/FAIL status and reason. |
++
++Older visualization directories may contain only `trajectory.png` plus
++`trajectory.csv`. Do not rename, delete, or overwrite those historical results.
++
++## Demo Output Names
++
++Each current demo runner uses `scripts/run_trajectory_recorder.sh`, which starts
++the `trajectory_recorder` ROS 2 node and writes the same standard file names.
++
++| Demo | Runner | Visualization root | Standard files |
++| --- | --- | --- | --- |
++| Demo 01 Offboard Hover | `scripts/run_demo01_hover.sh` | `visualizations/demo01_hover/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
++| Demo 02 Waypoint Flight | `scripts/run_demo02_waypoint_flight.sh` | `visualizations/demo02_waypoint_flight/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
++| Demo 03 Circle Trajectory | `scripts/run_demo03_circle_trajectory.sh` | `visualizations/demo03_circle_trajectory/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
++| Demo 04 External Setpoint Interface | `scripts/run_demo04_external_setpoint.sh` | `visualizations/demo04_external_setpoint/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
++
++## Generate New Results
++
++Run demos from the workspace root:
++
++```bash
++cd /home/clcwork/UAV_capture/px4_ros2_ws
++source /opt/ros/jazzy/setup.bash
++source install/setup.bash
++
++./scripts/run_demo01_hover.sh
++./scripts/run_demo02_waypoint_flight.sh
++./scripts/run_demo03_circle_trajectory.sh
++./scripts/run_demo04_external_setpoint.sh
++```
++
++Each runner creates a new timestamped directory under `logs/<demo>/` and
++`visualizations/<demo>/`. The runner prints the exact output paths after the
++trajectory recorder finishes.
++
++## Check Existing Results
++
++List available PNG outputs:
++
++```bash
++find visualizations -name "*.png" | sort
++```
++
++Check the newest directory for each demo:
++
++```bash
++for demo in demo01_hover demo02_waypoint_flight demo03_circle_trajectory demo04_external_setpoint; do
++  latest="$(find "visualizations/$demo" -mindepth 1 -maxdepth 1 -type d | sort | tail -n 1)"
++  echo "$demo -> $latest"
++  ls "$latest"/trajectory.csv \
++     "$latest"/trajectory_3d.png \
++     "$latest"/xy_path.png \
++     "$latest"/height_curve.png \
++     "$latest"/speed_curve.png
++done
++```
++
++## View Results Locally
++
++Open PNG files from the timestamped visualization directory with an image viewer:
++
++```bash
++xdg-open visualizations/demo01_hover/<timestamp>/trajectory_3d.png
++xdg-open visualizations/demo01_hover/<timestamp>/xy_path.png
++xdg-open visualizations/demo01_hover/<timestamp>/height_curve.png
++xdg-open visualizations/demo01_hover/<timestamp>/speed_curve.png
++```
++
++Read metrics and status:
++
++```bash
++cat visualizations/demo01_hover/<timestamp>/summary.md
++cat visualizations/demo01_hover/<timestamp>/result.txt
++```
++
++## Copy Results To Mac
++
++From the Mac terminal, copy one timestamped result directory:
++
++```bash
++scp -r <linux_user>@<linux_host>:/home/clcwork/UAV_capture/px4_ros2_ws/visualizations/demo01_hover/<timestamp> ~/Desktop/px4_demo01_hover_<timestamp>
++```
++
++Copy all Demo 1-4 visualization results:
++
++```bash
++scp -r <linux_user>@<linux_host>:/home/clcwork/UAV_capture/px4_ros2_ws/visualizations ~/Desktop/px4_visualizations
++```
++
++Replace `<linux_user>` and `<linux_host>` with the SSH user and host for the
++Linux machine. If SSH uses a non-default port, add `-P <port>` after `scp`.
++
++## Current Missing Metrics
++
++The current recorder covers position, velocity magnitude, target position,
++tracking error, summary PASS/FAIL, and optional animation. It does not currently
++plot or summarize:
++
++- attitude, yaw, or yaw-rate tracking;
++- acceleration or jerk;
++- battery, estimator, actuator, or failsafe status;
++- per-waypoint arrival time and dwell time;
++- rosbag-based replay or offline redraw from a saved bag.
+
+codex
+已完成 Task 002。现有 `trajectory_recorder` 和 Demo 1-4 runner 已经统一生成目标文件名，所以没有改脚本，只新增文档并验证最近一次可视化结果。
+
+**Demo 输出命名**
+
+| Demo | 输出目录 | 标准文件 |
+| --- | --- | --- |
+| Demo 01 Hover | `visualizations/demo01_hover/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
+| Demo 02 Waypoint Flight | `visualizations/demo02_waypoint_flight/<timestamp>/` | 同上 |
+| Demo 03 Circle Trajectory | `visualizations/demo03_circle_trajectory/<timestamp>/` | 同上 |
+| Demo 04 External Setpoint | `visualizations/demo04_external_setpoint/<timestamp>/` | 同上 |
+
+Mac 端拉取示例：
+
+```bash
+scp -r <linux_user>@<linux_host>:/home/clcwork/UAV_capture/px4_ros2_ws/visualizations/demo01_hover/<timestamp> ~/Desktop/px4_demo01_hover_<timestamp>
+scp -r <linux_user>@<linux_host>:/home/clcwork/UAV_capture/px4_ros2_ws/visualizations ~/Desktop/px4_visualizations
+```
+
+**changed files**
+
+- [docs/VISUALIZATION_GUIDE.md](/home/clcwork/UAV_capture/px4_ros2_ws/docs/VISUALIZATION_GUIDE.md)
+- [codex-logs/002-standardize-demo-visualization.log](/home/clcwork/UAV_capture/px4_ros2_ws/codex-logs/002-standardize-demo-visualization.log)
+
+**commands run**
+
+- `source /opt/ros/jazzy/setup.bash`
+- `source install/setup.bash`
+- `python3 -m compileall src scripts`
+- checked latest `visualizations/<demo>/<timestamp>/` for the 5 required files
+- `find logs -name "*.png" | head`
+- `find visualizations -name "*.png" | head`
+
+**test result**
+
+PASS. `compileall` succeeded, and latest Demo 1-4 visualization directories all contain the required CSV and PNG files. `logs/` currently has no PNG output; PNG artifacts are under `visualizations/`.
+
+**current missing metrics**
+
+No attitude/yaw plots, acceleration/jerk plots, battery/actuator/failsafe summaries, per-waypoint dwell timing, or rosbag-based offline redraw.
+
+**known risks**
+
+No new PX4/Gazebo simulation was run for this task; validation used existing latest visualization outputs as allowed by the task. Older historical directories still contain legacy `trajectory.png` only and were left untouched.
+diff --git a/UAV_capture/px4_ros2_ws/docs/VISUALIZATION_GUIDE.md b/UAV_capture/px4_ros2_ws/docs/VISUALIZATION_GUIDE.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..bd050bcdadf1fb286ac175140172c80e7a64e85c
+--- /dev/null
++++ b/UAV_capture/px4_ros2_ws/docs/VISUALIZATION_GUIDE.md
+@@ -0,0 +1,129 @@
++# Demo Visualization Guide
++
++This guide covers the standard visualization outputs for Demo 1-4 in
++`/home/clcwork/UAV_capture/px4_ros2_ws`.
++
++## Standard Output Layout
++
++Demo visualizations are written to timestamped directories:
++
++```text
++visualizations/<demo>/<YYYYMMDD_HHMMSS>/
++```
++
++The current standard files are:
++
++| File | Purpose |
++| --- | --- |
++| `trajectory.csv` | Raw time series: position, velocity, speed, target position, and tracking error. |
++| `trajectory_3d.png` | 3D actual and target trajectory. |
++| `xy_path.png` | Top-down XY path with start/end markers. |
++| `height_curve.png` | Altitude over time with target altitude when available. |
++| `speed_curve.png` | Speed over time with the configured pass limit. |
++| `tracking_error.png` | 3D, XY, and height tracking error over time. |
++| `trajectory.mp4` | Optional XY animation when `ffmpeg` is available. |
++| `summary.md` | Metrics and generated output list. |
++| `result.txt` | PASS/FAIL status and reason. |
++
++Older visualization directories may contain only `trajectory.png` plus
++`trajectory.csv`. Do not rename, delete, or overwrite those historical results.
++
++## Demo Output Names
++
++Each current demo runner uses `scripts/run_trajectory_recorder.sh`, which starts
++the `trajectory_recorder` ROS 2 node and writes the same standard file names.
++
++| Demo | Runner | Visualization root | Standard files |
++| --- | --- | --- | --- |
++| Demo 01 Offboard Hover | `scripts/run_demo01_hover.sh` | `visualizations/demo01_hover/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
++| Demo 02 Waypoint Flight | `scripts/run_demo02_waypoint_flight.sh` | `visualizations/demo02_waypoint_flight/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
++| Demo 03 Circle Trajectory | `scripts/run_demo03_circle_trajectory.sh` | `visualizations/demo03_circle_trajectory/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
++| Demo 04 External Setpoint Interface | `scripts/run_demo04_external_setpoint.sh` | `visualizations/demo04_external_setpoint/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
++
++## Generate New Results
++
++Run demos from the workspace root:
++
++```bash
++cd /home/clcwork/UAV_capture/px4_ros2_ws
++source /opt/ros/jazzy/setup.bash
++source install/setup.bash
++
++./scripts/run_demo01_hover.sh
++./scripts/run_demo02_waypoint_flight.sh
++./scripts/run_demo03_circle_trajectory.sh
++./scripts/run_demo04_external_setpoint.sh
++```
++
++Each runner creates a new timestamped directory under `logs/<demo>/` and
++`visualizations/<demo>/`. The runner prints the exact output paths after the
++trajectory recorder finishes.
++
++## Check Existing Results
++
++List available PNG outputs:
++
++```bash
++find visualizations -name "*.png" | sort
++```
++
++Check the newest directory for each demo:
++
++```bash
++for demo in demo01_hover demo02_waypoint_flight demo03_circle_trajectory demo04_external_setpoint; do
++  latest="$(find "visualizations/$demo" -mindepth 1 -maxdepth 1 -type d | sort | tail -n 1)"
++  echo "$demo -> $latest"
++  ls "$latest"/trajectory.csv \
++     "$latest"/trajectory_3d.png \
++     "$latest"/xy_path.png \
++     "$latest"/height_curve.png \
++     "$latest"/speed_curve.png
++done
++```
++
++## View Results Locally
++
++Open PNG files from the timestamped visualization directory with an image viewer:
++
++```bash
++xdg-open visualizations/demo01_hover/<timestamp>/trajectory_3d.png
++xdg-open visualizations/demo01_hover/<timestamp>/xy_path.png
++xdg-open visualizations/demo01_hover/<timestamp>/height_curve.png
++xdg-open visualizations/demo01_hover/<timestamp>/speed_curve.png
++```
++
++Read metrics and status:
++
++```bash
++cat visualizations/demo01_hover/<timestamp>/summary.md
++cat visualizations/demo01_hover/<timestamp>/result.txt
++```
++
++## Copy Results To Mac
++
++From the Mac terminal, copy one timestamped result directory:
++
++```bash
++scp -r <linux_user>@<linux_host>:/home/clcwork/UAV_capture/px4_ros2_ws/visualizations/demo01_hover/<timestamp> ~/Desktop/px4_demo01_hover_<timestamp>
++```
++
++Copy all Demo 1-4 visualization results:
++
++```bash
++scp -r <linux_user>@<linux_host>:/home/clcwork/UAV_capture/px4_ros2_ws/visualizations ~/Desktop/px4_visualizations
++```
++
++Replace `<linux_user>` and `<linux_host>` with the SSH user and host for the
++Linux machine. If SSH uses a non-default port, add `-P <port>` after `scp`.
++
++## Current Missing Metrics
++
++The current recorder covers position, velocity magnitude, target position,
++tracking error, summary PASS/FAIL, and optional animation. It does not currently
++plot or summarize:
++
++- attitude, yaw, or yaw-rate tracking;
++- acceleration or jerk;
++- battery, estimator, actuator, or failsafe status;
++- per-waypoint arrival time and dwell time;
++- rosbag-based replay or offline redraw from a saved bag.
+
+tokens used
+60,911
+已完成 Task 002。现有 `trajectory_recorder` 和 Demo 1-4 runner 已经统一生成目标文件名，所以没有改脚本，只新增文档并验证最近一次可视化结果。
+
+**Demo 输出命名**
+
+| Demo | 输出目录 | 标准文件 |
+| --- | --- | --- |
+| Demo 01 Hover | `visualizations/demo01_hover/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
+| Demo 02 Waypoint Flight | `visualizations/demo02_waypoint_flight/<timestamp>/` | 同上 |
+| Demo 03 Circle Trajectory | `visualizations/demo03_circle_trajectory/<timestamp>/` | 同上 |
+| Demo 04 External Setpoint | `visualizations/demo04_external_setpoint/<timestamp>/` | 同上 |
+
+Mac 端拉取示例：
+
+```bash
+scp -r <linux_user>@<linux_host>:/home/clcwork/UAV_capture/px4_ros2_ws/visualizations/demo01_hover/<timestamp> ~/Desktop/px4_demo01_hover_<timestamp>
+scp -r <linux_user>@<linux_host>:/home/clcwork/UAV_capture/px4_ros2_ws/visualizations ~/Desktop/px4_visualizations
+```
+
+**changed files**
+
+- [docs/VISUALIZATION_GUIDE.md](/home/clcwork/UAV_capture/px4_ros2_ws/docs/VISUALIZATION_GUIDE.md)
+- [codex-logs/002-standardize-demo-visualization.log](/home/clcwork/UAV_capture/px4_ros2_ws/codex-logs/002-standardize-demo-visualization.log)
+
+**commands run**
+
+- `source /opt/ros/jazzy/setup.bash`
+- `source install/setup.bash`
+- `python3 -m compileall src scripts`
+- checked latest `visualizations/<demo>/<timestamp>/` for the 5 required files
+- `find logs -name "*.png" | head`
+- `find visualizations -name "*.png" | head`
+
+**test result**
+
+PASS. `compileall` succeeded, and latest Demo 1-4 visualization directories all contain the required CSV and PNG files. `logs/` currently has no PNG output; PNG artifacts are under `visualizations/`.
+
+**current missing metrics**
+
+No attitude/yaw plots, acceleration/jerk plots, battery/actuator/failsafe summaries, per-waypoint dwell timing, or rosbag-based offline redraw.
+
+**known risks**
+
+No new PX4/Gazebo simulation was run for this task; validation used existing latest visualization outputs as allowed by the task. Older historical directories still contain legacy `trajectory.png` only and were left untouched.

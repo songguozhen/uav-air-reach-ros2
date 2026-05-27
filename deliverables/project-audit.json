@@ -1,0 +1,132 @@
+{
+  "generated_at": "2026-05-27T20:05:04+08:00",
+  "project_name": "UAV_capture / PX4 ROS2 UAV-arm Stage 2",
+  "repository_path": "/home/clcwork/UAV_capture",
+  "workspace_path": "/home/clcwork/UAV_capture/px4_ros2_ws",
+  "detected_stack": [
+    "ROS2 / colcon / ament",
+    "PX4 message bridge",
+    "Gazebo / ros_gz bridge baseline",
+    "Python rclpy nodes",
+    "Shell automation",
+    "Markdown documentation",
+    "LeRobot-style dataset/policy baseline"
+  ],
+  "git_status": "Unavailable: target workspace is not inside a Git repository.",
+  "packages": [
+    "px4_ros2_ws/src/aerial_manip_control",
+    "px4_ros2_ws/src/aerial_manip_eval",
+    "px4_ros2_ws/src/aerial_manip_gazebo",
+    "px4_ros2_ws/src/aerial_manip_msgs",
+    "px4_ros2_ws/src/aerial_manip_policy",
+    "px4_ros2_ws/src/aerial_manip_vision",
+    "px4_ros2_ws/src/px4_msgs",
+    "px4_ros2_ws/src/px4_offboard_hover"
+  ],
+  "module_status": [
+    {
+      "name": "px4_offboard_hover",
+      "status": "Implemented",
+      "evidence": [
+        "uav_control_bridge.py",
+        "Demo 01-04 scripts",
+        "docs/UAV_CONTROL_API.md"
+      ]
+    },
+    {
+      "name": "aerial_manip_msgs",
+      "status": "Implemented",
+      "evidence": [
+        "ArmCommand/ArmState/PlatformState/SystemObservation/SafetyStatus messages",
+        "Approach action"
+      ]
+    },
+    {
+      "name": "aerial_manip_control",
+      "status": "Implemented",
+      "evidence": [
+        "arm_control_bridge.py",
+        "state_aggregator.py",
+        "approach_coordinator.py"
+      ]
+    },
+    {
+      "name": "aerial_manip_gazebo",
+      "status": "Implemented baseline",
+      "evidence": [
+        "x500_arm_2dof_smoke.sdf",
+        "front_camera_bridge.launch.py"
+      ]
+    },
+    {
+      "name": "aerial_manip_vision",
+      "status": "Implemented baseline",
+      "evidence": [
+        "tag_target_pose_node.py",
+        "tag_target_pose.launch.py"
+      ]
+    },
+    {
+      "name": "aerial_manip_eval",
+      "status": "Implemented",
+      "evidence": [
+        "episode_recorder.py",
+        "air_reach_demo.py",
+        "demo10_dry_run.py",
+        "check_demo_10.py"
+      ]
+    },
+    {
+      "name": "aerial_manip_policy",
+      "status": "Implemented baseline",
+      "evidence": [
+        "train_lerobot_baseline.py",
+        "policy_bridge.py",
+        "action_chunks.py"
+      ]
+    }
+  ],
+  "validation_status": [
+    "Queue completed 22/22 tasks with .done markers.",
+    "Latest Demo 10 dry-run checker PASS: max_flight_error_m=0.067, final_endpoint_error_m=0.051, target_visible_ratio=0.775.",
+    "Logs indicate package builds and Python/shell syntax checks were run per task final reports.",
+    "Live PX4/Gazebo Demo 10 remains not run in final task report."
+  ],
+  "risks": [
+    "No Git repository detected at /home/clcwork/UAV_capture/px4_ros2_ws, so file changes are not version-controlled here.",
+    "Demo 10 has deterministic dry-run validation only; live PX4/Gazebo air-reach needs explicit run with DEMO10_MODE=live RESET_STACK=1.",
+    "Several new perception/policy/control modules are baseline implementations and need integration tests against real simulator timing and sensor data.",
+    "Generated logs include earlier non-final attempts for some tasks; status is based on .done markers and latest timestamped logs."
+  ],
+  "important_scripts": [
+    "px4_ros2_ws/scripts/check_demo_10.py",
+    "px4_ros2_ws/scripts/check_demo_outputs.sh",
+    "px4_ros2_ws/scripts/run_demo01_hover.sh",
+    "px4_ros2_ws/scripts/run_demo02_waypoint_flight.sh",
+    "px4_ros2_ws/scripts/run_demo03_circle_trajectory.sh",
+    "px4_ros2_ws/scripts/run_demo04_external_setpoint.sh",
+    "px4_ros2_ws/scripts/run_hover_experiment.sh",
+    "px4_ros2_ws/scripts/run_regression_demo_10.sh",
+    "px4_ros2_ws/scripts/run_trajectory_recorder.sh",
+    "px4_ros2_ws/scripts/start_stack.sh",
+    "px4_ros2_ws/scripts/stop_stack.sh"
+  ],
+  "documentation": [
+    "px4_ros2_ws/docs/ARM_CONTROL_API.md",
+    "px4_ros2_ws/docs/PROJECT_STRUCTURE.md",
+    "px4_ros2_ws/docs/REGRESSION_CHECKS.md",
+    "px4_ros2_ws/docs/STAGE2_AIR_REACH_DEMO.md",
+    "px4_ros2_ws/docs/STAGE2_COORDINATOR.md",
+    "px4_ros2_ws/docs/STAGE2_DATASET_SCHEMA.md",
+    "px4_ros2_ws/docs/STAGE2_ENVIRONMENT_AUDIT.md",
+    "px4_ros2_ws/docs/STAGE2_FRAMES_AND_STATE.md",
+    "px4_ros2_ws/docs/STAGE2_LEROBOT_POLICY.md",
+    "px4_ros2_ws/docs/STAGE2_MODELING_NOTES.md",
+    "px4_ros2_ws/docs/STAGE2_PACKAGE_STRUCTURE.md",
+    "px4_ros2_ws/docs/STAGE2_TARGET_POSE.md",
+    "px4_ros2_ws/docs/STAGE2_VISION_BRIDGE.md",
+    "px4_ros2_ws/docs/UAV_ARM_SIMULATION_PLAN.md",
+    "px4_ros2_ws/docs/UAV_CONTROL_API.md",
+    "px4_ros2_ws/docs/VISUALIZATION_GUIDE.md"
+  ]
+}

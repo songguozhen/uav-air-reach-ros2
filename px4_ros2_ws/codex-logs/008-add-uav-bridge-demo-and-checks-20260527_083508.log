@@ -1,0 +1,3944 @@
+Reading prompt from stdin...
+OpenAI Codex v0.133.0
+--------
+workdir: /home/clcwork/UAV_capture/px4_ros2_ws
+model: gpt-5.5
+provider: openai
+approval: never
+sandbox: danger-full-access
+reasoning effort: high
+reasoning summaries: none
+session id: 019e66db-4cac-76b3-9e37-4b0d75879a2c
+--------
+user
+# Task 008: Add UAV Bridge Demo and Checks
+
+## Task goal
+
+- Add a runnable demo path that uses `uav_control_bridge` for the external setpoint workflow.
+- Preserve old Demo 04 behavior as much as possible, but prefer the bridge path for future runs.
+
+## Required behavior
+
+- Add or update a script under `scripts/` that runs the bridge-backed external setpoint demo.
+- The script must:
+  - Start the existing stack with `scripts/start_stack.sh`.
+  - Start the trajectory recorder using `scripts/run_trajectory_recorder.sh`.
+  - Run `ros2 run px4_offboard_hover uav_control_bridge`.
+  - Publish the same square target sequence used by Demo 04 to `/uav/target_position`.
+  - Write logs under `logs/demo04_external_setpoint/<timestamp>/`.
+  - Write visualization artifacts under `visualizations/demo04_external_setpoint/<timestamp>/`.
+- Keep standard output names:
+  - `trajectory.csv`
+  - `trajectory_3d.png`
+  - `xy_path.png`
+  - `height_curve.png`
+  - `speed_curve.png`
+  - `tracking_error.png`
+  - `trajectory.mp4`
+  - `summary.md`
+  - `result.txt`
+- If the full simulation cannot be run in the current environment, still add syntax checks and a dry-run or documented manual command path.
+
+## Allowed changes
+
+- `scripts/`
+- `docs/VISUALIZATION_GUIDE.md`
+- `docs/REGRESSION_CHECKS.md`
+- `codex-logs/008-add-uav-bridge-demo-and-checks.log`
+
+Do not delete or overwrite existing `logs/` or `visualizations/` results.
+
+## Required commands
+
+Save command output to `codex-logs/008-add-uav-bridge-demo-and-checks.log`:
+
+```bash
+chmod +x scripts/*.sh
+bash -n scripts/run_codex_queue.sh 2>/dev/null || true
+bash -n run_codex_queue.sh
+bash -n scripts/check_demo_outputs.sh
+bash -n <new-or-updated-demo-script>
+./scripts/check_demo_outputs.sh visualizations/demo01_hover
+./scripts/check_demo_outputs.sh visualizations/demo02_waypoint_flight
+./scripts/check_demo_outputs.sh visualizations/demo03_circle_trajectory
+./scripts/check_demo_outputs.sh visualizations/demo04_external_setpoint
+```
+
+If a full bridge demo is executed, also run `./scripts/check_demo_outputs.sh` on the newly generated Demo 04 visualization directory.
+
+## Deliverables
+
+- Bridge-backed Demo 04 script or clearly updated existing Demo 04 script.
+- Updated docs for running and checking the bridge-backed demo.
+- `codex-logs/008-add-uav-bridge-demo-and-checks.log`
+
+## Final report requirements
+
+- `changed files`
+- `commands run`
+- `test result`
+- `known risks`
+
+
+codex
+I’ll first inspect the workspace scripts/docs and the current Demo 04 flow so the new bridge-backed path matches existing conventions and doesn’t disturb prior demo outputs.
+exec
+/bin/bash -lc 'git status --short' in /home/clcwork/UAV_capture/px4_ros2_ws
+exec
+/bin/bash -lc 'pwd && rg --files scripts docs codex-tasks codex-logs 2>/dev/null | sort' in /home/clcwork/UAV_capture/px4_ros2_ws
+ exited 128 in 0ms:
+fatal: not a git repository (or any of the parent directories): .git
+
+ succeeded in 0ms:
+/home/clcwork/UAV_capture/px4_ros2_ws
+
+codex
+The workspace itself is not a Git repository, so I’ll rely on direct file inspection and avoid touching anything outside the task’s allowed paths. Next I’m reading the existing run/check scripts and docs that define Demo 04 behavior.
+exec
+/bin/bash -lc 'rg --files scripts docs codex-logs 2>/dev/null | sort' in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+exec
+/bin/bash -lc 'rg -n "demo04|external|uav_control_bridge|target_position|square|run_demo" scripts docs src 2>/dev/null' in /home/clcwork/UAV_capture/px4_ros2_ws
+ exited 127 in 0ms:
+exec
+/bin/bash -lc 'ls -la scripts docs codex-logs visualizations 2>/dev/null' in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+codex-logs:
+total 1268
+drwxrwxr-x  2 clcwork clcwork   4096 May 27 08:35 .
+drwxrwxr-x 13 clcwork clcwork   4096 May 27 00:27 ..
+-rw-rw-r--  1 clcwork clcwork    251 May 27 00:13 001-audit-project-structure-20260527_001340.log
+-rw-rw-r--  1 clcwork clcwork  73556 May 27 00:21 001-audit-project-structure-20260527_001912.log
+-rw-rw-r--  1 clcwork clcwork      0 May 27 00:21 001-audit-project-structure.done
+-rw-rw-r--  1 clcwork clcwork   9400 May 27 00:20 001-audit-project-structure.log
+-rw-rw-r--  1 clcwork clcwork 109441 May 27 00:23 002-standardize-demo-visualization-20260527_002105.log
+-rw-rw-r--  1 clcwork clcwork      0 May 27 00:23 002-standardize-demo-visualization.done
+-rw-rw-r--  1 clcwork clcwork   3088 May 27 00:22 002-standardize-demo-visualization.log
+-rw-rw-r--  1 clcwork clcwork 112952 May 27 00:25 003-add-demo-regression-checks-20260527_002316.log
+-rw-rw-r--  1 clcwork clcwork      0 May 27 00:25 003-add-demo-regression-checks.done
+-rw-rw-r--  1 clcwork clcwork   3906 May 27 00:25 003-add-demo-regression-checks.log
+-rw-rw-r--  1 clcwork clcwork 136285 May 27 00:28 004-design-uav-control-api-20260527_002532.log
+-rw-rw-r--  1 clcwork clcwork      0 May 27 00:28 004-design-uav-control-api.done
+-rw-rw-r--  1 clcwork clcwork    167 May 27 00:27 004-design-uav-control-api.log
+-rw-rw-r--  1 clcwork clcwork 101194 May 27 00:30 005-plan-uav-arm-simulation-20260527_002806.log
+-rw-rw-r--  1 clcwork clcwork      0 May 27 00:30 005-plan-uav-arm-simulation.done
+-rw-rw-r--  1 clcwork clcwork    111 May 27 00:30 005-plan-uav-arm-simulation.log
+-rw-rw-r--  1 clcwork clcwork 400460 May 27 08:32 006-implement-uav-control-bridge-20260527_082911.log
+-rw-rw-r--  1 clcwork clcwork      0 May 27 08:32 006-implement-uav-control-bridge.done
+-rw-rw-r--  1 clcwork clcwork  52160 May 27 08:32 006-implement-uav-control-bridge.log
+-rw-rw-r--  1 clcwork clcwork 228099 May 27 08:35 007-add-uav-state-feedback-20260527_083233.log
+-rw-rw-r--  1 clcwork clcwork      0 May 27 08:35 007-add-uav-state-feedback.done
+-rw-rw-r--  1 clcwork clcwork   1366 May 27 08:34 007-add-uav-state-feedback.log
+-rw-rw-r--  1 clcwork clcwork   3514 May 27 08:35 008-add-uav-bridge-demo-and-checks-20260527_083508.log
+-rw-rw-r--  1 clcwork clcwork   2089 May 27 00:17 run-codex-queue-fix-20260527_001740.log
+
+docs:
+total 56
+drwxrwxr-x  2 clcwork clcwork  4096 May 27 00:29 .
+drwxrwxr-x 13 clcwork clcwork  4096 May 27 00:27 ..
+-rw-rw-r--  1 clcwork clcwork  5336 May 27 00:20 PROJECT_STRUCTURE.md
+-rw-rw-r--  1 clcwork clcwork  1846 May 27 00:24 REGRESSION_CHECKS.md
+-rw-rw-r--  1 clcwork clcwork 13644 May 27 00:29 UAV_ARM_SIMULATION_PLAN.md
+-rw-rw-r--  1 clcwork clcwork 11709 May 27 08:34 UAV_CONTROL_API.md
+-rw-rw-r--  1 clcwork clcwork  4853 May 27 00:22 VISUALIZATION_GUIDE.md
+
+scripts:
+total 48
+drwxrwxr-x  2 clcwork clcwork 4096 May 27 00:24 .
+drwxrwxr-x 13 clcwork clcwork 4096 May 27 00:27 ..
+-rwxrwxr-x  1 clcwork clcwork 4520 May 27 00:24 check_demo_outputs.sh
+-rwxrwxr-x  1 clcwork clcwork 1897 May 26 22:13 run_demo01_hover.sh
+-rwxrwxr-x  1 clcwork clcwork 1814 May 26 22:12 run_demo02_waypoint_flight.sh
+-rwxrwxr-x  1 clcwork clcwork 2073 May 26 22:12 run_demo03_circle_trajectory.sh
+-rwxrwxr-x  1 clcwork clcwork 3031 May 26 22:12 run_demo04_external_setpoint.sh
+-rwxrwxr-x  1 clcwork clcwork 1213 May 25 21:25 run_hover_experiment.sh
+-rwxrwxr-x  1 clcwork clcwork 1372 May 26 22:11 run_trajectory_recorder.sh
+-rwxrwxr-x  1 clcwork clcwork 1591 May 26 22:13 start_stack.sh
+-rwxrwxr-x  1 clcwork clcwork  551 May 26 22:13 stop_stack.sh
+
+visualizations:
+total 24
+drwxrwxr-x  6 clcwork clcwork 4096 May 26 22:17 .
+drwxrwxr-x 13 clcwork clcwork 4096 May 27 00:27 ..
+drwxrwxr-x  3 clcwork clcwork 4096 May 26 22:17 demo01_hover
+drwxrwxr-x  6 clcwork clcwork 4096 May 26 22:21 demo02_waypoint_flight
+drwxrwxr-x  4 clcwork clcwork 4096 May 26 22:23 demo03_circle_trajectory
+drwxrwxr-x  4 clcwork clcwork 4096 May 26 22:25 demo04_external_setpoint
+
+codex
+`rg` is unavailable in this environment, so I’m switching to `find`/`grep` for the project scan. I also see there is already a timestamped Task 008 log from a prior attempt, but the requested deliverable path is the non-timestamped log, so I’ll create/update that file without deleting existing logs.
+exec
+/bin/bash -lc 'find scripts docs src -type f 2>/dev/null | sort' in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+docs/PROJECT_STRUCTURE.md
+docs/REGRESSION_CHECKS.md
+docs/UAV_ARM_SIMULATION_PLAN.md
+docs/UAV_CONTROL_API.md
+docs/VISUALIZATION_GUIDE.md
+scripts/check_demo_outputs.sh
+scripts/run_demo01_hover.sh
+scripts/run_demo02_waypoint_flight.sh
+scripts/run_demo03_circle_trajectory.sh
+scripts/run_demo04_external_setpoint.sh
+scripts/run_hover_experiment.sh
+scripts/run_trajectory_recorder.sh
+scripts/start_stack.sh
+scripts/stop_stack.sh
+src/px4_msgs/.git/HEAD
+src/px4_msgs/.git/config
+src/px4_msgs/.git/description
+src/px4_msgs/.git/hooks/applypatch-msg.sample
+src/px4_msgs/.git/hooks/commit-msg.sample
+src/px4_msgs/.git/hooks/fsmonitor-watchman.sample
+src/px4_msgs/.git/hooks/post-update.sample
+src/px4_msgs/.git/hooks/pre-applypatch.sample
+src/px4_msgs/.git/hooks/pre-commit.sample
+src/px4_msgs/.git/hooks/pre-merge-commit.sample
+src/px4_msgs/.git/hooks/pre-push.sample
+src/px4_msgs/.git/hooks/pre-rebase.sample
+src/px4_msgs/.git/hooks/pre-receive.sample
+src/px4_msgs/.git/hooks/prepare-commit-msg.sample
+src/px4_msgs/.git/hooks/push-to-checkout.sample
+src/px4_msgs/.git/hooks/sendemail-validate.sample
+src/px4_msgs/.git/hooks/update.sample
+src/px4_msgs/.git/index
+src/px4_msgs/.git/info/exclude
+src/px4_msgs/.git/logs/HEAD
+src/px4_msgs/.git/logs/refs/heads/main
+src/px4_msgs/.git/logs/refs/remotes/origin/HEAD
+src/px4_msgs/.git/objects/pack/pack-c93484e903090574ab83ef5b96489befbdeae8cf.idx
+src/px4_msgs/.git/objects/pack/pack-c93484e903090574ab83ef5b96489befbdeae8cf.pack
+src/px4_msgs/.git/objects/pack/pack-c93484e903090574ab83ef5b96489befbdeae8cf.rev
+src/px4_msgs/.git/packed-refs
+src/px4_msgs/.git/refs/heads/main
+src/px4_msgs/.git/refs/remotes/origin/HEAD
+src/px4_msgs/.github/dependabot.yml
+src/px4_msgs/.github/workflows/build.yml
+src/px4_msgs/.gitignore
+src/px4_msgs/CMakeLists.txt
+src/px4_msgs/CONTRIBUTING.md
+src/px4_msgs/LICENSE
+src/px4_msgs/README.md
+src/px4_msgs/msg/ActionRequest.msg
+src/px4_msgs/msg/ActuatorArmed.msg
+src/px4_msgs/msg/ActuatorControlsStatus.msg
+src/px4_msgs/msg/ActuatorMotors.msg
+src/px4_msgs/msg/ActuatorOutputs.msg
+src/px4_msgs/msg/ActuatorServos.msg
+src/px4_msgs/msg/ActuatorServosTrim.msg
+src/px4_msgs/msg/ActuatorTest.msg
+src/px4_msgs/msg/AdcReport.msg
+src/px4_msgs/msg/Airspeed.msg
+src/px4_msgs/msg/AirspeedValidated.msg
+src/px4_msgs/msg/AirspeedWind.msg
+src/px4_msgs/msg/ArmingCheckReply.msg
+src/px4_msgs/msg/ArmingCheckRequest.msg
+src/px4_msgs/msg/AutotuneAttitudeControlStatus.msg
+src/px4_msgs/msg/AuxGlobalPosition.msg
+src/px4_msgs/msg/BatteryInfo.msg
+src/px4_msgs/msg/BatteryStatus.msg
+src/px4_msgs/msg/ButtonEvent.msg
+src/px4_msgs/msg/CameraCapture.msg
+src/px4_msgs/msg/CameraStatus.msg
+src/px4_msgs/msg/CameraTrigger.msg
+src/px4_msgs/msg/CanInterfaceStatus.msg
+src/px4_msgs/msg/CellularStatus.msg
+src/px4_msgs/msg/CollisionConstraints.msg
+src/px4_msgs/msg/ConfigOverrides.msg
+src/px4_msgs/msg/ControlAllocatorStatus.msg
+src/px4_msgs/msg/Cpuload.msg
+src/px4_msgs/msg/DatamanRequest.msg
+src/px4_msgs/msg/DatamanResponse.msg
+src/px4_msgs/msg/DebugArray.msg
+src/px4_msgs/msg/DebugKeyValue.msg
+src/px4_msgs/msg/DebugValue.msg
+src/px4_msgs/msg/DebugVect.msg
+src/px4_msgs/msg/DeviceInformation.msg
+src/px4_msgs/msg/DifferentialPressure.msg
+src/px4_msgs/msg/DistanceSensor.msg
+src/px4_msgs/msg/DistanceSensorModeChangeRequest.msg
+src/px4_msgs/msg/DronecanNodeStatus.msg
+src/px4_msgs/msg/Ekf2Timestamps.msg
+src/px4_msgs/msg/EscEepromRead.msg
+src/px4_msgs/msg/EscEepromWrite.msg
+src/px4_msgs/msg/EscReport.msg
+src/px4_msgs/msg/EscStatus.msg
+src/px4_msgs/msg/EstimatorAidSource1d.msg
+src/px4_msgs/msg/EstimatorAidSource2d.msg
+src/px4_msgs/msg/EstimatorAidSource3d.msg
+src/px4_msgs/msg/EstimatorBias.msg
+src/px4_msgs/msg/EstimatorBias3d.msg
+src/px4_msgs/msg/EstimatorEventFlags.msg
+src/px4_msgs/msg/EstimatorFusionControl.msg
+src/px4_msgs/msg/EstimatorGpsStatus.msg
+src/px4_msgs/msg/EstimatorInnovations.msg
+src/px4_msgs/msg/EstimatorSelectorStatus.msg
+src/px4_msgs/msg/EstimatorSensorBias.msg
+src/px4_msgs/msg/EstimatorStates.msg
+src/px4_msgs/msg/EstimatorStatus.msg
+src/px4_msgs/msg/EstimatorStatusFlags.msg
+src/px4_msgs/msg/Event.msg
+src/px4_msgs/msg/FailsafeFlags.msg
+src/px4_msgs/msg/FailureDetectorStatus.msg
+src/px4_msgs/msg/FigureEightStatus.msg
+src/px4_msgs/msg/FixedWingLateralGuidanceStatus.msg
+src/px4_msgs/msg/FixedWingLateralSetpoint.msg
+src/px4_msgs/msg/FixedWingLateralStatus.msg
+src/px4_msgs/msg/FixedWingLongitudinalSetpoint.msg
+src/px4_msgs/msg/FixedWingRunwayControl.msg
+src/px4_msgs/msg/FlightPhaseEstimation.msg
+src/px4_msgs/msg/FollowTarget.msg
+src/px4_msgs/msg/FollowTargetEstimator.msg
+src/px4_msgs/msg/FollowTargetStatus.msg
+src/px4_msgs/msg/FuelTankStatus.msg
+src/px4_msgs/msg/GainCompression.msg
+src/px4_msgs/msg/GeneratorStatus.msg
+src/px4_msgs/msg/GeofenceResult.msg
+src/px4_msgs/msg/GeofenceStatus.msg
+src/px4_msgs/msg/GimbalControls.msg
+src/px4_msgs/msg/GimbalDeviceAttitudeStatus.msg
+src/px4_msgs/msg/GimbalDeviceInformation.msg
+src/px4_msgs/msg/GimbalDeviceSetAttitude.msg
+src/px4_msgs/msg/GimbalManagerInformation.msg
+src/px4_msgs/msg/GimbalManagerSetAttitude.msg
+src/px4_msgs/msg/GimbalManagerSetManualControl.msg
+src/px4_msgs/msg/GimbalManagerStatus.msg
+src/px4_msgs/msg/GotoSetpoint.msg
+src/px4_msgs/msg/GpioConfig.msg
+src/px4_msgs/msg/GpioIn.msg
+src/px4_msgs/msg/GpioOut.msg
+src/px4_msgs/msg/GpioRequest.msg
+src/px4_msgs/msg/GpsDump.msg
+src/px4_msgs/msg/GpsInjectData.msg
+src/px4_msgs/msg/Gripper.msg
+src/px4_msgs/msg/HealthReport.msg
+src/px4_msgs/msg/HeaterStatus.msg
+src/px4_msgs/msg/HomePosition.msg
+src/px4_msgs/msg/HoverThrustEstimate.msg
+src/px4_msgs/msg/InputRc.msg
+src/px4_msgs/msg/InternalCombustionEngineControl.msg
+src/px4_msgs/msg/InternalCombustionEngineStatus.msg
+src/px4_msgs/msg/IridiumsbdStatus.msg
+src/px4_msgs/msg/IrlockReport.msg
+src/px4_msgs/msg/LandingGear.msg
+src/px4_msgs/msg/LandingGearWheel.msg
+src/px4_msgs/msg/LandingTargetInnovations.msg
+src/px4_msgs/msg/LandingTargetPose.msg
+src/px4_msgs/msg/LateralControlConfiguration.msg
+src/px4_msgs/msg/LaunchDetectionStatus.msg
+src/px4_msgs/msg/LedControl.msg
+src/px4_msgs/msg/LogMessage.msg
+src/px4_msgs/msg/LoggerStatus.msg
+src/px4_msgs/msg/LongitudinalControlConfiguration.msg
+src/px4_msgs/msg/MagWorkerData.msg
+src/px4_msgs/msg/MagnetometerBiasEstimate.msg
+src/px4_msgs/msg/ManualControlSetpoint.msg
+src/px4_msgs/msg/ManualControlSwitches.msg
+src/px4_msgs/msg/MavlinkLog.msg
+src/px4_msgs/msg/MavlinkTunnel.msg
+src/px4_msgs/msg/MessageFormatRequest.msg
+src/px4_msgs/msg/MessageFormatResponse.msg
+src/px4_msgs/msg/Mission.msg
+src/px4_msgs/msg/MissionResult.msg
+src/px4_msgs/msg/ModeCompleted.msg
+src/px4_msgs/msg/MountOrientation.msg
+src/px4_msgs/msg/NavigatorMissionItem.msg
+src/px4_msgs/msg/NavigatorStatus.msg
+src/px4_msgs/msg/NeuralControl.msg
+src/px4_msgs/msg/NormalizedUnsignedSetpoint.msg
+src/px4_msgs/msg/ObstacleDistance.msg
+src/px4_msgs/msg/OffboardControlMode.msg
+src/px4_msgs/msg/OnboardComputerStatus.msg
+src/px4_msgs/msg/OpenDroneIdArmStatus.msg
+src/px4_msgs/msg/OpenDroneIdOperatorId.msg
+src/px4_msgs/msg/OpenDroneIdSelfId.msg
+src/px4_msgs/msg/OpenDroneIdSystem.msg
+src/px4_msgs/msg/OrbTest.msg
+src/px4_msgs/msg/OrbTestLarge.msg
+src/px4_msgs/msg/OrbTestMedium.msg
+src/px4_msgs/msg/OrbitStatus.msg
+src/px4_msgs/msg/ParameterResetRequest.msg
+src/px4_msgs/msg/ParameterSetUsedRequest.msg
+src/px4_msgs/msg/ParameterSetValueRequest.msg
+src/px4_msgs/msg/ParameterSetValueResponse.msg
+src/px4_msgs/msg/ParameterUpdate.msg
+src/px4_msgs/msg/Ping.msg
+src/px4_msgs/msg/PositionControllerLandingStatus.msg
+src/px4_msgs/msg/PositionControllerStatus.msg
+src/px4_msgs/msg/PositionSetpoint.msg
+src/px4_msgs/msg/PositionSetpointTriplet.msg
+src/px4_msgs/msg/PowerButtonState.msg
+src/px4_msgs/msg/PowerMonitor.msg
+src/px4_msgs/msg/PpsCapture.msg
+src/px4_msgs/msg/PurePursuitStatus.msg
+src/px4_msgs/msg/PwmInput.msg
+src/px4_msgs/msg/Px4ioStatus.msg
+src/px4_msgs/msg/QshellReq.msg
+src/px4_msgs/msg/QshellRetval.msg
+src/px4_msgs/msg/RadioStatus.msg
+src/px4_msgs/msg/RangingBeacon.msg
+src/px4_msgs/msg/RaptorInput.msg
+src/px4_msgs/msg/RaptorStatus.msg
+src/px4_msgs/msg/RateCtrlStatus.msg
+src/px4_msgs/msg/RcChannels.msg
+src/px4_msgs/msg/RcParameterMap.msg
+src/px4_msgs/msg/RegisterExtComponentReply.msg
+src/px4_msgs/msg/RegisterExtComponentRequest.msg
+src/px4_msgs/msg/RoverAttitudeSetpoint.msg
+src/px4_msgs/msg/RoverAttitudeStatus.msg
+src/px4_msgs/msg/RoverPositionSetpoint.msg
+src/px4_msgs/msg/RoverRateSetpoint.msg
+src/px4_msgs/msg/RoverRateStatus.msg
+src/px4_msgs/msg/RoverSpeedSetpoint.msg
+src/px4_msgs/msg/RoverSpeedStatus.msg
+src/px4_msgs/msg/RoverSteeringSetpoint.msg
+src/px4_msgs/msg/RoverThrottleSetpoint.msg
+src/px4_msgs/msg/Rpm.msg
+src/px4_msgs/msg/RtlStatus.msg
+src/px4_msgs/msg/RtlTimeEstimate.msg
+src/px4_msgs/msg/SatelliteInfo.msg
+src/px4_msgs/msg/SensorAccel.msg
+src/px4_msgs/msg/SensorAccelFifo.msg
+src/px4_msgs/msg/SensorAirflow.msg
+src/px4_msgs/msg/SensorBaro.msg
+src/px4_msgs/msg/SensorCombined.msg
+src/px4_msgs/msg/SensorCorrection.msg
+src/px4_msgs/msg/SensorGnssRelative.msg
+src/px4_msgs/msg/SensorGnssStatus.msg
+src/px4_msgs/msg/SensorGps.msg
+src/px4_msgs/msg/SensorGyro.msg
+src/px4_msgs/msg/SensorGyroFft.msg
+src/px4_msgs/msg/SensorGyroFifo.msg
+src/px4_msgs/msg/SensorHygrometer.msg
+src/px4_msgs/msg/SensorMag.msg
+src/px4_msgs/msg/SensorOpticalFlow.msg
+src/px4_msgs/msg/SensorPreflightMag.msg
+src/px4_msgs/msg/SensorSelection.msg
+src/px4_msgs/msg/SensorTemp.msg
+src/px4_msgs/msg/SensorUwb.msg
+src/px4_msgs/msg/SensorsStatus.msg
+src/px4_msgs/msg/SensorsStatusImu.msg
+src/px4_msgs/msg/SystemPower.msg
+src/px4_msgs/msg/TakeoffStatus.msg
+src/px4_msgs/msg/TaskStackInfo.msg
+src/px4_msgs/msg/TecsStatus.msg
+src/px4_msgs/msg/TelemetryStatus.msg
+src/px4_msgs/msg/TiltrotorExtraControls.msg
+src/px4_msgs/msg/TimesyncStatus.msg
+src/px4_msgs/msg/TrajectorySetpoint.msg
+src/px4_msgs/msg/TrajectorySetpoint6dof.msg
+src/px4_msgs/msg/TransponderReport.msg
+src/px4_msgs/msg/TuneControl.msg
+src/px4_msgs/msg/UavcanParameterRequest.msg
+src/px4_msgs/msg/UavcanParameterValue.msg
+src/px4_msgs/msg/UlogStream.msg
+src/px4_msgs/msg/UlogStreamAck.msg
+src/px4_msgs/msg/UnregisterExtComponent.msg
+src/px4_msgs/msg/VehicleAcceleration.msg
+src/px4_msgs/msg/VehicleAirData.msg
+src/px4_msgs/msg/VehicleAngularAccelerationSetpoint.msg
+src/px4_msgs/msg/VehicleAngularVelocity.msg
+src/px4_msgs/msg/VehicleAttitude.msg
+src/px4_msgs/msg/VehicleAttitudeSetpoint.msg
+src/px4_msgs/msg/VehicleCommand.msg
+src/px4_msgs/msg/VehicleCommandAck.msg
+src/px4_msgs/msg/VehicleConstraints.msg
+src/px4_msgs/msg/VehicleControlMode.msg
+src/px4_msgs/msg/VehicleGlobalPosition.msg
+src/px4_msgs/msg/VehicleImu.msg
+src/px4_msgs/msg/VehicleImuStatus.msg
+src/px4_msgs/msg/VehicleLandDetected.msg
+src/px4_msgs/msg/VehicleLocalPosition.msg
+src/px4_msgs/msg/VehicleLocalPositionSetpoint.msg
+src/px4_msgs/msg/VehicleMagnetometer.msg
+src/px4_msgs/msg/VehicleOdometry.msg
+src/px4_msgs/msg/VehicleOpticalFlow.msg
+src/px4_msgs/msg/VehicleOpticalFlowVel.msg
+src/px4_msgs/msg/VehicleRatesSetpoint.msg
+src/px4_msgs/msg/VehicleRoi.msg
+src/px4_msgs/msg/VehicleStatus.msg
+src/px4_msgs/msg/VehicleThrustSetpoint.msg
+src/px4_msgs/msg/VehicleTorqueSetpoint.msg
+src/px4_msgs/msg/VelocityLimits.msg
+src/px4_msgs/msg/VtolVehicleStatus.msg
+src/px4_msgs/msg/Vtx.msg
+src/px4_msgs/msg/WheelEncoders.msg
+src/px4_msgs/msg/Wind.msg
+src/px4_msgs/msg/YawEstimatorStatus.msg
+src/px4_msgs/package.xml
+src/px4_msgs/srv/VehicleCommand.srv
+src/px4_offboard_hover/__pycache__/setup.cpython-312.pyc
+src/px4_offboard_hover/package.xml
+src/px4_offboard_hover/px4_offboard_hover/__init__.py
+src/px4_offboard_hover/px4_offboard_hover/__pycache__/__init__.cpython-312.pyc
+src/px4_offboard_hover/px4_offboard_hover/__pycache__/circle_trajectory.cpython-312.pyc
+src/px4_offboard_hover/px4_offboard_hover/__pycache__/external_setpoint.cpython-312.pyc
+src/px4_offboard_hover/px4_offboard_hover/__pycache__/hover.cpython-312.pyc
+src/px4_offboard_hover/px4_offboard_hover/__pycache__/offboard_base.cpython-312.pyc
+src/px4_offboard_hover/px4_offboard_hover/__pycache__/trajectory_recorder.cpython-312.pyc
+src/px4_offboard_hover/px4_offboard_hover/__pycache__/uav_control_bridge.cpython-312.pyc
+src/px4_offboard_hover/px4_offboard_hover/__pycache__/verify_hover.cpython-312.pyc
+src/px4_offboard_hover/px4_offboard_hover/__pycache__/waypoint_flight.cpython-312.pyc
+src/px4_offboard_hover/px4_offboard_hover/circle_trajectory.py
+src/px4_offboard_hover/px4_offboard_hover/external_setpoint.py
+src/px4_offboard_hover/px4_offboard_hover/hover.py
+src/px4_offboard_hover/px4_offboard_hover/offboard_base.py
+src/px4_offboard_hover/px4_offboard_hover/trajectory_recorder.py
+src/px4_offboard_hover/px4_offboard_hover/uav_control_bridge.py
+src/px4_offboard_hover/px4_offboard_hover/verify_hover.py
+src/px4_offboard_hover/px4_offboard_hover/waypoint_flight.py
+src/px4_offboard_hover/resource/px4_offboard_hover
+src/px4_offboard_hover/setup.cfg
+src/px4_offboard_hover/setup.py
+
+exec
+/bin/bash -lc "find . -maxdepth 3 -type f -name 'run_codex_queue.sh' -o -path './scripts/run_codex_queue.sh'" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+./run_codex_queue.sh
+
+exec
+/bin/bash -lc "grep -RIn \"demo04\\|external\\|uav_control_bridge\\|target_position\\|square\\|run_demo\" scripts docs src 2>/dev/null" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+scripts/stop_stack.sh:7:tmux kill-session -t px4_demo04_external_setpoint 2>/dev/null || true
+scripts/stop_stack.sh:8:tmux kill-session -t px4_demo04_target_sequence 2>/dev/null || true
+scripts/start_stack.sh:12:  tmux kill-session -t px4_demo04_external_setpoint 2>/dev/null || true
+scripts/start_stack.sh:13:  tmux kill-session -t px4_demo04_target_sequence 2>/dev/null || true
+scripts/run_demo04_external_setpoint.sh:12:LOG_DIR="$WS_DIR/logs/demo04_external_setpoint/$STAMP"
+scripts/run_demo04_external_setpoint.sh:13:VIS_DIR="$WS_DIR/visualizations/demo04_external_setpoint/$STAMP"
+scripts/run_demo04_external_setpoint.sh:21:  "VIS_DIR=\"$VIS_DIR\" VIS_DURATION=\"$VIS_DURATION\" VIS_TITLE=\"Demo 04 External Setpoint Interface\" VIS_DEMO_ID=\"demo04\" AVG_ERROR_PASS=\"0.9\" FINAL_ERROR_PASS=\"0.6\" MAX_SPEED_PASS=\"3.0\" \"$WS_DIR/scripts/run_trajectory_recorder.sh\" 2>&1 | tee \"$LOG_DIR/trajectory_recorder.log\""
+scripts/run_demo04_external_setpoint.sh:23:tmux kill-session -t px4_demo04_external_setpoint 2>/dev/null || true
+scripts/run_demo04_external_setpoint.sh:24:tmux new-session -d -s px4_demo04_external_setpoint \
+scripts/run_demo04_external_setpoint.sh:25:  "cd \"$WS_DIR\" && set +u && source /opt/ros/jazzy/setup.bash && source install/setup.bash && set -u && ros2 run px4_offboard_hover demo04_external_setpoint --ros-args -p initial_x:=$INITIAL_X -p initial_y:=$INITIAL_Y -p initial_z:=$INITIAL_Z 2>&1 | tee \"$LOG_DIR/demo04.log\""
+scripts/run_demo04_external_setpoint.sh:27:tmux kill-session -t px4_demo04_target_sequence 2>/dev/null || true
+scripts/run_demo04_external_setpoint.sh:28:tmux new-session -d -s px4_demo04_target_sequence \
+scripts/run_demo04_external_setpoint.sh:30:  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 2.0, y: 0.0, z: -2.0}' && sleep \"$TARGET_HOLD\" && \
+scripts/run_demo04_external_setpoint.sh:31:  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 2.0, y: 2.0, z: -2.0}' && sleep \"$TARGET_HOLD\" && \
+scripts/run_demo04_external_setpoint.sh:32:  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 0.0, y: 2.0, z: -2.0}' && sleep \"$TARGET_HOLD\" && \
+scripts/run_demo04_external_setpoint.sh:33:  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 0.0, y: 0.0, z: -2.0}' 2>&1 | tee \"$LOG_DIR/target_sequence.log\""
+scripts/run_demo04_external_setpoint.sh:35:echo "demo04 session=px4_demo04_external_setpoint"
+scripts/run_demo04_external_setpoint.sh:37:echo "target sequence session=px4_demo04_target_sequence"
+scripts/run_demo04_external_setpoint.sh:38:echo "target topic=/uav/target_position geometry_msgs/msg/Point"
+docs/PROJECT_STRUCTURE.md:36:- `external_setpoint.py`
+docs/PROJECT_STRUCTURE.md:46:- `demo04_external_setpoint`
+docs/PROJECT_STRUCTURE.md:57:| `run_demo01_hover.sh` | Demo 01 Offboard Hover runner. |
+docs/PROJECT_STRUCTURE.md:58:| `run_demo02_waypoint_flight.sh` | Demo 02 Waypoint Flight runner. |
+docs/PROJECT_STRUCTURE.md:59:| `run_demo03_circle_trajectory.sh` | Demo 03 Circle Trajectory runner. |
+docs/PROJECT_STRUCTURE.md:60:| `run_demo04_external_setpoint.sh` | Demo 04 External Setpoint Interface runner. |
+docs/PROJECT_STRUCTURE.md:73:- `logs/demo04_external_setpoint/`
+docs/PROJECT_STRUCTURE.md:81:- `demo04.log`
+docs/PROJECT_STRUCTURE.md:100:- `visualizations/demo04_external_setpoint/`
+docs/UAV_CONTROL_API.md:8:Task 004 was an interface design task. The reusable `uav_control_bridge` node
+docs/UAV_CONTROL_API.md:9:now implements the validated `/uav/target_position` command path. Demo 04 also
+docs/UAV_CONTROL_API.md:10:keeps its original external setpoint example behavior. The remaining topics
+docs/UAV_CONTROL_API.md:41:| `/uav/target_position` | `geometry_msgs/msg/Point` | client -> UAV bridge | Implemented in `uav_control_bridge`; Demo 04 example also subscribes | Position-only target in local NED. |
+docs/UAV_CONTROL_API.md:43:| `/uav/current_position` | `geometry_msgs/msg/PointStamped` | UAV bridge -> clients | Implemented in `uav_control_bridge` | Current filtered local NED position. |
+docs/UAV_CONTROL_API.md:44:| `/uav/current_target` | `geometry_msgs/msg/PointStamped` | UAV bridge -> clients | Implemented in `uav_control_bridge` | Sanitized target currently being sent to PX4. |
+docs/UAV_CONTROL_API.md:45:| `/uav/reached_target` | `std_msgs/msg/Bool` | UAV bridge -> clients | Implemented in `uav_control_bridge` | `true` when the current target is reached within configured tolerances. |
+docs/UAV_CONTROL_API.md:46:| `/uav/control_state` | `std_msgs/msg/String` | UAV bridge -> clients | Implemented in `uav_control_bridge` | Human-readable control state such as `TRACKING`, `HOLDING`, or `INVALID_TARGET`. |
+docs/UAV_CONTROL_API.md:51:### `/uav/target_position`
+docs/UAV_CONTROL_API.md:67:The `uav_control_bridge` node subscribes to this topic, rejects invalid or
+docs/UAV_CONTROL_API.md:70:this topic as a direct external setpoint example.
+docs/UAV_CONTROL_API.md:85:`/uav/target_position` are active, the bridge should define one priority rule,
+docs/UAV_CONTROL_API.md:117:`/uav/target_position` or `/uav/target_pose` command when a client requests an
+docs/UAV_CONTROL_API.md:133:The exact tolerances are parameters on `uav_control_bridge`:
+docs/UAV_CONTROL_API.md:179:For a valid `/uav/target_position` command:
+docs/UAV_CONTROL_API.md:191:Positive altitude values are not accepted directly on `/uav/target_position`.
+docs/UAV_CONTROL_API.md:216:The current `uav_control_bridge` rejects commands outside these altitude, range,
+docs/UAV_CONTROL_API.md:247:`/uav/target_position` after transforming detections into the local NED frame.
+docs/UAV_CONTROL_API.md:256:`/uav/target_position` or `/uav/target_pose`. LeRobot must not control PX4
+docs/UAV_CONTROL_API.md:274:Implemented in `uav_control_bridge`:
+docs/UAV_CONTROL_API.md:276:- Subscribe to `/uav/target_position` as `geometry_msgs/msg/Point` in local NED.
+docs/UAV_CONTROL_API.md:296:04 external setpoint node.
+docs/VISUALIZATION_GUIDE.md:38:| Demo 01 Offboard Hover | `scripts/run_demo01_hover.sh` | `visualizations/demo01_hover/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
+docs/VISUALIZATION_GUIDE.md:39:| Demo 02 Waypoint Flight | `scripts/run_demo02_waypoint_flight.sh` | `visualizations/demo02_waypoint_flight/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
+docs/VISUALIZATION_GUIDE.md:40:| Demo 03 Circle Trajectory | `scripts/run_demo03_circle_trajectory.sh` | `visualizations/demo03_circle_trajectory/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
+docs/VISUALIZATION_GUIDE.md:41:| Demo 04 External Setpoint Interface | `scripts/run_demo04_external_setpoint.sh` | `visualizations/demo04_external_setpoint/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
+docs/VISUALIZATION_GUIDE.md:52:./scripts/run_demo01_hover.sh
+docs/VISUALIZATION_GUIDE.md:53:./scripts/run_demo02_waypoint_flight.sh
+docs/VISUALIZATION_GUIDE.md:54:./scripts/run_demo03_circle_trajectory.sh
+docs/VISUALIZATION_GUIDE.md:55:./scripts/run_demo04_external_setpoint.sh
+docs/VISUALIZATION_GUIDE.md:73:for demo in demo01_hover demo02_waypoint_flight demo03_circle_trajectory demo04_external_setpoint; do
+docs/UAV_ARM_SIMULATION_PLAN.md:215:such as `/uav/target_position` or the future `/uav/target_pose` interface
+docs/UAV_ARM_SIMULATION_PLAN.md:250:  -> /uav/target_position or /uav/target_pose
+src/px4_msgs/.git/hooks/pre-commit.sample:30:	# the square bracket bytes happen to fall in the designated range.
+src/px4_msgs/msg/EstimatorAidSource2d.msg:18:float32[2] test_ratio           # normalized innovation squared
+src/px4_msgs/msg/EstimatorAidSource1d.msg:18:float32 test_ratio           # normalized innovation squared
+src/px4_msgs/msg/VehicleGlobalPosition.msg:35:# TOPICS vehicle_global_position vehicle_global_position_groundtruth external_ins_global_position
+src/px4_msgs/msg/EstimatorInnovations.msg:11:float32[2] ev_hvel	# horizontal external vision velocity innovation (m/sec) and innovation variance ((m/sec)**2)
+src/px4_msgs/msg/EstimatorInnovations.msg:12:float32    ev_vvel	# vertical external vision velocity innovation (m/sec) and innovation variance ((m/sec)**2)
+src/px4_msgs/msg/EstimatorInnovations.msg:13:float32[2] ev_hpos	# horizontal external vision position innovation (m) and innovation variance (m**2)
+src/px4_msgs/msg/EstimatorInnovations.msg:14:float32    ev_vpos	# vertical external vision position innovation (m) and innovation variance (m**2)
+src/px4_msgs/msg/EstimatorBias.msg:10:float32 innov_test_ratio	# normalized innovation squared test ratio
+src/px4_msgs/msg/BatteryStatus.msg:25:uint8 SOURCE_EXTERNAL = 1 # External (MAVLink, CAN, or external driver)
+src/px4_msgs/msg/HoverThrustEstimate.msg:9:float32 accel_innov_test_ratio	# normalized innovation squared test ratio
+src/px4_msgs/msg/VehicleCommand.msg:25:uint16 VEHICLE_CMD_NAV_GUIDED_LIMITS = 90 # Set limits for external control. |[s] Timeout  - maximum time that external controller will be allowed to control vehicle. 0 means no timeout|[m] Absolute altitude min AMSL - if vehicle moves below this alt, the command will be aborted and the mission will continue. 0 means no lower altitude limit|[m] Absolute altitude max - if vehicle moves above this alt, the command will be aborted and the mission will continue. 0 means no upper altitude limit|[m] Horizontal move limit (AMSL) - if vehicle moves more than this distance from it's location at the moment the command was executed, the command will be aborted and the mission will continue. 0 means no horizontal altitude limit|Unused|Unused|Unused|
+src/px4_msgs/msg/VehicleCommand.msg:68:uint16 VEHICLE_CMD_DO_GUIDED_LIMITS=222 # Set limits for external control. |[s] Timeout - maximum time that external controller will be allowed to control vehicle. 0 means no timeout|[m] Absolute altitude min(AMSL) - if vehicle moves below this alt, the command will be aborted and the mission will continue. 0 means no lower altitude limit|[m] Absolute altitude max - if vehicle moves above this alt, the command will be aborted and the mission will continue. 0 means no upper altitude limit|[m] Horizontal move limit (AMSL) - if vehicle moves more than this distance from it's location at the moment the command was executed, the command will be aborted and the mission will continue. 0 means no horizontal altitude limit|Unused|Unused|Unused|
+src/px4_msgs/msg/VehicleCommand.msg:94:uint16 VEHICLE_CMD_EXTERNAL_ATTITUDE_ESTIMATE = 620 # Set an external estimate of vehicle attitude in degrees.
+src/px4_msgs/msg/VehicleCommand.msg:238:bool from_external
+src/px4_msgs/msg/ActionRequest.msg:4:# It allows mapping triggers from various external interfaces like RC channels or MAVLink to cause an action.
+src/px4_msgs/msg/GainCompression.msg:5:float32[3] spectral_damper_out  # [-] [@frame FRD] Spectral damper output squared
+src/px4_msgs/msg/EstimatorStatusFlags.msg:19:bool cs_ev_pos                # 12 - true when local position data fusion from external vision is intended
+src/px4_msgs/msg/EstimatorStatusFlags.msg:20:bool cs_ev_yaw                # 13 - true when yaw data from external vision measurements fusion is intended
+src/px4_msgs/msg/EstimatorStatusFlags.msg:21:bool cs_ev_hgt                # 14 - true when height data from external vision measurements is being fused
+src/px4_msgs/msg/EstimatorStatusFlags.msg:31:bool cs_ev_vel                # 24 - true when local frame velocity data fusion from external vision measurements is intended
+src/px4_msgs/msg/EstimatorStatus.msg:34:uint8 CS_EV_POS = 12		# 12 - true when local position data from external vision is being fused
+src/px4_msgs/msg/EstimatorStatus.msg:35:uint8 CS_EV_YAW = 13		# 13 - true when yaw data from external vision measurements is being fused
+src/px4_msgs/msg/EstimatorStatus.msg:36:uint8 CS_EV_HGT = 14		# 14 - true when height data from external vision measurements is being fused
+src/px4_msgs/msg/EstimatorStatus.msg:46:uint8 CS_EV_VEL = 24		# 24 - true when local frame velocity data fusion from external vision measurements is intended
+src/px4_msgs/msg/EstimatorStatus.msg:94:# 7 - True if the EKF is in a constant position mode and is not using external measurements (eg GPS or optical flow)
+src/px4_msgs/msg/EstimatorAidSource3d.msg:18:float32[3] test_ratio           # normalized innovation squared
+src/px4_msgs/msg/ArmingCheckReply.msg:3:# This is a response to an ArmingCheckRequest message sent by the FMU to an external component, such as a ROS 2 navigation mode.
+src/px4_msgs/msg/ArmingCheckReply.msg:4:# The response contains the current set of external mode requirements, and a queue of events indicating recent failures to set the mode (which the FMU may then forward to a ground station).
+src/px4_msgs/msg/ArmingCheckReply.msg:7:# Note that the external component is identified by its registration_id, which is allocated to the component during registration (arming_check_id in RegisterExtComponentReply).
+src/px4_msgs/msg/ArmingCheckReply.msg:15:uint8 registration_id # [-] Id of external component emitting this response
+src/px4_msgs/msg/VehicleLocalPosition.msg:87:# TOPICS vehicle_local_position vehicle_local_position_groundtruth external_ins_local_position
+src/px4_msgs/msg/VehicleAttitude.msg:14:# TOPICS vehicle_attitude vehicle_attitude_groundtruth external_ins_attitude
+src/px4_msgs/msg/FailsafeFlags.msg:22:uint32 mode_req_other             # other requirements, not covered above (for external modes)
+src/px4_msgs/msg/FailsafeFlags.msg:48:bool fd_critical_failure              # Critical failure (attitude limit exceeded, or external ATS)
+src/px4_msgs/msg/Event.msg:10:uint8 log_levels            # Log levels: 4 bits MSB: internal, 4 bits LSB: external
+src/px4_msgs/msg/VehicleCommandAck.msg:41:bool from_external # Indicates if the command came from an external source
+src/px4_msgs/msg/RegisterExtComponentRequest.msg:1:# Request to register an external component
+src/px4_msgs/msg/EstimatorBias3d.msg:11:float32[3] innov_test_ratio     # normalized innovation squared test ratio
+src/px4_msgs/msg/LedControl.msg:2:# These are the externally visible LED's, not the board LED's
+src/px4_msgs/msg/ArmingCheckRequest.msg:3:# Broadcast message to request arming checks be reported by all registered components, such as external ROS 2 navigation modes.
+src/px4_msgs/msg/ArmingCheckRequest.msg:5:# The request is sent regularly, even while armed, so that the FMU always knows the current arming state for external modes, and can forward it to ground stations.
+src/px4_msgs/msg/ArmingCheckRequest.msg:8:# The reply will also include the registration_id for each external component, provided to it during the registration process (RegisterExtComponentReply).
+src/px4_msgs/msg/AuxGlobalPosition.msg:3:# This message provides global position data from an external source such as
+src/px4_msgs/msg/SensorsStatus.msg:13:bool[4] external
+src/px4_msgs/msg/VehicleControlMode.msg:21:# TODO: use dedicated topic for external requests
+src/px4_msgs/msg/ConfigOverrides.msg:1:# Configurable overrides by (external) modes or mode executors
+src/px4_offboard_hover/setup.py:25:            "demo04_external_setpoint = px4_offboard_hover.external_setpoint:main",
+src/px4_offboard_hover/setup.py:26:            "uav_control_bridge = px4_offboard_hover.uav_control_bridge:main",
+src/px4_offboard_hover/px4_offboard_hover/external_setpoint.py:11:        super().__init__("px4_demo04_external_setpoint_interface")
+src/px4_offboard_hover/px4_offboard_hover/external_setpoint.py:28:        self.create_subscription(Point, "/uav/target_position", self.target_callback, 10)
+src/px4_offboard_hover/px4_offboard_hover/external_setpoint.py:31:            "Demo 04 external setpoint interface ready: publish geometry_msgs/msg/Point "
+src/px4_offboard_hover/px4_offboard_hover/external_setpoint.py:32:            "to /uav/target_position with NED x,y,z"
+src/px4_offboard_hover/px4_offboard_hover/external_setpoint.py:39:            f"New target from /uav/target_position: x={msg.x:.2f}, y={msg.y:.2f}, z={msg.z:.2f}"
+src/px4_offboard_hover/px4_offboard_hover/offboard_base.py:135:        msg.from_external = True
+src/px4_offboard_hover/px4_offboard_hover/uav_control_bridge.py:18:        super().__init__("uav_control_bridge")
+src/px4_offboard_hover/px4_offboard_hover/uav_control_bridge.py:88:        self.create_subscription(Point, "/uav/target_position", self.target_callback, 10)
+src/px4_offboard_hover/px4_offboard_hover/uav_control_bridge.py:91:            "UAV control bridge ready on /uav/target_position; targets must be "
+src/px4_offboard_hover/px4_offboard_hover/uav_control_bridge.py:108:                "Rejected /uav/target_position "
+src/px4_offboard_hover/px4_offboard_hover/uav_control_bridge.py:124:            "Accepted /uav/target_position "
+src/px4_offboard_hover/px4_offboard_hover/trajectory_recorder.py:461:        elif demo == "demo04":
+src/px4_offboard_hover/px4_offboard_hover/trajectory_recorder.py:463:                return False, "external_targets_not_observed"
+src/px4_offboard_hover/px4_offboard_hover/trajectory_recorder.py:467:                return False, "external_tracking_error_high"
+
+exec
+/bin/bash -lc "sed -n '1,220p' scripts/run_demo04_external_setpoint.sh" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+#!/usr/bin/env bash
+set -euo pipefail
+
+WS_DIR="${WS_DIR:-/home/clcwork/UAV_capture/px4_ros2_ws}"
+INITIAL_X="${INITIAL_X:-0.0}"
+INITIAL_Y="${INITIAL_Y:-0.0}"
+INITIAL_Z="${INITIAL_Z:--2.0}"
+VIS_DURATION="${VIS_DURATION:-120.0}"
+TARGET_START_DELAY="${TARGET_START_DELAY:-15}"
+TARGET_HOLD="${TARGET_HOLD:-18}"
+STAMP="$(date +%Y%m%d_%H%M%S)"
+LOG_DIR="$WS_DIR/logs/demo04_external_setpoint/$STAMP"
+VIS_DIR="$WS_DIR/visualizations/demo04_external_setpoint/$STAMP"
+export RESET_STACK="${RESET_STACK:-1}"
+
+mkdir -p "$LOG_DIR" "$VIS_DIR"
+"$WS_DIR/scripts/start_stack.sh"
+
+tmux kill-session -t px4_trajectory_recorder 2>/dev/null || true
+tmux new-session -d -s px4_trajectory_recorder \
+  "VIS_DIR=\"$VIS_DIR\" VIS_DURATION=\"$VIS_DURATION\" VIS_TITLE=\"Demo 04 External Setpoint Interface\" VIS_DEMO_ID=\"demo04\" AVG_ERROR_PASS=\"0.9\" FINAL_ERROR_PASS=\"0.6\" MAX_SPEED_PASS=\"3.0\" \"$WS_DIR/scripts/run_trajectory_recorder.sh\" 2>&1 | tee \"$LOG_DIR/trajectory_recorder.log\""
+
+tmux kill-session -t px4_demo04_external_setpoint 2>/dev/null || true
+tmux new-session -d -s px4_demo04_external_setpoint \
+  "cd \"$WS_DIR\" && set +u && source /opt/ros/jazzy/setup.bash && source install/setup.bash && set -u && ros2 run px4_offboard_hover demo04_external_setpoint --ros-args -p initial_x:=$INITIAL_X -p initial_y:=$INITIAL_Y -p initial_z:=$INITIAL_Z 2>&1 | tee \"$LOG_DIR/demo04.log\""
+
+tmux kill-session -t px4_demo04_target_sequence 2>/dev/null || true
+tmux new-session -d -s px4_demo04_target_sequence \
+  "cd \"$WS_DIR\" && set +u && source /opt/ros/jazzy/setup.bash && source install/setup.bash && set -u && sleep \"$TARGET_START_DELAY\" && \
+  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 2.0, y: 0.0, z: -2.0}' && sleep \"$TARGET_HOLD\" && \
+  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 2.0, y: 2.0, z: -2.0}' && sleep \"$TARGET_HOLD\" && \
+  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 0.0, y: 2.0, z: -2.0}' && sleep \"$TARGET_HOLD\" && \
+  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 0.0, y: 0.0, z: -2.0}' 2>&1 | tee \"$LOG_DIR/target_sequence.log\""
+
+echo "demo04 session=px4_demo04_external_setpoint"
+echo "visualizer session=px4_trajectory_recorder"
+echo "target sequence session=px4_demo04_target_sequence"
+echo "target topic=/uav/target_position geometry_msgs/msg/Point"
+echo "visual outputs will be written after ${VIS_DURATION}s"
+echo "logs=$LOG_DIR"
+echo "visuals=$VIS_DIR"
+while tmux has-session -t px4_trajectory_recorder 2>/dev/null; do
+  sleep 2
+done
+echo "trajectory_csv=$VIS_DIR/trajectory.csv"
+echo "trajectory_3d=$VIS_DIR/trajectory_3d.png"
+echo "xy_path=$VIS_DIR/xy_path.png"
+echo "height_curve=$VIS_DIR/height_curve.png"
+echo "speed_curve=$VIS_DIR/speed_curve.png"
+echo "tracking_error=$VIS_DIR/tracking_error.png"
+echo "video=$VIS_DIR/trajectory.mp4"
+echo "summary=$VIS_DIR/summary.md"
+echo "result=$VIS_DIR/result.txt"
+cat "$VIS_DIR/result.txt" 2>/dev/null || true
+
+exec
+/bin/bash -lc "sed -n '1,220p' scripts/run_demo01_hover.sh" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+#!/usr/bin/env bash
+set -euo pipefail
+
+WS_DIR="${WS_DIR:-/home/clcwork/UAV_capture/px4_ros2_ws}"
+ALTITUDE="${ALTITUDE:-2.0}"
+VIS_DURATION="${VIS_DURATION:-30.0}"
+HOVER_DURATION="${HOVER_DURATION:-35.0}"
+STAMP="$(date +%Y%m%d_%H%M%S)"
+LOG_DIR="$WS_DIR/logs/demo01_hover/$STAMP"
+VIS_DIR="$WS_DIR/visualizations/demo01_hover/$STAMP"
+export RESET_STACK="${RESET_STACK:-1}"
+
+mkdir -p "$LOG_DIR" "$VIS_DIR"
+"$WS_DIR/scripts/start_stack.sh"
+
+tmux kill-session -t px4_trajectory_recorder 2>/dev/null || true
+tmux new-session -d -s px4_trajectory_recorder \
+  "VIS_DIR=\"$VIS_DIR\" VIS_DURATION=\"$VIS_DURATION\" VIS_TITLE=\"Demo 01 Hover\" VIS_DEMO_ID=\"demo01\" AVG_ERROR_PASS=\"0.8\" HEIGHT_ERROR_PASS=\"0.35\" MAX_SPEED_PASS=\"3.0\" \"$WS_DIR/scripts/run_trajectory_recorder.sh\" 2>&1 | tee \"$LOG_DIR/trajectory_recorder.log\""
+
+tmux kill-session -t px4_offboard_hover 2>/dev/null || true
+tmux new-session -d -s px4_offboard_hover \
+  "cd \"$WS_DIR\" && set +u && source /opt/ros/jazzy/setup.bash && source install/setup.bash && set -u && ros2 run px4_offboard_hover hover --ros-args -p altitude:=$ALTITUDE -p hover_duration:=$HOVER_DURATION -p land_on_exit:=true 2>&1 | tee \"$LOG_DIR/demo01.log\""
+
+echo "demo01 session=px4_offboard_hover"
+echo "visualizer session=px4_trajectory_recorder"
+echo "visual outputs will be written after ${VIS_DURATION}s"
+echo "logs=$LOG_DIR"
+echo "visuals=$VIS_DIR"
+while tmux has-session -t px4_trajectory_recorder 2>/dev/null; do
+  sleep 2
+done
+echo "trajectory_csv=$VIS_DIR/trajectory.csv"
+echo "trajectory_3d=$VIS_DIR/trajectory_3d.png"
+echo "xy_path=$VIS_DIR/xy_path.png"
+echo "height_curve=$VIS_DIR/height_curve.png"
+echo "speed_curve=$VIS_DIR/speed_curve.png"
+echo "tracking_error=$VIS_DIR/tracking_error.png"
+echo "video=$VIS_DIR/trajectory.mp4"
+echo "summary=$VIS_DIR/summary.md"
+echo "result=$VIS_DIR/result.txt"
+cat "$VIS_DIR/result.txt" 2>/dev/null || true
+
+exec
+/bin/bash -lc "sed -n '1,240p' scripts/start_stack.sh" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+#!/usr/bin/env bash
+set -euo pipefail
+
+PX4_DIR="${PX4_DIR:-/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot}"
+AGENT_DIR="${AGENT_DIR:-/home/clcwork/Micro-XRCE-DDS-Agent/build}"
+RESET_STACK="${RESET_STACK:-0}"
+
+if [ "$RESET_STACK" = "1" ]; then
+  tmux kill-session -t px4_offboard_hover 2>/dev/null || true
+  tmux kill-session -t px4_demo02_waypoint_flight 2>/dev/null || true
+  tmux kill-session -t px4_demo03_circle_trajectory 2>/dev/null || true
+  tmux kill-session -t px4_demo04_external_setpoint 2>/dev/null || true
+  tmux kill-session -t px4_demo04_target_sequence 2>/dev/null || true
+  tmux kill-session -t px4_trajectory_recorder 2>/dev/null || true
+  tmux kill-session -t micro_xrce_agent 2>/dev/null || true
+  tmux kill-session -t px4_gz_x500 2>/dev/null || true
+  rm -f /tmp/px4_gz_x500_tmux.log /tmp/micro_xrce_agent.log /tmp/px4_offboard_hover.log
+fi
+
+tmux has-session -t px4_gz_x500 2>/dev/null || \
+  tmux new-session -d -s px4_gz_x500 \
+    "cd \"$PX4_DIR\" && HEADLESS=1 make px4_sitl gz_x500 2>&1 | tee /tmp/px4_gz_x500_tmux.log"
+
+tmux has-session -t micro_xrce_agent 2>/dev/null || \
+  tmux new-session -d -s micro_xrce_agent \
+    "cd \"$AGENT_DIR\" && ./MicroXRCEAgent udp4 -p 8888 2>&1 | tee /tmp/micro_xrce_agent.log"
+
+for _ in $(seq 1 60); do
+  if grep -q "Preflight check: OK\\|Ready for takeoff" /tmp/px4_gz_x500_tmux.log 2>/dev/null; then
+    break
+  fi
+  if grep -q "pxh>" /tmp/px4_gz_x500_tmux.log 2>/dev/null; then
+    tmux send-keys -t px4_gz_x500 "param set NAV_DLL_ACT 0" C-m
+    tmux send-keys -t px4_gz_x500 "commander check" C-m
+  fi
+  sleep 1
+done
+
+tmux ls
+
+exec
+/bin/bash -lc "sed -n '1,220p' scripts/run_trajectory_recorder.sh" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+#!/usr/bin/env bash
+set -euo pipefail
+
+WS_DIR="${WS_DIR:-/home/clcwork/UAV_capture/px4_ros2_ws}"
+VIS_DIR="${VIS_DIR:?VIS_DIR is required}"
+VIS_DURATION="${VIS_DURATION:-90.0}"
+VIS_TITLE="${VIS_TITLE:-PX4 Trajectory}"
+VIS_DEMO_ID="${VIS_DEMO_ID:-generic}"
+VIS_FPS="${VIS_FPS:-12}"
+MAKE_VIDEO="${MAKE_VIDEO:-true}"
+MAX_SPEED_PASS="${MAX_SPEED_PASS:-3.0}"
+AVG_ERROR_PASS="${AVG_ERROR_PASS:-0.9}"
+MAX_ERROR_PASS="${MAX_ERROR_PASS:-2.0}"
+HEIGHT_ERROR_PASS="${HEIGHT_ERROR_PASS:-0.35}"
+FINAL_ERROR_PASS="${FINAL_ERROR_PASS:-0.6}"
+MIN_SAMPLES_PASS="${MIN_SAMPLES_PASS:-40}"
+CONDA_ENV_DIR="${CONDA_ENV_DIR:-/home/clcwork/miniconda3/envs/lerobot}"
+
+mkdir -p "$VIS_DIR"
+cd "$WS_DIR"
+export PATH="$CONDA_ENV_DIR/bin:$PATH"
+set +u
+source /opt/ros/jazzy/setup.bash
+source "$WS_DIR/install/setup.bash"
+set -u
+
+echo "conda_env_dir=$CONDA_ENV_DIR"
+echo "ffmpeg=$(command -v ffmpeg || true)"
+
+ros2 run px4_offboard_hover trajectory_recorder --ros-args \
+  -p output_dir:="$VIS_DIR" \
+  -p duration:="$VIS_DURATION" \
+  -p title:="$VIS_TITLE" \
+  -p demo_id:="$VIS_DEMO_ID" \
+  -p fps:="$VIS_FPS" \
+  -p make_video:="$MAKE_VIDEO" \
+  -p max_speed_pass:="$MAX_SPEED_PASS" \
+  -p avg_error_pass:="$AVG_ERROR_PASS" \
+  -p max_error_pass:="$MAX_ERROR_PASS" \
+  -p height_error_pass:="$HEIGHT_ERROR_PASS" \
+  -p final_error_pass:="$FINAL_ERROR_PASS" \
+  -p min_samples_pass:="$MIN_SAMPLES_PASS"
+
+exec
+/bin/bash -lc "sed -n '1,240p' scripts/check_demo_outputs.sh" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+#!/usr/bin/env bash
+set -u
+
+failures=()
+checked_files=()
+
+usage() {
+  cat <<'EOF'
+Usage:
+  ./scripts/check_demo_outputs.sh <log-or-visualization-directory>
+
+Examples:
+  ./scripts/check_demo_outputs.sh logs/offboard_hover/<timestamp>
+  ./scripts/check_demo_outputs.sh visualizations/demo01_hover/<timestamp>
+EOF
+}
+
+add_failure() {
+  failures+=("$1")
+}
+
+mark_checked() {
+  local existing
+  for existing in "${checked_files[@]}"; do
+    [[ "$existing" == "$1" ]] && return
+  done
+  checked_files+=("$1")
+}
+
+has_standard_output_marker() {
+  local dir="$1"
+  [[ -f "$dir/trajectory.csv" || -f "$dir/result.txt" || -f "$dir/verify.log" ]]
+}
+
+latest_child_dir() {
+  local dir="$1"
+  find "$dir" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort | tail -n 1
+}
+
+resolve_target_dir() {
+  local input_dir="$1"
+  local target_dir="$input_dir"
+
+  if ! has_standard_output_marker "$target_dir"; then
+    local latest
+    latest="$(latest_child_dir "$target_dir")"
+    if [[ -n "$latest" ]]; then
+      target_dir="$latest"
+    fi
+  fi
+
+  local parent_dir demo_name timestamp vis_dir
+  parent_dir="$(dirname "$target_dir")"
+  demo_name="$(basename "$parent_dir")"
+  timestamp="$(basename "$target_dir")"
+  vis_dir="visualizations/$demo_name/$timestamp"
+
+  if [[ "$target_dir" == logs/* && -d "$vis_dir" ]]; then
+    target_dir="$vis_dir"
+  fi
+
+  printf '%s\n' "$target_dir"
+}
+
+require_file() {
+  local file="$1"
+  if [[ -f "$file" ]]; then
+    mark_checked "$file"
+  else
+    add_failure "missing file: $file"
+  fi
+}
+
+check_pass_marker() {
+  local dir="$1"
+
+  if [[ -f "$dir/result.txt" ]]; then
+    mark_checked "$dir/result.txt"
+    if ! grep -q 'RESULT=PASS' "$dir/result.txt"; then
+      add_failure "missing RESULT=PASS in: $dir/result.txt"
+    fi
+    return
+  fi
+
+  if [[ -f "$dir/verify.log" ]]; then
+    mark_checked "$dir/verify.log"
+    if ! grep -q 'RESULT=PASS' "$dir/verify.log"; then
+      add_failure "missing RESULT=PASS in: $dir/verify.log"
+    fi
+    return
+  fi
+
+  add_failure "missing pass marker file: $dir/result.txt or $dir/verify.log"
+}
+
+check_csv_header() {
+  local csv_file="$1"
+  require_file "$csv_file"
+  [[ -f "$csv_file" ]] || return
+
+  local missing
+  missing="$(
+    awk -F',' '
+      NR == 1 {
+        saw_header = 1
+        for (i = 1; i <= NF; i++) {
+          field = $i
+          gsub(/\r/, "", field)
+          gsub(/^[[:space:]"]+|[[:space:]"]+$/, "", field)
+          seen[field] = 1
+        }
+
+        if (!seen["timestamp"] && !seen["t"]) {
+          print "timestamp-or-t"
+        }
+
+        required[1] = "x"
+        required[2] = "y"
+        required[3] = "z"
+        required[4] = "vx"
+        required[5] = "vy"
+        required[6] = "vz"
+
+        for (i = 1; i <= 6; i++) {
+          if (!seen[required[i]]) {
+            print required[i]
+          }
+        }
+        exit
+      }
+      END {
+        if (!saw_header) {
+          print "header"
+        }
+      }
+    ' "$csv_file"
+  )"
+
+  if [[ -n "$missing" ]]; then
+    while IFS= read -r field; do
+      [[ -n "$field" ]] && add_failure "missing CSV field in $csv_file: $field"
+    done <<< "$missing"
+  fi
+}
+
+check_standard_visualization_dir() {
+  local dir="$1"
+
+  check_csv_header "$dir/trajectory.csv"
+  require_file "$dir/trajectory_3d.png"
+  require_file "$dir/xy_path.png"
+  require_file "$dir/height_curve.png"
+  require_file "$dir/speed_curve.png"
+  require_file "$dir/tracking_error.png"
+  require_file "$dir/summary.md"
+  require_file "$dir/result.txt"
+  check_pass_marker "$dir"
+}
+
+check_legacy_log_dir() {
+  local dir="$1"
+  require_file "$dir/verify.log"
+  check_pass_marker "$dir"
+}
+
+main() {
+  if [[ "$#" -ne 1 ]]; then
+    usage
+    echo "CHECK=FAIL"
+    return 2
+  fi
+
+  local input_dir="$1"
+  if [[ ! -d "$input_dir" ]]; then
+    echo "input directory not found: $input_dir"
+    echo "CHECK=FAIL"
+    return 2
+  fi
+
+  local target_dir
+  target_dir="$(resolve_target_dir "$input_dir")"
+  echo "checking: $target_dir"
+
+  if [[ -f "$target_dir/trajectory.csv" || -f "$target_dir/result.txt" ]]; then
+    check_standard_visualization_dir "$target_dir"
+  elif [[ -f "$target_dir/verify.log" ]]; then
+    check_legacy_log_dir "$target_dir"
+  else
+    add_failure "unsupported output directory: $target_dir"
+  fi
+
+  if [[ "${#checked_files[@]}" -gt 0 ]]; then
+    echo "checked files:"
+    printf '  %s\n' "${checked_files[@]}"
+  fi
+
+  if [[ "${#failures[@]}" -gt 0 ]]; then
+    echo "failures:"
+    printf '  %s\n' "${failures[@]}"
+    echo "CHECK=FAIL"
+    return 1
+  fi
+
+  echo "CHECK=PASS"
+  return 0
+}
+
+main "$@"
+
+exec
+/bin/bash -lc "sed -n '1,120p' src/px4_offboard_hover/px4_offboard_hover/external_setpoint.py" in /home/clcwork/UAV_capture/px4_ros2_ws
+exec
+/bin/bash -lc "sed -n '1,240p' src/px4_offboard_hover/px4_offboard_hover/uav_control_bridge.py" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+import math
+import time
+from typing import Optional
+
+from geometry_msgs.msg import Point, PointStamped
+from px4_msgs.msg import VehicleLocalPosition
+import rclpy
+from rclpy.qos import DurabilityPolicy, HistoryPolicy, QoSProfile, ReliabilityPolicy
+from std_msgs.msg import Bool, String
+
+from px4_offboard_hover.offboard_base import OffboardPositionControl, Position
+
+
+class UavControlBridge(OffboardPositionControl):
+    """Validated high-level /uav target bridge for PX4 offboard position control."""
+
+    def __init__(self) -> None:
+        super().__init__("uav_control_bridge")
+
+        self.declare_parameter("initial_x", 0.0)
+        self.declare_parameter("initial_y", 0.0)
+        self.declare_parameter("initial_z", -2.0)
+        self.declare_parameter("yaw", 0.0)
+        self.declare_parameter("target_timeout", 1.0)
+        self.declare_parameter("max_altitude", 5.0)
+        self.declare_parameter("min_altitude", 0.5)
+        self.declare_parameter("max_horizontal_range", 5.0)
+        self.declare_parameter("target_jump_limit", 1.5)
+        self.declare_parameter("reach_xy_tolerance", 0.30)
+        self.declare_parameter("reach_z_tolerance", 0.20)
+        self.declare_parameter("reach_hold_time", 1.0)
+
+        self.safe_target: Position = (
+            float(self.get_parameter("initial_x").value),
+            float(self.get_parameter("initial_y").value),
+            float(self.get_parameter("initial_z").value),
+        )
+        self.yaw = float(self.get_parameter("yaw").value)
+        self.target_timeout = float(self.get_parameter("target_timeout").value)
+        self.max_altitude = float(self.get_parameter("max_altitude").value)
+        self.min_altitude = float(self.get_parameter("min_altitude").value)
+        self.max_horizontal_range = float(
+            self.get_parameter("max_horizontal_range").value
+        )
+        self.target_jump_limit = float(self.get_parameter("target_jump_limit").value)
+        self.reach_xy_tolerance = float(
+            self.get_parameter("reach_xy_tolerance").value
+        )
+        self.reach_z_tolerance = float(self.get_parameter("reach_z_tolerance").value)
+        self.reach_hold_time = float(self.get_parameter("reach_hold_time").value)
+
+        error = self._validate_target(self.safe_target, check_jump=False)
+        if error is not None:
+            raise ValueError(f"Initial target is unsafe: {error}")
+
+        self.last_safe_target_time = time.monotonic()
+        self.last_timeout_warning_time = 0.0
+        self.control_state = "HOLDING"
+        self.current_position: Optional[Position] = None
+        self.reach_start_time: Optional[float] = None
+        self.reached_target = False
+        self.invalid_target_pending = False
+
+        px4_out_qos = QoSProfile(
+            reliability=ReliabilityPolicy.BEST_EFFORT,
+            durability=DurabilityPolicy.TRANSIENT_LOCAL,
+            history=HistoryPolicy.KEEP_LAST,
+            depth=10,
+        )
+        self.current_position_pub = self.create_publisher(
+            PointStamped, "/uav/current_position", 10
+        )
+        self.current_target_pub = self.create_publisher(
+            PointStamped, "/uav/current_target", 10
+        )
+        self.reached_target_pub = self.create_publisher(
+            Bool, "/uav/reached_target", 10
+        )
+        self.control_state_pub = self.create_publisher(
+            String, "/uav/control_state", 10
+        )
+        self.create_subscription(
+            VehicleLocalPosition,
+            "/fmu/out/vehicle_local_position_v1",
+            self.position_callback,
+            px4_out_qos,
+        )
+        self.create_subscription(Point, "/uav/target_position", self.target_callback, 10)
+        self.timer = self.create_timer(0.1, self.timer_callback)
+        self.get_logger().info(
+            "UAV control bridge ready on /uav/target_position; targets must be "
+            "local PX4 NED points with z=-altitude"
+        )
+
+    def position_callback(self, msg: VehicleLocalPosition) -> None:
+        if not msg.xy_valid or not msg.z_valid:
+            return
+
+        self.current_position = (float(msg.x), float(msg.y), float(msg.z))
+        position_msg = self._point_stamped(self.current_position)
+        self.current_position_pub.publish(position_msg)
+
+    def target_callback(self, msg: Point) -> None:
+        target = (float(msg.x), float(msg.y), float(msg.z))
+        error = self._validate_target(target, check_jump=True)
+        if error is not None:
+            self.get_logger().warn(
+                "Rejected /uav/target_position "
+                f"x={msg.x:.2f}, y={msg.y:.2f}, z={msg.z:.2f}: {error}"
+            )
+            self.control_state = "INVALID_TARGET"
+            self.invalid_target_pending = True
+            self._publish_bridge_state()
+            return
+
+        self.safe_target = target
+        self.last_safe_target_time = time.monotonic()
+        self.last_timeout_warning_time = 0.0
+        self.reach_start_time = None
+        self.reached_target = False
+        self.invalid_target_pending = False
+        self.control_state = "TRACKING"
+        self.get_logger().info(
+            "Accepted /uav/target_position "
+            f"x={target[0]:.2f}, y={target[1]:.2f}, z={target[2]:.2f}"
+        )
+
+    def timer_callback(self) -> None:
+        self.tick_offboard(self.safe_target, self.yaw)
+        self._update_reached_target()
+        self._update_control_state()
+        self._publish_bridge_state()
+
+    def _validate_target(
+        self, target: Position, check_jump: bool
+    ) -> Optional[str]:
+        x, y, z = target
+        if not all(math.isfinite(value) for value in target):
+            return "target contains non-finite values"
+
+        altitude = -z
+        if altitude <= 0.0:
+            return "positive altitude commands are not accepted; publish NED z=-altitude"
+        if altitude > self.max_altitude:
+            return (
+                f"altitude {altitude:.2f} m exceeds max_altitude "
+                f"{self.max_altitude:.2f} m"
+            )
+        if altitude < self.min_altitude:
+            return (
+                f"altitude {altitude:.2f} m is below min_altitude "
+                f"{self.min_altitude:.2f} m"
+            )
+
+        horizontal_range = math.hypot(x, y)
+        if horizontal_range > self.max_horizontal_range:
+            return (
+                f"horizontal range {horizontal_range:.2f} m exceeds "
+                f"max_horizontal_range {self.max_horizontal_range:.2f} m"
+            )
+
+        if check_jump:
+            jump = self._distance(target, self.safe_target)
+            if jump > self.target_jump_limit:
+                return (
+                    f"target jump {jump:.2f} m exceeds target_jump_limit "
+                    f"{self.target_jump_limit:.2f} m"
+                )
+
+        return None
+
+    def _target_timed_out(self, now: float) -> bool:
+        if self.target_timeout <= 0.0:
+            return False
+
+        return now - self.last_safe_target_time > self.target_timeout
+
+    def _warn_if_target_timed_out(self, now: float) -> None:
+        if not self._target_timed_out(now):
+            return
+        if now - self.last_timeout_warning_time < self.target_timeout:
+            return
+
+        self.get_logger().warn("Target timeout; holding last safe target")
+        self.last_timeout_warning_time = now
+
+    def _update_reached_target(self) -> None:
+        if self.current_position is None:
+            self.reach_start_time = None
+            self.reached_target = False
+            return
+
+        dx = self.current_position[0] - self.safe_target[0]
+        dy = self.current_position[1] - self.safe_target[1]
+        dz = self.current_position[2] - self.safe_target[2]
+        within_tolerance = (
+            math.hypot(dx, dy) <= self.reach_xy_tolerance
+            and abs(dz) <= self.reach_z_tolerance
+        )
+        if not within_tolerance:
+            self.reach_start_time = None
+            self.reached_target = False
+            return
+
+        now = time.monotonic()
+        if self.reach_start_time is None:
+            self.reach_start_time = now
+        self.reached_target = now - self.reach_start_time >= self.reach_hold_time
+
+    def _update_control_state(self) -> None:
+        if self.invalid_target_pending:
+            self.control_state = "INVALID_TARGET"
+            self.invalid_target_pending = False
+            return
+
+        now = time.monotonic()
+        if self._target_timed_out(now):
+            self._warn_if_target_timed_out(now)
+            self.control_state = "HOLDING"
+            return
+
+        if self.reached_target:
+            self.control_state = "REACHED"
+            return
+
+        self.control_state = "TRACKING"
+
+    def _publish_bridge_state(self) -> None:
+        target_msg = self._point_stamped(self.safe_target)
+        self.current_target_pub.publish(target_msg)
+
+        reached_msg = Bool()
+        reached_msg.data = self.reached_target
+        self.reached_target_pub.publish(reached_msg)
+
+        state_msg = String()
+        state_msg.data = self.control_state
+        self.control_state_pub.publish(state_msg)
+
+    def _point_stamped(self, point: Position) -> PointStamped:
+
+ succeeded in 0ms:
+import time
+
+from geometry_msgs.msg import Point
+import rclpy
+
+from px4_offboard_hover.offboard_base import OffboardPositionControl, Position
+
+
+class ExternalSetpointInterface(OffboardPositionControl):
+    def __init__(self) -> None:
+        super().__init__("px4_demo04_external_setpoint_interface")
+
+        self.declare_parameter("initial_x", 0.0)
+        self.declare_parameter("initial_y", 0.0)
+        self.declare_parameter("initial_z", -2.0)
+        self.declare_parameter("target_timeout", 0.0)
+        self.declare_parameter("yaw", 0.0)
+
+        self.target: Position = (
+            float(self.get_parameter("initial_x").value),
+            float(self.get_parameter("initial_y").value),
+            float(self.get_parameter("initial_z").value),
+        )
+        self.target_timeout = float(self.get_parameter("target_timeout").value)
+        self.yaw = float(self.get_parameter("yaw").value)
+        self.last_target_time = time.time()
+
+        self.create_subscription(Point, "/uav/target_position", self.target_callback, 10)
+        self.timer = self.create_timer(0.1, self.timer_callback)
+        self.get_logger().info(
+            "Demo 04 external setpoint interface ready: publish geometry_msgs/msg/Point "
+            "to /uav/target_position with NED x,y,z"
+        )
+
+    def target_callback(self, msg: Point) -> None:
+        self.target = (float(msg.x), float(msg.y), float(msg.z))
+        self.last_target_time = time.time()
+        self.get_logger().info(
+            f"New target from /uav/target_position: x={msg.x:.2f}, y={msg.y:.2f}, z={msg.z:.2f}"
+        )
+
+    def timer_callback(self) -> None:
+        if self.target_timeout > 0.0 and time.time() - self.last_target_time > self.target_timeout:
+            self.get_logger().warn("Target timeout; holding last setpoint")
+            self.last_target_time = time.time()
+
+        self.tick_offboard(self.target, self.yaw)
+
+
+def main(args=None) -> None:
+    rclpy.init(args=args)
+    node = ExternalSetpointInterface()
+    try:
+        rclpy.spin(node)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        node.destroy_node()
+        if rclpy.ok():
+            rclpy.shutdown()
+
+exec
+/bin/bash -lc "sed -n '1,220p' docs/REGRESSION_CHECKS.md" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+# Demo Regression Checks
+
+This workspace provides a lightweight output checker for Demo 1-4 visualization
+results and legacy hover verification logs.
+
+## Script
+
+Run from the workspace root:
+
+```bash
+./scripts/check_demo_outputs.sh visualizations/demo01_hover/<timestamp>
+./scripts/check_demo_outputs.sh logs/offboard_hover/<timestamp>
+```
+
+The script prints `CHECK=PASS` and exits `0` when the checked output directory
+passes. It prints `CHECK=FAIL`, lists missing files or fields, and exits non-zero
+when a required check fails.
+
+If the argument is a demo root such as `visualizations/demo01_hover`, the script
+checks the newest timestamped child directory. If the argument is a current demo
+log directory such as `logs/demo02_waypoint_flight/<timestamp>` and the matching
+visualization directory exists, the script checks the visualization output.
+
+## Current Demo 1-4 Checks
+
+Current visualization directories are expected to contain:
+
+```text
+trajectory.csv
+trajectory_3d.png
+xy_path.png
+height_curve.png
+speed_curve.png
+tracking_error.png
+summary.md
+result.txt
+```
+
+The checker also requires `result.txt` to contain:
+
+```text
+RESULT=PASS
+```
+
+`trajectory.csv` must contain a header with `timestamp` or `t`, plus all of:
+
+```text
+x
+y
+z
+vx
+vy
+vz
+```
+
+## Legacy Hover Check
+
+Older hover experiment directories under `logs/offboard_hover/<timestamp>` may
+not contain visualization files. For those directories, the checker accepts
+`verify.log` when it contains:
+
+```text
+RESULT=PASS
+```
+
+## Known Limits
+
+These checks are regression smoke checks, not full flight-quality validation.
+They verify that standard artifacts exist, required CSV columns are present, and
+the recorded PASS marker is present. They do not recompute trajectory metrics,
+inspect image contents, validate MP4 playback, or prove that the vehicle followed
+the expected path.
+
+exec
+/bin/bash -lc "grep -n \"target_position\\|current_target\\|demo04\" -n src/px4_offboard_hover/px4_offboard_hover/trajectory_recorder.py" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+461:        elif demo == "demo04":
+
+exec
+/bin/bash -lc "sed -n '1,180p' docs/VISUALIZATION_GUIDE.md" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+# Demo Visualization Guide
+
+This guide covers the standard visualization outputs for Demo 1-4 in
+`/home/clcwork/UAV_capture/px4_ros2_ws`.
+
+## Standard Output Layout
+
+Demo visualizations are written to timestamped directories:
+
+```text
+visualizations/<demo>/<YYYYMMDD_HHMMSS>/
+```
+
+The current standard files are:
+
+| File | Purpose |
+| --- | --- |
+| `trajectory.csv` | Raw time series: position, velocity, speed, target position, and tracking error. |
+| `trajectory_3d.png` | 3D actual and target trajectory. |
+| `xy_path.png` | Top-down XY path with start/end markers. |
+| `height_curve.png` | Altitude over time with target altitude when available. |
+| `speed_curve.png` | Speed over time with the configured pass limit. |
+| `tracking_error.png` | 3D, XY, and height tracking error over time. |
+| `trajectory.mp4` | Optional XY animation when `ffmpeg` is available. |
+| `summary.md` | Metrics and generated output list. |
+| `result.txt` | PASS/FAIL status and reason. |
+
+Older visualization directories may contain only `trajectory.png` plus
+`trajectory.csv`. Do not rename, delete, or overwrite those historical results.
+
+## Demo Output Names
+
+Each current demo runner uses `scripts/run_trajectory_recorder.sh`, which starts
+the `trajectory_recorder` ROS 2 node and writes the same standard file names.
+
+| Demo | Runner | Visualization root | Standard files |
+| --- | --- | --- | --- |
+| Demo 01 Offboard Hover | `scripts/run_demo01_hover.sh` | `visualizations/demo01_hover/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
+| Demo 02 Waypoint Flight | `scripts/run_demo02_waypoint_flight.sh` | `visualizations/demo02_waypoint_flight/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
+| Demo 03 Circle Trajectory | `scripts/run_demo03_circle_trajectory.sh` | `visualizations/demo03_circle_trajectory/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
+| Demo 04 External Setpoint Interface | `scripts/run_demo04_external_setpoint.sh` | `visualizations/demo04_external_setpoint/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
+
+## Generate New Results
+
+Run demos from the workspace root:
+
+```bash
+cd /home/clcwork/UAV_capture/px4_ros2_ws
+source /opt/ros/jazzy/setup.bash
+source install/setup.bash
+
+./scripts/run_demo01_hover.sh
+./scripts/run_demo02_waypoint_flight.sh
+./scripts/run_demo03_circle_trajectory.sh
+./scripts/run_demo04_external_setpoint.sh
+```
+
+Each runner creates a new timestamped directory under `logs/<demo>/` and
+`visualizations/<demo>/`. The runner prints the exact output paths after the
+trajectory recorder finishes.
+
+## Check Existing Results
+
+List available PNG outputs:
+
+```bash
+find visualizations -name "*.png" | sort
+```
+
+Check the newest directory for each demo:
+
+```bash
+for demo in demo01_hover demo02_waypoint_flight demo03_circle_trajectory demo04_external_setpoint; do
+  latest="$(find "visualizations/$demo" -mindepth 1 -maxdepth 1 -type d | sort | tail -n 1)"
+  echo "$demo -> $latest"
+  ls "$latest"/trajectory.csv \
+     "$latest"/trajectory_3d.png \
+     "$latest"/xy_path.png \
+     "$latest"/height_curve.png \
+     "$latest"/speed_curve.png
+done
+```
+
+## View Results Locally
+
+Open PNG files from the timestamped visualization directory with an image viewer:
+
+```bash
+xdg-open visualizations/demo01_hover/<timestamp>/trajectory_3d.png
+xdg-open visualizations/demo01_hover/<timestamp>/xy_path.png
+xdg-open visualizations/demo01_hover/<timestamp>/height_curve.png
+xdg-open visualizations/demo01_hover/<timestamp>/speed_curve.png
+```
+
+Read metrics and status:
+
+```bash
+cat visualizations/demo01_hover/<timestamp>/summary.md
+cat visualizations/demo01_hover/<timestamp>/result.txt
+```
+
+## Copy Results To Mac
+
+From the Mac terminal, copy one timestamped result directory:
+
+```bash
+scp -r <linux_user>@<linux_host>:/home/clcwork/UAV_capture/px4_ros2_ws/visualizations/demo01_hover/<timestamp> ~/Desktop/px4_demo01_hover_<timestamp>
+```
+
+Copy all Demo 1-4 visualization results:
+
+```bash
+scp -r <linux_user>@<linux_host>:/home/clcwork/UAV_capture/px4_ros2_ws/visualizations ~/Desktop/px4_visualizations
+```
+
+Replace `<linux_user>` and `<linux_host>` with the SSH user and host for the
+Linux machine. If SSH uses a non-default port, add `-P <port>` after `scp`.
+
+## Current Missing Metrics
+
+The current recorder covers position, velocity magnitude, target position,
+tracking error, summary PASS/FAIL, and optional animation. It does not currently
+plot or summarize:
+
+- attitude, yaw, or yaw-rate tracking;
+- acceleration or jerk;
+- battery, estimator, actuator, or failsafe status;
+- per-waypoint arrival time and dwell time;
+- rosbag-based replay or offline redraw from a saved bag.
+
+exec
+/bin/bash -lc "sed -n '1,220p' src/px4_offboard_hover/px4_offboard_hover/trajectory_recorder.py" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+import csv
+import math
+import shutil
+import time
+from pathlib import Path
+from typing import Dict, List, Optional, Tuple
+
+import matplotlib
+
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+from matplotlib import animation
+from px4_msgs.msg import TrajectorySetpoint, VehicleLocalPosition
+import rclpy
+from rclpy.node import Node
+from rclpy.qos import DurabilityPolicy, HistoryPolicy, QoSProfile, ReliabilityPolicy
+
+Position = Tuple[float, float, float]
+Sample = Tuple[float, float, float, float, float, float, float, float, float, float]
+
+
+class TrajectoryRecorder(Node):
+    def __init__(self) -> None:
+        super().__init__("px4_trajectory_recorder")
+
+        self.declare_parameter("output_dir", "logs/trajectory")
+        self.declare_parameter("duration", 90.0)
+        self.declare_parameter("title", "PX4 trajectory")
+        self.declare_parameter("demo_id", "generic")
+        self.declare_parameter("fps", 12)
+        self.declare_parameter("make_video", True)
+        self.declare_parameter("max_speed_pass", 3.0)
+        self.declare_parameter("avg_error_pass", 0.9)
+        self.declare_parameter("max_error_pass", 2.0)
+        self.declare_parameter("height_error_pass", 0.35)
+        self.declare_parameter("final_error_pass", 0.6)
+        self.declare_parameter("min_samples_pass", 40)
+
+        self.output_dir = Path(str(self.get_parameter("output_dir").value))
+        self.duration = float(self.get_parameter("duration").value)
+        self.title = str(self.get_parameter("title").value)
+        self.demo_id = str(self.get_parameter("demo_id").value)
+        self.fps = int(self.get_parameter("fps").value)
+        self.make_video = bool(self.get_parameter("make_video").value)
+        self.thresholds = {
+            "max_speed_pass": float(self.get_parameter("max_speed_pass").value),
+            "avg_error_pass": float(self.get_parameter("avg_error_pass").value),
+            "max_error_pass": float(self.get_parameter("max_error_pass").value),
+            "height_error_pass": float(self.get_parameter("height_error_pass").value),
+            "final_error_pass": float(self.get_parameter("final_error_pass").value),
+            "min_samples_pass": int(self.get_parameter("min_samples_pass").value),
+        }
+
+        self.output_dir.mkdir(parents=True, exist_ok=True)
+        self.csv_path = self.output_dir / "trajectory.csv"
+        self.start_time = time.time()
+        self.latest_target: Optional[Position] = None
+        self.samples: List[Sample] = []
+
+        px4_out_qos = QoSProfile(
+            reliability=ReliabilityPolicy.BEST_EFFORT,
+            durability=DurabilityPolicy.TRANSIENT_LOCAL,
+            history=HistoryPolicy.KEEP_LAST,
+            depth=10,
+        )
+        px4_in_qos = QoSProfile(
+            reliability=ReliabilityPolicy.BEST_EFFORT,
+            durability=DurabilityPolicy.VOLATILE,
+            history=HistoryPolicy.KEEP_LAST,
+            depth=10,
+        )
+        self.create_subscription(
+            VehicleLocalPosition,
+            "/fmu/out/vehicle_local_position_v1",
+            self.position_callback,
+            px4_out_qos,
+        )
+        self.create_subscription(
+            TrajectorySetpoint,
+            "/fmu/in/trajectory_setpoint",
+            self.target_callback,
+            px4_in_qos,
+        )
+        self.timer = self.create_timer(0.5, self.timer_callback)
+        self.get_logger().info(
+            f"Recording {self.demo_id} for {self.duration:.1f}s into {self.output_dir}"
+        )
+
+    def target_callback(self, msg: TrajectorySetpoint) -> None:
+        if len(msg.position) >= 3:
+            self.latest_target = (
+                float(msg.position[0]),
+                float(msg.position[1]),
+                float(msg.position[2]),
+            )
+
+    def position_callback(self, msg: VehicleLocalPosition) -> None:
+        if not msg.xy_valid or not msg.z_valid:
+            return
+
+        elapsed = time.time() - self.start_time
+        target = self.latest_target or (math.nan, math.nan, math.nan)
+        self.samples.append(
+            (
+                elapsed,
+                float(msg.x),
+                float(msg.y),
+                float(msg.z),
+                float(msg.vx),
+                float(msg.vy),
+                float(msg.vz),
+                target[0],
+                target[1],
+                target[2],
+            )
+        )
+
+    def timer_callback(self) -> None:
+        if time.time() - self.start_time < self.duration:
+            return
+
+        self.write_outputs()
+        self.destroy_timer(self.timer)
+        if rclpy.ok():
+            rclpy.shutdown()
+
+    def write_outputs(self) -> None:
+        metrics = self.compute_metrics()
+        self.write_csv()
+        if not self.samples:
+            self.write_result(False, "no_samples")
+            self.write_summary(metrics, None)
+            self.get_logger().warn("No samples recorded; skipped visualization")
+            return
+
+        self.write_xy_path()
+        self.write_3d_path()
+        self.write_height_curve()
+        self.write_speed_curve()
+        self.write_tracking_error()
+        video_path = self.write_animation() if self.make_video else None
+        passed, reason = self.evaluate_pass_fail(metrics)
+        self.write_result(passed, reason)
+        self.write_summary(metrics, video_path, passed, reason)
+        self.get_logger().info(f"Visualization written to {self.output_dir}")
+
+    def write_csv(self) -> None:
+        with self.csv_path.open("w", newline="", encoding="utf-8") as f:
+            writer = csv.writer(f)
+            writer.writerow(
+                [
+                    "t",
+                    "x",
+                    "y",
+                    "z",
+                    "vx",
+                    "vy",
+                    "vz",
+                    "speed_mps",
+                    "target_x",
+                    "target_y",
+                    "target_z",
+                    "error_xy_m",
+                    "error_z_m",
+                    "error_3d_m",
+                ]
+            )
+            for sample in self.samples:
+                speed = self.speed(sample)
+                err_xy, err_z, err_3d = self.error_components(sample)
+                writer.writerow(
+                    [
+                        f"{sample[0]:.3f}",
+                        f"{sample[1]:.4f}",
+                        f"{sample[2]:.4f}",
+                        f"{sample[3]:.4f}",
+                        f"{sample[4]:.4f}",
+                        f"{sample[5]:.4f}",
+                        f"{sample[6]:.4f}",
+                        f"{speed:.4f}",
+                        self.float_cell(sample[7]),
+                        self.float_cell(sample[8]),
+                        self.float_cell(sample[9]),
+                        self.float_cell(err_xy),
+                        self.float_cell(err_z),
+                        self.float_cell(err_3d),
+                    ]
+                )
+
+    def write_xy_path(self) -> None:
+        x = [s[1] for s in self.samples]
+        y = [s[2] for s in self.samples]
+        tx, ty, _ = self.target_series()
+
+        fig, ax = plt.subplots(figsize=(8, 7), constrained_layout=True)
+        ax.set_title(f"{self.title} - XY path")
+        ax.plot(x, y, color="#1764ab", linewidth=2.2, label="actual")
+        if tx and ty:
+            ax.plot(tx, ty, color="#d1495b", linestyle="--", linewidth=1.7, label="target")
+            target_points = self.unique_target_points()
+            if target_points:
+                ax.scatter(
+                    [p[0] for p in target_points],
+                    [p[1] for p in target_points],
+                    color="#d1495b",
+                    s=42,
+                    zorder=4,
+                    label="target points",
+                )
+        ax.scatter(x[0], y[0], color="#2a9d8f", s=58, zorder=5, label="start")
+        ax.scatter(x[-1], y[-1], color="#111111", s=58, zorder=5, label="end")
+        ax.set_xlabel("x forward (m)")
+        ax.set_ylabel("y right (m)")
+        ax.axis("equal")
+        ax.grid(True, alpha=0.3)
+        ax.legend(loc="best")
+        fig.savefig(self.output_dir / "xy_path.png", dpi=160)
+        plt.close(fig)
+
+    def write_3d_path(self) -> None:
+
+exec
+/bin/bash -lc "sed -n '220,520p' src/px4_offboard_hover/px4_offboard_hover/trajectory_recorder.py" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+    def write_3d_path(self) -> None:
+        x = [s[1] for s in self.samples]
+        y = [s[2] for s in self.samples]
+        alt = [-s[3] for s in self.samples]
+        tx, ty, tz = self.target_series()
+
+        fig = plt.figure(figsize=(9, 7), constrained_layout=True)
+        ax = fig.add_subplot(111, projection="3d")
+        ax.set_title(f"{self.title} - 3D trajectory")
+        ax.plot(x, y, alt, color="#1764ab", linewidth=2.0, label="actual")
+        if tx and ty and tz:
+            ax.plot(tx, ty, [-z for z in tz], color="#d1495b", linestyle="--", linewidth=1.5, label="target")
+        ax.scatter([x[0]], [y[0]], [alt[0]], color="#2a9d8f", s=45, label="start")
+        ax.scatter([x[-1]], [y[-1]], [alt[-1]], color="#111111", s=45, label="end")
+        ax.set_xlabel("x forward (m)")
+        ax.set_ylabel("y right (m)")
+        ax.set_zlabel("altitude (m)")
+        ax.legend(loc="best")
+        fig.savefig(self.output_dir / "trajectory_3d.png", dpi=160)
+        plt.close(fig)
+
+    def write_height_curve(self) -> None:
+        t = [s[0] for s in self.samples]
+        altitude = [-s[3] for s in self.samples]
+        _, _, tz = self.target_series()
+
+        fig, ax = plt.subplots(figsize=(9, 5), constrained_layout=True)
+        ax.set_title(f"{self.title} - height")
+        ax.plot(t, altitude, color="#1764ab", linewidth=2.0, label="actual altitude")
+        if tz:
+            ax.plot(t[: len(tz)], [-z for z in tz], color="#d1495b", linestyle="--", linewidth=1.5, label="target altitude")
+        ax.set_xlabel("time (s)")
+        ax.set_ylabel("altitude (m)")
+        ax.grid(True, alpha=0.3)
+        ax.legend(loc="best")
+        fig.savefig(self.output_dir / "height_curve.png", dpi=160)
+        plt.close(fig)
+
+    def write_speed_curve(self) -> None:
+        t = [s[0] for s in self.samples]
+        speed = [self.speed(s) for s in self.samples]
+
+        fig, ax = plt.subplots(figsize=(9, 5), constrained_layout=True)
+        ax.set_title(f"{self.title} - speed")
+        ax.plot(t, speed, color="#1764ab", linewidth=2.0, label="speed")
+        ax.axhline(self.thresholds["max_speed_pass"], color="#d1495b", linestyle="--", linewidth=1.3, label="PASS limit")
+        ax.set_xlabel("time (s)")
+        ax.set_ylabel("speed (m/s)")
+        ax.grid(True, alpha=0.3)
+        ax.legend(loc="best")
+        fig.savefig(self.output_dir / "speed_curve.png", dpi=160)
+        plt.close(fig)
+
+    def write_tracking_error(self) -> None:
+        t = [s[0] for s in self.samples]
+        err_xy = []
+        err_3d = []
+        err_z = []
+        for sample in self.samples:
+            xy, z, err = self.error_components(sample)
+            err_xy.append(xy)
+            err_z.append(abs(z) if not math.isnan(z) else math.nan)
+            err_3d.append(err)
+
+        fig, ax = plt.subplots(figsize=(9, 5), constrained_layout=True)
+        ax.set_title(f"{self.title} - tracking error")
+        ax.plot(t, err_3d, color="#1764ab", linewidth=2.0, label="3D error")
+        ax.plot(t, err_xy, color="#2a9d8f", linewidth=1.5, label="XY error")
+        ax.plot(t, err_z, color="#7a5195", linewidth=1.3, label="height error")
+        ax.axhline(self.thresholds["avg_error_pass"], color="#d1495b", linestyle="--", linewidth=1.3, label="avg PASS limit")
+        ax.set_xlabel("time (s)")
+        ax.set_ylabel("error (m)")
+        ax.grid(True, alpha=0.3)
+        ax.legend(loc="best")
+        fig.savefig(self.output_dir / "tracking_error.png", dpi=160)
+        plt.close(fig)
+
+    def write_animation(self) -> Optional[Path]:
+        if len(self.samples) < 2:
+            return None
+
+        step = max(1, len(self.samples) // 160)
+        frames = list(range(0, len(self.samples), step))
+        x = [s[1] for s in self.samples]
+        y = [s[2] for s in self.samples]
+        tx, ty, _ = self.target_series()
+
+        fig, ax = plt.subplots(figsize=(7, 7), constrained_layout=True)
+        ax.set_title(self.title)
+        ax.set_xlabel("x forward (m)")
+        ax.set_ylabel("y right (m)")
+        ax.grid(True, alpha=0.3)
+        ax.axis("equal")
+        margin = 0.75
+        all_x = x + tx
+        all_y = y + ty
+        ax.set_xlim(min(all_x) - margin, max(all_x) + margin)
+        ax.set_ylim(min(all_y) - margin, max(all_y) + margin)
+
+        actual_line, = ax.plot([], [], color="#1764ab", linewidth=2.2, label="actual")
+        target_line, = ax.plot([], [], color="#d1495b", linestyle="--", linewidth=1.5, label="target")
+        current_dot = ax.scatter([], [], color="#111111", s=70, zorder=4)
+        ax.legend(loc="best")
+
+        def update(frame_index: int):
+            actual_line.set_data(x[: frame_index + 1], y[: frame_index + 1])
+            if tx and ty:
+                target_line.set_data(tx[: frame_index + 1], ty[: frame_index + 1])
+            current_dot.set_offsets([[x[frame_index], y[frame_index]]])
+            return actual_line, target_line, current_dot
+
+        ani = animation.FuncAnimation(fig, update, frames=frames, interval=1000 / self.fps, blit=True)
+        if shutil.which("ffmpeg"):
+            output = self.output_dir / "trajectory.mp4"
+            ani.save(output, writer="ffmpeg", fps=self.fps, dpi=130)
+        else:
+            output = self.output_dir / "trajectory.gif"
+            ani.save(output, writer="pillow", fps=self.fps, dpi=110)
+        plt.close(fig)
+        return output
+
+    def compute_metrics(self) -> Dict[str, float]:
+        metrics: Dict[str, float] = {
+            "samples": float(len(self.samples)),
+            "duration_s": 0.0,
+            "path_length_m": 0.0,
+            "max_speed_mps": 0.0,
+            "avg_speed_mps": 0.0,
+            "avg_error_3d_m": math.nan,
+            "max_error_3d_m": math.nan,
+            "avg_error_xy_m": math.nan,
+            "avg_height_error_m": math.nan,
+            "final_error_3d_m": math.nan,
+            "target_point_count": float(len(self.unique_target_points())),
+            "circle_radius_avg_m": math.nan,
+            "circle_radius_error_avg_m": math.nan,
+            "stable_avg_error_3d_m": math.nan,
+            "stable_avg_height_error_m": math.nan,
+            "stable_max_speed_mps": math.nan,
+            "flight_avg_error_3d_m": math.nan,
+            "flight_avg_error_xy_m": math.nan,
+            "flight_avg_height_error_m": math.nan,
+            "flight_circle_radius_error_avg_m": math.nan,
+        }
+        if not self.samples:
+            return metrics
+
+        metrics["duration_s"] = self.samples[-1][0]
+        speeds = [self.speed(sample) for sample in self.samples]
+        metrics["max_speed_mps"] = max(speeds)
+        metrics["avg_speed_mps"] = sum(speeds) / len(speeds)
+        for prev, cur in zip(self.samples, self.samples[1:]):
+            metrics["path_length_m"] += math.dist(prev[1:4], cur[1:4])
+
+        errors_3d = []
+        errors_xy = []
+        errors_z = []
+        for sample in self.samples:
+            err_xy, err_z, err_3d = self.error_components(sample)
+            if not math.isnan(err_3d):
+                errors_3d.append(err_3d)
+            if not math.isnan(err_xy):
+                errors_xy.append(err_xy)
+            if not math.isnan(err_z):
+                errors_z.append(abs(err_z))
+        if errors_3d:
+            metrics["avg_error_3d_m"] = sum(errors_3d) / len(errors_3d)
+            metrics["max_error_3d_m"] = max(errors_3d)
+            metrics["final_error_3d_m"] = errors_3d[-1]
+        if errors_xy:
+            metrics["avg_error_xy_m"] = sum(errors_xy) / len(errors_xy)
+        if errors_z:
+            metrics["avg_height_error_m"] = sum(errors_z) / len(errors_z)
+
+        stable = self.stable_samples()
+        flight = self.flight_samples()
+        if self.demo_id == "demo03":
+            circle_samples = flight or stable or self.samples
+            radii = [math.hypot(s[7], s[8]) for s in circle_samples if self.has_target(s)]
+            actual_radii = [math.hypot(s[1], s[2]) for s in circle_samples]
+            if radii and actual_radii:
+                radius = sum(radii) / len(radii)
+                metrics["circle_radius_avg_m"] = sum(actual_radii) / len(actual_radii)
+                metrics["circle_radius_error_avg_m"] = sum(abs(r - radius) for r in actual_radii) / len(actual_radii)
+                metrics["flight_circle_radius_error_avg_m"] = metrics["circle_radius_error_avg_m"]
+        if stable:
+            stable_errors = [self.error_components(s) for s in stable if self.has_target(s)]
+            stable_3d = [e[2] for e in stable_errors if not math.isnan(e[2])]
+            stable_z = [abs(e[1]) for e in stable_errors if not math.isnan(e[1])]
+            stable_speed = [self.speed(s) for s in stable]
+            if stable_3d:
+                metrics["stable_avg_error_3d_m"] = sum(stable_3d) / len(stable_3d)
+            if stable_z:
+                metrics["stable_avg_height_error_m"] = sum(stable_z) / len(stable_z)
+            if stable_speed:
+                metrics["stable_max_speed_mps"] = max(stable_speed)
+        if flight:
+            flight_errors = [self.error_components(s) for s in flight if self.has_target(s)]
+            flight_3d = [e[2] for e in flight_errors if not math.isnan(e[2])]
+            flight_xy = [e[0] for e in flight_errors if not math.isnan(e[0])]
+            flight_z = [abs(e[1]) for e in flight_errors if not math.isnan(e[1])]
+            if flight_3d:
+                metrics["flight_avg_error_3d_m"] = sum(flight_3d) / len(flight_3d)
+            if flight_xy:
+                metrics["flight_avg_error_xy_m"] = sum(flight_xy) / len(flight_xy)
+            if flight_z:
+                metrics["flight_avg_height_error_m"] = sum(flight_z) / len(flight_z)
+        return metrics
+
+    def evaluate_pass_fail(self, metrics: Dict[str, float]) -> Tuple[bool, str]:
+        if metrics["samples"] < self.thresholds["min_samples_pass"]:
+            return False, "too_few_samples"
+        if metrics["max_speed_mps"] > self.thresholds["max_speed_pass"]:
+            return False, "max_speed_exceeded"
+        if math.isnan(metrics["avg_error_3d_m"]):
+            return False, "no_target_samples"
+
+        demo = self.demo_id
+        if demo == "demo01":
+            if metrics["stable_max_speed_mps"] > self.thresholds["max_speed_pass"]:
+                return False, "stable_speed_exceeded"
+            if metrics["stable_avg_height_error_m"] > self.thresholds["height_error_pass"]:
+                return False, "height_not_stable"
+            if metrics["stable_avg_error_3d_m"] > self.thresholds["avg_error_pass"]:
+                return False, "hover_error_high"
+        elif demo == "demo02":
+            if metrics["target_point_count"] < 4:
+                return False, "waypoints_not_observed"
+            if math.isnan(metrics["flight_avg_error_3d_m"]):
+                return False, "no_airborne_tracking_samples"
+            if metrics["flight_avg_error_3d_m"] > self.thresholds["avg_error_pass"]:
+                return False, "waypoint_tracking_error_high"
+        elif demo == "demo03":
+            if math.isnan(metrics["flight_circle_radius_error_avg_m"]):
+                return False, "no_airborne_circle_samples"
+            if metrics["flight_circle_radius_error_avg_m"] > 0.6:
+                return False, "circle_radius_error_high"
+            if math.isnan(metrics["flight_avg_height_error_m"]):
+                return False, "no_airborne_height_samples"
+            if metrics["flight_avg_height_error_m"] > self.thresholds["height_error_pass"]:
+                return False, "circle_height_error_high"
+        elif demo == "demo04":
+            if metrics["target_point_count"] < 4:
+                return False, "external_targets_not_observed"
+            if metrics["final_error_3d_m"] > self.thresholds["final_error_pass"]:
+                return False, "final_target_error_high"
+            if metrics["avg_error_3d_m"] > self.thresholds["avg_error_pass"]:
+                return False, "external_tracking_error_high"
+        else:
+            if metrics["avg_error_3d_m"] > self.thresholds["avg_error_pass"]:
+                return False, "tracking_error_high"
+
+        return True, "ok"
+
+    def write_summary(
+        self,
+        metrics: Dict[str, float],
+        video_path: Optional[Path],
+        passed: bool = False,
+        reason: str = "no_samples",
+    ) -> None:
+        lines = [
+            f"# {self.title}",
+            "",
+            f"RESULT={'PASS' if passed else 'FAIL'}",
+            f"reason={reason}",
+            "",
+            f"- demo_id: {self.demo_id}",
+            f"- samples: {int(metrics['samples'])}",
+            f"- duration_s: {metrics['duration_s']:.2f}",
+            f"- path_length_m: {metrics['path_length_m']:.2f}",
+            f"- max_speed_mps: {metrics['max_speed_mps']:.2f}",
+            f"- avg_speed_mps: {metrics['avg_speed_mps']:.2f}",
+            f"- avg_error_3d_m: {self.metric_cell(metrics['avg_error_3d_m'])}",
+            f"- max_error_3d_m: {self.metric_cell(metrics['max_error_3d_m'])}",
+            f"- avg_error_xy_m: {self.metric_cell(metrics['avg_error_xy_m'])}",
+            f"- avg_height_error_m: {self.metric_cell(metrics['avg_height_error_m'])}",
+            f"- final_error_3d_m: {self.metric_cell(metrics['final_error_3d_m'])}",
+            f"- stable_avg_error_3d_m: {self.metric_cell(metrics['stable_avg_error_3d_m'])}",
+            f"- stable_avg_height_error_m: {self.metric_cell(metrics['stable_avg_height_error_m'])}",
+            f"- stable_max_speed_mps: {self.metric_cell(metrics['stable_max_speed_mps'])}",
+            f"- flight_avg_error_3d_m: {self.metric_cell(metrics['flight_avg_error_3d_m'])}",
+            f"- flight_avg_error_xy_m: {self.metric_cell(metrics['flight_avg_error_xy_m'])}",
+            f"- flight_avg_height_error_m: {self.metric_cell(metrics['flight_avg_height_error_m'])}",
+            f"- flight_circle_radius_error_avg_m: {self.metric_cell(metrics['flight_circle_radius_error_avg_m'])}",
+            f"- target_point_count: {int(metrics['target_point_count'])}",
+            f"- final_position_ned: {self.final_position_text()}",
+            "",
+            "## Outputs",
+            "",
+            "- trajectory.csv",
+            "- trajectory_3d.png",
+            "- xy_path.png",
+            "- height_curve.png",
+            "- speed_curve.png",
+            "- tracking_error.png",
+        ]
+        if video_path:
+            lines.append(f"- {video_path.name}")
+        lines.append("- result.txt")
+        (self.output_dir / "summary.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+exec
+/bin/bash -lc "sed -n '1,180p' run_codex_queue.sh" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Codex CLI command. Permission and sandbox defaults are read from Codex config.
+# If the local CLI changes flags, override this variable:
+#   CODEX_CMD=(codex exec) ./run_codex_queue.sh
+# or edit only this line.
+CODEX_CMD=(${CODEX_CMD:-codex exec})
+
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+TASK_DIR="$ROOT_DIR/codex-tasks"
+LOG_DIR="$ROOT_DIR/codex-logs"
+DRY_RUN=0
+FROM_PREFIX=""
+SINGLE_TASK=""
+
+usage() {
+  cat <<'EOF'
+Usage:
+  ./run_codex_queue.sh
+  ./run_codex_queue.sh --dry-run
+  ./run_codex_queue.sh --from 003
+  ./run_codex_queue.sh --from 006
+  ./run_codex_queue.sh --task codex-tasks/004-design-uav-control-api.md
+
+Environment:
+  CODEX_CMD="codex exec"
+    Override if your Codex CLI uses different permission flags.
+EOF
+}
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --dry-run)
+      DRY_RUN=1
+      shift
+      ;;
+    --from)
+      FROM_PREFIX="${2:?--from requires a task prefix, for example 003}"
+      shift 2
+      ;;
+    --task)
+      SINGLE_TASK="${2:?--task requires a task file path}"
+      shift 2
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      echo "Unknown argument: $1" >&2
+      usage >&2
+      exit 2
+      ;;
+  esac
+done
+
+cd "$ROOT_DIR"
+
+if ! command -v codex >/dev/null 2>&1; then
+  echo "ERROR: codex CLI not found in PATH" >&2
+  exit 127
+fi
+
+if [ ! -f "$ROOT_DIR/AGENTS.md" ]; then
+  echo "ERROR: AGENTS.md not found" >&2
+  exit 1
+fi
+
+if [ ! -d "$TASK_DIR" ]; then
+  echo "ERROR: codex-tasks/ not found" >&2
+  exit 1
+fi
+
+mkdir -p "$LOG_DIR"
+
+task_stem() {
+  basename "$1" .md
+}
+
+run_task() {
+  local task_file="$1"
+  local stem
+  local done_file
+  local stamp
+  local log_file
+
+  stem="$(task_stem "$task_file")"
+  done_file="$LOG_DIR/$stem.done"
+  stamp="$(date +%Y%m%d_%H%M%S)"
+  log_file="$LOG_DIR/${stem}-${stamp}.log"
+
+  if [ -z "$SINGLE_TASK" ] && [ -f "$done_file" ]; then
+    echo "SKIP $task_file already done: $done_file"
+    return 0
+  fi
+
+  echo "TASK $task_file"
+  echo "LOG  $log_file"
+  echo "START $(date --iso-8601=seconds)"
+
+  if [ "$DRY_RUN" = "1" ]; then
+    echo "DRY-RUN: ${CODEX_CMD[*]} < $task_file | tee $log_file"
+    return 0
+  fi
+
+  set +e
+  "${CODEX_CMD[@]}" < "$task_file" 2>&1 | tee "$log_file"
+  local status=${PIPESTATUS[0]}
+  set -e
+
+  if [ "$status" -eq 0 ]; then
+    touch "$done_file"
+    echo "END   $(date --iso-8601=seconds)"
+    echo "DONE $task_file"
+  else
+    echo "END   $(date --iso-8601=seconds)"
+    echo "FAIL $task_file status=$status" >&2
+    echo "See log: $log_file" >&2
+    exit "$status"
+  fi
+}
+
+if [ -n "$SINGLE_TASK" ]; then
+  if [ ! -f "$SINGLE_TASK" ]; then
+    echo "ERROR: task file not found: $SINGLE_TASK" >&2
+    exit 1
+  fi
+  run_task "$SINGLE_TASK"
+  exit 0
+fi
+
+mapfile -t TASKS < <(find "$TASK_DIR" -maxdepth 1 -type f -name "*.md" | sort)
+
+if [ "${#TASKS[@]}" -eq 0 ]; then
+  echo "No task files found in $TASK_DIR" >&2
+  exit 1
+fi
+
+for task_file in "${TASKS[@]}"; do
+  stem="$(task_stem "$task_file")"
+  prefix="${stem%%-*}"
+  if [ -n "$FROM_PREFIX" ] && [ "$prefix" \< "$FROM_PREFIX" ]; then
+    echo "SKIP $task_file before --from $FROM_PREFIX"
+    continue
+  fi
+  run_task "$task_file"
+done
+
+codex
+I found the key compatibility issue: the bridge’s default `target_jump_limit` is 1.5 m, while the existing Demo 04 square moves in 2 m edges, so the bridge runner needs to set that limit high enough for the current sequence. I’m going to update the Demo 04 runner to use the bridge by default, keep a legacy direct-node mode behind an env var, and add a dry-run path plus docs.
+apply patch
+patch: completed
+/home/clcwork/UAV_capture/px4_ros2_ws/docs/REGRESSION_CHECKS.md
+/home/clcwork/UAV_capture/px4_ros2_ws/docs/VISUALIZATION_GUIDE.md
+/home/clcwork/UAV_capture/px4_ros2_ws/scripts/run_demo04_external_setpoint.sh
+/home/clcwork/UAV_capture/px4_ros2_ws/scripts/start_stack.sh
+/home/clcwork/UAV_capture/px4_ros2_ws/scripts/stop_stack.sh
+diff --git a/UAV_capture/px4_ros2_ws/docs/REGRESSION_CHECKS.md b/UAV_capture/px4_ros2_ws/docs/REGRESSION_CHECKS.md
+index ee752127c552d513faadad194a265bfba3532b9d..0d0cf5d7db74d9f4ea50cb308a044cb85bca422f
+--- a/UAV_capture/px4_ros2_ws/docs/REGRESSION_CHECKS.md
++++ b/UAV_capture/px4_ros2_ws/docs/REGRESSION_CHECKS.md
+@@ -53,6 +53,30 @@
+ vz
+ ```
+ 
++## Demo 04 Bridge Check
++
++Demo 04 should normally be generated with the bridge-backed runner:
++
++```bash
++./scripts/run_demo04_external_setpoint.sh
++./scripts/check_demo_outputs.sh visualizations/demo04_external_setpoint
++```
++
++This starts the stack, runs `uav_control_bridge`, publishes the existing square
++sequence to `/uav/target_position`, and records outputs under
++`visualizations/demo04_external_setpoint/<timestamp>/`. Use this dry-run path
++when the full PX4/Gazebo simulation is not available:
++
++```bash
++DRY_RUN=1 ./scripts/run_demo04_external_setpoint.sh
++```
++
++For legacy comparison only, run:
++
++```bash
++DEMO04_MODE=legacy ./scripts/run_demo04_external_setpoint.sh
++```
++
+ ## Legacy Hover Check
+ 
+ Older hover experiment directories under `logs/offboard_hover/<timestamp>` may
+diff --git a/UAV_capture/px4_ros2_ws/docs/VISUALIZATION_GUIDE.md b/UAV_capture/px4_ros2_ws/docs/VISUALIZATION_GUIDE.md
+index bd050bcdadf1fb286ac175140172c80e7a64e85c..ed880d9c3b8c5a6f4bb6f0aef1744fdcf3cb3da4
+--- a/UAV_capture/px4_ros2_ws/docs/VISUALIZATION_GUIDE.md
++++ b/UAV_capture/px4_ros2_ws/docs/VISUALIZATION_GUIDE.md
+@@ -38,7 +38,7 @@
+ | Demo 01 Offboard Hover | `scripts/run_demo01_hover.sh` | `visualizations/demo01_hover/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
+ | Demo 02 Waypoint Flight | `scripts/run_demo02_waypoint_flight.sh` | `visualizations/demo02_waypoint_flight/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
+ | Demo 03 Circle Trajectory | `scripts/run_demo03_circle_trajectory.sh` | `visualizations/demo03_circle_trajectory/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
+-| Demo 04 External Setpoint Interface | `scripts/run_demo04_external_setpoint.sh` | `visualizations/demo04_external_setpoint/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
++| Demo 04 External Setpoint Bridge | `scripts/run_demo04_external_setpoint.sh` | `visualizations/demo04_external_setpoint/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
+ 
+ ## Generate New Results
+ 
+@@ -55,6 +55,31 @@
+ ./scripts/run_demo04_external_setpoint.sh
+ ```
+ 
++Demo 04 now runs the bridge-backed external setpoint workflow by default:
++
++```bash
++DEMO04_MODE=bridge ./scripts/run_demo04_external_setpoint.sh
++```
++
++The runner starts `scripts/start_stack.sh`, records with
++`scripts/run_trajectory_recorder.sh`, runs
++`ros2 run px4_offboard_hover uav_control_bridge`, and publishes the existing
++square target sequence to `/uav/target_position` as NED
++`geometry_msgs/msg/Point` commands. The square uses z=-2.0, which means 2 m
++positive altitude in PX4 NED coordinates.
++
++The original direct Demo 04 node is still available for comparison:
++
++```bash
++DEMO04_MODE=legacy ./scripts/run_demo04_external_setpoint.sh
++```
++
++To inspect the bridge command path without launching PX4/Gazebo:
++
++```bash
++DRY_RUN=1 ./scripts/run_demo04_external_setpoint.sh
++```
++
+ Each runner creates a new timestamped directory under `logs/<demo>/` and
+ `visualizations/<demo>/`. The runner prints the exact output paths after the
+ trajectory recorder finishes.
+diff --git a/UAV_capture/px4_ros2_ws/scripts/run_demo04_external_setpoint.sh b/UAV_capture/px4_ros2_ws/scripts/run_demo04_external_setpoint.sh
+index 80a63e0447515358746565a8abea7f43ac2c0d2d..3c41be73ac2cbcd7d8d2a48395d4c095338ac9b5
+--- a/UAV_capture/px4_ros2_ws/scripts/run_demo04_external_setpoint.sh
++++ b/UAV_capture/px4_ros2_ws/scripts/run_demo04_external_setpoint.sh
+@@ -2,37 +2,81 @@
+ set -euo pipefail
+ 
+ WS_DIR="${WS_DIR:-/home/clcwork/UAV_capture/px4_ros2_ws}"
++DEMO04_MODE="${DEMO04_MODE:-bridge}"
++DRY_RUN="${DRY_RUN:-0}"
+ INITIAL_X="${INITIAL_X:-0.0}"
+ INITIAL_Y="${INITIAL_Y:-0.0}"
+ INITIAL_Z="${INITIAL_Z:--2.0}"
+ VIS_DURATION="${VIS_DURATION:-120.0}"
+ TARGET_START_DELAY="${TARGET_START_DELAY:-15}"
+ TARGET_HOLD="${TARGET_HOLD:-18}"
++BRIDGE_TARGET_TIMEOUT="${BRIDGE_TARGET_TIMEOUT:-25.0}"
++BRIDGE_TARGET_JUMP_LIMIT="${BRIDGE_TARGET_JUMP_LIMIT:-2.5}"
++BRIDGE_MAX_ALTITUDE="${BRIDGE_MAX_ALTITUDE:-5.0}"
++BRIDGE_MIN_ALTITUDE="${BRIDGE_MIN_ALTITUDE:-0.5}"
++BRIDGE_MAX_HORIZONTAL_RANGE="${BRIDGE_MAX_HORIZONTAL_RANGE:-5.0}"
+ STAMP="$(date +%Y%m%d_%H%M%S)"
+ LOG_DIR="$WS_DIR/logs/demo04_external_setpoint/$STAMP"
+ VIS_DIR="$WS_DIR/visualizations/demo04_external_setpoint/$STAMP"
+ export RESET_STACK="${RESET_STACK:-1}"
+ 
++case "$DEMO04_MODE" in
++  bridge)
++    CONTROL_SESSION="px4_uav_control_bridge"
++    CONTROL_LOG="$LOG_DIR/uav_control_bridge.log"
++    CONTROL_TITLE="Demo 04 External Setpoint Bridge"
++    CONTROL_RUNNER="ros2 run px4_offboard_hover uav_control_bridge --ros-args -p initial_x:=$INITIAL_X -p initial_y:=$INITIAL_Y -p initial_z:=$INITIAL_Z -p target_timeout:=$BRIDGE_TARGET_TIMEOUT -p target_jump_limit:=$BRIDGE_TARGET_JUMP_LIMIT -p max_altitude:=$BRIDGE_MAX_ALTITUDE -p min_altitude:=$BRIDGE_MIN_ALTITUDE -p max_horizontal_range:=$BRIDGE_MAX_HORIZONTAL_RANGE"
++    ;;
++  legacy)
++    CONTROL_SESSION="px4_demo04_external_setpoint"
++    CONTROL_LOG="$LOG_DIR/demo04.log"
++    CONTROL_TITLE="Demo 04 External Setpoint Interface"
++    CONTROL_RUNNER="ros2 run px4_offboard_hover demo04_external_setpoint --ros-args -p initial_x:=$INITIAL_X -p initial_y:=$INITIAL_Y -p initial_z:=$INITIAL_Z"
++    ;;
++  *)
++    echo "Unsupported DEMO04_MODE=$DEMO04_MODE. Use bridge or legacy." >&2
++    exit 2
++    ;;
++esac
++
++TARGET_SEQUENCE_COMMAND="sleep \"$TARGET_START_DELAY\" && \
++  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 2.0, y: 0.0, z: -2.0}' && sleep \"$TARGET_HOLD\" && \
++  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 2.0, y: 2.0, z: -2.0}' && sleep \"$TARGET_HOLD\" && \
++  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 0.0, y: 2.0, z: -2.0}' && sleep \"$TARGET_HOLD\" && \
++  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 0.0, y: 0.0, z: -2.0}'"
++
++if [ "$DRY_RUN" = "1" ]; then
++  echo "DRY_RUN=1"
++  echo "mode=$DEMO04_MODE"
++  echo "start_stack=$WS_DIR/scripts/start_stack.sh"
++  echo "trajectory_recorder=VIS_DIR=\"$VIS_DIR\" VIS_DURATION=\"$VIS_DURATION\" VIS_TITLE=\"$CONTROL_TITLE\" VIS_DEMO_ID=\"demo04\" AVG_ERROR_PASS=\"0.9\" FINAL_ERROR_PASS=\"0.6\" MAX_SPEED_PASS=\"3.0\" \"$WS_DIR/scripts/run_trajectory_recorder.sh\""
++  echo "control_session=$CONTROL_SESSION"
++  echo "control_command=$CONTROL_RUNNER"
++  echo "target_topic=/uav/target_position geometry_msgs/msg/Point"
++  echo "target_sequence=$TARGET_SEQUENCE_COMMAND"
++  echo "logs=$LOG_DIR"
++  echo "visuals=$VIS_DIR"
++  exit 0
++fi
++
+ mkdir -p "$LOG_DIR" "$VIS_DIR"
+ "$WS_DIR/scripts/start_stack.sh"
+ 
+ tmux kill-session -t px4_trajectory_recorder 2>/dev/null || true
+ tmux new-session -d -s px4_trajectory_recorder \
+-  "VIS_DIR=\"$VIS_DIR\" VIS_DURATION=\"$VIS_DURATION\" VIS_TITLE=\"Demo 04 External Setpoint Interface\" VIS_DEMO_ID=\"demo04\" AVG_ERROR_PASS=\"0.9\" FINAL_ERROR_PASS=\"0.6\" MAX_SPEED_PASS=\"3.0\" \"$WS_DIR/scripts/run_trajectory_recorder.sh\" 2>&1 | tee \"$LOG_DIR/trajectory_recorder.log\""
++  "VIS_DIR=\"$VIS_DIR\" VIS_DURATION=\"$VIS_DURATION\" VIS_TITLE=\"$CONTROL_TITLE\" VIS_DEMO_ID=\"demo04\" AVG_ERROR_PASS=\"0.9\" FINAL_ERROR_PASS=\"0.6\" MAX_SPEED_PASS=\"3.0\" \"$WS_DIR/scripts/run_trajectory_recorder.sh\" 2>&1 | tee \"$LOG_DIR/trajectory_recorder.log\""
+ 
+ tmux kill-session -t px4_demo04_external_setpoint 2>/dev/null || true
+-tmux new-session -d -s px4_demo04_external_setpoint \
+-  "cd \"$WS_DIR\" && set +u && source /opt/ros/jazzy/setup.bash && source install/setup.bash && set -u && ros2 run px4_offboard_hover demo04_external_setpoint --ros-args -p initial_x:=$INITIAL_X -p initial_y:=$INITIAL_Y -p initial_z:=$INITIAL_Z 2>&1 | tee \"$LOG_DIR/demo04.log\""
++tmux kill-session -t px4_uav_control_bridge 2>/dev/null || true
++tmux new-session -d -s "$CONTROL_SESSION" \
++  "cd \"$WS_DIR\" && set +u && source /opt/ros/jazzy/setup.bash && source install/setup.bash && set -u && $CONTROL_RUNNER 2>&1 | tee \"$CONTROL_LOG\""
+ 
+ tmux kill-session -t px4_demo04_target_sequence 2>/dev/null || true
+ tmux new-session -d -s px4_demo04_target_sequence \
+-  "cd \"$WS_DIR\" && set +u && source /opt/ros/jazzy/setup.bash && source install/setup.bash && set -u && sleep \"$TARGET_START_DELAY\" && \
+-  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 2.0, y: 0.0, z: -2.0}' && sleep \"$TARGET_HOLD\" && \
+-  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 2.0, y: 2.0, z: -2.0}' && sleep \"$TARGET_HOLD\" && \
+-  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 0.0, y: 2.0, z: -2.0}' && sleep \"$TARGET_HOLD\" && \
+-  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 0.0, y: 0.0, z: -2.0}' 2>&1 | tee \"$LOG_DIR/target_sequence.log\""
++  "cd \"$WS_DIR\" && set +u && source /opt/ros/jazzy/setup.bash && source install/setup.bash && set -u && $TARGET_SEQUENCE_COMMAND 2>&1 | tee \"$LOG_DIR/target_sequence.log\""
+ 
+-echo "demo04 session=px4_demo04_external_setpoint"
++echo "demo04 mode=$DEMO04_MODE"
++echo "control session=$CONTROL_SESSION"
+ echo "visualizer session=px4_trajectory_recorder"
+ echo "target sequence session=px4_demo04_target_sequence"
+ echo "target topic=/uav/target_position geometry_msgs/msg/Point"
+diff --git a/UAV_capture/px4_ros2_ws/scripts/start_stack.sh b/UAV_capture/px4_ros2_ws/scripts/start_stack.sh
+index 2a1cabc70ef0877acaf78595b3cb14c7d926a326..dbcc143f436006870fd1f76baeca6218583b6edd
+--- a/UAV_capture/px4_ros2_ws/scripts/start_stack.sh
++++ b/UAV_capture/px4_ros2_ws/scripts/start_stack.sh
+@@ -10,6 +10,7 @@
+   tmux kill-session -t px4_demo02_waypoint_flight 2>/dev/null || true
+   tmux kill-session -t px4_demo03_circle_trajectory 2>/dev/null || true
+   tmux kill-session -t px4_demo04_external_setpoint 2>/dev/null || true
++  tmux kill-session -t px4_uav_control_bridge 2>/dev/null || true
+   tmux kill-session -t px4_demo04_target_sequence 2>/dev/null || true
+   tmux kill-session -t px4_trajectory_recorder 2>/dev/null || true
+   tmux kill-session -t micro_xrce_agent 2>/dev/null || true
+diff --git a/UAV_capture/px4_ros2_ws/scripts/stop_stack.sh b/UAV_capture/px4_ros2_ws/scripts/stop_stack.sh
+index fbf0c08ce1a93ea14633b8446281b84c8e994d05..8a62aeb89592a1b41cc8525a4e9ed12f9c187ee7
+--- a/UAV_capture/px4_ros2_ws/scripts/stop_stack.sh
++++ b/UAV_capture/px4_ros2_ws/scripts/stop_stack.sh
+@@ -5,6 +5,7 @@
+ tmux kill-session -t px4_demo02_waypoint_flight 2>/dev/null || true
+ tmux kill-session -t px4_demo03_circle_trajectory 2>/dev/null || true
+ tmux kill-session -t px4_demo04_external_setpoint 2>/dev/null || true
++tmux kill-session -t px4_uav_control_bridge 2>/dev/null || true
+ tmux kill-session -t px4_demo04_target_sequence 2>/dev/null || true
+ tmux kill-session -t px4_trajectory_recorder 2>/dev/null || true
+ tmux kill-session -t micro_xrce_agent 2>/dev/null || true
+
+diff --git a/UAV_capture/px4_ros2_ws/docs/REGRESSION_CHECKS.md b/UAV_capture/px4_ros2_ws/docs/REGRESSION_CHECKS.md
+index ee752127c552d513faadad194a265bfba3532b9d..0d0cf5d7db74d9f4ea50cb308a044cb85bca422f
+--- a/UAV_capture/px4_ros2_ws/docs/REGRESSION_CHECKS.md
++++ b/UAV_capture/px4_ros2_ws/docs/REGRESSION_CHECKS.md
+@@ -53,6 +53,30 @@
+ vz
+ ```
+ 
++## Demo 04 Bridge Check
++
++Demo 04 should normally be generated with the bridge-backed runner:
++
++```bash
++./scripts/run_demo04_external_setpoint.sh
++./scripts/check_demo_outputs.sh visualizations/demo04_external_setpoint
++```
++
++This starts the stack, runs `uav_control_bridge`, publishes the existing square
++sequence to `/uav/target_position`, and records outputs under
++`visualizations/demo04_external_setpoint/<timestamp>/`. Use this dry-run path
++when the full PX4/Gazebo simulation is not available:
++
++```bash
++DRY_RUN=1 ./scripts/run_demo04_external_setpoint.sh
++```
++
++For legacy comparison only, run:
++
++```bash
++DEMO04_MODE=legacy ./scripts/run_demo04_external_setpoint.sh
++```
++
+ ## Legacy Hover Check
+ 
+ Older hover experiment directories under `logs/offboard_hover/<timestamp>` may
+diff --git a/UAV_capture/px4_ros2_ws/docs/VISUALIZATION_GUIDE.md b/UAV_capture/px4_ros2_ws/docs/VISUALIZATION_GUIDE.md
+index bd050bcdadf1fb286ac175140172c80e7a64e85c..ed880d9c3b8c5a6f4bb6f0aef1744fdcf3cb3da4
+--- a/UAV_capture/px4_ros2_ws/docs/VISUALIZATION_GUIDE.md
++++ b/UAV_capture/px4_ros2_ws/docs/VISUALIZATION_GUIDE.md
+@@ -38,7 +38,7 @@
+ | Demo 01 Offboard Hover | `scripts/run_demo01_hover.sh` | `visualizations/demo01_hover/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
+ | Demo 02 Waypoint Flight | `scripts/run_demo02_waypoint_flight.sh` | `visualizations/demo02_waypoint_flight/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
+ | Demo 03 Circle Trajectory | `scripts/run_demo03_circle_trajectory.sh` | `visualizations/demo03_circle_trajectory/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
+-| Demo 04 External Setpoint Interface | `scripts/run_demo04_external_setpoint.sh` | `visualizations/demo04_external_setpoint/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
++| Demo 04 External Setpoint Bridge | `scripts/run_demo04_external_setpoint.sh` | `visualizations/demo04_external_setpoint/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
+ 
+ ## Generate New Results
+ 
+@@ -55,6 +55,31 @@
+ ./scripts/run_demo04_external_setpoint.sh
+ ```
+ 
++Demo 04 now runs the bridge-backed external setpoint workflow by default:
++
++```bash
++DEMO04_MODE=bridge ./scripts/run_demo04_external_setpoint.sh
++```
++
++The runner starts `scripts/start_stack.sh`, records with
++`scripts/run_trajectory_recorder.sh`, runs
++`ros2 run px4_offboard_hover uav_control_bridge`, and publishes the existing
++square target sequence to `/uav/target_position` as NED
++`geometry_msgs/msg/Point` commands. The square uses z=-2.0, which means 2 m
++positive altitude in PX4 NED coordinates.
++
++The original direct Demo 04 node is still available for comparison:
++
++```bash
++DEMO04_MODE=legacy ./scripts/run_demo04_external_setpoint.sh
++```
++
++To inspect the bridge command path without launching PX4/Gazebo:
++
++```bash
++DRY_RUN=1 ./scripts/run_demo04_external_setpoint.sh
++```
++
+ Each runner creates a new timestamped directory under `logs/<demo>/` and
+ `visualizations/<demo>/`. The runner prints the exact output paths after the
+ trajectory recorder finishes.
+diff --git a/UAV_capture/px4_ros2_ws/scripts/run_demo04_external_setpoint.sh b/UAV_capture/px4_ros2_ws/scripts/run_demo04_external_setpoint.sh
+index 80a63e0447515358746565a8abea7f43ac2c0d2d..3c41be73ac2cbcd7d8d2a48395d4c095338ac9b5
+--- a/UAV_capture/px4_ros2_ws/scripts/run_demo04_external_setpoint.sh
++++ b/UAV_capture/px4_ros2_ws/scripts/run_demo04_external_setpoint.sh
+@@ -2,37 +2,81 @@
+ set -euo pipefail
+ 
+ WS_DIR="${WS_DIR:-/home/clcwork/UAV_capture/px4_ros2_ws}"
++DEMO04_MODE="${DEMO04_MODE:-bridge}"
++DRY_RUN="${DRY_RUN:-0}"
+ INITIAL_X="${INITIAL_X:-0.0}"
+ INITIAL_Y="${INITIAL_Y:-0.0}"
+ INITIAL_Z="${INITIAL_Z:--2.0}"
+ VIS_DURATION="${VIS_DURATION:-120.0}"
+ TARGET_START_DELAY="${TARGET_START_DELAY:-15}"
+ TARGET_HOLD="${TARGET_HOLD:-18}"
++BRIDGE_TARGET_TIMEOUT="${BRIDGE_TARGET_TIMEOUT:-25.0}"
++BRIDGE_TARGET_JUMP_LIMIT="${BRIDGE_TARGET_JUMP_LIMIT:-2.5}"
++BRIDGE_MAX_ALTITUDE="${BRIDGE_MAX_ALTITUDE:-5.0}"
++BRIDGE_MIN_ALTITUDE="${BRIDGE_MIN_ALTITUDE:-0.5}"
++BRIDGE_MAX_HORIZONTAL_RANGE="${BRIDGE_MAX_HORIZONTAL_RANGE:-5.0}"
+ STAMP="$(date +%Y%m%d_%H%M%S)"
+ LOG_DIR="$WS_DIR/logs/demo04_external_setpoint/$STAMP"
+ VIS_DIR="$WS_DIR/visualizations/demo04_external_setpoint/$STAMP"
+ export RESET_STACK="${RESET_STACK:-1}"
+ 
++case "$DEMO04_MODE" in
++  bridge)
++    CONTROL_SESSION="px4_uav_control_bridge"
++    CONTROL_LOG="$LOG_DIR/uav_control_bridge.log"
++    CONTROL_TITLE="Demo 04 External Setpoint Bridge"
++    CONTROL_RUNNER="ros2 run px4_offboard_hover uav_control_bridge --ros-args -p initial_x:=$INITIAL_X -p initial_y:=$INITIAL_Y -p initial_z:=$INITIAL_Z -p target_timeout:=$BRIDGE_TARGET_TIMEOUT -p target_jump_limit:=$BRIDGE_TARGET_JUMP_LIMIT -p max_altitude:=$BRIDGE_MAX_ALTITUDE -p min_altitude:=$BRIDGE_MIN_ALTITUDE -p max_horizontal_range:=$BRIDGE_MAX_HORIZONTAL_RANGE"
++    ;;
++  legacy)
++    CONTROL_SESSION="px4_demo04_external_setpoint"
++    CONTROL_LOG="$LOG_DIR/demo04.log"
++    CONTROL_TITLE="Demo 04 External Setpoint Interface"
++    CONTROL_RUNNER="ros2 run px4_offboard_hover demo04_external_setpoint --ros-args -p initial_x:=$INITIAL_X -p initial_y:=$INITIAL_Y -p initial_z:=$INITIAL_Z"
++    ;;
++  *)
++    echo "Unsupported DEMO04_MODE=$DEMO04_MODE. Use bridge or legacy." >&2
++    exit 2
++    ;;
++esac
++
++TARGET_SEQUENCE_COMMAND="sleep \"$TARGET_START_DELAY\" && \
++  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 2.0, y: 0.0, z: -2.0}' && sleep \"$TARGET_HOLD\" && \
++  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 2.0, y: 2.0, z: -2.0}' && sleep \"$TARGET_HOLD\" && \
++  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 0.0, y: 2.0, z: -2.0}' && sleep \"$TARGET_HOLD\" && \
++  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 0.0, y: 0.0, z: -2.0}'"
++
++if [ "$DRY_RUN" = "1" ]; then
++  echo "DRY_RUN=1"
++  echo "mode=$DEMO04_MODE"
++  echo "start_stack=$WS_DIR/scripts/start_stack.sh"
++  echo "trajectory_recorder=VIS_DIR=\"$VIS_DIR\" VIS_DURATION=\"$VIS_DURATION\" VIS_TITLE=\"$CONTROL_TITLE\" VIS_DEMO_ID=\"demo04\" AVG_ERROR_PASS=\"0.9\" FINAL_ERROR_PASS=\"0.6\" MAX_SPEED_PASS=\"3.0\" \"$WS_DIR/scripts/run_trajectory_recorder.sh\""
++  echo "control_session=$CONTROL_SESSION"
++  echo "control_command=$CONTROL_RUNNER"
++  echo "target_topic=/uav/target_position geometry_msgs/msg/Point"
++  echo "target_sequence=$TARGET_SEQUENCE_COMMAND"
++  echo "logs=$LOG_DIR"
++  echo "visuals=$VIS_DIR"
++  exit 0
++fi
++
+ mkdir -p "$LOG_DIR" "$VIS_DIR"
+ "$WS_DIR/scripts/start_stack.sh"
+ 
+ tmux kill-session -t px4_trajectory_recorder 2>/dev/null || true
+ tmux new-session -d -s px4_trajectory_recorder \
+-  "VIS_DIR=\"$VIS_DIR\" VIS_DURATION=\"$VIS_DURATION\" VIS_TITLE=\"Demo 04 External Setpoint Interface\" VIS_DEMO_ID=\"demo04\" AVG_ERROR_PASS=\"0.9\" FINAL_ERROR_PASS=\"0.6\" MAX_SPEED_PASS=\"3.0\" \"$WS_DIR/scripts/run_trajectory_recorder.sh\" 2>&1 | tee \"$LOG_DIR/trajectory_recorder.log\""
++  "VIS_DIR=\"$VIS_DIR\" VIS_DURATION=\"$VIS_DURATION\" VIS_TITLE=\"$CONTROL_TITLE\" VIS_DEMO_ID=\"demo04\" AVG_ERROR_PASS=\"0.9\" FINAL_ERROR_PASS=\"0.6\" MAX_SPEED_PASS=\"3.0\" \"$WS_DIR/scripts/run_trajectory_recorder.sh\" 2>&1 | tee \"$LOG_DIR/trajectory_recorder.log\""
+ 
+ tmux kill-session -t px4_demo04_external_setpoint 2>/dev/null || true
+-tmux new-session -d -s px4_demo04_external_setpoint \
+-  "cd \"$WS_DIR\" && set +u && source /opt/ros/jazzy/setup.bash && source install/setup.bash && set -u && ros2 run px4_offboard_hover demo04_external_setpoint --ros-args -p initial_x:=$INITIAL_X -p initial_y:=$INITIAL_Y -p initial_z:=$INITIAL_Z 2>&1 | tee \"$LOG_DIR/demo04.log\""
++tmux kill-session -t px4_uav_control_bridge 2>/dev/null || true
++tmux new-session -d -s "$CONTROL_SESSION" \
++  "cd \"$WS_DIR\" && set +u && source /opt/ros/jazzy/setup.bash && source install/setup.bash && set -u && $CONTROL_RUNNER 2>&1 | tee \"$CONTROL_LOG\""
+ 
+ tmux kill-session -t px4_demo04_target_sequence 2>/dev/null || true
+ tmux new-session -d -s px4_demo04_target_sequence \
+-  "cd \"$WS_DIR\" && set +u && source /opt/ros/jazzy/setup.bash && source install/setup.bash && set -u && sleep \"$TARGET_START_DELAY\" && \
+-  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 2.0, y: 0.0, z: -2.0}' && sleep \"$TARGET_HOLD\" && \
+-  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 2.0, y: 2.0, z: -2.0}' && sleep \"$TARGET_HOLD\" && \
+-  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 0.0, y: 2.0, z: -2.0}' && sleep \"$TARGET_HOLD\" && \
+-  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 0.0, y: 0.0, z: -2.0}' 2>&1 | tee \"$LOG_DIR/target_sequence.log\""
++  "cd \"$WS_DIR\" && set +u && source /opt/ros/jazzy/setup.bash && source install/setup.bash && set -u && $TARGET_SEQUENCE_COMMAND 2>&1 | tee \"$LOG_DIR/target_sequence.log\""
+ 
+-echo "demo04 session=px4_demo04_external_setpoint"
++echo "demo04 mode=$DEMO04_MODE"
++echo "control session=$CONTROL_SESSION"
+ echo "visualizer session=px4_trajectory_recorder"
+ echo "target sequence session=px4_demo04_target_sequence"
+ echo "target topic=/uav/target_position geometry_msgs/msg/Point"
+diff --git a/UAV_capture/px4_ros2_ws/scripts/start_stack.sh b/UAV_capture/px4_ros2_ws/scripts/start_stack.sh
+index 2a1cabc70ef0877acaf78595b3cb14c7d926a326..dbcc143f436006870fd1f76baeca6218583b6edd
+--- a/UAV_capture/px4_ros2_ws/scripts/start_stack.sh
++++ b/UAV_capture/px4_ros2_ws/scripts/start_stack.sh
+@@ -10,6 +10,7 @@
+   tmux kill-session -t px4_demo02_waypoint_flight 2>/dev/null || true
+   tmux kill-session -t px4_demo03_circle_trajectory 2>/dev/null || true
+   tmux kill-session -t px4_demo04_external_setpoint 2>/dev/null || true
++  tmux kill-session -t px4_uav_control_bridge 2>/dev/null || true
+   tmux kill-session -t px4_demo04_target_sequence 2>/dev/null || true
+   tmux kill-session -t px4_trajectory_recorder 2>/dev/null || true
+   tmux kill-session -t micro_xrce_agent 2>/dev/null || true
+diff --git a/UAV_capture/px4_ros2_ws/scripts/stop_stack.sh b/UAV_capture/px4_ros2_ws/scripts/stop_stack.sh
+index fbf0c08ce1a93ea14633b8446281b84c8e994d05..8a62aeb89592a1b41cc8525a4e9ed12f9c187ee7
+--- a/UAV_capture/px4_ros2_ws/scripts/stop_stack.sh
++++ b/UAV_capture/px4_ros2_ws/scripts/stop_stack.sh
+@@ -5,6 +5,7 @@
+ tmux kill-session -t px4_demo02_waypoint_flight 2>/dev/null || true
+ tmux kill-session -t px4_demo03_circle_trajectory 2>/dev/null || true
+ tmux kill-session -t px4_demo04_external_setpoint 2>/dev/null || true
++tmux kill-session -t px4_uav_control_bridge 2>/dev/null || true
+ tmux kill-session -t px4_demo04_target_sequence 2>/dev/null || true
+ tmux kill-session -t px4_trajectory_recorder 2>/dev/null || true
+ tmux kill-session -t micro_xrce_agent 2>/dev/null || true
+
+codex
+The script now defaults to `DEMO04_MODE=bridge`, with `DEMO04_MODE=legacy` retaining the old direct external setpoint node. I’m checking the resulting shell text before running the required command bundle into the Task 008 log.
+exec
+/bin/bash -lc "sed -n '1,180p' scripts/run_demo04_external_setpoint.sh" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+#!/usr/bin/env bash
+set -euo pipefail
+
+WS_DIR="${WS_DIR:-/home/clcwork/UAV_capture/px4_ros2_ws}"
+DEMO04_MODE="${DEMO04_MODE:-bridge}"
+DRY_RUN="${DRY_RUN:-0}"
+INITIAL_X="${INITIAL_X:-0.0}"
+INITIAL_Y="${INITIAL_Y:-0.0}"
+INITIAL_Z="${INITIAL_Z:--2.0}"
+VIS_DURATION="${VIS_DURATION:-120.0}"
+TARGET_START_DELAY="${TARGET_START_DELAY:-15}"
+TARGET_HOLD="${TARGET_HOLD:-18}"
+BRIDGE_TARGET_TIMEOUT="${BRIDGE_TARGET_TIMEOUT:-25.0}"
+BRIDGE_TARGET_JUMP_LIMIT="${BRIDGE_TARGET_JUMP_LIMIT:-2.5}"
+BRIDGE_MAX_ALTITUDE="${BRIDGE_MAX_ALTITUDE:-5.0}"
+BRIDGE_MIN_ALTITUDE="${BRIDGE_MIN_ALTITUDE:-0.5}"
+BRIDGE_MAX_HORIZONTAL_RANGE="${BRIDGE_MAX_HORIZONTAL_RANGE:-5.0}"
+STAMP="$(date +%Y%m%d_%H%M%S)"
+LOG_DIR="$WS_DIR/logs/demo04_external_setpoint/$STAMP"
+VIS_DIR="$WS_DIR/visualizations/demo04_external_setpoint/$STAMP"
+export RESET_STACK="${RESET_STACK:-1}"
+
+case "$DEMO04_MODE" in
+  bridge)
+    CONTROL_SESSION="px4_uav_control_bridge"
+    CONTROL_LOG="$LOG_DIR/uav_control_bridge.log"
+    CONTROL_TITLE="Demo 04 External Setpoint Bridge"
+    CONTROL_RUNNER="ros2 run px4_offboard_hover uav_control_bridge --ros-args -p initial_x:=$INITIAL_X -p initial_y:=$INITIAL_Y -p initial_z:=$INITIAL_Z -p target_timeout:=$BRIDGE_TARGET_TIMEOUT -p target_jump_limit:=$BRIDGE_TARGET_JUMP_LIMIT -p max_altitude:=$BRIDGE_MAX_ALTITUDE -p min_altitude:=$BRIDGE_MIN_ALTITUDE -p max_horizontal_range:=$BRIDGE_MAX_HORIZONTAL_RANGE"
+    ;;
+  legacy)
+    CONTROL_SESSION="px4_demo04_external_setpoint"
+    CONTROL_LOG="$LOG_DIR/demo04.log"
+    CONTROL_TITLE="Demo 04 External Setpoint Interface"
+    CONTROL_RUNNER="ros2 run px4_offboard_hover demo04_external_setpoint --ros-args -p initial_x:=$INITIAL_X -p initial_y:=$INITIAL_Y -p initial_z:=$INITIAL_Z"
+    ;;
+  *)
+    echo "Unsupported DEMO04_MODE=$DEMO04_MODE. Use bridge or legacy." >&2
+    exit 2
+    ;;
+esac
+
+TARGET_SEQUENCE_COMMAND="sleep \"$TARGET_START_DELAY\" && \
+  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 2.0, y: 0.0, z: -2.0}' && sleep \"$TARGET_HOLD\" && \
+  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 2.0, y: 2.0, z: -2.0}' && sleep \"$TARGET_HOLD\" && \
+  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 0.0, y: 2.0, z: -2.0}' && sleep \"$TARGET_HOLD\" && \
+  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 0.0, y: 0.0, z: -2.0}'"
+
+if [ "$DRY_RUN" = "1" ]; then
+  echo "DRY_RUN=1"
+  echo "mode=$DEMO04_MODE"
+  echo "start_stack=$WS_DIR/scripts/start_stack.sh"
+  echo "trajectory_recorder=VIS_DIR=\"$VIS_DIR\" VIS_DURATION=\"$VIS_DURATION\" VIS_TITLE=\"$CONTROL_TITLE\" VIS_DEMO_ID=\"demo04\" AVG_ERROR_PASS=\"0.9\" FINAL_ERROR_PASS=\"0.6\" MAX_SPEED_PASS=\"3.0\" \"$WS_DIR/scripts/run_trajectory_recorder.sh\""
+  echo "control_session=$CONTROL_SESSION"
+  echo "control_command=$CONTROL_RUNNER"
+  echo "target_topic=/uav/target_position geometry_msgs/msg/Point"
+  echo "target_sequence=$TARGET_SEQUENCE_COMMAND"
+  echo "logs=$LOG_DIR"
+  echo "visuals=$VIS_DIR"
+  exit 0
+fi
+
+mkdir -p "$LOG_DIR" "$VIS_DIR"
+"$WS_DIR/scripts/start_stack.sh"
+
+tmux kill-session -t px4_trajectory_recorder 2>/dev/null || true
+tmux new-session -d -s px4_trajectory_recorder \
+  "VIS_DIR=\"$VIS_DIR\" VIS_DURATION=\"$VIS_DURATION\" VIS_TITLE=\"$CONTROL_TITLE\" VIS_DEMO_ID=\"demo04\" AVG_ERROR_PASS=\"0.9\" FINAL_ERROR_PASS=\"0.6\" MAX_SPEED_PASS=\"3.0\" \"$WS_DIR/scripts/run_trajectory_recorder.sh\" 2>&1 | tee \"$LOG_DIR/trajectory_recorder.log\""
+
+tmux kill-session -t px4_demo04_external_setpoint 2>/dev/null || true
+tmux kill-session -t px4_uav_control_bridge 2>/dev/null || true
+tmux new-session -d -s "$CONTROL_SESSION" \
+  "cd \"$WS_DIR\" && set +u && source /opt/ros/jazzy/setup.bash && source install/setup.bash && set -u && $CONTROL_RUNNER 2>&1 | tee \"$CONTROL_LOG\""
+
+tmux kill-session -t px4_demo04_target_sequence 2>/dev/null || true
+tmux new-session -d -s px4_demo04_target_sequence \
+  "cd \"$WS_DIR\" && set +u && source /opt/ros/jazzy/setup.bash && source install/setup.bash && set -u && $TARGET_SEQUENCE_COMMAND 2>&1 | tee \"$LOG_DIR/target_sequence.log\""
+
+echo "demo04 mode=$DEMO04_MODE"
+echo "control session=$CONTROL_SESSION"
+echo "visualizer session=px4_trajectory_recorder"
+echo "target sequence session=px4_demo04_target_sequence"
+echo "target topic=/uav/target_position geometry_msgs/msg/Point"
+echo "visual outputs will be written after ${VIS_DURATION}s"
+echo "logs=$LOG_DIR"
+echo "visuals=$VIS_DIR"
+while tmux has-session -t px4_trajectory_recorder 2>/dev/null; do
+  sleep 2
+done
+echo "trajectory_csv=$VIS_DIR/trajectory.csv"
+echo "trajectory_3d=$VIS_DIR/trajectory_3d.png"
+echo "xy_path=$VIS_DIR/xy_path.png"
+echo "height_curve=$VIS_DIR/height_curve.png"
+echo "speed_curve=$VIS_DIR/speed_curve.png"
+echo "tracking_error=$VIS_DIR/tracking_error.png"
+echo "video=$VIS_DIR/trajectory.mp4"
+echo "summary=$VIS_DIR/summary.md"
+echo "result=$VIS_DIR/result.txt"
+cat "$VIS_DIR/result.txt" 2>/dev/null || true
+
+exec
+/bin/bash -lc "sed -n '1,40p' scripts/start_stack.sh && sed -n '1,30p' scripts/stop_stack.sh" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+#!/usr/bin/env bash
+set -euo pipefail
+
+PX4_DIR="${PX4_DIR:-/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot}"
+AGENT_DIR="${AGENT_DIR:-/home/clcwork/Micro-XRCE-DDS-Agent/build}"
+RESET_STACK="${RESET_STACK:-0}"
+
+if [ "$RESET_STACK" = "1" ]; then
+  tmux kill-session -t px4_offboard_hover 2>/dev/null || true
+  tmux kill-session -t px4_demo02_waypoint_flight 2>/dev/null || true
+  tmux kill-session -t px4_demo03_circle_trajectory 2>/dev/null || true
+  tmux kill-session -t px4_demo04_external_setpoint 2>/dev/null || true
+  tmux kill-session -t px4_uav_control_bridge 2>/dev/null || true
+  tmux kill-session -t px4_demo04_target_sequence 2>/dev/null || true
+  tmux kill-session -t px4_trajectory_recorder 2>/dev/null || true
+  tmux kill-session -t micro_xrce_agent 2>/dev/null || true
+  tmux kill-session -t px4_gz_x500 2>/dev/null || true
+  rm -f /tmp/px4_gz_x500_tmux.log /tmp/micro_xrce_agent.log /tmp/px4_offboard_hover.log
+fi
+
+tmux has-session -t px4_gz_x500 2>/dev/null || \
+  tmux new-session -d -s px4_gz_x500 \
+    "cd \"$PX4_DIR\" && HEADLESS=1 make px4_sitl gz_x500 2>&1 | tee /tmp/px4_gz_x500_tmux.log"
+
+tmux has-session -t micro_xrce_agent 2>/dev/null || \
+  tmux new-session -d -s micro_xrce_agent \
+    "cd \"$AGENT_DIR\" && ./MicroXRCEAgent udp4 -p 8888 2>&1 | tee /tmp/micro_xrce_agent.log"
+
+for _ in $(seq 1 60); do
+  if grep -q "Preflight check: OK\\|Ready for takeoff" /tmp/px4_gz_x500_tmux.log 2>/dev/null; then
+    break
+  fi
+  if grep -q "pxh>" /tmp/px4_gz_x500_tmux.log 2>/dev/null; then
+    tmux send-keys -t px4_gz_x500 "param set NAV_DLL_ACT 0" C-m
+    tmux send-keys -t px4_gz_x500 "commander check" C-m
+  fi
+  sleep 1
+done
+
+tmux ls
+#!/usr/bin/env bash
+set -euo pipefail
+
+tmux kill-session -t px4_offboard_hover 2>/dev/null || true
+tmux kill-session -t px4_demo02_waypoint_flight 2>/dev/null || true
+tmux kill-session -t px4_demo03_circle_trajectory 2>/dev/null || true
+tmux kill-session -t px4_demo04_external_setpoint 2>/dev/null || true
+tmux kill-session -t px4_uav_control_bridge 2>/dev/null || true
+tmux kill-session -t px4_demo04_target_sequence 2>/dev/null || true
+tmux kill-session -t px4_trajectory_recorder 2>/dev/null || true
+tmux kill-session -t micro_xrce_agent 2>/dev/null || true
+tmux kill-session -t px4_gz_x500 2>/dev/null || true
+
+exec
+/bin/bash -lc "grep -n \"Demo 04\\|DRY_RUN\\|uav_control_bridge\\|legacy\" docs/VISUALIZATION_GUIDE.md docs/REGRESSION_CHECKS.md" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+docs/VISUALIZATION_GUIDE.md:41:| Demo 04 External Setpoint Bridge | `scripts/run_demo04_external_setpoint.sh` | `visualizations/demo04_external_setpoint/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
+docs/VISUALIZATION_GUIDE.md:58:Demo 04 now runs the bridge-backed external setpoint workflow by default:
+docs/VISUALIZATION_GUIDE.md:66:`ros2 run px4_offboard_hover uav_control_bridge`, and publishes the existing
+docs/VISUALIZATION_GUIDE.md:71:The original direct Demo 04 node is still available for comparison:
+docs/VISUALIZATION_GUIDE.md:74:DEMO04_MODE=legacy ./scripts/run_demo04_external_setpoint.sh
+docs/VISUALIZATION_GUIDE.md:80:DRY_RUN=1 ./scripts/run_demo04_external_setpoint.sh
+docs/REGRESSION_CHECKS.md:4:results and legacy hover verification logs.
+docs/REGRESSION_CHECKS.md:56:## Demo 04 Bridge Check
+docs/REGRESSION_CHECKS.md:58:Demo 04 should normally be generated with the bridge-backed runner:
+docs/REGRESSION_CHECKS.md:65:This starts the stack, runs `uav_control_bridge`, publishes the existing square
+docs/REGRESSION_CHECKS.md:71:DRY_RUN=1 ./scripts/run_demo04_external_setpoint.sh
+docs/REGRESSION_CHECKS.md:74:For legacy comparison only, run:
+docs/REGRESSION_CHECKS.md:77:DEMO04_MODE=legacy ./scripts/run_demo04_external_setpoint.sh
+
+diff --git a/UAV_capture/px4_ros2_ws/docs/REGRESSION_CHECKS.md b/UAV_capture/px4_ros2_ws/docs/REGRESSION_CHECKS.md
+index ee752127c552d513faadad194a265bfba3532b9d..0d0cf5d7db74d9f4ea50cb308a044cb85bca422f
+--- a/UAV_capture/px4_ros2_ws/docs/REGRESSION_CHECKS.md
++++ b/UAV_capture/px4_ros2_ws/docs/REGRESSION_CHECKS.md
+@@ -53,6 +53,30 @@
+ vz
+ ```
+ 
++## Demo 04 Bridge Check
++
++Demo 04 should normally be generated with the bridge-backed runner:
++
++```bash
++./scripts/run_demo04_external_setpoint.sh
++./scripts/check_demo_outputs.sh visualizations/demo04_external_setpoint
++```
++
++This starts the stack, runs `uav_control_bridge`, publishes the existing square
++sequence to `/uav/target_position`, and records outputs under
++`visualizations/demo04_external_setpoint/<timestamp>/`. Use this dry-run path
++when the full PX4/Gazebo simulation is not available:
++
++```bash
++DRY_RUN=1 ./scripts/run_demo04_external_setpoint.sh
++```
++
++For legacy comparison only, run:
++
++```bash
++DEMO04_MODE=legacy ./scripts/run_demo04_external_setpoint.sh
++```
++
+ ## Legacy Hover Check
+ 
+ Older hover experiment directories under `logs/offboard_hover/<timestamp>` may
+diff --git a/UAV_capture/px4_ros2_ws/docs/VISUALIZATION_GUIDE.md b/UAV_capture/px4_ros2_ws/docs/VISUALIZATION_GUIDE.md
+index bd050bcdadf1fb286ac175140172c80e7a64e85c..ed880d9c3b8c5a6f4bb6f0aef1744fdcf3cb3da4
+--- a/UAV_capture/px4_ros2_ws/docs/VISUALIZATION_GUIDE.md
++++ b/UAV_capture/px4_ros2_ws/docs/VISUALIZATION_GUIDE.md
+@@ -38,7 +38,7 @@
+ | Demo 01 Offboard Hover | `scripts/run_demo01_hover.sh` | `visualizations/demo01_hover/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
+ | Demo 02 Waypoint Flight | `scripts/run_demo02_waypoint_flight.sh` | `visualizations/demo02_waypoint_flight/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
+ | Demo 03 Circle Trajectory | `scripts/run_demo03_circle_trajectory.sh` | `visualizations/demo03_circle_trajectory/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
+-| Demo 04 External Setpoint Interface | `scripts/run_demo04_external_setpoint.sh` | `visualizations/demo04_external_setpoint/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
++| Demo 04 External Setpoint Bridge | `scripts/run_demo04_external_setpoint.sh` | `visualizations/demo04_external_setpoint/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
+ 
+ ## Generate New Results
+ 
+@@ -55,6 +55,31 @@
+ ./scripts/run_demo04_external_setpoint.sh
+ ```
+ 
++Demo 04 now runs the bridge-backed external setpoint workflow by default:
++
++```bash
++DEMO04_MODE=bridge ./scripts/run_demo04_external_setpoint.sh
++```
++
++The runner starts `scripts/start_stack.sh`, records with
++`scripts/run_trajectory_recorder.sh`, runs
++`ros2 run px4_offboard_hover uav_control_bridge`, and publishes the existing
++square target sequence to `/uav/target_position` as NED
++`geometry_msgs/msg/Point` commands. The square uses z=-2.0, which means 2 m
++positive altitude in PX4 NED coordinates.
++
++The original direct Demo 04 node is still available for comparison:
++
++```bash
++DEMO04_MODE=legacy ./scripts/run_demo04_external_setpoint.sh
++```
++
++To inspect the bridge command path without launching PX4/Gazebo:
++
++```bash
++DRY_RUN=1 ./scripts/run_demo04_external_setpoint.sh
++```
++
+ Each runner creates a new timestamped directory under `logs/<demo>/` and
+ `visualizations/<demo>/`. The runner prints the exact output paths after the
+ trajectory recorder finishes.
+diff --git a/UAV_capture/px4_ros2_ws/scripts/run_demo04_external_setpoint.sh b/UAV_capture/px4_ros2_ws/scripts/run_demo04_external_setpoint.sh
+index 80a63e0447515358746565a8abea7f43ac2c0d2d..3c41be73ac2cbcd7d8d2a48395d4c095338ac9b5
+--- a/UAV_capture/px4_ros2_ws/scripts/run_demo04_external_setpoint.sh
++++ b/UAV_capture/px4_ros2_ws/scripts/run_demo04_external_setpoint.sh
+@@ -2,37 +2,81 @@
+ set -euo pipefail
+ 
+ WS_DIR="${WS_DIR:-/home/clcwork/UAV_capture/px4_ros2_ws}"
++DEMO04_MODE="${DEMO04_MODE:-bridge}"
++DRY_RUN="${DRY_RUN:-0}"
+ INITIAL_X="${INITIAL_X:-0.0}"
+ INITIAL_Y="${INITIAL_Y:-0.0}"
+ INITIAL_Z="${INITIAL_Z:--2.0}"
+ VIS_DURATION="${VIS_DURATION:-120.0}"
+ TARGET_START_DELAY="${TARGET_START_DELAY:-15}"
+ TARGET_HOLD="${TARGET_HOLD:-18}"
++BRIDGE_TARGET_TIMEOUT="${BRIDGE_TARGET_TIMEOUT:-25.0}"
++BRIDGE_TARGET_JUMP_LIMIT="${BRIDGE_TARGET_JUMP_LIMIT:-2.5}"
++BRIDGE_MAX_ALTITUDE="${BRIDGE_MAX_ALTITUDE:-5.0}"
++BRIDGE_MIN_ALTITUDE="${BRIDGE_MIN_ALTITUDE:-0.5}"
++BRIDGE_MAX_HORIZONTAL_RANGE="${BRIDGE_MAX_HORIZONTAL_RANGE:-5.0}"
+ STAMP="$(date +%Y%m%d_%H%M%S)"
+ LOG_DIR="$WS_DIR/logs/demo04_external_setpoint/$STAMP"
+ VIS_DIR="$WS_DIR/visualizations/demo04_external_setpoint/$STAMP"
+ export RESET_STACK="${RESET_STACK:-1}"
+ 
++case "$DEMO04_MODE" in
++  bridge)
++    CONTROL_SESSION="px4_uav_control_bridge"
++    CONTROL_LOG="$LOG_DIR/uav_control_bridge.log"
++    CONTROL_TITLE="Demo 04 External Setpoint Bridge"
++    CONTROL_RUNNER="ros2 run px4_offboard_hover uav_control_bridge --ros-args -p initial_x:=$INITIAL_X -p initial_y:=$INITIAL_Y -p initial_z:=$INITIAL_Z -p target_timeout:=$BRIDGE_TARGET_TIMEOUT -p target_jump_limit:=$BRIDGE_TARGET_JUMP_LIMIT -p max_altitude:=$BRIDGE_MAX_ALTITUDE -p min_altitude:=$BRIDGE_MIN_ALTITUDE -p max_horizontal_range:=$BRIDGE_MAX_HORIZONTAL_RANGE"
++    ;;
++  legacy)
++    CONTROL_SESSION="px4_demo04_external_setpoint"
++    CONTROL_LOG="$LOG_DIR/demo04.log"
++    CONTROL_TITLE="Demo 04 External Setpoint Interface"
++    CONTROL_RUNNER="ros2 run px4_offboard_hover demo04_external_setpoint --ros-args -p initial_x:=$INITIAL_X -p initial_y:=$INITIAL_Y -p initial_z:=$INITIAL_Z"
++    ;;
++  *)
++    echo "Unsupported DEMO04_MODE=$DEMO04_MODE. Use bridge or legacy." >&2
++    exit 2
++    ;;
++esac
++
++TARGET_SEQUENCE_COMMAND="sleep \"$TARGET_START_DELAY\" && \
++  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 2.0, y: 0.0, z: -2.0}' && sleep \"$TARGET_HOLD\" && \
++  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 2.0, y: 2.0, z: -2.0}' && sleep \"$TARGET_HOLD\" && \
++  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 0.0, y: 2.0, z: -2.0}' && sleep \"$TARGET_HOLD\" && \
++  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 0.0, y: 0.0, z: -2.0}'"
++
++if [ "$DRY_RUN" = "1" ]; then
++  echo "DRY_RUN=1"
++  echo "mode=$DEMO04_MODE"
++  echo "start_stack=$WS_DIR/scripts/start_stack.sh"
++  echo "trajectory_recorder=VIS_DIR=\"$VIS_DIR\" VIS_DURATION=\"$VIS_DURATION\" VIS_TITLE=\"$CONTROL_TITLE\" VIS_DEMO_ID=\"demo04\" AVG_ERROR_PASS=\"0.9\" FINAL_ERROR_PASS=\"0.6\" MAX_SPEED_PASS=\"3.0\" \"$WS_DIR/scripts/run_trajectory_recorder.sh\""
++  echo "control_session=$CONTROL_SESSION"
++  echo "control_command=$CONTROL_RUNNER"
++  echo "target_topic=/uav/target_position geometry_msgs/msg/Point"
++  echo "target_sequence=$TARGET_SEQUENCE_COMMAND"
++  echo "logs=$LOG_DIR"
++  echo "visuals=$VIS_DIR"
++  exit 0
++fi
++
+ mkdir -p "$LOG_DIR" "$VIS_DIR"
+ "$WS_DIR/scripts/start_stack.sh"
+ 
+ tmux kill-session -t px4_trajectory_recorder 2>/dev/null || true
+ tmux new-session -d -s px4_trajectory_recorder \
+-  "VIS_DIR=\"$VIS_DIR\" VIS_DURATION=\"$VIS_DURATION\" VIS_TITLE=\"Demo 04 External Setpoint Interface\" VIS_DEMO_ID=\"demo04\" AVG_ERROR_PASS=\"0.9\" FINAL_ERROR_PASS=\"0.6\" MAX_SPEED_PASS=\"3.0\" \"$WS_DIR/scripts/run_trajectory_recorder.sh\" 2>&1 | tee \"$LOG_DIR/trajectory_recorder.log\""
++  "VIS_DIR=\"$VIS_DIR\" VIS_DURATION=\"$VIS_DURATION\" VIS_TITLE=\"$CONTROL_TITLE\" VIS_DEMO_ID=\"demo04\" AVG_ERROR_PASS=\"0.9\" FINAL_ERROR_PASS=\"0.6\" MAX_SPEED_PASS=\"3.0\" \"$WS_DIR/scripts/run_trajectory_recorder.sh\" 2>&1 | tee \"$LOG_DIR/trajectory_recorder.log\""
+ 
+ tmux kill-session -t px4_demo04_external_setpoint 2>/dev/null || true
+-tmux new-session -d -s px4_demo04_external_setpoint \
+-  "cd \"$WS_DIR\" && set +u && source /opt/ros/jazzy/setup.bash && source install/setup.bash && set -u && ros2 run px4_offboard_hover demo04_external_setpoint --ros-args -p initial_x:=$INITIAL_X -p initial_y:=$INITIAL_Y -p initial_z:=$INITIAL_Z 2>&1 | tee \"$LOG_DIR/demo04.log\""
++tmux kill-session -t px4_uav_control_bridge 2>/dev/null || true
++tmux new-session -d -s "$CONTROL_SESSION" \
++  "cd \"$WS_DIR\" && set +u && source /opt/ros/jazzy/setup.bash && source install/setup.bash && set -u && $CONTROL_RUNNER 2>&1 | tee \"$CONTROL_LOG\""
+ 
+ tmux kill-session -t px4_demo04_target_sequence 2>/dev/null || true
+ tmux new-session -d -s px4_demo04_target_sequence \
+-  "cd \"$WS_DIR\" && set +u && source /opt/ros/jazzy/setup.bash && source install/setup.bash && set -u && sleep \"$TARGET_START_DELAY\" && \
+-  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 2.0, y: 0.0, z: -2.0}' && sleep \"$TARGET_HOLD\" && \
+-  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 2.0, y: 2.0, z: -2.0}' && sleep \"$TARGET_HOLD\" && \
+-  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 0.0, y: 2.0, z: -2.0}' && sleep \"$TARGET_HOLD\" && \
+-  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 0.0, y: 0.0, z: -2.0}' 2>&1 | tee \"$LOG_DIR/target_sequence.log\""
++  "cd \"$WS_DIR\" && set +u && source /opt/ros/jazzy/setup.bash && source install/setup.bash && set -u && $TARGET_SEQUENCE_COMMAND 2>&1 | tee \"$LOG_DIR/target_sequence.log\""
+ 
+-echo "demo04 session=px4_demo04_external_setpoint"
++echo "demo04 mode=$DEMO04_MODE"
++echo "control session=$CONTROL_SESSION"
+ echo "visualizer session=px4_trajectory_recorder"
+ echo "target sequence session=px4_demo04_target_sequence"
+ echo "target topic=/uav/target_position geometry_msgs/msg/Point"
+diff --git a/UAV_capture/px4_ros2_ws/scripts/start_stack.sh b/UAV_capture/px4_ros2_ws/scripts/start_stack.sh
+index 2a1cabc70ef0877acaf78595b3cb14c7d926a326..dbcc143f436006870fd1f76baeca6218583b6edd
+--- a/UAV_capture/px4_ros2_ws/scripts/start_stack.sh
++++ b/UAV_capture/px4_ros2_ws/scripts/start_stack.sh
+@@ -10,6 +10,7 @@
+   tmux kill-session -t px4_demo02_waypoint_flight 2>/dev/null || true
+   tmux kill-session -t px4_demo03_circle_trajectory 2>/dev/null || true
+   tmux kill-session -t px4_demo04_external_setpoint 2>/dev/null || true
++  tmux kill-session -t px4_uav_control_bridge 2>/dev/null || true
+   tmux kill-session -t px4_demo04_target_sequence 2>/dev/null || true
+   tmux kill-session -t px4_trajectory_recorder 2>/dev/null || true
+   tmux kill-session -t micro_xrce_agent 2>/dev/null || true
+diff --git a/UAV_capture/px4_ros2_ws/scripts/stop_stack.sh b/UAV_capture/px4_ros2_ws/scripts/stop_stack.sh
+index fbf0c08ce1a93ea14633b8446281b84c8e994d05..8a62aeb89592a1b41cc8525a4e9ed12f9c187ee7
+--- a/UAV_capture/px4_ros2_ws/scripts/stop_stack.sh
++++ b/UAV_capture/px4_ros2_ws/scripts/stop_stack.sh
+@@ -5,6 +5,7 @@
+ tmux kill-session -t px4_demo02_waypoint_flight 2>/dev/null || true
+ tmux kill-session -t px4_demo03_circle_trajectory 2>/dev/null || true
+ tmux kill-session -t px4_demo04_external_setpoint 2>/dev/null || true
++tmux kill-session -t px4_uav_control_bridge 2>/dev/null || true
+ tmux kill-session -t px4_demo04_target_sequence 2>/dev/null || true
+ tmux kill-session -t px4_trajectory_recorder 2>/dev/null || true
+ tmux kill-session -t micro_xrce_agent 2>/dev/null || true
+
+codex
+I’m running the exact required checks now and writing their output to `codex-logs/008-add-uav-bridge-demo-and-checks.log`. I’m also logging the new Demo 04 dry-run path since I’m not launching a full PX4/Gazebo flight in this validation pass.
+exec
+/bin/bash -lc 'LOG_FILE="codex-logs/008-add-uav-bridge-demo-and-checks.log"
+: > "$LOG_FILE"
+run_cmd() {
+  echo
+  echo "$ $*"
+  "$@"
+  local status=$?
+  echo "exit=$status"
+  return "$status"
+}
+status=0
+{
+  echo "Task 008 validation"
+  date --iso-8601=seconds
+  echo "workspace=$(pwd)"
+
+  run_cmd chmod +x scripts/*.sh || status=$?
+  run_cmd bash -c '"'bash -n scripts/run_codex_queue.sh 2>/dev/null || true' || status="'$?
+  run_cmd bash -n run_codex_queue.sh || status=$?
+  run_cmd bash -n scripts/check_demo_outputs.sh || status=$?
+  run_cmd bash -n scripts/run_demo04_external_setpoint.sh || status=$?
+  run_cmd bash -n scripts/start_stack.sh || status=$?
+  run_cmd bash -n scripts/stop_stack.sh || status=$?
+  run_cmd env DRY_RUN=1 ./scripts/run_demo04_external_setpoint.sh || status=$?
+  run_cmd ./scripts/check_demo_outputs.sh visualizations/demo01_hover || status=$?
+  run_cmd ./scripts/check_demo_outputs.sh visualizations/demo02_waypoint_flight || status=$?
+  run_cmd ./scripts/check_demo_outputs.sh visualizations/demo03_circle_trajectory || status=$?
+  run_cmd ./scripts/check_demo_outputs.sh visualizations/demo04_external_setpoint || status=$?
+
+  echo
+  echo "overall_status=$status"
+  exit "$status"
+} 2>&1 | tee "$LOG_FILE"' in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+Task 008 validation
+2026-05-27T08:38:21+08:00
+workspace=/home/clcwork/UAV_capture/px4_ros2_ws
+
+$ chmod +x scripts/check_demo_outputs.sh scripts/run_demo01_hover.sh scripts/run_demo02_waypoint_flight.sh scripts/run_demo03_circle_trajectory.sh scripts/run_demo04_external_setpoint.sh scripts/run_hover_experiment.sh scripts/run_trajectory_recorder.sh scripts/start_stack.sh scripts/stop_stack.sh
+exit=0
+
+$ bash -c bash -n scripts/run_codex_queue.sh 2>/dev/null || true
+exit=0
+
+$ bash -n run_codex_queue.sh
+exit=0
+
+$ bash -n scripts/check_demo_outputs.sh
+exit=0
+
+$ bash -n scripts/run_demo04_external_setpoint.sh
+exit=0
+
+$ bash -n scripts/start_stack.sh
+exit=0
+
+$ bash -n scripts/stop_stack.sh
+exit=0
+
+$ env DRY_RUN=1 ./scripts/run_demo04_external_setpoint.sh
+DRY_RUN=1
+mode=bridge
+start_stack=/home/clcwork/UAV_capture/px4_ros2_ws/scripts/start_stack.sh
+trajectory_recorder=VIS_DIR="/home/clcwork/UAV_capture/px4_ros2_ws/visualizations/demo04_external_setpoint/20260527_083821" VIS_DURATION="120.0" VIS_TITLE="Demo 04 External Setpoint Bridge" VIS_DEMO_ID="demo04" AVG_ERROR_PASS="0.9" FINAL_ERROR_PASS="0.6" MAX_SPEED_PASS="3.0" "/home/clcwork/UAV_capture/px4_ros2_ws/scripts/run_trajectory_recorder.sh"
+control_session=px4_uav_control_bridge
+control_command=ros2 run px4_offboard_hover uav_control_bridge --ros-args -p initial_x:=0.0 -p initial_y:=0.0 -p initial_z:=-2.0 -p target_timeout:=25.0 -p target_jump_limit:=2.5 -p max_altitude:=5.0 -p min_altitude:=0.5 -p max_horizontal_range:=5.0
+target_topic=/uav/target_position geometry_msgs/msg/Point
+target_sequence=sleep "15" &&   ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 2.0, y: 0.0, z: -2.0}' && sleep "18" &&   ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 2.0, y: 2.0, z: -2.0}' && sleep "18" &&   ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 0.0, y: 2.0, z: -2.0}' && sleep "18" &&   ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 0.0, y: 0.0, z: -2.0}'
+logs=/home/clcwork/UAV_capture/px4_ros2_ws/logs/demo04_external_setpoint/20260527_083821
+visuals=/home/clcwork/UAV_capture/px4_ros2_ws/visualizations/demo04_external_setpoint/20260527_083821
+exit=0
+
+$ ./scripts/check_demo_outputs.sh visualizations/demo01_hover
+checking: visualizations/demo01_hover/20260526_221722
+checked files:
+  visualizations/demo01_hover/20260526_221722/trajectory.csv
+  visualizations/demo01_hover/20260526_221722/trajectory_3d.png
+  visualizations/demo01_hover/20260526_221722/xy_path.png
+  visualizations/demo01_hover/20260526_221722/height_curve.png
+  visualizations/demo01_hover/20260526_221722/speed_curve.png
+  visualizations/demo01_hover/20260526_221722/tracking_error.png
+  visualizations/demo01_hover/20260526_221722/summary.md
+  visualizations/demo01_hover/20260526_221722/result.txt
+CHECK=PASS
+exit=0
+
+$ ./scripts/check_demo_outputs.sh visualizations/demo02_waypoint_flight
+checking: visualizations/demo02_waypoint_flight/20260526_222121
+checked files:
+  visualizations/demo02_waypoint_flight/20260526_222121/trajectory.csv
+  visualizations/demo02_waypoint_flight/20260526_222121/trajectory_3d.png
+  visualizations/demo02_waypoint_flight/20260526_222121/xy_path.png
+  visualizations/demo02_waypoint_flight/20260526_222121/height_curve.png
+  visualizations/demo02_waypoint_flight/20260526_222121/speed_curve.png
+  visualizations/demo02_waypoint_flight/20260526_222121/tracking_error.png
+  visualizations/demo02_waypoint_flight/20260526_222121/summary.md
+  visualizations/demo02_waypoint_flight/20260526_222121/result.txt
+CHECK=PASS
+exit=0
+
+$ ./scripts/check_demo_outputs.sh visualizations/demo03_circle_trajectory
+checking: visualizations/demo03_circle_trajectory/20260526_222313
+checked files:
+  visualizations/demo03_circle_trajectory/20260526_222313/trajectory.csv
+  visualizations/demo03_circle_trajectory/20260526_222313/trajectory_3d.png
+  visualizations/demo03_circle_trajectory/20260526_222313/xy_path.png
+  visualizations/demo03_circle_trajectory/20260526_222313/height_curve.png
+  visualizations/demo03_circle_trajectory/20260526_222313/speed_curve.png
+  visualizations/demo03_circle_trajectory/20260526_222313/tracking_error.png
+  visualizations/demo03_circle_trajectory/20260526_222313/summary.md
+  visualizations/demo03_circle_trajectory/20260526_222313/result.txt
+CHECK=PASS
+exit=0
+
+$ ./scripts/check_demo_outputs.sh visualizations/demo04_external_setpoint
+checking: visualizations/demo04_external_setpoint/20260526_222502
+checked files:
+  visualizations/demo04_external_setpoint/20260526_222502/trajectory.csv
+  visualizations/demo04_external_setpoint/20260526_222502/trajectory_3d.png
+  visualizations/demo04_external_setpoint/20260526_222502/xy_path.png
+  visualizations/demo04_external_setpoint/20260526_222502/height_curve.png
+  visualizations/demo04_external_setpoint/20260526_222502/speed_curve.png
+  visualizations/demo04_external_setpoint/20260526_222502/tracking_error.png
+  visualizations/demo04_external_setpoint/20260526_222502/summary.md
+  visualizations/demo04_external_setpoint/20260526_222502/result.txt
+CHECK=PASS
+exit=0
+
+overall_status=0
+
+diff --git a/UAV_capture/px4_ros2_ws/docs/REGRESSION_CHECKS.md b/UAV_capture/px4_ros2_ws/docs/REGRESSION_CHECKS.md
+index ee752127c552d513faadad194a265bfba3532b9d..0d0cf5d7db74d9f4ea50cb308a044cb85bca422f
+--- a/UAV_capture/px4_ros2_ws/docs/REGRESSION_CHECKS.md
++++ b/UAV_capture/px4_ros2_ws/docs/REGRESSION_CHECKS.md
+@@ -53,6 +53,30 @@
+ vz
+ ```
+ 
++## Demo 04 Bridge Check
++
++Demo 04 should normally be generated with the bridge-backed runner:
++
++```bash
++./scripts/run_demo04_external_setpoint.sh
++./scripts/check_demo_outputs.sh visualizations/demo04_external_setpoint
++```
++
++This starts the stack, runs `uav_control_bridge`, publishes the existing square
++sequence to `/uav/target_position`, and records outputs under
++`visualizations/demo04_external_setpoint/<timestamp>/`. Use this dry-run path
++when the full PX4/Gazebo simulation is not available:
++
++```bash
++DRY_RUN=1 ./scripts/run_demo04_external_setpoint.sh
++```
++
++For legacy comparison only, run:
++
++```bash
++DEMO04_MODE=legacy ./scripts/run_demo04_external_setpoint.sh
++```
++
+ ## Legacy Hover Check
+ 
+ Older hover experiment directories under `logs/offboard_hover/<timestamp>` may
+diff --git a/UAV_capture/px4_ros2_ws/docs/VISUALIZATION_GUIDE.md b/UAV_capture/px4_ros2_ws/docs/VISUALIZATION_GUIDE.md
+index bd050bcdadf1fb286ac175140172c80e7a64e85c..ed880d9c3b8c5a6f4bb6f0aef1744fdcf3cb3da4
+--- a/UAV_capture/px4_ros2_ws/docs/VISUALIZATION_GUIDE.md
++++ b/UAV_capture/px4_ros2_ws/docs/VISUALIZATION_GUIDE.md
+@@ -38,7 +38,7 @@
+ | Demo 01 Offboard Hover | `scripts/run_demo01_hover.sh` | `visualizations/demo01_hover/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
+ | Demo 02 Waypoint Flight | `scripts/run_demo02_waypoint_flight.sh` | `visualizations/demo02_waypoint_flight/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
+ | Demo 03 Circle Trajectory | `scripts/run_demo03_circle_trajectory.sh` | `visualizations/demo03_circle_trajectory/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
+-| Demo 04 External Setpoint Interface | `scripts/run_demo04_external_setpoint.sh` | `visualizations/demo04_external_setpoint/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
++| Demo 04 External Setpoint Bridge | `scripts/run_demo04_external_setpoint.sh` | `visualizations/demo04_external_setpoint/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
+ 
+ ## Generate New Results
+ 
+@@ -55,6 +55,31 @@
+ ./scripts/run_demo04_external_setpoint.sh
+ ```
+ 
++Demo 04 now runs the bridge-backed external setpoint workflow by default:
++
++```bash
++DEMO04_MODE=bridge ./scripts/run_demo04_external_setpoint.sh
++```
++
++The runner starts `scripts/start_stack.sh`, records with
++`scripts/run_trajectory_recorder.sh`, runs
++`ros2 run px4_offboard_hover uav_control_bridge`, and publishes the existing
++square target sequence to `/uav/target_position` as NED
++`geometry_msgs/msg/Point` commands. The square uses z=-2.0, which means 2 m
++positive altitude in PX4 NED coordinates.
++
++The original direct Demo 04 node is still available for comparison:
++
++```bash
++DEMO04_MODE=legacy ./scripts/run_demo04_external_setpoint.sh
++```
++
++To inspect the bridge command path without launching PX4/Gazebo:
++
++```bash
++DRY_RUN=1 ./scripts/run_demo04_external_setpoint.sh
++```
++
+ Each runner creates a new timestamped directory under `logs/<demo>/` and
+ `visualizations/<demo>/`. The runner prints the exact output paths after the
+ trajectory recorder finishes.
+diff --git a/UAV_capture/px4_ros2_ws/scripts/run_demo04_external_setpoint.sh b/UAV_capture/px4_ros2_ws/scripts/run_demo04_external_setpoint.sh
+index 80a63e0447515358746565a8abea7f43ac2c0d2d..3c41be73ac2cbcd7d8d2a48395d4c095338ac9b5
+--- a/UAV_capture/px4_ros2_ws/scripts/run_demo04_external_setpoint.sh
++++ b/UAV_capture/px4_ros2_ws/scripts/run_demo04_external_setpoint.sh
+@@ -2,37 +2,81 @@
+ set -euo pipefail
+ 
+ WS_DIR="${WS_DIR:-/home/clcwork/UAV_capture/px4_ros2_ws}"
++DEMO04_MODE="${DEMO04_MODE:-bridge}"
++DRY_RUN="${DRY_RUN:-0}"
+ INITIAL_X="${INITIAL_X:-0.0}"
+ INITIAL_Y="${INITIAL_Y:-0.0}"
+ INITIAL_Z="${INITIAL_Z:--2.0}"
+ VIS_DURATION="${VIS_DURATION:-120.0}"
+ TARGET_START_DELAY="${TARGET_START_DELAY:-15}"
+ TARGET_HOLD="${TARGET_HOLD:-18}"
++BRIDGE_TARGET_TIMEOUT="${BRIDGE_TARGET_TIMEOUT:-25.0}"
++BRIDGE_TARGET_JUMP_LIMIT="${BRIDGE_TARGET_JUMP_LIMIT:-2.5}"
++BRIDGE_MAX_ALTITUDE="${BRIDGE_MAX_ALTITUDE:-5.0}"
++BRIDGE_MIN_ALTITUDE="${BRIDGE_MIN_ALTITUDE:-0.5}"
++BRIDGE_MAX_HORIZONTAL_RANGE="${BRIDGE_MAX_HORIZONTAL_RANGE:-5.0}"
+ STAMP="$(date +%Y%m%d_%H%M%S)"
+ LOG_DIR="$WS_DIR/logs/demo04_external_setpoint/$STAMP"
+ VIS_DIR="$WS_DIR/visualizations/demo04_external_setpoint/$STAMP"
+ export RESET_STACK="${RESET_STACK:-1}"
+ 
++case "$DEMO04_MODE" in
++  bridge)
++    CONTROL_SESSION="px4_uav_control_bridge"
++    CONTROL_LOG="$LOG_DIR/uav_control_bridge.log"
++    CONTROL_TITLE="Demo 04 External Setpoint Bridge"
++    CONTROL_RUNNER="ros2 run px4_offboard_hover uav_control_bridge --ros-args -p initial_x:=$INITIAL_X -p initial_y:=$INITIAL_Y -p initial_z:=$INITIAL_Z -p target_timeout:=$BRIDGE_TARGET_TIMEOUT -p target_jump_limit:=$BRIDGE_TARGET_JUMP_LIMIT -p max_altitude:=$BRIDGE_MAX_ALTITUDE -p min_altitude:=$BRIDGE_MIN_ALTITUDE -p max_horizontal_range:=$BRIDGE_MAX_HORIZONTAL_RANGE"
++    ;;
++  legacy)
++    CONTROL_SESSION="px4_demo04_external_setpoint"
++    CONTROL_LOG="$LOG_DIR/demo04.log"
++    CONTROL_TITLE="Demo 04 External Setpoint Interface"
++    CONTROL_RUNNER="ros2 run px4_offboard_hover demo04_external_setpoint --ros-args -p initial_x:=$INITIAL_X -p initial_y:=$INITIAL_Y -p initial_z:=$INITIAL_Z"
++    ;;
++  *)
++    echo "Unsupported DEMO04_MODE=$DEMO04_MODE. Use bridge or legacy." >&2
++    exit 2
++    ;;
++esac
++
++TARGET_SEQUENCE_COMMAND="sleep \"$TARGET_START_DELAY\" && \
++  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 2.0, y: 0.0, z: -2.0}' && sleep \"$TARGET_HOLD\" && \
++  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 2.0, y: 2.0, z: -2.0}' && sleep \"$TARGET_HOLD\" && \
++  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 0.0, y: 2.0, z: -2.0}' && sleep \"$TARGET_HOLD\" && \
++  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 0.0, y: 0.0, z: -2.0}'"
++
++if [ "$DRY_RUN" = "1" ]; then
++  echo "DRY_RUN=1"
++  echo "mode=$DEMO04_MODE"
++  echo "start_stack=$WS_DIR/scripts/start_stack.sh"
++  echo "trajectory_recorder=VIS_DIR=\"$VIS_DIR\" VIS_DURATION=\"$VIS_DURATION\" VIS_TITLE=\"$CONTROL_TITLE\" VIS_DEMO_ID=\"demo04\" AVG_ERROR_PASS=\"0.9\" FINAL_ERROR_PASS=\"0.6\" MAX_SPEED_PASS=\"3.0\" \"$WS_DIR/scripts/run_trajectory_recorder.sh\""
++  echo "control_session=$CONTROL_SESSION"
++  echo "control_command=$CONTROL_RUNNER"
++  echo "target_topic=/uav/target_position geometry_msgs/msg/Point"
++  echo "target_sequence=$TARGET_SEQUENCE_COMMAND"
++  echo "logs=$LOG_DIR"
++  echo "visuals=$VIS_DIR"
++  exit 0
++fi
++
+ mkdir -p "$LOG_DIR" "$VIS_DIR"
+ "$WS_DIR/scripts/start_stack.sh"
+ 
+ tmux kill-session -t px4_trajectory_recorder 2>/dev/null || true
+ tmux new-session -d -s px4_trajectory_recorder \
+-  "VIS_DIR=\"$VIS_DIR\" VIS_DURATION=\"$VIS_DURATION\" VIS_TITLE=\"Demo 04 External Setpoint Interface\" VIS_DEMO_ID=\"demo04\" AVG_ERROR_PASS=\"0.9\" FINAL_ERROR_PASS=\"0.6\" MAX_SPEED_PASS=\"3.0\" \"$WS_DIR/scripts/run_trajectory_recorder.sh\" 2>&1 | tee \"$LOG_DIR/trajectory_recorder.log\""
++  "VIS_DIR=\"$VIS_DIR\" VIS_DURATION=\"$VIS_DURATION\" VIS_TITLE=\"$CONTROL_TITLE\" VIS_DEMO_ID=\"demo04\" AVG_ERROR_PASS=\"0.9\" FINAL_ERROR_PASS=\"0.6\" MAX_SPEED_PASS=\"3.0\" \"$WS_DIR/scripts/run_trajectory_recorder.sh\" 2>&1 | tee \"$LOG_DIR/trajectory_recorder.log\""
+ 
+ tmux kill-session -t px4_demo04_external_setpoint 2>/dev/null || true
+-tmux new-session -d -s px4_demo04_external_setpoint \
+-  "cd \"$WS_DIR\" && set +u && source /opt/ros/jazzy/setup.bash && source install/setup.bash && set -u && ros2 run px4_offboard_hover demo04_external_setpoint --ros-args -p initial_x:=$INITIAL_X -p initial_y:=$INITIAL_Y -p initial_z:=$INITIAL_Z 2>&1 | tee \"$LOG_DIR/demo04.log\""
++tmux kill-session -t px4_uav_control_bridge 2>/dev/null || true
++tmux new-session -d -s "$CONTROL_SESSION" \
++  "cd \"$WS_DIR\" && set +u && source /opt/ros/jazzy/setup.bash && source install/setup.bash && set -u && $CONTROL_RUNNER 2>&1 | tee \"$CONTROL_LOG\""
+ 
+ tmux kill-session -t px4_demo04_target_sequence 2>/dev/null || true
+ tmux new-session -d -s px4_demo04_target_sequence \
+-  "cd \"$WS_DIR\" && set +u && source /opt/ros/jazzy/setup.bash && source install/setup.bash && set -u && sleep \"$TARGET_START_DELAY\" && \
+-  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 2.0, y: 0.0, z: -2.0}' && sleep \"$TARGET_HOLD\" && \
+-  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 2.0, y: 2.0, z: -2.0}' && sleep \"$TARGET_HOLD\" && \
+-  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 0.0, y: 2.0, z: -2.0}' && sleep \"$TARGET_HOLD\" && \
+-  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 0.0, y: 0.0, z: -2.0}' 2>&1 | tee \"$LOG_DIR/target_sequence.log\""
++  "cd \"$WS_DIR\" && set +u && source /opt/ros/jazzy/setup.bash && source install/setup.bash && set -u && $TARGET_SEQUENCE_COMMAND 2>&1 | tee \"$LOG_DIR/target_sequence.log\""
+ 
+-echo "demo04 session=px4_demo04_external_setpoint"
++echo "demo04 mode=$DEMO04_MODE"
++echo "control session=$CONTROL_SESSION"
+ echo "visualizer session=px4_trajectory_recorder"
+ echo "target sequence session=px4_demo04_target_sequence"
+ echo "target topic=/uav/target_position geometry_msgs/msg/Point"
+diff --git a/UAV_capture/px4_ros2_ws/scripts/start_stack.sh b/UAV_capture/px4_ros2_ws/scripts/start_stack.sh
+index 2a1cabc70ef0877acaf78595b3cb14c7d926a326..dbcc143f436006870fd1f76baeca6218583b6edd
+--- a/UAV_capture/px4_ros2_ws/scripts/start_stack.sh
++++ b/UAV_capture/px4_ros2_ws/scripts/start_stack.sh
+@@ -10,6 +10,7 @@
+   tmux kill-session -t px4_demo02_waypoint_flight 2>/dev/null || true
+   tmux kill-session -t px4_demo03_circle_trajectory 2>/dev/null || true
+   tmux kill-session -t px4_demo04_external_setpoint 2>/dev/null || true
++  tmux kill-session -t px4_uav_control_bridge 2>/dev/null || true
+   tmux kill-session -t px4_demo04_target_sequence 2>/dev/null || true
+   tmux kill-session -t px4_trajectory_recorder 2>/dev/null || true
+   tmux kill-session -t micro_xrce_agent 2>/dev/null || true
+diff --git a/UAV_capture/px4_ros2_ws/scripts/stop_stack.sh b/UAV_capture/px4_ros2_ws/scripts/stop_stack.sh
+index fbf0c08ce1a93ea14633b8446281b84c8e994d05..8a62aeb89592a1b41cc8525a4e9ed12f9c187ee7
+--- a/UAV_capture/px4_ros2_ws/scripts/stop_stack.sh
++++ b/UAV_capture/px4_ros2_ws/scripts/stop_stack.sh
+@@ -5,6 +5,7 @@
+ tmux kill-session -t px4_demo02_waypoint_flight 2>/dev/null || true
+ tmux kill-session -t px4_demo03_circle_trajectory 2>/dev/null || true
+ tmux kill-session -t px4_demo04_external_setpoint 2>/dev/null || true
++tmux kill-session -t px4_uav_control_bridge 2>/dev/null || true
+ tmux kill-session -t px4_demo04_target_sequence 2>/dev/null || true
+ tmux kill-session -t px4_trajectory_recorder 2>/dev/null || true
+ tmux kill-session -t micro_xrce_agent 2>/dev/null || true
+
+codex
+The required syntax checks and existing Demo 1-4 output checks all passed, and the dry-run shows the bridge command plus the unchanged square `/uav/target_position` sequence. I’m doing a final quick file/log sanity check before wrapping up.
+exec
+/bin/bash -lc 'ls -l codex-logs/008-add-uav-bridge-demo-and-checks.log scripts/run_demo04_external_setpoint.sh scripts/start_stack.sh scripts/stop_stack.sh docs/VISUALIZATION_GUIDE.md docs/REGRESSION_CHECKS.md' in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+-rw-rw-r-- 1 clcwork clcwork 5155 May 27 08:38 codex-logs/008-add-uav-bridge-demo-and-checks.log
+-rw-rw-r-- 1 clcwork clcwork 2515 May 27 08:37 docs/REGRESSION_CHECKS.md
+-rw-rw-r-- 1 clcwork clcwork 5625 May 27 08:37 docs/VISUALIZATION_GUIDE.md
+-rwxrwxr-x 1 clcwork clcwork 4978 May 27 08:37 scripts/run_demo04_external_setpoint.sh
+-rwxrwxr-x 1 clcwork clcwork 1657 May 27 08:37 scripts/start_stack.sh
+-rwxrwxr-x 1 clcwork clcwork  615 May 27 08:37 scripts/stop_stack.sh
+
+exec
+/bin/bash -lc 'tail -n 20 codex-logs/008-add-uav-bridge-demo-and-checks.log' in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+  visualizations/demo03_circle_trajectory/20260526_222313/summary.md
+  visualizations/demo03_circle_trajectory/20260526_222313/result.txt
+CHECK=PASS
+exit=0
+
+$ ./scripts/check_demo_outputs.sh visualizations/demo04_external_setpoint
+checking: visualizations/demo04_external_setpoint/20260526_222502
+checked files:
+  visualizations/demo04_external_setpoint/20260526_222502/trajectory.csv
+  visualizations/demo04_external_setpoint/20260526_222502/trajectory_3d.png
+  visualizations/demo04_external_setpoint/20260526_222502/xy_path.png
+  visualizations/demo04_external_setpoint/20260526_222502/height_curve.png
+  visualizations/demo04_external_setpoint/20260526_222502/speed_curve.png
+  visualizations/demo04_external_setpoint/20260526_222502/tracking_error.png
+  visualizations/demo04_external_setpoint/20260526_222502/summary.md
+  visualizations/demo04_external_setpoint/20260526_222502/result.txt
+CHECK=PASS
+exit=0
+
+overall_status=0
+
+exec
+/bin/bash -lc "nl -ba scripts/run_demo04_external_setpoint.sh | sed -n '1,140p'" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+     1	#!/usr/bin/env bash
+     2	set -euo pipefail
+     3	
+     4	WS_DIR="${WS_DIR:-/home/clcwork/UAV_capture/px4_ros2_ws}"
+     5	DEMO04_MODE="${DEMO04_MODE:-bridge}"
+     6	DRY_RUN="${DRY_RUN:-0}"
+     7	INITIAL_X="${INITIAL_X:-0.0}"
+     8	INITIAL_Y="${INITIAL_Y:-0.0}"
+     9	INITIAL_Z="${INITIAL_Z:--2.0}"
+    10	VIS_DURATION="${VIS_DURATION:-120.0}"
+    11	TARGET_START_DELAY="${TARGET_START_DELAY:-15}"
+    12	TARGET_HOLD="${TARGET_HOLD:-18}"
+    13	BRIDGE_TARGET_TIMEOUT="${BRIDGE_TARGET_TIMEOUT:-25.0}"
+    14	BRIDGE_TARGET_JUMP_LIMIT="${BRIDGE_TARGET_JUMP_LIMIT:-2.5}"
+    15	BRIDGE_MAX_ALTITUDE="${BRIDGE_MAX_ALTITUDE:-5.0}"
+    16	BRIDGE_MIN_ALTITUDE="${BRIDGE_MIN_ALTITUDE:-0.5}"
+    17	BRIDGE_MAX_HORIZONTAL_RANGE="${BRIDGE_MAX_HORIZONTAL_RANGE:-5.0}"
+    18	STAMP="$(date +%Y%m%d_%H%M%S)"
+    19	LOG_DIR="$WS_DIR/logs/demo04_external_setpoint/$STAMP"
+    20	VIS_DIR="$WS_DIR/visualizations/demo04_external_setpoint/$STAMP"
+    21	export RESET_STACK="${RESET_STACK:-1}"
+    22	
+    23	case "$DEMO04_MODE" in
+    24	  bridge)
+    25	    CONTROL_SESSION="px4_uav_control_bridge"
+    26	    CONTROL_LOG="$LOG_DIR/uav_control_bridge.log"
+    27	    CONTROL_TITLE="Demo 04 External Setpoint Bridge"
+    28	    CONTROL_RUNNER="ros2 run px4_offboard_hover uav_control_bridge --ros-args -p initial_x:=$INITIAL_X -p initial_y:=$INITIAL_Y -p initial_z:=$INITIAL_Z -p target_timeout:=$BRIDGE_TARGET_TIMEOUT -p target_jump_limit:=$BRIDGE_TARGET_JUMP_LIMIT -p max_altitude:=$BRIDGE_MAX_ALTITUDE -p min_altitude:=$BRIDGE_MIN_ALTITUDE -p max_horizontal_range:=$BRIDGE_MAX_HORIZONTAL_RANGE"
+    29	    ;;
+    30	  legacy)
+    31	    CONTROL_SESSION="px4_demo04_external_setpoint"
+    32	    CONTROL_LOG="$LOG_DIR/demo04.log"
+    33	    CONTROL_TITLE="Demo 04 External Setpoint Interface"
+    34	    CONTROL_RUNNER="ros2 run px4_offboard_hover demo04_external_setpoint --ros-args -p initial_x:=$INITIAL_X -p initial_y:=$INITIAL_Y -p initial_z:=$INITIAL_Z"
+    35	    ;;
+    36	  *)
+    37	    echo "Unsupported DEMO04_MODE=$DEMO04_MODE. Use bridge or legacy." >&2
+    38	    exit 2
+    39	    ;;
+    40	esac
+    41	
+    42	TARGET_SEQUENCE_COMMAND="sleep \"$TARGET_START_DELAY\" && \
+    43	  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 2.0, y: 0.0, z: -2.0}' && sleep \"$TARGET_HOLD\" && \
+    44	  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 2.0, y: 2.0, z: -2.0}' && sleep \"$TARGET_HOLD\" && \
+    45	  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 0.0, y: 2.0, z: -2.0}' && sleep \"$TARGET_HOLD\" && \
+    46	  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 0.0, y: 0.0, z: -2.0}'"
+    47	
+    48	if [ "$DRY_RUN" = "1" ]; then
+    49	  echo "DRY_RUN=1"
+    50	  echo "mode=$DEMO04_MODE"
+    51	  echo "start_stack=$WS_DIR/scripts/start_stack.sh"
+    52	  echo "trajectory_recorder=VIS_DIR=\"$VIS_DIR\" VIS_DURATION=\"$VIS_DURATION\" VIS_TITLE=\"$CONTROL_TITLE\" VIS_DEMO_ID=\"demo04\" AVG_ERROR_PASS=\"0.9\" FINAL_ERROR_PASS=\"0.6\" MAX_SPEED_PASS=\"3.0\" \"$WS_DIR/scripts/run_trajectory_recorder.sh\""
+    53	  echo "control_session=$CONTROL_SESSION"
+    54	  echo "control_command=$CONTROL_RUNNER"
+    55	  echo "target_topic=/uav/target_position geometry_msgs/msg/Point"
+    56	  echo "target_sequence=$TARGET_SEQUENCE_COMMAND"
+    57	  echo "logs=$LOG_DIR"
+    58	  echo "visuals=$VIS_DIR"
+    59	  exit 0
+    60	fi
+    61	
+    62	mkdir -p "$LOG_DIR" "$VIS_DIR"
+    63	"$WS_DIR/scripts/start_stack.sh"
+    64	
+    65	tmux kill-session -t px4_trajectory_recorder 2>/dev/null || true
+    66	tmux new-session -d -s px4_trajectory_recorder \
+    67	  "VIS_DIR=\"$VIS_DIR\" VIS_DURATION=\"$VIS_DURATION\" VIS_TITLE=\"$CONTROL_TITLE\" VIS_DEMO_ID=\"demo04\" AVG_ERROR_PASS=\"0.9\" FINAL_ERROR_PASS=\"0.6\" MAX_SPEED_PASS=\"3.0\" \"$WS_DIR/scripts/run_trajectory_recorder.sh\" 2>&1 | tee \"$LOG_DIR/trajectory_recorder.log\""
+    68	
+    69	tmux kill-session -t px4_demo04_external_setpoint 2>/dev/null || true
+    70	tmux kill-session -t px4_uav_control_bridge 2>/dev/null || true
+    71	tmux new-session -d -s "$CONTROL_SESSION" \
+    72	  "cd \"$WS_DIR\" && set +u && source /opt/ros/jazzy/setup.bash && source install/setup.bash && set -u && $CONTROL_RUNNER 2>&1 | tee \"$CONTROL_LOG\""
+    73	
+    74	tmux kill-session -t px4_demo04_target_sequence 2>/dev/null || true
+    75	tmux new-session -d -s px4_demo04_target_sequence \
+    76	  "cd \"$WS_DIR\" && set +u && source /opt/ros/jazzy/setup.bash && source install/setup.bash && set -u && $TARGET_SEQUENCE_COMMAND 2>&1 | tee \"$LOG_DIR/target_sequence.log\""
+    77	
+    78	echo "demo04 mode=$DEMO04_MODE"
+    79	echo "control session=$CONTROL_SESSION"
+    80	echo "visualizer session=px4_trajectory_recorder"
+    81	echo "target sequence session=px4_demo04_target_sequence"
+    82	echo "target topic=/uav/target_position geometry_msgs/msg/Point"
+    83	echo "visual outputs will be written after ${VIS_DURATION}s"
+    84	echo "logs=$LOG_DIR"
+    85	echo "visuals=$VIS_DIR"
+    86	while tmux has-session -t px4_trajectory_recorder 2>/dev/null; do
+    87	  sleep 2
+    88	done
+    89	echo "trajectory_csv=$VIS_DIR/trajectory.csv"
+    90	echo "trajectory_3d=$VIS_DIR/trajectory_3d.png"
+    91	echo "xy_path=$VIS_DIR/xy_path.png"
+    92	echo "height_curve=$VIS_DIR/height_curve.png"
+    93	echo "speed_curve=$VIS_DIR/speed_curve.png"
+    94	echo "tracking_error=$VIS_DIR/tracking_error.png"
+    95	echo "video=$VIS_DIR/trajectory.mp4"
+    96	echo "summary=$VIS_DIR/summary.md"
+    97	echo "result=$VIS_DIR/result.txt"
+    98	cat "$VIS_DIR/result.txt" 2>/dev/null || true
+
+diff --git a/UAV_capture/px4_ros2_ws/docs/REGRESSION_CHECKS.md b/UAV_capture/px4_ros2_ws/docs/REGRESSION_CHECKS.md
+index ee752127c552d513faadad194a265bfba3532b9d..0d0cf5d7db74d9f4ea50cb308a044cb85bca422f
+--- a/UAV_capture/px4_ros2_ws/docs/REGRESSION_CHECKS.md
++++ b/UAV_capture/px4_ros2_ws/docs/REGRESSION_CHECKS.md
+@@ -53,6 +53,30 @@
+ vz
+ ```
+ 
++## Demo 04 Bridge Check
++
++Demo 04 should normally be generated with the bridge-backed runner:
++
++```bash
++./scripts/run_demo04_external_setpoint.sh
++./scripts/check_demo_outputs.sh visualizations/demo04_external_setpoint
++```
++
++This starts the stack, runs `uav_control_bridge`, publishes the existing square
++sequence to `/uav/target_position`, and records outputs under
++`visualizations/demo04_external_setpoint/<timestamp>/`. Use this dry-run path
++when the full PX4/Gazebo simulation is not available:
++
++```bash
++DRY_RUN=1 ./scripts/run_demo04_external_setpoint.sh
++```
++
++For legacy comparison only, run:
++
++```bash
++DEMO04_MODE=legacy ./scripts/run_demo04_external_setpoint.sh
++```
++
+ ## Legacy Hover Check
+ 
+ Older hover experiment directories under `logs/offboard_hover/<timestamp>` may
+diff --git a/UAV_capture/px4_ros2_ws/docs/VISUALIZATION_GUIDE.md b/UAV_capture/px4_ros2_ws/docs/VISUALIZATION_GUIDE.md
+index bd050bcdadf1fb286ac175140172c80e7a64e85c..ed880d9c3b8c5a6f4bb6f0aef1744fdcf3cb3da4
+--- a/UAV_capture/px4_ros2_ws/docs/VISUALIZATION_GUIDE.md
++++ b/UAV_capture/px4_ros2_ws/docs/VISUALIZATION_GUIDE.md
+@@ -38,7 +38,7 @@
+ | Demo 01 Offboard Hover | `scripts/run_demo01_hover.sh` | `visualizations/demo01_hover/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
+ | Demo 02 Waypoint Flight | `scripts/run_demo02_waypoint_flight.sh` | `visualizations/demo02_waypoint_flight/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
+ | Demo 03 Circle Trajectory | `scripts/run_demo03_circle_trajectory.sh` | `visualizations/demo03_circle_trajectory/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
+-| Demo 04 External Setpoint Interface | `scripts/run_demo04_external_setpoint.sh` | `visualizations/demo04_external_setpoint/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
++| Demo 04 External Setpoint Bridge | `scripts/run_demo04_external_setpoint.sh` | `visualizations/demo04_external_setpoint/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
+ 
+ ## Generate New Results
+ 
+@@ -55,6 +55,31 @@
+ ./scripts/run_demo04_external_setpoint.sh
+ ```
+ 
++Demo 04 now runs the bridge-backed external setpoint workflow by default:
++
++```bash
++DEMO04_MODE=bridge ./scripts/run_demo04_external_setpoint.sh
++```
++
++The runner starts `scripts/start_stack.sh`, records with
++`scripts/run_trajectory_recorder.sh`, runs
++`ros2 run px4_offboard_hover uav_control_bridge`, and publishes the existing
++square target sequence to `/uav/target_position` as NED
++`geometry_msgs/msg/Point` commands. The square uses z=-2.0, which means 2 m
++positive altitude in PX4 NED coordinates.
++
++The original direct Demo 04 node is still available for comparison:
++
++```bash
++DEMO04_MODE=legacy ./scripts/run_demo04_external_setpoint.sh
++```
++
++To inspect the bridge command path without launching PX4/Gazebo:
++
++```bash
++DRY_RUN=1 ./scripts/run_demo04_external_setpoint.sh
++```
++
+ Each runner creates a new timestamped directory under `logs/<demo>/` and
+ `visualizations/<demo>/`. The runner prints the exact output paths after the
+ trajectory recorder finishes.
+diff --git a/UAV_capture/px4_ros2_ws/scripts/run_demo04_external_setpoint.sh b/UAV_capture/px4_ros2_ws/scripts/run_demo04_external_setpoint.sh
+index 80a63e0447515358746565a8abea7f43ac2c0d2d..3c41be73ac2cbcd7d8d2a48395d4c095338ac9b5
+--- a/UAV_capture/px4_ros2_ws/scripts/run_demo04_external_setpoint.sh
++++ b/UAV_capture/px4_ros2_ws/scripts/run_demo04_external_setpoint.sh
+@@ -2,37 +2,81 @@
+ set -euo pipefail
+ 
+ WS_DIR="${WS_DIR:-/home/clcwork/UAV_capture/px4_ros2_ws}"
++DEMO04_MODE="${DEMO04_MODE:-bridge}"
++DRY_RUN="${DRY_RUN:-0}"
+ INITIAL_X="${INITIAL_X:-0.0}"
+ INITIAL_Y="${INITIAL_Y:-0.0}"
+ INITIAL_Z="${INITIAL_Z:--2.0}"
+ VIS_DURATION="${VIS_DURATION:-120.0}"
+ TARGET_START_DELAY="${TARGET_START_DELAY:-15}"
+ TARGET_HOLD="${TARGET_HOLD:-18}"
++BRIDGE_TARGET_TIMEOUT="${BRIDGE_TARGET_TIMEOUT:-25.0}"
++BRIDGE_TARGET_JUMP_LIMIT="${BRIDGE_TARGET_JUMP_LIMIT:-2.5}"
++BRIDGE_MAX_ALTITUDE="${BRIDGE_MAX_ALTITUDE:-5.0}"
++BRIDGE_MIN_ALTITUDE="${BRIDGE_MIN_ALTITUDE:-0.5}"
++BRIDGE_MAX_HORIZONTAL_RANGE="${BRIDGE_MAX_HORIZONTAL_RANGE:-5.0}"
+ STAMP="$(date +%Y%m%d_%H%M%S)"
+ LOG_DIR="$WS_DIR/logs/demo04_external_setpoint/$STAMP"
+ VIS_DIR="$WS_DIR/visualizations/demo04_external_setpoint/$STAMP"
+ export RESET_STACK="${RESET_STACK:-1}"
+ 
++case "$DEMO04_MODE" in
++  bridge)
++    CONTROL_SESSION="px4_uav_control_bridge"
++    CONTROL_LOG="$LOG_DIR/uav_control_bridge.log"
++    CONTROL_TITLE="Demo 04 External Setpoint Bridge"
++    CONTROL_RUNNER="ros2 run px4_offboard_hover uav_control_bridge --ros-args -p initial_x:=$INITIAL_X -p initial_y:=$INITIAL_Y -p initial_z:=$INITIAL_Z -p target_timeout:=$BRIDGE_TARGET_TIMEOUT -p target_jump_limit:=$BRIDGE_TARGET_JUMP_LIMIT -p max_altitude:=$BRIDGE_MAX_ALTITUDE -p min_altitude:=$BRIDGE_MIN_ALTITUDE -p max_horizontal_range:=$BRIDGE_MAX_HORIZONTAL_RANGE"
++    ;;
++  legacy)
++    CONTROL_SESSION="px4_demo04_external_setpoint"
++    CONTROL_LOG="$LOG_DIR/demo04.log"
++    CONTROL_TITLE="Demo 04 External Setpoint Interface"
++    CONTROL_RUNNER="ros2 run px4_offboard_hover demo04_external_setpoint --ros-args -p initial_x:=$INITIAL_X -p initial_y:=$INITIAL_Y -p initial_z:=$INITIAL_Z"
++    ;;
++  *)
++    echo "Unsupported DEMO04_MODE=$DEMO04_MODE. Use bridge or legacy." >&2
++    exit 2
++    ;;
++esac
++
++TARGET_SEQUENCE_COMMAND="sleep \"$TARGET_START_DELAY\" && \
++  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 2.0, y: 0.0, z: -2.0}' && sleep \"$TARGET_HOLD\" && \
++  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 2.0, y: 2.0, z: -2.0}' && sleep \"$TARGET_HOLD\" && \
++  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 0.0, y: 2.0, z: -2.0}' && sleep \"$TARGET_HOLD\" && \
++  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 0.0, y: 0.0, z: -2.0}'"
++
++if [ "$DRY_RUN" = "1" ]; then
++  echo "DRY_RUN=1"
++  echo "mode=$DEMO04_MODE"
++  echo "start_stack=$WS_DIR/scripts/start_stack.sh"
++  echo "trajectory_recorder=VIS_DIR=\"$VIS_DIR\" VIS_DURATION=\"$VIS_DURATION\" VIS_TITLE=\"$CONTROL_TITLE\" VIS_DEMO_ID=\"demo04\" AVG_ERROR_PASS=\"0.9\" FINAL_ERROR_PASS=\"0.6\" MAX_SPEED_PASS=\"3.0\" \"$WS_DIR/scripts/run_trajectory_recorder.sh\""
++  echo "control_session=$CONTROL_SESSION"
++  echo "control_command=$CONTROL_RUNNER"
++  echo "target_topic=/uav/target_position geometry_msgs/msg/Point"
++  echo "target_sequence=$TARGET_SEQUENCE_COMMAND"
++  echo "logs=$LOG_DIR"
++  echo "visuals=$VIS_DIR"
++  exit 0
++fi
++
+ mkdir -p "$LOG_DIR" "$VIS_DIR"
+ "$WS_DIR/scripts/start_stack.sh"
+ 
+ tmux kill-session -t px4_trajectory_recorder 2>/dev/null || true
+ tmux new-session -d -s px4_trajectory_recorder \
+-  "VIS_DIR=\"$VIS_DIR\" VIS_DURATION=\"$VIS_DURATION\" VIS_TITLE=\"Demo 04 External Setpoint Interface\" VIS_DEMO_ID=\"demo04\" AVG_ERROR_PASS=\"0.9\" FINAL_ERROR_PASS=\"0.6\" MAX_SPEED_PASS=\"3.0\" \"$WS_DIR/scripts/run_trajectory_recorder.sh\" 2>&1 | tee \"$LOG_DIR/trajectory_recorder.log\""
++  "VIS_DIR=\"$VIS_DIR\" VIS_DURATION=\"$VIS_DURATION\" VIS_TITLE=\"$CONTROL_TITLE\" VIS_DEMO_ID=\"demo04\" AVG_ERROR_PASS=\"0.9\" FINAL_ERROR_PASS=\"0.6\" MAX_SPEED_PASS=\"3.0\" \"$WS_DIR/scripts/run_trajectory_recorder.sh\" 2>&1 | tee \"$LOG_DIR/trajectory_recorder.log\""
+ 
+ tmux kill-session -t px4_demo04_external_setpoint 2>/dev/null || true
+-tmux new-session -d -s px4_demo04_external_setpoint \
+-  "cd \"$WS_DIR\" && set +u && source /opt/ros/jazzy/setup.bash && source install/setup.bash && set -u && ros2 run px4_offboard_hover demo04_external_setpoint --ros-args -p initial_x:=$INITIAL_X -p initial_y:=$INITIAL_Y -p initial_z:=$INITIAL_Z 2>&1 | tee \"$LOG_DIR/demo04.log\""
++tmux kill-session -t px4_uav_control_bridge 2>/dev/null || true
++tmux new-session -d -s "$CONTROL_SESSION" \
++  "cd \"$WS_DIR\" && set +u && source /opt/ros/jazzy/setup.bash && source install/setup.bash && set -u && $CONTROL_RUNNER 2>&1 | tee \"$CONTROL_LOG\""
+ 
+ tmux kill-session -t px4_demo04_target_sequence 2>/dev/null || true
+ tmux new-session -d -s px4_demo04_target_sequence \
+-  "cd \"$WS_DIR\" && set +u && source /opt/ros/jazzy/setup.bash && source install/setup.bash && set -u && sleep \"$TARGET_START_DELAY\" && \
+-  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 2.0, y: 0.0, z: -2.0}' && sleep \"$TARGET_HOLD\" && \
+-  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 2.0, y: 2.0, z: -2.0}' && sleep \"$TARGET_HOLD\" && \
+-  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 0.0, y: 2.0, z: -2.0}' && sleep \"$TARGET_HOLD\" && \
+-  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 0.0, y: 0.0, z: -2.0}' 2>&1 | tee \"$LOG_DIR/target_sequence.log\""
++  "cd \"$WS_DIR\" && set +u && source /opt/ros/jazzy/setup.bash && source install/setup.bash && set -u && $TARGET_SEQUENCE_COMMAND 2>&1 | tee \"$LOG_DIR/target_sequence.log\""
+ 
+-echo "demo04 session=px4_demo04_external_setpoint"
++echo "demo04 mode=$DEMO04_MODE"
++echo "control session=$CONTROL_SESSION"
+ echo "visualizer session=px4_trajectory_recorder"
+ echo "target sequence session=px4_demo04_target_sequence"
+ echo "target topic=/uav/target_position geometry_msgs/msg/Point"
+diff --git a/UAV_capture/px4_ros2_ws/scripts/start_stack.sh b/UAV_capture/px4_ros2_ws/scripts/start_stack.sh
+index 2a1cabc70ef0877acaf78595b3cb14c7d926a326..dbcc143f436006870fd1f76baeca6218583b6edd
+--- a/UAV_capture/px4_ros2_ws/scripts/start_stack.sh
++++ b/UAV_capture/px4_ros2_ws/scripts/start_stack.sh
+@@ -10,6 +10,7 @@
+   tmux kill-session -t px4_demo02_waypoint_flight 2>/dev/null || true
+   tmux kill-session -t px4_demo03_circle_trajectory 2>/dev/null || true
+   tmux kill-session -t px4_demo04_external_setpoint 2>/dev/null || true
++  tmux kill-session -t px4_uav_control_bridge 2>/dev/null || true
+   tmux kill-session -t px4_demo04_target_sequence 2>/dev/null || true
+   tmux kill-session -t px4_trajectory_recorder 2>/dev/null || true
+   tmux kill-session -t micro_xrce_agent 2>/dev/null || true
+diff --git a/UAV_capture/px4_ros2_ws/scripts/stop_stack.sh b/UAV_capture/px4_ros2_ws/scripts/stop_stack.sh
+index fbf0c08ce1a93ea14633b8446281b84c8e994d05..8a62aeb89592a1b41cc8525a4e9ed12f9c187ee7
+--- a/UAV_capture/px4_ros2_ws/scripts/stop_stack.sh
++++ b/UAV_capture/px4_ros2_ws/scripts/stop_stack.sh
+@@ -5,6 +5,7 @@
+ tmux kill-session -t px4_demo02_waypoint_flight 2>/dev/null || true
+ tmux kill-session -t px4_demo03_circle_trajectory 2>/dev/null || true
+ tmux kill-session -t px4_demo04_external_setpoint 2>/dev/null || true
++tmux kill-session -t px4_uav_control_bridge 2>/dev/null || true
+ tmux kill-session -t px4_demo04_target_sequence 2>/dev/null || true
+ tmux kill-session -t px4_trajectory_recorder 2>/dev/null || true
+ tmux kill-session -t micro_xrce_agent 2>/dev/null || true
+
+codex
+**changed files**
+- [scripts/run_demo04_external_setpoint.sh](/home/clcwork/UAV_capture/px4_ros2_ws/scripts/run_demo04_external_setpoint.sh:1): Demo 04 now defaults to `uav_control_bridge`, keeps `DEMO04_MODE=legacy`, adds `DRY_RUN=1`.
+- [scripts/start_stack.sh](/home/clcwork/UAV_capture/px4_ros2_ws/scripts/start_stack.sh:1), [scripts/stop_stack.sh](/home/clcwork/UAV_capture/px4_ros2_ws/scripts/stop_stack.sh:1): clean up `px4_uav_control_bridge` tmux session.
+- [docs/VISUALIZATION_GUIDE.md](/home/clcwork/UAV_capture/px4_ros2_ws/docs/VISUALIZATION_GUIDE.md:1), [docs/REGRESSION_CHECKS.md](/home/clcwork/UAV_capture/px4_ros2_ws/docs/REGRESSION_CHECKS.md:1): documented bridge-backed Demo 04 and dry-run/manual check path.
+- [codex-logs/008-add-uav-bridge-demo-and-checks.log](/home/clcwork/UAV_capture/px4_ros2_ws/codex-logs/008-add-uav-bridge-demo-and-checks.log:1): saved validation output.
+
+**commands run**
+- `chmod +x scripts/*.sh`
+- `bash -n scripts/run_codex_queue.sh 2>/dev/null || true`
+- `bash -n run_codex_queue.sh`
+- `bash -n scripts/check_demo_outputs.sh`
+- `bash -n scripts/run_demo04_external_setpoint.sh`
+- `bash -n scripts/start_stack.sh`
+- `bash -n scripts/stop_stack.sh`
+- `DRY_RUN=1 ./scripts/run_demo04_external_setpoint.sh`
+- `./scripts/check_demo_outputs.sh visualizations/demo01_hover`
+- `./scripts/check_demo_outputs.sh visualizations/demo02_waypoint_flight`
+- `./scripts/check_demo_outputs.sh visualizations/demo03_circle_trajectory`
+- `./scripts/check_demo_outputs.sh visualizations/demo04_external_setpoint`
+
+**test result**
+- PASS. Syntax checks passed, Demo 04 dry-run printed the bridge command path and unchanged square target sequence, and existing Demo 1-4 visualization checks all returned `CHECK=PASS`.
+
+**known risks**
+- I did not run the full PX4/Gazebo bridge flight in this pass, so no new Demo 04 visualization directory was generated or flight-validated. Existing Demo 04 outputs were checked instead.
+diff --git a/UAV_capture/px4_ros2_ws/docs/REGRESSION_CHECKS.md b/UAV_capture/px4_ros2_ws/docs/REGRESSION_CHECKS.md
+index ee752127c552d513faadad194a265bfba3532b9d..0d0cf5d7db74d9f4ea50cb308a044cb85bca422f
+--- a/UAV_capture/px4_ros2_ws/docs/REGRESSION_CHECKS.md
++++ b/UAV_capture/px4_ros2_ws/docs/REGRESSION_CHECKS.md
+@@ -53,6 +53,30 @@
+ vz
+ ```
+ 
++## Demo 04 Bridge Check
++
++Demo 04 should normally be generated with the bridge-backed runner:
++
++```bash
++./scripts/run_demo04_external_setpoint.sh
++./scripts/check_demo_outputs.sh visualizations/demo04_external_setpoint
++```
++
++This starts the stack, runs `uav_control_bridge`, publishes the existing square
++sequence to `/uav/target_position`, and records outputs under
++`visualizations/demo04_external_setpoint/<timestamp>/`. Use this dry-run path
++when the full PX4/Gazebo simulation is not available:
++
++```bash
++DRY_RUN=1 ./scripts/run_demo04_external_setpoint.sh
++```
++
++For legacy comparison only, run:
++
++```bash
++DEMO04_MODE=legacy ./scripts/run_demo04_external_setpoint.sh
++```
++
+ ## Legacy Hover Check
+ 
+ Older hover experiment directories under `logs/offboard_hover/<timestamp>` may
+diff --git a/UAV_capture/px4_ros2_ws/docs/VISUALIZATION_GUIDE.md b/UAV_capture/px4_ros2_ws/docs/VISUALIZATION_GUIDE.md
+index bd050bcdadf1fb286ac175140172c80e7a64e85c..ed880d9c3b8c5a6f4bb6f0aef1744fdcf3cb3da4
+--- a/UAV_capture/px4_ros2_ws/docs/VISUALIZATION_GUIDE.md
++++ b/UAV_capture/px4_ros2_ws/docs/VISUALIZATION_GUIDE.md
+@@ -38,7 +38,7 @@
+ | Demo 01 Offboard Hover | `scripts/run_demo01_hover.sh` | `visualizations/demo01_hover/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
+ | Demo 02 Waypoint Flight | `scripts/run_demo02_waypoint_flight.sh` | `visualizations/demo02_waypoint_flight/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
+ | Demo 03 Circle Trajectory | `scripts/run_demo03_circle_trajectory.sh` | `visualizations/demo03_circle_trajectory/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
+-| Demo 04 External Setpoint Interface | `scripts/run_demo04_external_setpoint.sh` | `visualizations/demo04_external_setpoint/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
++| Demo 04 External Setpoint Bridge | `scripts/run_demo04_external_setpoint.sh` | `visualizations/demo04_external_setpoint/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
+ 
+ ## Generate New Results
+ 
+@@ -55,6 +55,31 @@
+ ./scripts/run_demo04_external_setpoint.sh
+ ```
+ 
++Demo 04 now runs the bridge-backed external setpoint workflow by default:
++
++```bash
++DEMO04_MODE=bridge ./scripts/run_demo04_external_setpoint.sh
++```
++
++The runner starts `scripts/start_stack.sh`, records with
++`scripts/run_trajectory_recorder.sh`, runs
++`ros2 run px4_offboard_hover uav_control_bridge`, and publishes the existing
++square target sequence to `/uav/target_position` as NED
++`geometry_msgs/msg/Point` commands. The square uses z=-2.0, which means 2 m
++positive altitude in PX4 NED coordinates.
++
++The original direct Demo 04 node is still available for comparison:
++
++```bash
++DEMO04_MODE=legacy ./scripts/run_demo04_external_setpoint.sh
++```
++
++To inspect the bridge command path without launching PX4/Gazebo:
++
++```bash
++DRY_RUN=1 ./scripts/run_demo04_external_setpoint.sh
++```
++
+ Each runner creates a new timestamped directory under `logs/<demo>/` and
+ `visualizations/<demo>/`. The runner prints the exact output paths after the
+ trajectory recorder finishes.
+diff --git a/UAV_capture/px4_ros2_ws/scripts/run_demo04_external_setpoint.sh b/UAV_capture/px4_ros2_ws/scripts/run_demo04_external_setpoint.sh
+index 80a63e0447515358746565a8abea7f43ac2c0d2d..3c41be73ac2cbcd7d8d2a48395d4c095338ac9b5
+--- a/UAV_capture/px4_ros2_ws/scripts/run_demo04_external_setpoint.sh
++++ b/UAV_capture/px4_ros2_ws/scripts/run_demo04_external_setpoint.sh
+@@ -2,37 +2,81 @@
+ set -euo pipefail
+ 
+ WS_DIR="${WS_DIR:-/home/clcwork/UAV_capture/px4_ros2_ws}"
++DEMO04_MODE="${DEMO04_MODE:-bridge}"
++DRY_RUN="${DRY_RUN:-0}"
+ INITIAL_X="${INITIAL_X:-0.0}"
+ INITIAL_Y="${INITIAL_Y:-0.0}"
+ INITIAL_Z="${INITIAL_Z:--2.0}"
+ VIS_DURATION="${VIS_DURATION:-120.0}"
+ TARGET_START_DELAY="${TARGET_START_DELAY:-15}"
+ TARGET_HOLD="${TARGET_HOLD:-18}"
++BRIDGE_TARGET_TIMEOUT="${BRIDGE_TARGET_TIMEOUT:-25.0}"
++BRIDGE_TARGET_JUMP_LIMIT="${BRIDGE_TARGET_JUMP_LIMIT:-2.5}"
++BRIDGE_MAX_ALTITUDE="${BRIDGE_MAX_ALTITUDE:-5.0}"
++BRIDGE_MIN_ALTITUDE="${BRIDGE_MIN_ALTITUDE:-0.5}"
++BRIDGE_MAX_HORIZONTAL_RANGE="${BRIDGE_MAX_HORIZONTAL_RANGE:-5.0}"
+ STAMP="$(date +%Y%m%d_%H%M%S)"
+ LOG_DIR="$WS_DIR/logs/demo04_external_setpoint/$STAMP"
+ VIS_DIR="$WS_DIR/visualizations/demo04_external_setpoint/$STAMP"
+ export RESET_STACK="${RESET_STACK:-1}"
+ 
++case "$DEMO04_MODE" in
++  bridge)
++    CONTROL_SESSION="px4_uav_control_bridge"
++    CONTROL_LOG="$LOG_DIR/uav_control_bridge.log"
++    CONTROL_TITLE="Demo 04 External Setpoint Bridge"
++    CONTROL_RUNNER="ros2 run px4_offboard_hover uav_control_bridge --ros-args -p initial_x:=$INITIAL_X -p initial_y:=$INITIAL_Y -p initial_z:=$INITIAL_Z -p target_timeout:=$BRIDGE_TARGET_TIMEOUT -p target_jump_limit:=$BRIDGE_TARGET_JUMP_LIMIT -p max_altitude:=$BRIDGE_MAX_ALTITUDE -p min_altitude:=$BRIDGE_MIN_ALTITUDE -p max_horizontal_range:=$BRIDGE_MAX_HORIZONTAL_RANGE"
++    ;;
++  legacy)
++    CONTROL_SESSION="px4_demo04_external_setpoint"
++    CONTROL_LOG="$LOG_DIR/demo04.log"
++    CONTROL_TITLE="Demo 04 External Setpoint Interface"
++    CONTROL_RUNNER="ros2 run px4_offboard_hover demo04_external_setpoint --ros-args -p initial_x:=$INITIAL_X -p initial_y:=$INITIAL_Y -p initial_z:=$INITIAL_Z"
++    ;;
++  *)
++    echo "Unsupported DEMO04_MODE=$DEMO04_MODE. Use bridge or legacy." >&2
++    exit 2
++    ;;
++esac
++
++TARGET_SEQUENCE_COMMAND="sleep \"$TARGET_START_DELAY\" && \
++  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 2.0, y: 0.0, z: -2.0}' && sleep \"$TARGET_HOLD\" && \
++  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 2.0, y: 2.0, z: -2.0}' && sleep \"$TARGET_HOLD\" && \
++  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 0.0, y: 2.0, z: -2.0}' && sleep \"$TARGET_HOLD\" && \
++  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 0.0, y: 0.0, z: -2.0}'"
++
++if [ "$DRY_RUN" = "1" ]; then
++  echo "DRY_RUN=1"
++  echo "mode=$DEMO04_MODE"
++  echo "start_stack=$WS_DIR/scripts/start_stack.sh"
++  echo "trajectory_recorder=VIS_DIR=\"$VIS_DIR\" VIS_DURATION=\"$VIS_DURATION\" VIS_TITLE=\"$CONTROL_TITLE\" VIS_DEMO_ID=\"demo04\" AVG_ERROR_PASS=\"0.9\" FINAL_ERROR_PASS=\"0.6\" MAX_SPEED_PASS=\"3.0\" \"$WS_DIR/scripts/run_trajectory_recorder.sh\""
++  echo "control_session=$CONTROL_SESSION"
++  echo "control_command=$CONTROL_RUNNER"
++  echo "target_topic=/uav/target_position geometry_msgs/msg/Point"
++  echo "target_sequence=$TARGET_SEQUENCE_COMMAND"
++  echo "logs=$LOG_DIR"
++  echo "visuals=$VIS_DIR"
++  exit 0
++fi
++
+ mkdir -p "$LOG_DIR" "$VIS_DIR"
+ "$WS_DIR/scripts/start_stack.sh"
+ 
+ tmux kill-session -t px4_trajectory_recorder 2>/dev/null || true
+ tmux new-session -d -s px4_trajectory_recorder \
+-  "VIS_DIR=\"$VIS_DIR\" VIS_DURATION=\"$VIS_DURATION\" VIS_TITLE=\"Demo 04 External Setpoint Interface\" VIS_DEMO_ID=\"demo04\" AVG_ERROR_PASS=\"0.9\" FINAL_ERROR_PASS=\"0.6\" MAX_SPEED_PASS=\"3.0\" \"$WS_DIR/scripts/run_trajectory_recorder.sh\" 2>&1 | tee \"$LOG_DIR/trajectory_recorder.log\""
++  "VIS_DIR=\"$VIS_DIR\" VIS_DURATION=\"$VIS_DURATION\" VIS_TITLE=\"$CONTROL_TITLE\" VIS_DEMO_ID=\"demo04\" AVG_ERROR_PASS=\"0.9\" FINAL_ERROR_PASS=\"0.6\" MAX_SPEED_PASS=\"3.0\" \"$WS_DIR/scripts/run_trajectory_recorder.sh\" 2>&1 | tee \"$LOG_DIR/trajectory_recorder.log\""
+ 
+ tmux kill-session -t px4_demo04_external_setpoint 2>/dev/null || true
+-tmux new-session -d -s px4_demo04_external_setpoint \
+-  "cd \"$WS_DIR\" && set +u && source /opt/ros/jazzy/setup.bash && source install/setup.bash && set -u && ros2 run px4_offboard_hover demo04_external_setpoint --ros-args -p initial_x:=$INITIAL_X -p initial_y:=$INITIAL_Y -p initial_z:=$INITIAL_Z 2>&1 | tee \"$LOG_DIR/demo04.log\""
++tmux kill-session -t px4_uav_control_bridge 2>/dev/null || true
++tmux new-session -d -s "$CONTROL_SESSION" \
++  "cd \"$WS_DIR\" && set +u && source /opt/ros/jazzy/setup.bash && source install/setup.bash && set -u && $CONTROL_RUNNER 2>&1 | tee \"$CONTROL_LOG\""
+ 
+ tmux kill-session -t px4_demo04_target_sequence 2>/dev/null || true
+ tmux new-session -d -s px4_demo04_target_sequence \
+-  "cd \"$WS_DIR\" && set +u && source /opt/ros/jazzy/setup.bash && source install/setup.bash && set -u && sleep \"$TARGET_START_DELAY\" && \
+-  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 2.0, y: 0.0, z: -2.0}' && sleep \"$TARGET_HOLD\" && \
+-  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 2.0, y: 2.0, z: -2.0}' && sleep \"$TARGET_HOLD\" && \
+-  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 0.0, y: 2.0, z: -2.0}' && sleep \"$TARGET_HOLD\" && \
+-  ros2 topic pub --times 3 -r 2 /uav/target_position geometry_msgs/msg/Point '{x: 0.0, y: 0.0, z: -2.0}' 2>&1 | tee \"$LOG_DIR/target_sequence.log\""
++  "cd \"$WS_DIR\" && set +u && source /opt/ros/jazzy/setup.bash && source install/setup.bash && set -u && $TARGET_SEQUENCE_COMMAND 2>&1 | tee \"$LOG_DIR/target_sequence.log\""
+ 
+-echo "demo04 session=px4_demo04_external_setpoint"
++echo "demo04 mode=$DEMO04_MODE"
++echo "control session=$CONTROL_SESSION"
+ echo "visualizer session=px4_trajectory_recorder"
+ echo "target sequence session=px4_demo04_target_sequence"
+ echo "target topic=/uav/target_position geometry_msgs/msg/Point"
+diff --git a/UAV_capture/px4_ros2_ws/scripts/start_stack.sh b/UAV_capture/px4_ros2_ws/scripts/start_stack.sh
+index 2a1cabc70ef0877acaf78595b3cb14c7d926a326..dbcc143f436006870fd1f76baeca6218583b6edd
+--- a/UAV_capture/px4_ros2_ws/scripts/start_stack.sh
++++ b/UAV_capture/px4_ros2_ws/scripts/start_stack.sh
+@@ -10,6 +10,7 @@
+   tmux kill-session -t px4_demo02_waypoint_flight 2>/dev/null || true
+   tmux kill-session -t px4_demo03_circle_trajectory 2>/dev/null || true
+   tmux kill-session -t px4_demo04_external_setpoint 2>/dev/null || true
++  tmux kill-session -t px4_uav_control_bridge 2>/dev/null || true
+   tmux kill-session -t px4_demo04_target_sequence 2>/dev/null || true
+   tmux kill-session -t px4_trajectory_recorder 2>/dev/null || true
+   tmux kill-session -t micro_xrce_agent 2>/dev/null || true
+diff --git a/UAV_capture/px4_ros2_ws/scripts/stop_stack.sh b/UAV_capture/px4_ros2_ws/scripts/stop_stack.sh
+index fbf0c08ce1a93ea14633b8446281b84c8e994d05..8a62aeb89592a1b41cc8525a4e9ed12f9c187ee7
+--- a/UAV_capture/px4_ros2_ws/scripts/stop_stack.sh
++++ b/UAV_capture/px4_ros2_ws/scripts/stop_stack.sh
+@@ -5,6 +5,7 @@
+ tmux kill-session -t px4_demo02_waypoint_flight 2>/dev/null || true
+ tmux kill-session -t px4_demo03_circle_trajectory 2>/dev/null || true
+ tmux kill-session -t px4_demo04_external_setpoint 2>/dev/null || true
++tmux kill-session -t px4_uav_control_bridge 2>/dev/null || true
+ tmux kill-session -t px4_demo04_target_sequence 2>/dev/null || true
+ tmux kill-session -t px4_trajectory_recorder 2>/dev/null || true
+ tmux kill-session -t micro_xrce_agent 2>/dev/null || true
+
+tokens used
+96,180
+**changed files**
+- [scripts/run_demo04_external_setpoint.sh](/home/clcwork/UAV_capture/px4_ros2_ws/scripts/run_demo04_external_setpoint.sh:1): Demo 04 now defaults to `uav_control_bridge`, keeps `DEMO04_MODE=legacy`, adds `DRY_RUN=1`.
+- [scripts/start_stack.sh](/home/clcwork/UAV_capture/px4_ros2_ws/scripts/start_stack.sh:1), [scripts/stop_stack.sh](/home/clcwork/UAV_capture/px4_ros2_ws/scripts/stop_stack.sh:1): clean up `px4_uav_control_bridge` tmux session.
+- [docs/VISUALIZATION_GUIDE.md](/home/clcwork/UAV_capture/px4_ros2_ws/docs/VISUALIZATION_GUIDE.md:1), [docs/REGRESSION_CHECKS.md](/home/clcwork/UAV_capture/px4_ros2_ws/docs/REGRESSION_CHECKS.md:1): documented bridge-backed Demo 04 and dry-run/manual check path.
+- [codex-logs/008-add-uav-bridge-demo-and-checks.log](/home/clcwork/UAV_capture/px4_ros2_ws/codex-logs/008-add-uav-bridge-demo-and-checks.log:1): saved validation output.
+
+**commands run**
+- `chmod +x scripts/*.sh`
+- `bash -n scripts/run_codex_queue.sh 2>/dev/null || true`
+- `bash -n run_codex_queue.sh`
+- `bash -n scripts/check_demo_outputs.sh`
+- `bash -n scripts/run_demo04_external_setpoint.sh`
+- `bash -n scripts/start_stack.sh`
+- `bash -n scripts/stop_stack.sh`
+- `DRY_RUN=1 ./scripts/run_demo04_external_setpoint.sh`
+- `./scripts/check_demo_outputs.sh visualizations/demo01_hover`
+- `./scripts/check_demo_outputs.sh visualizations/demo02_waypoint_flight`
+- `./scripts/check_demo_outputs.sh visualizations/demo03_circle_trajectory`
+- `./scripts/check_demo_outputs.sh visualizations/demo04_external_setpoint`
+
+**test result**
+- PASS. Syntax checks passed, Demo 04 dry-run printed the bridge command path and unchanged square target sequence, and existing Demo 1-4 visualization checks all returned `CHECK=PASS`.
+
+**known risks**
+- I did not run the full PX4/Gazebo bridge flight in this pass, so no new Demo 04 visualization directory was generated or flight-validated. Existing Demo 04 outputs were checked instead.

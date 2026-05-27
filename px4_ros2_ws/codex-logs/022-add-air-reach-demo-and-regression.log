@@ -1,0 +1,13 @@
+Task 022 Add Air Reach Demo and Regression
+timestamp: 20260527_191736
+
+commands:
+PASS bash -n scripts/run_regression_demo_10.sh
+PASS python3 -m py_compile scripts/check_demo_10.py
+PASS python3 -m compileall src/aerial_manip_eval scripts/check_demo_10.py
+PASS colcon build --packages-select aerial_manip_eval
+PASS bash scripts/run_regression_demo_10.sh || true
+PASS python3 scripts/check_demo_10.py logs/demo10_air_reach/20260527_191707
+
+latest output_dir: logs/demo10_air_reach/20260527_191707
+latest result: CHECK=PASS mode=dry-run max_flight_error_m=0.067 final_endpoint_error_m=0.051 target_visible_ratio=0.775

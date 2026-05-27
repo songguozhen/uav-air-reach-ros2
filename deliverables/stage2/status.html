@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>第二阶段状态 — UAV_capture Task 010–022</title>
+  <style>
+    :root {
+      --bg: #eef1f4;
+      --panel: #ffffff;
+      --ink: #15202b;
+      --muted: #5c6773;
+      --line: #d4dae1;
+      --ok: #1a6b42;
+      --warn: #8f5f00;
+      --bad: #9b342c;
+      --idle: #4a5560;
+      --bg-ok: #e6f4ec;
+      --bg-warn: #fff4dd;
+      --bg-bad: #fbeae8;
+      --bg-idle: #edf0f3;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font: 14px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+    }
+    .wrap {
+      width: min(1140px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 22px 0 36px;
+    }
+    header {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 20px 22px;
+      margin-bottom: 14px;
+    }
+    h1 { margin: 0 0 6px; font-size: 24px; }
+    h2 {
+      margin: 0 0 10px;
+      font-size: 17px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--line);
+    }
+    .meta { color: var(--muted); font-size: 13px; line-height: 1.65; }
+    .tag {
+      display: inline-block;
+      padding: 2px 9px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      margin: 4px 6px 0 0;
+    }
+    .tag-warn { background: var(--bg-warn); color: var(--warn); }
+    .tag-ok { background: var(--bg-ok); color: var(--ok); }
+    .tag-idle { background: var(--bg-idle); color: var(--idle); }
+    .tag-bad { background: var(--bg-bad); color: var(--bad); }
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 10px;
+      margin: 14px 0 0;
+    }
+    .kpi {
+      background: var(--bg-idle);
+      border-radius: 8px;
+      padding: 12px 14px;
+    }
+    .kpi label {
+      display: block;
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .kpi strong { font-size: 26px; line-height: 1.2; }
+    section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 16px 18px;
+      margin-bottom: 12px;
+    }
+    p { margin: 8px 0; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 7px 8px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { background: var(--bg-idle); }
+    code {
+      font-family: ui-monospace, "Cascadia Code", monospace;
+      font-size: 12px;
+      word-break: break-all;
+    }
+    pre {
+      background: var(--bg-idle);
+      border-radius: 6px;
+      padding: 11px 12px;
+      overflow-x: auto;
+      font-size: 12px;
+      margin: 8px 0 0;
+    }
+    ul { margin: 6px 0; padding-left: 18px; }
+    li { margin: 5px 0; }
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+      padding-top: 8px;
+    }
+    @media print {
+      body { background: #fff; }
+      section, header { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>第二阶段项目状态（Task 010–022）</h1>
+      <p class="meta">
+        项目：UAV_capture · 空中操作 / Air Reach<br>
+        仓库：<code>/home/clcwork/UAV_capture</code><br>
+        工作区：<code>/home/clcwork/UAV_capture/px4_ros2_ws</code><br>
+        栈：ROS 2 Jazzy · PX4 Offboard · Gazebo Harmonic · LeRobot（conda）<br>
+        生成：2026-05-27T17:23:17+08:00
+      </p>
+      <p>
+        <span class="tag tag-warn">总体：Warning</span>
+        <span class="tag tag-ok">已完成 1</span>
+        <span class="tag tag-idle">待执行 12</span>
+        <span class="tag tag-idle">失败 0</span>
+      </p>
+      <div class="kpis">
+        <div class="kpi"><label>任务范围</label><strong>010–022</strong></div>
+        <div class="kpi"><label>完成率</label><strong>8%</strong></div>
+        <div class="kpi"><label>阶段一</label><strong style="color:var(--ok)">就绪</strong></div>
+        <div class="kpi"><label>参考资料</label><strong>24 文件</strong></div>
+      </div>
+    </header>
+
+    <section>
+      <h2>概览</h2>
+      <p>第二阶段目标：在已有 <code>/uav/*</code> 控制桥基础上，增加 2-DOF 机载臂、视觉、协同接近、LeRobot 数据管线与 Air Reach 回归 Demo。</p>
+      <p><strong>当前事实：</strong>仅 Task 010（资料归档）已执行完毕；Task 011–022 仅有 <code>codex-tasks/</code> 任务卡，无 <code>codex-logs</code> 记录，无 <code>src/aerial_manip_*</code> 包、无 STAGE2 文档、无 Demo 10。</p>
+      <p><strong>阶段一依赖仍可用：</strong><code>px4_offboard_hover</code> 已安装；Demo 01–04 脚本在 <code>scripts/</code>。</p>
+    </section>
+
+    <section>
+      <h2>任务队列（010–022）</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>任务</th>
+            <th>状态</th>
+            <th>日志</th>
+            <th>说明 / 下一步</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>010</td>
+            <td>下载第二阶段资料</td>
+            <td><span class="tag tag-ok">completed</span></td>
+            <td><code>010-download-stage2-materials.log</code></td>
+            <td><code>references/stage2/</code> 含 manifest、官方文档、论文、模型快照</td>
+          </tr>
+          <tr>
+            <td>011</td>
+            <td>审计本地环境</td>
+            <td><span class="tag tag-idle">pending</span></td>
+            <td>—</td>
+            <td>预检：ROS2/Gazebo/PX4 模型 OK；ros_gz 栈缺失 → <code>./run_codex_queue.sh --from 011</code></td>
+          </tr>
+          <tr>
+            <td>012</td>
+            <td>建立 aerial_manip 包骨架</td>
+            <td><span class="tag tag-idle">pending</span></td>
+            <td>—</td>
+            <td>六个 <code>aerial_manip_*</code> 包未创建</td>
+          </tr>
+          <tr>
+            <td>013</td>
+            <td>x500_arm_2dof 模型</td>
+            <td><span class="tag tag-idle">pending</span></td>
+            <td>—</td>
+            <td>依赖 012</td>
+          </tr>
+          <tr>
+            <td>014</td>
+            <td>机械臂 ros2_control 闭环</td>
+            <td><span class="tag tag-idle">pending</span></td>
+            <td>—</td>
+            <td><span class="tag tag-bad">Blocker</span> 需 gz_ros2_control</td>
+          </tr>
+          <tr>
+            <td>015</td>
+            <td>arm_control_bridge</td>
+            <td><span class="tag tag-idle">pending</span></td>
+            <td>—</td>
+            <td>依赖 014；对齐 <code>/arm/*</code> 高层接口</td>
+          </tr>
+          <tr>
+            <td>016</td>
+            <td>状态聚合与 TF 基线</td>
+            <td><span class="tag tag-idle">pending</span></td>
+            <td>—</td>
+            <td>NED/ENU 转换集中在边界节点</td>
+          </tr>
+          <tr>
+            <td>017</td>
+            <td>前视相机与 ros_gz_bridge</td>
+            <td><span class="tag tag-idle">pending</span></td>
+            <td>—</td>
+            <td><span class="tag tag-bad">Blocker</span> 需 ros_gz_bridge</td>
+          </tr>
+          <tr>
+            <td>018</td>
+            <td>标记目标位姿估计</td>
+            <td><span class="tag tag-idle">pending</span></td>
+            <td>—</td>
+            <td>输出 <code>/vision/target_pose*</code></td>
+          </tr>
+          <tr>
+            <td>019</td>
+            <td>UAV-臂协同接近</td>
+            <td><span class="tag tag-idle">pending</span></td>
+            <td>—</td>
+            <td>仅经 <code>/uav/*</code>、<code>/arm/*</code> 发令</td>
+          </tr>
+          <tr>
+            <td>020</td>
+            <td>Episode 录制与 LeRobot 导出</td>
+            <td><span class="tag tag-idle">pending</span></td>
+            <td>—</td>
+            <td>LeRobot 在 conda；<code>datasets/air_reach_v1/</code> 未建</td>
+          </tr>
+          <tr>
+            <td>021</td>
+            <td>LeRobot 基线训练与策略桥</td>
+            <td><span class="tag tag-idle">pending</span></td>
+            <td>—</td>
+            <td>依赖 020</td>
+          </tr>
+          <tr>
+            <td>022</td>
+            <td>Air Reach Demo 与回归</td>
+            <td><span class="tag tag-idle">pending</span></td>
+            <td>—</td>
+            <td><code>run_regression_demo_10.sh</code> 不存在；最终集成</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="meta">队列：<code>px4_ros2_ws/run_codex_queue.sh</code> · 中文说明：<code>codex-logs/stage2-task-descriptions-zh.md</code></p>
+    </section>
+
+    <section>
+      <h2>模块与交付物检查</h2>
+      <table>
+        <thead>
+          <tr><th>模块</th><th>状态</th><th>证据路径</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>第二阶段参考资料</td><td><span class="tag tag-ok">就绪</span></td><td><code>references/stage2/manifest.yaml</code></td></tr>
+          <tr><td>UAV 高层桥</td><td><span class="tag tag-ok">就绪</span></td><td><code>src/px4_offboard_hover/.../uav_control_bridge.py</code></td></tr>
+          <tr><td>aerial_manip 包族</td><td><span class="tag tag-idle">缺失</span></td><td>任务 012</td></tr>
+          <tr><td>x500_arm_2dof</td><td><span class="tag tag-idle">缺失</span></td><td>任务 013</td></tr>
+          <tr><td>STAGE2 文档</td><td><span class="tag tag-idle">缺失</span></td><td><code>docs/STAGE2_*.md</code></td></tr>
+          <tr><td>Demo 10 回归</td><td><span class="tag tag-idle">缺失</span></td><td>任务 022</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>环境与风险</h2>
+      <table>
+        <thead>
+          <tr><th>检查项</th><th>结果</th><th>影响</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>ROS 2 Jazzy</td><td><span class="tag tag-ok">OK</span></td><td>—</td></tr>
+          <tr><td>Gazebo Harmonic</td><td><span class="tag tag-ok">8.11.0</span></td><td>—</td></tr>
+          <tr><td>PX4 仿真模型</td><td><span class="tag tag-ok">OK</span></td><td>x500 / mono_cam / arucotag 等</td></tr>
+          <tr><td>ros_gz_bridge</td><td><span class="tag tag-bad">缺失</span></td><td>任务 017</td></tr>
+          <tr><td>gz_ros2_control</td><td><span class="tag tag-bad">缺失</span></td><td>任务 014</td></tr>
+          <tr><td>LeRobot</td><td><span class="tag tag-warn">conda 可用</span></td><td>任务 020–021 需激活环境</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>建议下一步</h2>
+      <ol>
+        <li>安装 Gazebo–ROS 2 控制相关包：</li>
+      </ol>
+      <pre>sudo apt install ros-jazzy-ros-gz-bridge ros-jazzy-gz-ros2-control \
+  ros-jazzy-ros2-control ros-jazzy-ros2-controllers</pre>
+      <ol start="2">
+        <li>从环境审计继续 Codex 队列：</li>
+      </ol>
+      <pre>cd /home/clcwork/UAV_capture/px4_ros2_ws
+./run_codex_queue.sh --from 011</pre>
+      <ol start="3">
+        <li>录制/训练前：<code>source ~/miniconda3/envs/lerobot/bin/activate</code></li>
+        <li>保持 Demo 01–04 与 <code>/uav/*</code> 约定不变（见 <code>AGENTS.md</code>）</li>
+      </ol>
+    </section>
+
+    <footer>Generated by Codex · Stage 2 only · 2026-05-27T17:23:17+08:00</footer>
+  </div>
+</body>
+</html>

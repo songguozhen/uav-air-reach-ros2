@@ -1,0 +1,4682 @@
+Reading prompt from stdin...
+OpenAI Codex v0.133.0
+--------
+workdir: /home/clcwork/UAV_capture/px4_ros2_ws
+model: gpt-5.5
+provider: openai
+approval: never
+sandbox: danger-full-access
+reasoning effort: medium
+reasoning summaries: none
+session id: 019e68fe-75e5-7930-b198-09367ee4b341
+--------
+user
+# Required workspace rules
+
+# Codex Runbook
+
+This file is the required operating record for every Codex run in this
+workspace. Read it together with `AGENTS.md` before changing files or running
+simulation tasks.
+
+## Workspace
+
+Root workspace:
+
+```text
+/home/clcwork/UAV_capture/px4_ros2_ws
+```
+
+Related external paths:
+
+```text
+/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot
+/home/clcwork/Micro-XRCE-DDS-Agent/build
+/home/clcwork/miniconda3/envs/lerobot
+```
+
+This directory is not currently a git repository. Treat existing files,
+generated artifacts, logs, and user edits as persistent project state.
+
+## Current Project State
+
+Implemented ROS 2 package:
+
+```text
+src/px4_offboard_hover
+```
+
+Available PX4 offboard demos and tools:
+
+- Demo 01 hover: `scripts/run_demo01_hover.sh`
+- Demo 02 waypoint flight: `scripts/run_demo02_waypoint_flight.sh`
+- Demo 03 circle trajectory: `scripts/run_demo03_circle_trajectory.sh`
+- Demo 04 external setpoint / UAV bridge: `scripts/run_demo04_external_setpoint.sh`
+- Hover experiment: `scripts/run_hover_experiment.sh`
+- Trajectory recorder: `scripts/run_trajectory_recorder.sh`
+- Output checker: `scripts/check_demo_outputs.sh`
+- Stack startup and cleanup: `scripts/start_stack.sh`, `scripts/stop_stack.sh`
+
+Implemented UAV bridge:
+
+```text
+src/px4_offboard_hover/px4_offboard_hover/uav_control_bridge.py
+```
+
+The bridge exposes high-level UAV control topics:
+
+```text
+/uav/target_position      geometry_msgs/msg/Point
+/uav/current_position     geometry_msgs/msg/PointStamped
+/uav/current_target       geometry_msgs/msg/PointStamped
+/uav/reached_target       std_msgs/msg/Bool
+/uav/control_state        std_msgs/msg/String
+```
+
+External modules, including future vision, LeRobot, planner, and UAV-arm work,
+must use `/uav/*` topics by default. Do not publish directly to PX4
+`/fmu/in/*` topics from external modules unless a task explicitly requires it.
+
+Current bridge safety parameters include:
+
+```text
+initial_x
+initial_y
+initial_z
+yaw
+target_timeout
+max_altitude
+min_altitude
+max_horizontal_range
+target_jump_limit
+reach_xy_tolerance
+reach_z_tolerance
+reach_hold_time
+```
+
+Coordinate rule: `/uav/target_position` is local PX4 NED. Positive altitude is
+represented as negative `z`. For example, 2 m altitude is `z: -2.0`.
+
+Latest recorded full Demo 04 bridge simulation:
+
+```text
+timestamp: 20260527_085025
+visuals: visualizations/demo04_external_setpoint/20260527_085025
+logs: logs/demo04_external_setpoint/20260527_085025
+result: RESULT=PASS reason=ok
+checker: CHECK=PASS
+avg_error_3d_m: 0.20
+final_error_3d_m: 0.02
+final_position_ned: (-0.01, -0.01, -2.01)
+```
+
+The preceding run at `20260527_084530` failed because a stale Gazebo
+`default.sdf` server from an earlier day was still running. `RESET_STACK=1` and
+`scripts/stop_stack.sh` now clean this project Gazebo world process before
+reruns.
+
+## File Path Management
+
+Use these path rules consistently:
+
+- Use workspace-relative paths in commands and documentation when already under
+  `/home/clcwork/UAV_capture/px4_ros2_ws`.
+- Use absolute paths when referring to artifacts in final reports, cross-root
+  scripts, or external paths outside this workspace.
+- Keep source code under `src/`.
+- Keep reusable shell entry points under `scripts/`.
+- Keep task definitions under `codex-tasks/`.
+- Keep Codex execution logs and done markers under `codex-logs/`.
+- Keep project documentation under `docs/` or top-level Markdown files.
+- Keep simulation logs under `logs/<demo>/<timestamp>/`.
+- Keep visualization outputs under `visualizations/<demo>/<timestamp>/`.
+- Do not hand-edit generated build outputs under `build/`, `install/`, or
+  `log/build_*` unless the task is explicitly about generated artifacts.
+- Do not overwrite or delete existing timestamped `logs/` or
+  `visualizations/` directories.
+
+Stable generated Demo output names:
+
+```text
+trajectory.csv
+trajectory_3d.png
+xy_path.png
+height_curve.png
+speed_curve.png
+tracking_error.png
+trajectory.mp4
+summary.md
+result.txt
+```
+
+## Required Codex Run Procedure
+
+Every Codex run must follow this procedure:
+
+1. Confirm the working directory is the workspace root:
+
+   ```bash
+   cd /home/clcwork/UAV_capture/px4_ros2_ws
+   ```
+
+2. Read the governing files before planning edits:
+
+   ```text
+   AGENTS.md
+   codex.md
+   relevant codex-tasks/<task>.md
+   relevant docs/*.md or source files
+   ```
+
+3. Before editing, identify the exact files to touch and avoid unrelated
+   refactors.
+
+4. Preserve all existing user changes and generated results. Never run
+   destructive cleanup such as `git reset --hard`, broad `rm -rf`, or deleting
+   log/result directories unless the user explicitly asks.
+
+5. Use `apply_patch` for manual file edits. Use formatting/build tools only
+   after the target files are clear.
+
+6. Record the task execution in `codex-logs/`:
+
+   ```text
+   codex-logs/<task-stem>-<YYYYMMDD_HHMMSS>.log
+   codex-logs/<task-stem>.done
+   ```
+
+   `run_codex_queue.sh` creates these automatically. For manual one-off work,
+   create or preserve equivalent logs when practical.
+
+7. For shell script changes, run at least:
+
+   ```bash
+   bash -n <script>
+   ```
+
+8. For Python node changes, run at least one relevant Python check:
+
+   ```bash
+   python3 -m compileall src scripts
+   ```
+
+   Use `colcon build --packages-select <package>` when package metadata,
+   console entry points, dependencies, or ROS node code changed.
+
+9. For demo/output changes, run the relevant smoke checker:
+
+   ```bash
+   ./scripts/check_demo_outputs.sh visualizations/<demo>
+   ```
+
+10. For PX4/Gazebo simulation runs, prefer existing scripts. Use
+    `RESET_STACK=1` for reproducible runs, and call `scripts/stop_stack.sh`
+    before finishing unless the user explicitly wants the stack left running.
+
+11. If project state changes, update the appropriate Markdown record in the same
+    run. Examples:
+
+    ```text
+    codex.md
+    docs/REGRESSION_CHECKS.md
+    docs/UAV_CONTROL_API.md
+    docs/VISUALIZATION_GUIDE.md
+    TOOLS_AND_SCRIPTS_GUIDE.md
+    ```
+
+12. Final reports must include:
+
+    ```text
+    changed files
+    commands run
+    test result
+    known risks
+    output paths, when logs or visualizations were generated
+    ```
+
+## Codex Queue Requirements
+
+`run_codex_queue.sh` is the standard runner for queued task files. It must:
+
+- verify `AGENTS.md`, `codex.md`, `codex-tasks/`, and `codex-logs/` exist;
+- pass the contents of `codex.md` together with the task file to Codex;
+- write timestamped logs under `codex-logs/`;
+- create `.done` markers only after a task exits successfully;
+- support `--dry-run`, `--from <prefix>`, and `--task <file>`;
+- skip completed queued tasks unless `--task` is used.
+
+Before adding a new queued task, create a numbered Markdown file:
+
+```text
+codex-tasks/010-short-task-name.md
+```
+
+The task file should state:
+
+```text
+goal
+allowed files or directories
+required validation commands
+required documentation updates
+expected final report fields
+```
+
+## Current Validation Commands
+
+Known passing checks after the latest bridge work:
+
+```bash
+bash -n run_codex_queue.sh
+bash -n scripts/check_demo_outputs.sh
+bash -n scripts/run_demo04_external_setpoint.sh
+bash -n scripts/start_stack.sh
+bash -n scripts/stop_stack.sh
+python3 -m compileall src scripts
+colcon build --packages-select px4_offboard_hover
+./scripts/check_demo_outputs.sh visualizations/demo01_hover
+./scripts/check_demo_outputs.sh visualizations/demo02_waypoint_flight
+./scripts/check_demo_outputs.sh visualizations/demo03_circle_trajectory
+./scripts/check_demo_outputs.sh visualizations/demo04_external_setpoint
+```
+
+Latest full bridge simulation command:
+
+```bash
+./scripts/run_demo04_external_setpoint.sh
+./scripts/check_demo_outputs.sh visualizations/demo04_external_setpoint/20260527_085025
+```
+
+
+# Task file
+
+# Task 015: Add arm_control_bridge
+
+## Task goal
+
+- Add a high-level arm bridge so external modules do not publish directly to low-level controller command topics.
+
+## Allowed changes
+
+- `src/aerial_manip_msgs/**`
+- `src/aerial_manip_control/**`
+- `docs/ARM_CONTROL_API.md`
+- `codex-logs/015-add-arm-control-bridge.log`
+
+## Implementation requirements
+
+- Provide high-level topics for target joints, current joint state, control state, and reached target.
+- Add joint limit, velocity limit, command timeout, and target jump checks.
+- Match the style and safety posture of `px4_offboard_hover/uav_control_bridge.py`.
+
+## Required commands
+
+```bash
+python3 -m compileall src/aerial_manip_control
+colcon build --packages-select aerial_manip_msgs aerial_manip_control
+```
+
+## Deliverables
+
+- `arm_control_bridge` node.
+- API documentation for `/arm/*`.
+- Validation log.
+
+## Final report requirements
+
+- `changed files`
+- `commands run`
+- `test result`
+- `known risks`
+
+codex
+I’ll follow the workspace runbook for Task 015: first reading the project records and the relevant existing bridge/package structure, then I’ll make the narrow bridge and docs changes under the allowed paths.
+exec
+/bin/bash -lc "sed -n '1,220p' AGENTS.md" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+# Codex project rules
+
+These rules apply to the ROS2/PX4/LeRobot UAV simulation workspace at:
+
+```text
+/home/clcwork/UAV_capture/px4_ros2_ws
+```
+
+## Scope and workflow
+
+- 每次 Codex 运行都必须先读取并遵守 `codex.md`。`codex.md` 是当前项目状态、路径管理、日志记录和每次运行流程的主记录。
+- 修改前先理解项目结构，不要盲目改文件。
+- 每个任务只做当前 `codex-tasks/` 中对应 task 文件里的要求，不主动扩大范围。
+- 优先修改当前 ROS2 工作区 `/home/clcwork/UAV_capture/px4_ros2_ws` 下的脚本、文档和自定义包。
+- 不要随意更改 PX4-Autopilot 源码，除非任务文件明确要求。
+- 不要破坏已成功通过的 Demo 1-4：
+  - Demo 01 Offboard Hover
+  - Demo 02 Waypoint Flight
+  - Demo 03 Circle Trajectory
+  - Demo 04 External Setpoint Interface
+- 如果需要长时间运行实验，优先使用已有脚本和 tmux，不要随意新建后台进程。
+- 对于 PX4/Gazebo/Micro XRCE-DDS 相关任务，优先使用已有 `start_stack.sh`、`stop_stack.sh`、`run_*_experiment.sh` 和 `run_demo*.sh` 脚本。
+
+## Safety rules
+
+- 不要删除用户数据、日志、实验结果、模型 checkpoint、rosbag、`trajectory.csv`、可视化图片或视频。
+- 不要删除或改动 `.env`、secrets、production 配置、SSH key、token、代理配置、系统级配置。
+- 不要运行破坏性命令，例如 `git reset --hard`、批量删除日志或清空实验目录，除非任务文件明确要求且用户确认。
+- 如果工作区已有未提交修改，必须保留并绕开无关修改，不要回滚用户改动。
+
+## Validation requirements
+
+- 修改代码后必须运行相关测试、检查脚本或最小可复现实验。
+- 修改 shell 脚本后必须确保可执行权限正确，并至少运行 `bash -n <script>`。
+- 修改 Python 节点后必须至少运行 `python3 -m compileall`、`python3 -m py_compile` 或相关 pytest。
+- 如果测试失败，先尝试修复；仍失败则在最终报告里写清楚原因。
+- 每次执行任务应把输出日志保存到 `codex-logs/`。
+
+## Demo and visualization rules
+
+- 对于可视化任务，优先复用现有 `trajectory.csv`、日志和 plotting/recorder 脚本，不要重复造轮子。
+- Demo 1-4 的展示输出应保持稳定命名：
+  - `trajectory.csv`
+  - `trajectory_3d.png`
+  - `xy_path.png`
+  - `height_curve.png`
+  - `speed_curve.png`
+  - `tracking_error.png`
+  - `trajectory.mp4`
+  - `summary.md`
+  - `result.txt`
+- 不要删除或覆盖已有 `visualizations/<demo>/<timestamp>/` 结果目录。
+
+## UAV high-level control bridge rules
+
+- 后续视觉、任务规划、LeRobot 和机械臂相关任务必须优先通过 `/uav/*` 高层 ROS2 topic 接入无人机控制。
+- 不要让外部模块直接发布 `/fmu/in/offboard_control_mode`、`/fmu/in/trajectory_setpoint` 或 `/fmu/in/vehicle_command`。
+- PX4 `/fmu/in/*` 发布逻辑应集中在一个可审计的 UAV bridge 或现有 Offboard 控制基类内。
+- 新增 UAV bridge 节点时必须至少包含：
+  - 参数化安全限制，例如最大高度、最小高度、最大水平范围、目标跳变限制和目标超时。
+  - 当前安全目标和控制状态输出。
+  - 明确的 NED 坐标系说明，正高度输入必须转换为 PX4 `z=-altitude` 后再发给 PX4。
+  - `python3 -m compileall` 或等价 Python 检查。
+- Demo 04 可以继续作为外部目标点接口示例，但新的回归任务应优先验证通过 UAV bridge 跑通的路径。
+
+## LeRobot and UAV-arm rules
+
+- 对于后续 LeRobot 接入任务，不要让 LeRobot 直接控制 PX4 底层电机或姿态，只允许通过高层接口或机械臂操作策略接入。
+- LeRobot、视觉模块或任务规划器应优先通过 `/uav/target_position` 等高层 ROS2 topic 接入。
+- 对于 UAV-arm 任务，先设计 2-DOF/3-DOF 简化机械臂仿真，不要直接引入复杂 6-DOF 重机械臂。
+- PX4 Offboard 保持飞行平台稳定，机械臂执行局部操作；不要把机械臂策略和 PX4 飞控底层控制混在一起。
+
+## Final report format
+
+每个任务结束时必须总结：
+
+- `changed files`: 改了哪些文件。
+- `commands run`: 跑了什么命令。
+- `test result`: 结果如何，PASS/FAIL。
+- `known risks`: 还有什么风险或未验证项。
+
+exec
+/bin/bash -lc 'pwd && ls' in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+/home/clcwork/UAV_capture/px4_ros2_ws
+AGENTS.md
+BASIC_CONTROL_DEMOS.md
+OFFBOARD_HOVER_EXPERIMENT.md
+TOOLS_AND_SCRIPTS_GUIDE.md
+build
+codex-logs
+codex-tasks
+codex.md
+docs
+examples
+install
+log
+logs
+references
+run_codex_queue.sh
+scripts
+src
+visualizations
+
+exec
+/bin/bash -lc 'find src/aerial_manip_msgs src/aerial_manip_control -maxdepth 4 -type f | sort' in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+src/aerial_manip_control/aerial_manip_control/__init__.py
+src/aerial_manip_control/package.xml
+src/aerial_manip_control/resource/aerial_manip_control
+src/aerial_manip_control/setup.cfg
+src/aerial_manip_control/setup.py
+src/aerial_manip_msgs/CMakeLists.txt
+src/aerial_manip_msgs/action/Approach.action
+src/aerial_manip_msgs/msg/ArmCommand.msg
+src/aerial_manip_msgs/msg/ArmState.msg
+src/aerial_manip_msgs/msg/PlatformState.msg
+src/aerial_manip_msgs/msg/SystemObservation.msg
+src/aerial_manip_msgs/msg/TaskStatus.msg
+src/aerial_manip_msgs/package.xml
+
+exec
+/bin/bash -lc "sed -n '1,260p' codex.md" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+# Codex Runbook
+
+This file is the required operating record for every Codex run in this
+workspace. Read it together with `AGENTS.md` before changing files or running
+simulation tasks.
+
+## Workspace
+
+Root workspace:
+
+```text
+/home/clcwork/UAV_capture/px4_ros2_ws
+```
+
+Related external paths:
+
+```text
+/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot
+/home/clcwork/Micro-XRCE-DDS-Agent/build
+/home/clcwork/miniconda3/envs/lerobot
+```
+
+This directory is not currently a git repository. Treat existing files,
+generated artifacts, logs, and user edits as persistent project state.
+
+## Current Project State
+
+Implemented ROS 2 package:
+
+```text
+src/px4_offboard_hover
+```
+
+Available PX4 offboard demos and tools:
+
+- Demo 01 hover: `scripts/run_demo01_hover.sh`
+- Demo 02 waypoint flight: `scripts/run_demo02_waypoint_flight.sh`
+- Demo 03 circle trajectory: `scripts/run_demo03_circle_trajectory.sh`
+- Demo 04 external setpoint / UAV bridge: `scripts/run_demo04_external_setpoint.sh`
+- Hover experiment: `scripts/run_hover_experiment.sh`
+- Trajectory recorder: `scripts/run_trajectory_recorder.sh`
+- Output checker: `scripts/check_demo_outputs.sh`
+- Stack startup and cleanup: `scripts/start_stack.sh`, `scripts/stop_stack.sh`
+
+Implemented UAV bridge:
+
+```text
+src/px4_offboard_hover/px4_offboard_hover/uav_control_bridge.py
+```
+
+The bridge exposes high-level UAV control topics:
+
+```text
+/uav/target_position      geometry_msgs/msg/Point
+/uav/current_position     geometry_msgs/msg/PointStamped
+/uav/current_target       geometry_msgs/msg/PointStamped
+/uav/reached_target       std_msgs/msg/Bool
+/uav/control_state        std_msgs/msg/String
+```
+
+External modules, including future vision, LeRobot, planner, and UAV-arm work,
+must use `/uav/*` topics by default. Do not publish directly to PX4
+`/fmu/in/*` topics from external modules unless a task explicitly requires it.
+
+Current bridge safety parameters include:
+
+```text
+initial_x
+initial_y
+initial_z
+yaw
+target_timeout
+max_altitude
+min_altitude
+max_horizontal_range
+target_jump_limit
+reach_xy_tolerance
+reach_z_tolerance
+reach_hold_time
+```
+
+Coordinate rule: `/uav/target_position` is local PX4 NED. Positive altitude is
+represented as negative `z`. For example, 2 m altitude is `z: -2.0`.
+
+Latest recorded full Demo 04 bridge simulation:
+
+```text
+timestamp: 20260527_085025
+visuals: visualizations/demo04_external_setpoint/20260527_085025
+logs: logs/demo04_external_setpoint/20260527_085025
+result: RESULT=PASS reason=ok
+checker: CHECK=PASS
+avg_error_3d_m: 0.20
+final_error_3d_m: 0.02
+final_position_ned: (-0.01, -0.01, -2.01)
+```
+
+The preceding run at `20260527_084530` failed because a stale Gazebo
+`default.sdf` server from an earlier day was still running. `RESET_STACK=1` and
+`scripts/stop_stack.sh` now clean this project Gazebo world process before
+reruns.
+
+## File Path Management
+
+Use these path rules consistently:
+
+- Use workspace-relative paths in commands and documentation when already under
+  `/home/clcwork/UAV_capture/px4_ros2_ws`.
+- Use absolute paths when referring to artifacts in final reports, cross-root
+  scripts, or external paths outside this workspace.
+- Keep source code under `src/`.
+- Keep reusable shell entry points under `scripts/`.
+- Keep task definitions under `codex-tasks/`.
+- Keep Codex execution logs and done markers under `codex-logs/`.
+- Keep project documentation under `docs/` or top-level Markdown files.
+- Keep simulation logs under `logs/<demo>/<timestamp>/`.
+- Keep visualization outputs under `visualizations/<demo>/<timestamp>/`.
+- Do not hand-edit generated build outputs under `build/`, `install/`, or
+  `log/build_*` unless the task is explicitly about generated artifacts.
+- Do not overwrite or delete existing timestamped `logs/` or
+  `visualizations/` directories.
+
+Stable generated Demo output names:
+
+```text
+trajectory.csv
+trajectory_3d.png
+xy_path.png
+height_curve.png
+speed_curve.png
+tracking_error.png
+trajectory.mp4
+summary.md
+result.txt
+```
+
+## Required Codex Run Procedure
+
+Every Codex run must follow this procedure:
+
+1. Confirm the working directory is the workspace root:
+
+   ```bash
+   cd /home/clcwork/UAV_capture/px4_ros2_ws
+   ```
+
+2. Read the governing files before planning edits:
+
+   ```text
+   AGENTS.md
+   codex.md
+   relevant codex-tasks/<task>.md
+   relevant docs/*.md or source files
+   ```
+
+3. Before editing, identify the exact files to touch and avoid unrelated
+   refactors.
+
+4. Preserve all existing user changes and generated results. Never run
+   destructive cleanup such as `git reset --hard`, broad `rm -rf`, or deleting
+   log/result directories unless the user explicitly asks.
+
+5. Use `apply_patch` for manual file edits. Use formatting/build tools only
+   after the target files are clear.
+
+6. Record the task execution in `codex-logs/`:
+
+   ```text
+   codex-logs/<task-stem>-<YYYYMMDD_HHMMSS>.log
+   codex-logs/<task-stem>.done
+   ```
+
+   `run_codex_queue.sh` creates these automatically. For manual one-off work,
+   create or preserve equivalent logs when practical.
+
+7. For shell script changes, run at least:
+
+   ```bash
+   bash -n <script>
+   ```
+
+8. For Python node changes, run at least one relevant Python check:
+
+   ```bash
+   python3 -m compileall src scripts
+   ```
+
+   Use `colcon build --packages-select <package>` when package metadata,
+   console entry points, dependencies, or ROS node code changed.
+
+9. For demo/output changes, run the relevant smoke checker:
+
+   ```bash
+   ./scripts/check_demo_outputs.sh visualizations/<demo>
+   ```
+
+10. For PX4/Gazebo simulation runs, prefer existing scripts. Use
+    `RESET_STACK=1` for reproducible runs, and call `scripts/stop_stack.sh`
+    before finishing unless the user explicitly wants the stack left running.
+
+11. If project state changes, update the appropriate Markdown record in the same
+    run. Examples:
+
+    ```text
+    codex.md
+    docs/REGRESSION_CHECKS.md
+    docs/UAV_CONTROL_API.md
+    docs/VISUALIZATION_GUIDE.md
+    TOOLS_AND_SCRIPTS_GUIDE.md
+    ```
+
+12. Final reports must include:
+
+    ```text
+    changed files
+    commands run
+    test result
+    known risks
+    output paths, when logs or visualizations were generated
+    ```
+
+## Codex Queue Requirements
+
+`run_codex_queue.sh` is the standard runner for queued task files. It must:
+
+- verify `AGENTS.md`, `codex.md`, `codex-tasks/`, and `codex-logs/` exist;
+- pass the contents of `codex.md` together with the task file to Codex;
+- write timestamped logs under `codex-logs/`;
+- create `.done` markers only after a task exits successfully;
+- support `--dry-run`, `--from <prefix>`, and `--task <file>`;
+- skip completed queued tasks unless `--task` is used.
+
+Before adding a new queued task, create a numbered Markdown file:
+
+```text
+codex-tasks/010-short-task-name.md
+```
+
+The task file should state:
+
+```text
+goal
+allowed files or directories
+required validation commands
+required documentation updates
+expected final report fields
+```
+
+## Current Validation Commands
+
+Known passing checks after the latest bridge work:
+
+```bash
+bash -n run_codex_queue.sh
+bash -n scripts/check_demo_outputs.sh
+bash -n scripts/run_demo04_external_setpoint.sh
+bash -n scripts/start_stack.sh
+bash -n scripts/stop_stack.sh
+python3 -m compileall src scripts
+colcon build --packages-select px4_offboard_hover
+
+codex
+I’ve confirmed the workspace root and governing files. Next I’m reading the existing UAV bridge and arm message definitions so the new node matches local conventions and uses the project’s custom interfaces correctly.
+exec
+/bin/bash -lc "sed -n '1,260p' src/px4_offboard_hover/px4_offboard_hover/uav_control_bridge.py" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+import math
+import time
+from typing import Optional
+
+from geometry_msgs.msg import Point, PointStamped
+from px4_msgs.msg import VehicleLocalPosition
+import rclpy
+from rclpy.qos import DurabilityPolicy, HistoryPolicy, QoSProfile, ReliabilityPolicy
+from std_msgs.msg import Bool, String
+
+from px4_offboard_hover.offboard_base import OffboardPositionControl, Position
+
+
+class UavControlBridge(OffboardPositionControl):
+    """Validated high-level /uav target bridge for PX4 offboard position control."""
+
+    def __init__(self) -> None:
+        super().__init__("uav_control_bridge")
+
+        self.declare_parameter("initial_x", 0.0)
+        self.declare_parameter("initial_y", 0.0)
+        self.declare_parameter("initial_z", -2.0)
+        self.declare_parameter("yaw", 0.0)
+        self.declare_parameter("target_timeout", 1.0)
+        self.declare_parameter("max_altitude", 5.0)
+        self.declare_parameter("min_altitude", 0.5)
+        self.declare_parameter("max_horizontal_range", 5.0)
+        self.declare_parameter("target_jump_limit", 1.5)
+        self.declare_parameter("reach_xy_tolerance", 0.30)
+        self.declare_parameter("reach_z_tolerance", 0.20)
+        self.declare_parameter("reach_hold_time", 1.0)
+
+        self.safe_target: Position = (
+            float(self.get_parameter("initial_x").value),
+            float(self.get_parameter("initial_y").value),
+            float(self.get_parameter("initial_z").value),
+        )
+        self.yaw = float(self.get_parameter("yaw").value)
+        self.target_timeout = float(self.get_parameter("target_timeout").value)
+        self.max_altitude = float(self.get_parameter("max_altitude").value)
+        self.min_altitude = float(self.get_parameter("min_altitude").value)
+        self.max_horizontal_range = float(
+            self.get_parameter("max_horizontal_range").value
+        )
+        self.target_jump_limit = float(self.get_parameter("target_jump_limit").value)
+        self.reach_xy_tolerance = float(
+            self.get_parameter("reach_xy_tolerance").value
+        )
+        self.reach_z_tolerance = float(self.get_parameter("reach_z_tolerance").value)
+        self.reach_hold_time = float(self.get_parameter("reach_hold_time").value)
+
+        error = self._validate_target(self.safe_target, check_jump=False)
+        if error is not None:
+            raise ValueError(f"Initial target is unsafe: {error}")
+
+        self.last_safe_target_time = time.monotonic()
+        self.last_timeout_warning_time = 0.0
+        self.control_state = "HOLDING"
+        self.current_position: Optional[Position] = None
+        self.reach_start_time: Optional[float] = None
+        self.reached_target = False
+        self.invalid_target_pending = False
+
+        px4_out_qos = QoSProfile(
+            reliability=ReliabilityPolicy.BEST_EFFORT,
+            durability=DurabilityPolicy.TRANSIENT_LOCAL,
+            history=HistoryPolicy.KEEP_LAST,
+            depth=10,
+        )
+        self.current_position_pub = self.create_publisher(
+            PointStamped, "/uav/current_position", 10
+        )
+        self.current_target_pub = self.create_publisher(
+            PointStamped, "/uav/current_target", 10
+        )
+        self.reached_target_pub = self.create_publisher(
+            Bool, "/uav/reached_target", 10
+        )
+        self.control_state_pub = self.create_publisher(
+            String, "/uav/control_state", 10
+        )
+        self.create_subscription(
+            VehicleLocalPosition,
+            "/fmu/out/vehicle_local_position_v1",
+            self.position_callback,
+            px4_out_qos,
+        )
+        self.create_subscription(Point, "/uav/target_position", self.target_callback, 10)
+        self.timer = self.create_timer(0.1, self.timer_callback)
+        self.get_logger().info(
+            "UAV control bridge ready on /uav/target_position; targets must be "
+            "local PX4 NED points with z=-altitude"
+        )
+
+    def position_callback(self, msg: VehicleLocalPosition) -> None:
+        if not msg.xy_valid or not msg.z_valid:
+            return
+
+        self.current_position = (float(msg.x), float(msg.y), float(msg.z))
+        position_msg = self._point_stamped(self.current_position)
+        self.current_position_pub.publish(position_msg)
+
+    def target_callback(self, msg: Point) -> None:
+        target = (float(msg.x), float(msg.y), float(msg.z))
+        error = self._validate_target(target, check_jump=True)
+        if error is not None:
+            self.get_logger().warn(
+                "Rejected /uav/target_position "
+                f"x={msg.x:.2f}, y={msg.y:.2f}, z={msg.z:.2f}: {error}"
+            )
+            self.control_state = "INVALID_TARGET"
+            self.invalid_target_pending = True
+            self._publish_bridge_state()
+            return
+
+        self.safe_target = target
+        self.last_safe_target_time = time.monotonic()
+        self.last_timeout_warning_time = 0.0
+        self.reach_start_time = None
+        self.reached_target = False
+        self.invalid_target_pending = False
+        self.control_state = "TRACKING"
+        self.get_logger().info(
+            "Accepted /uav/target_position "
+            f"x={target[0]:.2f}, y={target[1]:.2f}, z={target[2]:.2f}"
+        )
+
+    def timer_callback(self) -> None:
+        self.tick_offboard(self.safe_target, self.yaw)
+        self._update_reached_target()
+        self._update_control_state()
+        self._publish_bridge_state()
+
+    def _validate_target(
+        self, target: Position, check_jump: bool
+    ) -> Optional[str]:
+        x, y, z = target
+        if not all(math.isfinite(value) for value in target):
+            return "target contains non-finite values"
+
+        altitude = -z
+        if altitude <= 0.0:
+            return "positive altitude commands are not accepted; publish NED z=-altitude"
+        if altitude > self.max_altitude:
+            return (
+                f"altitude {altitude:.2f} m exceeds max_altitude "
+                f"{self.max_altitude:.2f} m"
+            )
+        if altitude < self.min_altitude:
+            return (
+                f"altitude {altitude:.2f} m is below min_altitude "
+                f"{self.min_altitude:.2f} m"
+            )
+
+        horizontal_range = math.hypot(x, y)
+        if horizontal_range > self.max_horizontal_range:
+            return (
+                f"horizontal range {horizontal_range:.2f} m exceeds "
+                f"max_horizontal_range {self.max_horizontal_range:.2f} m"
+            )
+
+        if check_jump:
+            jump = self._distance(target, self.safe_target)
+            if jump > self.target_jump_limit:
+                return (
+                    f"target jump {jump:.2f} m exceeds target_jump_limit "
+                    f"{self.target_jump_limit:.2f} m"
+                )
+
+        return None
+
+    def _target_timed_out(self, now: float) -> bool:
+        if self.target_timeout <= 0.0:
+            return False
+
+        return now - self.last_safe_target_time > self.target_timeout
+
+    def _warn_if_target_timed_out(self, now: float) -> None:
+        if not self._target_timed_out(now):
+            return
+        if now - self.last_timeout_warning_time < self.target_timeout:
+            return
+
+        self.get_logger().warn("Target timeout; holding last safe target")
+        self.last_timeout_warning_time = now
+
+    def _update_reached_target(self) -> None:
+        if self.current_position is None:
+            self.reach_start_time = None
+            self.reached_target = False
+            return
+
+        dx = self.current_position[0] - self.safe_target[0]
+        dy = self.current_position[1] - self.safe_target[1]
+        dz = self.current_position[2] - self.safe_target[2]
+        within_tolerance = (
+            math.hypot(dx, dy) <= self.reach_xy_tolerance
+            and abs(dz) <= self.reach_z_tolerance
+        )
+        if not within_tolerance:
+            self.reach_start_time = None
+            self.reached_target = False
+            return
+
+        now = time.monotonic()
+        if self.reach_start_time is None:
+            self.reach_start_time = now
+        self.reached_target = now - self.reach_start_time >= self.reach_hold_time
+
+    def _update_control_state(self) -> None:
+        if self.invalid_target_pending:
+            self.control_state = "INVALID_TARGET"
+            self.invalid_target_pending = False
+            return
+
+        now = time.monotonic()
+        if self._target_timed_out(now):
+            self._warn_if_target_timed_out(now)
+            self.control_state = "HOLDING"
+            return
+
+        if self.reached_target:
+            self.control_state = "REACHED"
+            return
+
+        self.control_state = "TRACKING"
+
+    def _publish_bridge_state(self) -> None:
+        target_msg = self._point_stamped(self.safe_target)
+        self.current_target_pub.publish(target_msg)
+
+        reached_msg = Bool()
+        reached_msg.data = self.reached_target
+        self.reached_target_pub.publish(reached_msg)
+
+        state_msg = String()
+        state_msg.data = self.control_state
+        self.control_state_pub.publish(state_msg)
+
+    def _point_stamped(self, point: Position) -> PointStamped:
+        msg = PointStamped()
+        msg.header.stamp = self.get_clock().now().to_msg()
+        msg.header.frame_id = "uav_local_ned"
+        msg.point.x = point[0]
+        msg.point.y = point[1]
+        msg.point.z = point[2]
+        return msg
+
+    @staticmethod
+    def _distance(first: Position, second: Position) -> float:
+        dx = first[0] - second[0]
+        dy = first[1] - second[1]
+        dz = first[2] - second[2]
+        return math.sqrt(dx * dx + dy * dy + dz * dz)
+
+
+def main(args=None) -> None:
+    rclpy.init(args=args)
+    node = UavControlBridge()
+    try:
+
+exec
+/bin/bash -lc "sed -n '1,220p' src/aerial_manip_msgs/msg/ArmCommand.msg" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+std_msgs/Header header
+
+string MODE_HOLD=hold
+string MODE_JOINT_POSITION=joint_position
+string MODE_STOW=stow
+
+string command_mode
+string[] joint_names
+float64[] joint_positions
+float64[] joint_velocities
+float64[] joint_efforts
+
+exec
+/bin/bash -lc "sed -n '1,220p' src/aerial_manip_msgs/msg/ArmState.msg" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+std_msgs/Header header
+
+string[] joint_names
+float64[] joint_positions
+float64[] joint_velocities
+float64[] joint_efforts
+
+geometry_msgs/PoseStamped end_effector_pose
+bool contact_detected
+string state
+
+exec
+/bin/bash -lc "sed -n '1,220p' src/aerial_manip_control/setup.py" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+from setuptools import find_packages, setup
+
+package_name = "aerial_manip_control"
+
+setup(
+    name=package_name,
+    version="0.0.1",
+    packages=find_packages(exclude=["test"]),
+    data_files=[
+        ("share/ament_index/resource_index/packages", [f"resource/{package_name}"]),
+        (f"share/{package_name}", ["package.xml"]),
+    ],
+    install_requires=["setuptools"],
+    zip_safe=True,
+    maintainer="clcwork",
+    maintainer_email="clcwork@example.com",
+    description="Python control nodes for stage-2 aerial manipulation.",
+    license="Apache-2.0",
+    entry_points={"console_scripts": []},
+)
+
+exec
+/bin/bash -lc "find docs codex-tasks -maxdepth 2 -type f | sort | rg 'ARM|015|CONTROL|UAV'" in /home/clcwork/UAV_capture/px4_ros2_ws
+ exited 127 in 0ms:
+/bin/bash: line 1: rg: command not found
+
+exec
+/bin/bash -lc "sed -n '1,220p' src/aerial_manip_control/package.xml" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+<?xml version="1.0"?>
+<package format="3">
+  <name>aerial_manip_control</name>
+  <version>0.0.1</version>
+  <description>Python control nodes for stage-2 aerial manipulation.</description>
+  <maintainer email="clcwork@example.com">clcwork</maintainer>
+  <license>Apache-2.0</license>
+
+  <buildtool_depend>ament_python</buildtool_depend>
+
+  <exec_depend>aerial_manip_msgs</exec_depend>
+  <exec_depend>rclpy</exec_depend>
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>
+
+exec
+/bin/bash -lc "sed -n '261,380p' src/px4_offboard_hover/px4_offboard_hover/uav_control_bridge.py" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+        rclpy.spin(node)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        node.destroy_node()
+        if rclpy.ok():
+            rclpy.shutdown()
+
+exec
+/bin/bash -lc "sed -n '1,260p' src/aerial_manip_msgs/CMakeLists.txt" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+cmake_minimum_required(VERSION 3.8)
+project(aerial_manip_msgs)
+
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
+
+find_package(ament_cmake REQUIRED)
+find_package(builtin_interfaces REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(rosidl_default_generators REQUIRED)
+find_package(std_msgs REQUIRED)
+
+rosidl_generate_interfaces(${PROJECT_NAME}
+  "msg/PlatformState.msg"
+  "msg/ArmCommand.msg"
+  "msg/ArmState.msg"
+  "msg/SystemObservation.msg"
+  "msg/TaskStatus.msg"
+  "action/Approach.action"
+  DEPENDENCIES builtin_interfaces geometry_msgs std_msgs
+)
+
+ament_export_dependencies(rosidl_default_runtime)
+
+ament_package()
+
+exec
+/bin/bash -lc "sed -n '1,220p' src/aerial_manip_msgs/package.xml" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+<?xml version="1.0"?>
+<package format="3">
+  <name>aerial_manip_msgs</name>
+  <version>0.0.1</version>
+  <description>Minimal ROS 2 interfaces for stage-2 aerial manipulation tasks.</description>
+  <maintainer email="clcwork@example.com">clcwork</maintainer>
+  <license>Apache-2.0</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>rosidl_default_generators</buildtool_depend>
+
+  <depend>builtin_interfaces</depend>
+  <depend>geometry_msgs</depend>
+  <depend>std_msgs</depend>
+
+  <exec_depend>rosidl_default_runtime</exec_depend>
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <member_of_group>rosidl_interface_packages</member_of_group>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
+
+exec
+/bin/bash -lc "find docs codex-tasks -maxdepth 2 -type f | sort | grep -E 'ARM|015|CONTROL|UAV' || true" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+codex-tasks/015-add-arm-control-bridge.md
+docs/UAV_ARM_SIMULATION_PLAN.md
+docs/UAV_CONTROL_API.md
+
+codex
+The arm packages are minimal right now: custom `ArmCommand`/`ArmState` messages exist, and `aerial_manip_control` has no console entry points yet. I’m going to add a self-contained bridge node plus the package metadata needed to run it, and document the `/arm/*` API.
+exec
+/bin/bash -lc "sed -n '1,220p' codex-tasks/015-add-arm-control-bridge.md" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+# Task 015: Add arm_control_bridge
+
+## Task goal
+
+- Add a high-level arm bridge so external modules do not publish directly to low-level controller command topics.
+
+## Allowed changes
+
+- `src/aerial_manip_msgs/**`
+- `src/aerial_manip_control/**`
+- `docs/ARM_CONTROL_API.md`
+- `codex-logs/015-add-arm-control-bridge.log`
+
+## Implementation requirements
+
+- Provide high-level topics for target joints, current joint state, control state, and reached target.
+- Add joint limit, velocity limit, command timeout, and target jump checks.
+- Match the style and safety posture of `px4_offboard_hover/uav_control_bridge.py`.
+
+## Required commands
+
+```bash
+python3 -m compileall src/aerial_manip_control
+colcon build --packages-select aerial_manip_msgs aerial_manip_control
+```
+
+## Deliverables
+
+- `arm_control_bridge` node.
+- API documentation for `/arm/*`.
+- Validation log.
+
+## Final report requirements
+
+- `changed files`
+- `commands run`
+- `test result`
+- `known risks`
+
+exec
+/bin/bash -lc "find docs -maxdepth 1 -type f -name '*ARM*' -o -name '*CONTROL*' | sort" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+docs/UAV_ARM_SIMULATION_PLAN.md
+docs/UAV_CONTROL_API.md
+
+exec
+/bin/bash -lc "find src/aerial_manip_control -maxdepth 3 -type f -print -exec sed -n '1,120p' {} \\;" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+src/aerial_manip_control/aerial_manip_control/__init__.py
+"""Stage-2 aerial manipulation control package."""
+src/aerial_manip_control/resource/aerial_manip_control
+
+src/aerial_manip_control/setup.py
+from setuptools import find_packages, setup
+
+package_name = "aerial_manip_control"
+
+setup(
+    name=package_name,
+    version="0.0.1",
+    packages=find_packages(exclude=["test"]),
+    data_files=[
+        ("share/ament_index/resource_index/packages", [f"resource/{package_name}"]),
+        (f"share/{package_name}", ["package.xml"]),
+    ],
+    install_requires=["setuptools"],
+    zip_safe=True,
+    maintainer="clcwork",
+    maintainer_email="clcwork@example.com",
+    description="Python control nodes for stage-2 aerial manipulation.",
+    license="Apache-2.0",
+    entry_points={"console_scripts": []},
+)
+src/aerial_manip_control/setup.cfg
+[develop]
+script_dir=$base/lib/aerial_manip_control
+[install]
+install_scripts=$base/lib/aerial_manip_control
+src/aerial_manip_control/package.xml
+<?xml version="1.0"?>
+<package format="3">
+  <name>aerial_manip_control</name>
+  <version>0.0.1</version>
+  <description>Python control nodes for stage-2 aerial manipulation.</description>
+  <maintainer email="clcwork@example.com">clcwork</maintainer>
+  <license>Apache-2.0</license>
+
+  <buildtool_depend>ament_python</buildtool_depend>
+
+  <exec_depend>aerial_manip_msgs</exec_depend>
+  <exec_depend>rclpy</exec_depend>
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>
+
+codex
+I’m editing four allowed files: the new Python node, `setup.py`/`package.xml` for the console entry and runtime dependency, and the new API doc. The bridge will keep all outbound low-level arm commands in one node and expose only `/arm/*` high-level status and target topics to external modules.
+apply patch
+patch: completed
+/home/clcwork/UAV_capture/px4_ros2_ws/docs/ARM_CONTROL_API.md
+/home/clcwork/UAV_capture/px4_ros2_ws/src/aerial_manip_control/aerial_manip_control/arm_control_bridge.py
+/home/clcwork/UAV_capture/px4_ros2_ws/src/aerial_manip_control/package.xml
+/home/clcwork/UAV_capture/px4_ros2_ws/src/aerial_manip_control/setup.py
+diff --git a/UAV_capture/px4_ros2_ws/docs/ARM_CONTROL_API.md b/UAV_capture/px4_ros2_ws/docs/ARM_CONTROL_API.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..8265b34b857d5e13506f78d371df8553c5467837
+--- /dev/null
++++ b/UAV_capture/px4_ros2_ws/docs/ARM_CONTROL_API.md
+@@ -0,0 +1,63 @@
++# Arm Control API
++
++`arm_control_bridge` is the high-level joint command gate for the simplified
++UAV arm. External modules should publish desired joint targets to `/arm/*`
++topics and must not publish directly to low-level controller command topics.
++
++## Node
++
++```bash
++ros2 run aerial_manip_control arm_control_bridge
++```
++
++## High-level topics
++
++| Topic | Direction | Type | Purpose |
++| --- | --- | --- | --- |
++| `/arm/target_joints` | subscribe | `aerial_manip_msgs/msg/ArmCommand` | Validated high-level joint target input. |
++| `/arm/current_joint_state` | publish | `aerial_manip_msgs/msg/ArmState` | Current joint state normalized to configured joint order. |
++| `/arm/current_target` | publish | `aerial_manip_msgs/msg/ArmState` | Last accepted safe joint target. |
++| `/arm/reached_target` | publish | `std_msgs/msg/Bool` | True after the arm remains within tolerance for `reach_hold_time`. |
++| `/arm/control_state` | publish | `std_msgs/msg/String` | Bridge state: `TRACKING`, `REACHED`, `HOLDING`, or `INVALID_TARGET`. |
++
++## Low-level bridge topics
++
++Only the bridge should publish `/arm/controller_command`.
++
++| Topic | Direction | Type | Purpose |
++| --- | --- | --- | --- |
++| `/arm/controller_command` | publish | `aerial_manip_msgs/msg/ArmCommand` | Safe command forwarded to the low-level arm controller. |
++| `/arm/controller_state` | subscribe | `aerial_manip_msgs/msg/ArmState` | Low-level controller feedback consumed by the bridge. |
++
++## Command modes
++
++`/arm/target_joints.command_mode` supports:
++
++- `joint_position`: use `joint_positions` as the new target.
++- `hold`: keep the last accepted safe target.
++- `stow`: move to the configured `stow_joint_positions`.
++
++If `joint_names` is empty, joint arrays are interpreted in configured
++`joint_names` order. If `joint_names` is set, it must match the configured
++joint set; the bridge reorders values before publishing status and controller
++commands.
++
++## Safety parameters
++
++| Parameter | Default | Meaning |
++| --- | --- | --- |
++| `joint_names` | `["joint1", "joint2", "joint3"]` | Controlled joint names and canonical order. |
++| `initial_joint_positions` | `[0.0, 0.0, 0.0]` | Safe target used on startup. |
++| `stow_joint_positions` | `[0.0, 0.0, 0.0]` | Target used for `stow` commands. |
++| `min_joint_positions` | `[-1.57, -1.57, -1.57]` | Per-joint lower position limits in radians. |
++| `max_joint_positions` | `[1.57, 1.57, 1.57]` | Per-joint upper position limits in radians. |
++| `max_joint_velocities` | `[0.6, 0.6, 0.6]` | Per-joint velocity limits in radians per second. |
++| `target_jump_limit` | `0.35` | Maximum allowed per-command joint position jump in radians. |
++| `command_timeout` | `1.0` | Seconds before the bridge reports `HOLDING` while keeping the last safe target. |
++| `reach_tolerance` | `0.03` | Per-joint position tolerance for reached-target detection in radians. |
++| `reach_hold_time` | `0.5` | Seconds within tolerance before `/arm/reached_target` becomes true. |
++| `command_period` | `0.05` | Low-level command publish period in seconds. |
++
++The bridge rejects targets that contain non-finite values, violate joint
++limits, exceed `target_jump_limit`, include velocity values above
++`max_joint_velocities`, or use mismatched joint names.
+diff --git a/UAV_capture/px4_ros2_ws/src/aerial_manip_control/aerial_manip_control/arm_control_bridge.py b/UAV_capture/px4_ros2_ws/src/aerial_manip_control/aerial_manip_control/arm_control_bridge.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..814a5f6bf789cddeed37406a775f67a0d8674067
+--- /dev/null
++++ b/UAV_capture/px4_ros2_ws/src/aerial_manip_control/aerial_manip_control/arm_control_bridge.py
+@@ -0,0 +1,398 @@
++import math
++import time
++from typing import Dict, List, Optional, Sequence
++
++from aerial_manip_msgs.msg import ArmCommand, ArmState
++import rclpy
++from rclpy.node import Node
++from std_msgs.msg import Bool, String
++
++
++JointVector = List[float]
++
++
++class ArmControlBridge(Node):
++    """Validated high-level /arm target bridge for arm joint control."""
++
++    def __init__(self) -> None:
++        super().__init__("arm_control_bridge")
++
++        self.declare_parameter("joint_names", ["joint1", "joint2", "joint3"])
++        self.declare_parameter("initial_joint_positions", [0.0, 0.0, 0.0])
++        self.declare_parameter("stow_joint_positions", [0.0, 0.0, 0.0])
++        self.declare_parameter("min_joint_positions", [-1.57, -1.57, -1.57])
++        self.declare_parameter("max_joint_positions", [1.57, 1.57, 1.57])
++        self.declare_parameter("max_joint_velocities", [0.6, 0.6, 0.6])
++        self.declare_parameter("target_jump_limit", 0.35)
++        self.declare_parameter("command_timeout", 1.0)
++        self.declare_parameter("reach_tolerance", 0.03)
++        self.declare_parameter("reach_hold_time", 0.5)
++        self.declare_parameter("command_period", 0.05)
++
++        self.joint_names = self._string_list_parameter("joint_names")
++        self.initial_joint_positions = self._float_list_parameter(
++            "initial_joint_positions"
++        )
++        self.stow_joint_positions = self._float_list_parameter("stow_joint_positions")
++        self.min_joint_positions = self._float_list_parameter("min_joint_positions")
++        self.max_joint_positions = self._float_list_parameter("max_joint_positions")
++        self.max_joint_velocities = self._float_list_parameter("max_joint_velocities")
++        self.target_jump_limit = float(self.get_parameter("target_jump_limit").value)
++        self.command_timeout = float(self.get_parameter("command_timeout").value)
++        self.reach_tolerance = float(self.get_parameter("reach_tolerance").value)
++        self.reach_hold_time = float(self.get_parameter("reach_hold_time").value)
++        self.command_period = float(self.get_parameter("command_period").value)
++
++        self._validate_config()
++
++        self.safe_target = list(self.initial_joint_positions)
++        error = self._validate_positions(self.safe_target, check_jump=False)
++        if error is not None:
++            raise ValueError(f"Initial arm target is unsafe: {error}")
++
++        stow_error = self._validate_positions(
++            self.stow_joint_positions, check_jump=False
++        )
++        if stow_error is not None:
++            raise ValueError(f"Stow arm target is unsafe: {stow_error}")
++
++        self.current_positions: Optional[JointVector] = None
++        self.current_velocities: JointVector = [0.0] * len(self.joint_names)
++        self.current_efforts: JointVector = [0.0] * len(self.joint_names)
++        self.last_safe_target_time = time.monotonic()
++        self.last_timeout_warning_time = 0.0
++        self.reach_start_time: Optional[float] = None
++        self.reached_target = False
++        self.control_state = "HOLDING"
++        self.active_command_mode = ArmCommand.MODE_HOLD
++        self.invalid_target_pending = False
++
++        self.command_pub = self.create_publisher(
++            ArmCommand, "/arm/controller_command", 10
++        )
++        self.current_joint_state_pub = self.create_publisher(
++            ArmState, "/arm/current_joint_state", 10
++        )
++        self.current_target_pub = self.create_publisher(
++            ArmState, "/arm/current_target", 10
++        )
++        self.reached_target_pub = self.create_publisher(
++            Bool, "/arm/reached_target", 10
++        )
++        self.control_state_pub = self.create_publisher(
++            String, "/arm/control_state", 10
++        )
++        self.create_subscription(
++            ArmCommand, "/arm/target_joints", self.target_callback, 10
++        )
++        self.create_subscription(
++            ArmState, "/arm/controller_state", self.controller_state_callback, 10
++        )
++        self.timer = self.create_timer(self.command_period, self.timer_callback)
++        self.get_logger().info(
++            "Arm control bridge ready on /arm/target_joints; low-level arm "
++            "commands are published only on /arm/controller_command"
++        )
++
++    def target_callback(self, msg: ArmCommand) -> None:
++        command_mode = msg.command_mode or ArmCommand.MODE_JOINT_POSITION
++        if command_mode == ArmCommand.MODE_HOLD:
++            target = self.safe_target
++        elif command_mode == ArmCommand.MODE_STOW:
++            target = list(self.stow_joint_positions)
++        elif command_mode == ArmCommand.MODE_JOINT_POSITION:
++            target = self._ordered_positions(msg)
++        else:
++            self._reject_target(f"unsupported command_mode '{command_mode}'")
++            return
++
++        if target is None:
++            self._reject_target("joint_names must match configured arm joints")
++            return
++
++        error = self._validate_positions(target, check_jump=True)
++        if error is not None:
++            self._reject_target(error)
++            return
++
++        velocity_error = self._validate_command_velocities(msg)
++        if velocity_error is not None:
++            self._reject_target(velocity_error)
++            return
++
++        self.safe_target = list(target)
++        self.active_command_mode = command_mode
++        self.last_safe_target_time = time.monotonic()
++        self.last_timeout_warning_time = 0.0
++        self.reach_start_time = None
++        self.reached_target = False
++        self.invalid_target_pending = False
++        self.control_state = "TRACKING"
++        self.get_logger().info(
++            "Accepted /arm/target_joints "
++            + ", ".join(
++                f"{name}={position:.3f}"
++                for name, position in zip(self.joint_names, self.safe_target)
++            )
++        )
++
++    def controller_state_callback(self, msg: ArmState) -> None:
++        positions = self._ordered_state_values(msg.joint_names, msg.joint_positions)
++        if positions is None:
++            self.get_logger().warn(
++                "Ignored /arm/controller_state with mismatched joint_names"
++            )
++            return
++
++        velocities = self._ordered_state_values(msg.joint_names, msg.joint_velocities)
++        efforts = self._ordered_state_values(msg.joint_names, msg.joint_efforts)
++        self.current_positions = positions
++        self.current_velocities = velocities or [0.0] * len(self.joint_names)
++        self.current_efforts = efforts or [0.0] * len(self.joint_names)
++
++        state_msg = ArmState()
++        state_msg.header.stamp = self.get_clock().now().to_msg()
++        state_msg.header.frame_id = msg.header.frame_id or "arm_base"
++        state_msg.joint_names = list(self.joint_names)
++        state_msg.joint_positions = list(self.current_positions)
++        state_msg.joint_velocities = list(self.current_velocities)
++        state_msg.joint_efforts = list(self.current_efforts)
++        state_msg.end_effector_pose = msg.end_effector_pose
++        state_msg.contact_detected = msg.contact_detected
++        state_msg.state = msg.state
++        self.current_joint_state_pub.publish(state_msg)
++
++    def timer_callback(self) -> None:
++        self._publish_low_level_command()
++        self._update_reached_target()
++        self._update_control_state()
++        self._publish_bridge_state()
++
++    def _publish_low_level_command(self) -> None:
++        command = ArmCommand()
++        command.header.stamp = self.get_clock().now().to_msg()
++        command.header.frame_id = "arm_base"
++        command.command_mode = ArmCommand.MODE_JOINT_POSITION
++        command.joint_names = list(self.joint_names)
++        command.joint_positions = list(self.safe_target)
++        command.joint_velocities = [0.0] * len(self.joint_names)
++        command.joint_efforts = [0.0] * len(self.joint_names)
++        self.command_pub.publish(command)
++
++    def _validate_positions(
++        self, positions: Sequence[float], check_jump: bool
++    ) -> Optional[str]:
++        if len(positions) != len(self.joint_names):
++            return (
++                f"expected {len(self.joint_names)} joint positions, got "
++                f"{len(positions)}"
++            )
++
++        if not all(math.isfinite(value) for value in positions):
++            return "target contains non-finite joint positions"
++
++        for index, (name, position) in enumerate(zip(self.joint_names, positions)):
++            min_position = self.min_joint_positions[index]
++            max_position = self.max_joint_positions[index]
++            if position < min_position or position > max_position:
++                return (
++                    f"{name}={position:.3f} rad is outside "
++                    f"[{min_position:.3f}, {max_position:.3f}] rad"
++                )
++
++        if check_jump:
++            jump = max(
++                abs(position - previous)
++                for position, previous in zip(positions, self.safe_target)
++            )
++            if jump > self.target_jump_limit:
++                return (
++                    f"target jump {jump:.3f} rad exceeds target_jump_limit "
++                    f"{self.target_jump_limit:.3f} rad"
++                )
++
++        return None
++
++    def _validate_command_velocities(self, msg: ArmCommand) -> Optional[str]:
++        if not msg.joint_velocities:
++            return None
++
++        velocities = self._ordered_state_values(msg.joint_names, msg.joint_velocities)
++        if velocities is None:
++            return "joint_velocities must match configured arm joints"
++
++        for name, velocity, limit in zip(
++            self.joint_names, velocities, self.max_joint_velocities
++        ):
++            if not math.isfinite(velocity):
++                return "target contains non-finite joint velocities"
++            if abs(velocity) > limit:
++                return (
++                    f"{name} velocity {velocity:.3f} rad/s exceeds "
++                    f"max_joint_velocity {limit:.3f} rad/s"
++                )
++
++        return None
++
++    def _reject_target(self, reason: str) -> None:
++        self.get_logger().warn(f"Rejected /arm/target_joints: {reason}")
++        self.control_state = "INVALID_TARGET"
++        self.invalid_target_pending = True
++        self._publish_bridge_state()
++
++    def _target_timed_out(self, now: float) -> bool:
++        if self.command_timeout <= 0.0:
++            return False
++
++        return now - self.last_safe_target_time > self.command_timeout
++
++    def _warn_if_target_timed_out(self, now: float) -> None:
++        if not self._target_timed_out(now):
++            return
++        if now - self.last_timeout_warning_time < self.command_timeout:
++            return
++
++        self.get_logger().warn("Arm command timeout; holding last safe target")
++        self.last_timeout_warning_time = now
++
++    def _update_reached_target(self) -> None:
++        if self.current_positions is None:
++            self.reach_start_time = None
++            self.reached_target = False
++            return
++
++        max_error = max(
++            abs(current - target)
++            for current, target in zip(self.current_positions, self.safe_target)
++        )
++        if max_error > self.reach_tolerance:
++            self.reach_start_time = None
++            self.reached_target = False
++            return
++
++        now = time.monotonic()
++        if self.reach_start_time is None:
++            self.reach_start_time = now
++        self.reached_target = now - self.reach_start_time >= self.reach_hold_time
++
++    def _update_control_state(self) -> None:
++        if self.invalid_target_pending:
++            self.control_state = "INVALID_TARGET"
++            self.invalid_target_pending = False
++            return
++
++        now = time.monotonic()
++        if self._target_timed_out(now):
++            self._warn_if_target_timed_out(now)
++            self.control_state = "HOLDING"
++            return
++
++        if self.reached_target:
++            self.control_state = "REACHED"
++            return
++
++        self.control_state = "TRACKING"
++
++    def _publish_bridge_state(self) -> None:
++        target_msg = ArmState()
++        target_msg.header.stamp = self.get_clock().now().to_msg()
++        target_msg.header.frame_id = "arm_base"
++        target_msg.joint_names = list(self.joint_names)
++        target_msg.joint_positions = list(self.safe_target)
++        target_msg.joint_velocities = [0.0] * len(self.joint_names)
++        target_msg.joint_efforts = [0.0] * len(self.joint_names)
++        target_msg.state = self.active_command_mode
++        self.current_target_pub.publish(target_msg)
++
++        reached_msg = Bool()
++        reached_msg.data = self.reached_target
++        self.reached_target_pub.publish(reached_msg)
++
++        state_msg = String()
++        state_msg.data = self.control_state
++        self.control_state_pub.publish(state_msg)
++
++    def _ordered_positions(self, msg: ArmCommand) -> Optional[JointVector]:
++        return self._ordered_state_values(msg.joint_names, msg.joint_positions)
++
++    def _ordered_state_values(
++        self, joint_names: Sequence[str], values: Sequence[float]
++    ) -> Optional[JointVector]:
++        if not values:
++            return None
++        if len(values) != len(self.joint_names):
++            return None
++        if not joint_names:
++            return list(values)
++        if set(joint_names) != set(self.joint_names):
++            return None
++
++        value_by_joint: Dict[str, float] = dict(zip(joint_names, values))
++        return [float(value_by_joint[name]) for name in self.joint_names]
++
++    def _validate_config(self) -> None:
++        if not self.joint_names:
++            raise ValueError("joint_names must not be empty")
++        if len(set(self.joint_names)) != len(self.joint_names):
++            raise ValueError("joint_names must be unique")
++
++        expected_length = len(self.joint_names)
++        for parameter_name in (
++            "initial_joint_positions",
++            "stow_joint_positions",
++            "min_joint_positions",
++            "max_joint_positions",
++            "max_joint_velocities",
++        ):
++            values = getattr(self, parameter_name)
++            if len(values) != expected_length:
++                raise ValueError(
++                    f"{parameter_name} length {len(values)} does not match "
++                    f"joint_names length {expected_length}"
++                )
++            if not all(math.isfinite(value) for value in values):
++                raise ValueError(f"{parameter_name} contains non-finite values")
++
++        for name, min_position, max_position in zip(
++            self.joint_names, self.min_joint_positions, self.max_joint_positions
++        ):
++            if min_position > max_position:
++                raise ValueError(f"{name} min_joint_position exceeds max")
++
++        if any(limit <= 0.0 for limit in self.max_joint_velocities):
++            raise ValueError("max_joint_velocities must be positive")
++        if self.target_jump_limit <= 0.0:
++            raise ValueError("target_jump_limit must be positive")
++        if self.reach_tolerance <= 0.0:
++            raise ValueError("reach_tolerance must be positive")
++        if self.reach_hold_time < 0.0:
++            raise ValueError("reach_hold_time must be non-negative")
++        if self.command_period <= 0.0:
++            raise ValueError("command_period must be positive")
++
++    def _string_list_parameter(self, parameter_name: str) -> List[str]:
++        value = self.get_parameter(parameter_name).value
++        if not isinstance(value, (list, tuple)):
++            raise ValueError(f"{parameter_name} must be a list")
++
++        return [str(item) for item in value]
++
++    def _float_list_parameter(self, parameter_name: str) -> JointVector:
++        value = self.get_parameter(parameter_name).value
++        if not isinstance(value, (list, tuple)):
++            raise ValueError(f"{parameter_name} must be a list")
++
++        return [float(item) for item in value]
++
++
++def main(args=None) -> None:
++    rclpy.init(args=args)
++    node = ArmControlBridge()
++    try:
++        rclpy.spin(node)
++    except KeyboardInterrupt:
++        pass
++    finally:
++        node.destroy_node()
++        if rclpy.ok():
++            rclpy.shutdown()
+diff --git a/UAV_capture/px4_ros2_ws/src/aerial_manip_control/package.xml b/UAV_capture/px4_ros2_ws/src/aerial_manip_control/package.xml
+index bd749c3b0ed7865167ccabe5a91c96dbaa813950..f54e15ca4d57e07fe2d2519738ba716d0208882b
+--- a/UAV_capture/px4_ros2_ws/src/aerial_manip_control/package.xml
++++ b/UAV_capture/px4_ros2_ws/src/aerial_manip_control/package.xml
+@@ -10,6 +10,7 @@
+ 
+   <exec_depend>aerial_manip_msgs</exec_depend>
+   <exec_depend>rclpy</exec_depend>
++  <exec_depend>std_msgs</exec_depend>
+ 
+   <test_depend>ament_lint_auto</test_depend>
+   <test_depend>ament_lint_common</test_depend>
+diff --git a/UAV_capture/px4_ros2_ws/src/aerial_manip_control/setup.py b/UAV_capture/px4_ros2_ws/src/aerial_manip_control/setup.py
+index 4e3c7fecd5800217a9e59cccdd55cb7efe904d06..6e52e4cde67e4f78e609534d37174c9aad582112
+--- a/UAV_capture/px4_ros2_ws/src/aerial_manip_control/setup.py
++++ b/UAV_capture/px4_ros2_ws/src/aerial_manip_control/setup.py
+@@ -16,5 +16,9 @@
+     maintainer_email="clcwork@example.com",
+     description="Python control nodes for stage-2 aerial manipulation.",
+     license="Apache-2.0",
+-    entry_points={"console_scripts": []},
++    entry_points={
++        "console_scripts": [
++            "arm_control_bridge = aerial_manip_control.arm_control_bridge:main",
++        ]
++    },
+ )
+
+diff --git a/UAV_capture/px4_ros2_ws/docs/ARM_CONTROL_API.md b/UAV_capture/px4_ros2_ws/docs/ARM_CONTROL_API.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..8265b34b857d5e13506f78d371df8553c5467837
+--- /dev/null
++++ b/UAV_capture/px4_ros2_ws/docs/ARM_CONTROL_API.md
+@@ -0,0 +1,63 @@
++# Arm Control API
++
++`arm_control_bridge` is the high-level joint command gate for the simplified
++UAV arm. External modules should publish desired joint targets to `/arm/*`
++topics and must not publish directly to low-level controller command topics.
++
++## Node
++
++```bash
++ros2 run aerial_manip_control arm_control_bridge
++```
++
++## High-level topics
++
++| Topic | Direction | Type | Purpose |
++| --- | --- | --- | --- |
++| `/arm/target_joints` | subscribe | `aerial_manip_msgs/msg/ArmCommand` | Validated high-level joint target input. |
++| `/arm/current_joint_state` | publish | `aerial_manip_msgs/msg/ArmState` | Current joint state normalized to configured joint order. |
++| `/arm/current_target` | publish | `aerial_manip_msgs/msg/ArmState` | Last accepted safe joint target. |
++| `/arm/reached_target` | publish | `std_msgs/msg/Bool` | True after the arm remains within tolerance for `reach_hold_time`. |
++| `/arm/control_state` | publish | `std_msgs/msg/String` | Bridge state: `TRACKING`, `REACHED`, `HOLDING`, or `INVALID_TARGET`. |
++
++## Low-level bridge topics
++
++Only the bridge should publish `/arm/controller_command`.
++
++| Topic | Direction | Type | Purpose |
++| --- | --- | --- | --- |
++| `/arm/controller_command` | publish | `aerial_manip_msgs/msg/ArmCommand` | Safe command forwarded to the low-level arm controller. |
++| `/arm/controller_state` | subscribe | `aerial_manip_msgs/msg/ArmState` | Low-level controller feedback consumed by the bridge. |
++
++## Command modes
++
++`/arm/target_joints.command_mode` supports:
++
++- `joint_position`: use `joint_positions` as the new target.
++- `hold`: keep the last accepted safe target.
++- `stow`: move to the configured `stow_joint_positions`.
++
++If `joint_names` is empty, joint arrays are interpreted in configured
++`joint_names` order. If `joint_names` is set, it must match the configured
++joint set; the bridge reorders values before publishing status and controller
++commands.
++
++## Safety parameters
++
++| Parameter | Default | Meaning |
++| --- | --- | --- |
++| `joint_names` | `["joint1", "joint2", "joint3"]` | Controlled joint names and canonical order. |
++| `initial_joint_positions` | `[0.0, 0.0, 0.0]` | Safe target used on startup. |
++| `stow_joint_positions` | `[0.0, 0.0, 0.0]` | Target used for `stow` commands. |
++| `min_joint_positions` | `[-1.57, -1.57, -1.57]` | Per-joint lower position limits in radians. |
++| `max_joint_positions` | `[1.57, 1.57, 1.57]` | Per-joint upper position limits in radians. |
++| `max_joint_velocities` | `[0.6, 0.6, 0.6]` | Per-joint velocity limits in radians per second. |
++| `target_jump_limit` | `0.35` | Maximum allowed per-command joint position jump in radians. |
++| `command_timeout` | `1.0` | Seconds before the bridge reports `HOLDING` while keeping the last safe target. |
++| `reach_tolerance` | `0.03` | Per-joint position tolerance for reached-target detection in radians. |
++| `reach_hold_time` | `0.5` | Seconds within tolerance before `/arm/reached_target` becomes true. |
++| `command_period` | `0.05` | Low-level command publish period in seconds. |
++
++The bridge rejects targets that contain non-finite values, violate joint
++limits, exceed `target_jump_limit`, include velocity values above
++`max_joint_velocities`, or use mismatched joint names.
+diff --git a/UAV_capture/px4_ros2_ws/src/aerial_manip_control/aerial_manip_control/arm_control_bridge.py b/UAV_capture/px4_ros2_ws/src/aerial_manip_control/aerial_manip_control/arm_control_bridge.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..814a5f6bf789cddeed37406a775f67a0d8674067
+--- /dev/null
++++ b/UAV_capture/px4_ros2_ws/src/aerial_manip_control/aerial_manip_control/arm_control_bridge.py
+@@ -0,0 +1,398 @@
++import math
++import time
++from typing import Dict, List, Optional, Sequence
++
++from aerial_manip_msgs.msg import ArmCommand, ArmState
++import rclpy
++from rclpy.node import Node
++from std_msgs.msg import Bool, String
++
++
++JointVector = List[float]
++
++
++class ArmControlBridge(Node):
++    """Validated high-level /arm target bridge for arm joint control."""
++
++    def __init__(self) -> None:
++        super().__init__("arm_control_bridge")
++
++        self.declare_parameter("joint_names", ["joint1", "joint2", "joint3"])
++        self.declare_parameter("initial_joint_positions", [0.0, 0.0, 0.0])
++        self.declare_parameter("stow_joint_positions", [0.0, 0.0, 0.0])
++        self.declare_parameter("min_joint_positions", [-1.57, -1.57, -1.57])
++        self.declare_parameter("max_joint_positions", [1.57, 1.57, 1.57])
++        self.declare_parameter("max_joint_velocities", [0.6, 0.6, 0.6])
++        self.declare_parameter("target_jump_limit", 0.35)
++        self.declare_parameter("command_timeout", 1.0)
++        self.declare_parameter("reach_tolerance", 0.03)
++        self.declare_parameter("reach_hold_time", 0.5)
++        self.declare_parameter("command_period", 0.05)
++
++        self.joint_names = self._string_list_parameter("joint_names")
++        self.initial_joint_positions = self._float_list_parameter(
++            "initial_joint_positions"
++        )
++        self.stow_joint_positions = self._float_list_parameter("stow_joint_positions")
++        self.min_joint_positions = self._float_list_parameter("min_joint_positions")
++        self.max_joint_positions = self._float_list_parameter("max_joint_positions")
++        self.max_joint_velocities = self._float_list_parameter("max_joint_velocities")
++        self.target_jump_limit = float(self.get_parameter("target_jump_limit").value)
++        self.command_timeout = float(self.get_parameter("command_timeout").value)
++        self.reach_tolerance = float(self.get_parameter("reach_tolerance").value)
++        self.reach_hold_time = float(self.get_parameter("reach_hold_time").value)
++        self.command_period = float(self.get_parameter("command_period").value)
++
++        self._validate_config()
++
++        self.safe_target = list(self.initial_joint_positions)
++        error = self._validate_positions(self.safe_target, check_jump=False)
++        if error is not None:
++            raise ValueError(f"Initial arm target is unsafe: {error}")
++
++        stow_error = self._validate_positions(
++            self.stow_joint_positions, check_jump=False
++        )
++        if stow_error is not None:
++            raise ValueError(f"Stow arm target is unsafe: {stow_error}")
++
++        self.current_positions: Optional[JointVector] = None
++        self.current_velocities: JointVector = [0.0] * len(self.joint_names)
++        self.current_efforts: JointVector = [0.0] * len(self.joint_names)
++        self.last_safe_target_time = time.monotonic()
++        self.last_timeout_warning_time = 0.0
++        self.reach_start_time: Optional[float] = None
++        self.reached_target = False
++        self.control_state = "HOLDING"
++        self.active_command_mode = ArmCommand.MODE_HOLD
++        self.invalid_target_pending = False
++
++        self.command_pub = self.create_publisher(
++            ArmCommand, "/arm/controller_command", 10
++        )
++        self.current_joint_state_pub = self.create_publisher(
++            ArmState, "/arm/current_joint_state", 10
++        )
++        self.current_target_pub = self.create_publisher(
++            ArmState, "/arm/current_target", 10
++        )
++        self.reached_target_pub = self.create_publisher(
++            Bool, "/arm/reached_target", 10
++        )
++        self.control_state_pub = self.create_publisher(
++            String, "/arm/control_state", 10
++        )
++        self.create_subscription(
++            ArmCommand, "/arm/target_joints", self.target_callback, 10
++        )
++        self.create_subscription(
++            ArmState, "/arm/controller_state", self.controller_state_callback, 10
++        )
++        self.timer = self.create_timer(self.command_period, self.timer_callback)
++        self.get_logger().info(
++            "Arm control bridge ready on /arm/target_joints; low-level arm "
++            "commands are published only on /arm/controller_command"
++        )
++
++    def target_callback(self, msg: ArmCommand) -> None:
++        command_mode = msg.command_mode or ArmCommand.MODE_JOINT_POSITION
++        if command_mode == ArmCommand.MODE_HOLD:
++            target = self.safe_target
++        elif command_mode == ArmCommand.MODE_STOW:
++            target = list(self.stow_joint_positions)
++        elif command_mode == ArmCommand.MODE_JOINT_POSITION:
++            target = self._ordered_positions(msg)
++        else:
++            self._reject_target(f"unsupported command_mode '{command_mode}'")
++            return
++
++        if target is None:
++            self._reject_target("joint_names must match configured arm joints")
++            return
++
++        error = self._validate_positions(target, check_jump=True)
++        if error is not None:
++            self._reject_target(error)
++            return
++
++        velocity_error = self._validate_command_velocities(msg)
++        if velocity_error is not None:
++            self._reject_target(velocity_error)
++            return
++
++        self.safe_target = list(target)
++        self.active_command_mode = command_mode
++        self.last_safe_target_time = time.monotonic()
++        self.last_timeout_warning_time = 0.0
++        self.reach_start_time = None
++        self.reached_target = False
++        self.invalid_target_pending = False
++        self.control_state = "TRACKING"
++        self.get_logger().info(
++            "Accepted /arm/target_joints "
++            + ", ".join(
++                f"{name}={position:.3f}"
++                for name, position in zip(self.joint_names, self.safe_target)
++            )
++        )
++
++    def controller_state_callback(self, msg: ArmState) -> None:
++        positions = self._ordered_state_values(msg.joint_names, msg.joint_positions)
++        if positions is None:
++            self.get_logger().warn(
++                "Ignored /arm/controller_state with mismatched joint_names"
++            )
++            return
++
++        velocities = self._ordered_state_values(msg.joint_names, msg.joint_velocities)
++        efforts = self._ordered_state_values(msg.joint_names, msg.joint_efforts)
++        self.current_positions = positions
++        self.current_velocities = velocities or [0.0] * len(self.joint_names)
++        self.current_efforts = efforts or [0.0] * len(self.joint_names)
++
++        state_msg = ArmState()
++        state_msg.header.stamp = self.get_clock().now().to_msg()
++        state_msg.header.frame_id = msg.header.frame_id or "arm_base"
++        state_msg.joint_names = list(self.joint_names)
++        state_msg.joint_positions = list(self.current_positions)
++        state_msg.joint_velocities = list(self.current_velocities)
++        state_msg.joint_efforts = list(self.current_efforts)
++        state_msg.end_effector_pose = msg.end_effector_pose
++        state_msg.contact_detected = msg.contact_detected
++        state_msg.state = msg.state
++        self.current_joint_state_pub.publish(state_msg)
++
++    def timer_callback(self) -> None:
++        self._publish_low_level_command()
++        self._update_reached_target()
++        self._update_control_state()
++        self._publish_bridge_state()
++
++    def _publish_low_level_command(self) -> None:
++        command = ArmCommand()
++        command.header.stamp = self.get_clock().now().to_msg()
++        command.header.frame_id = "arm_base"
++        command.command_mode = ArmCommand.MODE_JOINT_POSITION
++        command.joint_names = list(self.joint_names)
++        command.joint_positions = list(self.safe_target)
++        command.joint_velocities = [0.0] * len(self.joint_names)
++        command.joint_efforts = [0.0] * len(self.joint_names)
++        self.command_pub.publish(command)
++
++    def _validate_positions(
++        self, positions: Sequence[float], check_jump: bool
++    ) -> Optional[str]:
++        if len(positions) != len(self.joint_names):
++            return (
++                f"expected {len(self.joint_names)} joint positions, got "
++                f"{len(positions)}"
++            )
++
++        if not all(math.isfinite(value) for value in positions):
++            return "target contains non-finite joint positions"
++
++        for index, (name, position) in enumerate(zip(self.joint_names, positions)):
++            min_position = self.min_joint_positions[index]
++            max_position = self.max_joint_positions[index]
++            if position < min_position or position > max_position:
++                return (
++                    f"{name}={position:.3f} rad is outside "
++                    f"[{min_position:.3f}, {max_position:.3f}] rad"
++                )
++
++        if check_jump:
++            jump = max(
++                abs(position - previous)
++                for position, previous in zip(positions, self.safe_target)
++            )
++            if jump > self.target_jump_limit:
++                return (
++                    f"target jump {jump:.3f} rad exceeds target_jump_limit "
++                    f"{self.target_jump_limit:.3f} rad"
++                )
++
++        return None
++
++    def _validate_command_velocities(self, msg: ArmCommand) -> Optional[str]:
++        if not msg.joint_velocities:
++            return None
++
++        velocities = self._ordered_state_values(msg.joint_names, msg.joint_velocities)
++        if velocities is None:
++            return "joint_velocities must match configured arm joints"
++
++        for name, velocity, limit in zip(
++            self.joint_names, velocities, self.max_joint_velocities
++        ):
++            if not math.isfinite(velocity):
++                return "target contains non-finite joint velocities"
++            if abs(velocity) > limit:
++                return (
++                    f"{name} velocity {velocity:.3f} rad/s exceeds "
++                    f"max_joint_velocity {limit:.3f} rad/s"
++                )
++
++        return None
++
++    def _reject_target(self, reason: str) -> None:
++        self.get_logger().warn(f"Rejected /arm/target_joints: {reason}")
++        self.control_state = "INVALID_TARGET"
++        self.invalid_target_pending = True
++        self._publish_bridge_state()
++
++    def _target_timed_out(self, now: float) -> bool:
++        if self.command_timeout <= 0.0:
++            return False
++
++        return now - self.last_safe_target_time > self.command_timeout
++
++    def _warn_if_target_timed_out(self, now: float) -> None:
++        if not self._target_timed_out(now):
++            return
++        if now - self.last_timeout_warning_time < self.command_timeout:
++            return
++
++        self.get_logger().warn("Arm command timeout; holding last safe target")
++        self.last_timeout_warning_time = now
++
++    def _update_reached_target(self) -> None:
++        if self.current_positions is None:
++            self.reach_start_time = None
++            self.reached_target = False
++            return
++
++        max_error = max(
++            abs(current - target)
++            for current, target in zip(self.current_positions, self.safe_target)
++        )
++        if max_error > self.reach_tolerance:
++            self.reach_start_time = None
++            self.reached_target = False
++            return
++
++        now = time.monotonic()
++        if self.reach_start_time is None:
++            self.reach_start_time = now
++        self.reached_target = now - self.reach_start_time >= self.reach_hold_time
++
++    def _update_control_state(self) -> None:
++        if self.invalid_target_pending:
++            self.control_state = "INVALID_TARGET"
++            self.invalid_target_pending = False
++            return
++
++        now = time.monotonic()
++        if self._target_timed_out(now):
++            self._warn_if_target_timed_out(now)
++            self.control_state = "HOLDING"
++            return
++
++        if self.reached_target:
++            self.control_state = "REACHED"
++            return
++
++        self.control_state = "TRACKING"
++
++    def _publish_bridge_state(self) -> None:
++        target_msg = ArmState()
++        target_msg.header.stamp = self.get_clock().now().to_msg()
++        target_msg.header.frame_id = "arm_base"
++        target_msg.joint_names = list(self.joint_names)
++        target_msg.joint_positions = list(self.safe_target)
++        target_msg.joint_velocities = [0.0] * len(self.joint_names)
++        target_msg.joint_efforts = [0.0] * len(self.joint_names)
++        target_msg.state = self.active_command_mode
++        self.current_target_pub.publish(target_msg)
++
++        reached_msg = Bool()
++        reached_msg.data = self.reached_target
++        self.reached_target_pub.publish(reached_msg)
++
++        state_msg = String()
++        state_msg.data = self.control_state
++        self.control_state_pub.publish(state_msg)
++
++    def _ordered_positions(self, msg: ArmCommand) -> Optional[JointVector]:
++        return self._ordered_state_values(msg.joint_names, msg.joint_positions)
++
++    def _ordered_state_values(
++        self, joint_names: Sequence[str], values: Sequence[float]
++    ) -> Optional[JointVector]:
++        if not values:
++            return None
++        if len(values) != len(self.joint_names):
++            return None
++        if not joint_names:
++            return list(values)
++        if set(joint_names) != set(self.joint_names):
++            return None
++
++        value_by_joint: Dict[str, float] = dict(zip(joint_names, values))
++        return [float(value_by_joint[name]) for name in self.joint_names]
++
++    def _validate_config(self) -> None:
++        if not self.joint_names:
++            raise ValueError("joint_names must not be empty")
++        if len(set(self.joint_names)) != len(self.joint_names):
++            raise ValueError("joint_names must be unique")
++
++        expected_length = len(self.joint_names)
++        for parameter_name in (
++            "initial_joint_positions",
++            "stow_joint_positions",
++            "min_joint_positions",
++            "max_joint_positions",
++            "max_joint_velocities",
++        ):
++            values = getattr(self, parameter_name)
++            if len(values) != expected_length:
++                raise ValueError(
++                    f"{parameter_name} length {len(values)} does not match "
++                    f"joint_names length {expected_length}"
++                )
++            if not all(math.isfinite(value) for value in values):
++                raise ValueError(f"{parameter_name} contains non-finite values")
++
++        for name, min_position, max_position in zip(
++            self.joint_names, self.min_joint_positions, self.max_joint_positions
++        ):
++            if min_position > max_position:
++                raise ValueError(f"{name} min_joint_position exceeds max")
++
++        if any(limit <= 0.0 for limit in self.max_joint_velocities):
++            raise ValueError("max_joint_velocities must be positive")
++        if self.target_jump_limit <= 0.0:
++            raise ValueError("target_jump_limit must be positive")
++        if self.reach_tolerance <= 0.0:
++            raise ValueError("reach_tolerance must be positive")
++        if self.reach_hold_time < 0.0:
++            raise ValueError("reach_hold_time must be non-negative")
++        if self.command_period <= 0.0:
++            raise ValueError("command_period must be positive")
++
++    def _string_list_parameter(self, parameter_name: str) -> List[str]:
++        value = self.get_parameter(parameter_name).value
++        if not isinstance(value, (list, tuple)):
++            raise ValueError(f"{parameter_name} must be a list")
++
++        return [str(item) for item in value]
++
++    def _float_list_parameter(self, parameter_name: str) -> JointVector:
++        value = self.get_parameter(parameter_name).value
++        if not isinstance(value, (list, tuple)):
++            raise ValueError(f"{parameter_name} must be a list")
++
++        return [float(item) for item in value]
++
++
++def main(args=None) -> None:
++    rclpy.init(args=args)
++    node = ArmControlBridge()
++    try:
++        rclpy.spin(node)
++    except KeyboardInterrupt:
++        pass
++    finally:
++        node.destroy_node()
++        if rclpy.ok():
++            rclpy.shutdown()
+diff --git a/UAV_capture/px4_ros2_ws/src/aerial_manip_control/package.xml b/UAV_capture/px4_ros2_ws/src/aerial_manip_control/package.xml
+index bd749c3b0ed7865167ccabe5a91c96dbaa813950..f54e15ca4d57e07fe2d2519738ba716d0208882b
+--- a/UAV_capture/px4_ros2_ws/src/aerial_manip_control/package.xml
++++ b/UAV_capture/px4_ros2_ws/src/aerial_manip_control/package.xml
+@@ -10,6 +10,7 @@
+ 
+   <exec_depend>aerial_manip_msgs</exec_depend>
+   <exec_depend>rclpy</exec_depend>
++  <exec_depend>std_msgs</exec_depend>
+ 
+   <test_depend>ament_lint_auto</test_depend>
+   <test_depend>ament_lint_common</test_depend>
+diff --git a/UAV_capture/px4_ros2_ws/src/aerial_manip_control/setup.py b/UAV_capture/px4_ros2_ws/src/aerial_manip_control/setup.py
+index 4e3c7fecd5800217a9e59cccdd55cb7efe904d06..6e52e4cde67e4f78e609534d37174c9aad582112
+--- a/UAV_capture/px4_ros2_ws/src/aerial_manip_control/setup.py
++++ b/UAV_capture/px4_ros2_ws/src/aerial_manip_control/setup.py
+@@ -16,5 +16,9 @@
+     maintainer_email="clcwork@example.com",
+     description="Python control nodes for stage-2 aerial manipulation.",
+     license="Apache-2.0",
+-    entry_points={"console_scripts": []},
++    entry_points={
++        "console_scripts": [
++            "arm_control_bridge = aerial_manip_control.arm_control_bridge:main",
++        ]
++    },
+ )
+
+codex
+The implementation is in place. I’m running the required Python compile and package build now, saving the validation output to `codex-logs/015-add-arm-control-bridge.log` as required.
+exec
+/bin/bash -lc '{
+  echo "# Task 015 validation $(date '"'+%Y-%m-%d %H:%M:%S %Z')\"
+  echo
+  echo \""'$ python3 -m compileall src/aerial_manip_control"
+  python3 -m compileall src/aerial_manip_control
+  echo
+  echo "$ colcon build --packages-select aerial_manip_msgs aerial_manip_control"
+  colcon build --packages-select aerial_manip_msgs aerial_manip_control
+} 2>&1 | tee codex-logs/015-add-arm-control-bridge.log' in /home/clcwork/UAV_capture/px4_ros2_ws
+diff --git a/UAV_capture/px4_ros2_ws/docs/ARM_CONTROL_API.md b/UAV_capture/px4_ros2_ws/docs/ARM_CONTROL_API.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..8265b34b857d5e13506f78d371df8553c5467837
+--- /dev/null
++++ b/UAV_capture/px4_ros2_ws/docs/ARM_CONTROL_API.md
+@@ -0,0 +1,63 @@
++# Arm Control API
++
++`arm_control_bridge` is the high-level joint command gate for the simplified
++UAV arm. External modules should publish desired joint targets to `/arm/*`
++topics and must not publish directly to low-level controller command topics.
++
++## Node
++
++```bash
++ros2 run aerial_manip_control arm_control_bridge
++```
++
++## High-level topics
++
++| Topic | Direction | Type | Purpose |
++| --- | --- | --- | --- |
++| `/arm/target_joints` | subscribe | `aerial_manip_msgs/msg/ArmCommand` | Validated high-level joint target input. |
++| `/arm/current_joint_state` | publish | `aerial_manip_msgs/msg/ArmState` | Current joint state normalized to configured joint order. |
++| `/arm/current_target` | publish | `aerial_manip_msgs/msg/ArmState` | Last accepted safe joint target. |
++| `/arm/reached_target` | publish | `std_msgs/msg/Bool` | True after the arm remains within tolerance for `reach_hold_time`. |
++| `/arm/control_state` | publish | `std_msgs/msg/String` | Bridge state: `TRACKING`, `REACHED`, `HOLDING`, or `INVALID_TARGET`. |
++
++## Low-level bridge topics
++
++Only the bridge should publish `/arm/controller_command`.
++
++| Topic | Direction | Type | Purpose |
++| --- | --- | --- | --- |
++| `/arm/controller_command` | publish | `aerial_manip_msgs/msg/ArmCommand` | Safe command forwarded to the low-level arm controller. |
++| `/arm/controller_state` | subscribe | `aerial_manip_msgs/msg/ArmState` | Low-level controller feedback consumed by the bridge. |
++
++## Command modes
++
++`/arm/target_joints.command_mode` supports:
++
++- `joint_position`: use `joint_positions` as the new target.
++- `hold`: keep the last accepted safe target.
++- `stow`: move to the configured `stow_joint_positions`.
++
++If `joint_names` is empty, joint arrays are interpreted in configured
++`joint_names` order. If `joint_names` is set, it must match the configured
++joint set; the bridge reorders values before publishing status and controller
++commands.
++
++## Safety parameters
++
++| Parameter | Default | Meaning |
++| --- | --- | --- |
++| `joint_names` | `["joint1", "joint2", "joint3"]` | Controlled joint names and canonical order. |
++| `initial_joint_positions` | `[0.0, 0.0, 0.0]` | Safe target used on startup. |
++| `stow_joint_positions` | `[0.0, 0.0, 0.0]` | Target used for `stow` commands. |
++| `min_joint_positions` | `[-1.57, -1.57, -1.57]` | Per-joint lower position limits in radians. |
++| `max_joint_positions` | `[1.57, 1.57, 1.57]` | Per-joint upper position limits in radians. |
++| `max_joint_velocities` | `[0.6, 0.6, 0.6]` | Per-joint velocity limits in radians per second. |
++| `target_jump_limit` | `0.35` | Maximum allowed per-command joint position jump in radians. |
++| `command_timeout` | `1.0` | Seconds before the bridge reports `HOLDING` while keeping the last safe target. |
++| `reach_tolerance` | `0.03` | Per-joint position tolerance for reached-target detection in radians. |
++| `reach_hold_time` | `0.5` | Seconds within tolerance before `/arm/reached_target` becomes true. |
++| `command_period` | `0.05` | Low-level command publish period in seconds. |
++
++The bridge rejects targets that contain non-finite values, violate joint
++limits, exceed `target_jump_limit`, include velocity values above
++`max_joint_velocities`, or use mismatched joint names.
+diff --git a/UAV_capture/px4_ros2_ws/src/aerial_manip_control/aerial_manip_control/arm_control_bridge.py b/UAV_capture/px4_ros2_ws/src/aerial_manip_control/aerial_manip_control/arm_control_bridge.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..814a5f6bf789cddeed37406a775f67a0d8674067
+--- /dev/null
++++ b/UAV_capture/px4_ros2_ws/src/aerial_manip_control/aerial_manip_control/arm_control_bridge.py
+@@ -0,0 +1,398 @@
++import math
++import time
++from typing import Dict, List, Optional, Sequence
++
++from aerial_manip_msgs.msg import ArmCommand, ArmState
++import rclpy
++from rclpy.node import Node
++from std_msgs.msg import Bool, String
++
++
++JointVector = List[float]
++
++
++class ArmControlBridge(Node):
++    """Validated high-level /arm target bridge for arm joint control."""
++
++    def __init__(self) -> None:
++        super().__init__("arm_control_bridge")
++
++        self.declare_parameter("joint_names", ["joint1", "joint2", "joint3"])
++        self.declare_parameter("initial_joint_positions", [0.0, 0.0, 0.0])
++        self.declare_parameter("stow_joint_positions", [0.0, 0.0, 0.0])
++        self.declare_parameter("min_joint_positions", [-1.57, -1.57, -1.57])
++        self.declare_parameter("max_joint_positions", [1.57, 1.57, 1.57])
++        self.declare_parameter("max_joint_velocities", [0.6, 0.6, 0.6])
++        self.declare_parameter("target_jump_limit", 0.35)
++        self.declare_parameter("command_timeout", 1.0)
++        self.declare_parameter("reach_tolerance", 0.03)
++        self.declare_parameter("reach_hold_time", 0.5)
++        self.declare_parameter("command_period", 0.05)
++
++        self.joint_names = self._string_list_parameter("joint_names")
++        self.initial_joint_positions = self._float_list_parameter(
++            "initial_joint_positions"
++        )
++        self.stow_joint_positions = self._float_list_parameter("stow_joint_positions")
++        self.min_joint_positions = self._float_list_parameter("min_joint_positions")
++        self.max_joint_positions = self._float_list_parameter("max_joint_positions")
++        self.max_joint_velocities = self._float_list_parameter("max_joint_velocities")
++        self.target_jump_limit = float(self.get_parameter("target_jump_limit").value)
++        self.command_timeout = float(self.get_parameter("command_timeout").value)
++        self.reach_tolerance = float(self.get_parameter("reach_tolerance").value)
++        self.reach_hold_time = float(self.get_parameter("reach_hold_time").value)
++        self.command_period = float(self.get_parameter("command_period").value)
++
++        self._validate_config()
++
++        self.safe_target = list(self.initial_joint_positions)
++        error = self._validate_positions(self.safe_target, check_jump=False)
++        if error is not None:
++            raise ValueError(f"Initial arm target is unsafe: {error}")
++
++        stow_error = self._validate_positions(
++            self.stow_joint_positions, check_jump=False
++        )
++        if stow_error is not None:
++            raise ValueError(f"Stow arm target is unsafe: {stow_error}")
++
++        self.current_positions: Optional[JointVector] = None
++        self.current_velocities: JointVector = [0.0] * len(self.joint_names)
++        self.current_efforts: JointVector = [0.0] * len(self.joint_names)
++        self.last_safe_target_time = time.monotonic()
++        self.last_timeout_warning_time = 0.0
++        self.reach_start_time: Optional[float] = None
++        self.reached_target = False
++        self.control_state = "HOLDING"
++        self.active_command_mode = ArmCommand.MODE_HOLD
++        self.invalid_target_pending = False
++
++        self.command_pub = self.create_publisher(
++            ArmCommand, "/arm/controller_command", 10
++        )
++        self.current_joint_state_pub = self.create_publisher(
++            ArmState, "/arm/current_joint_state", 10
++        )
++        self.current_target_pub = self.create_publisher(
++            ArmState, "/arm/current_target", 10
++        )
++        self.reached_target_pub = self.create_publisher(
++            Bool, "/arm/reached_target", 10
++        )
++        self.control_state_pub = self.create_publisher(
++            String, "/arm/control_state", 10
++        )
++        self.create_subscription(
++            ArmCommand, "/arm/target_joints", self.target_callback, 10
++        )
++        self.create_subscription(
++            ArmState, "/arm/controller_state", self.controller_state_callback, 10
++        )
++        self.timer = self.create_timer(self.command_period, self.timer_callback)
++        self.get_logger().info(
++            "Arm control bridge ready on /arm/target_joints; low-level arm "
++            "commands are published only on /arm/controller_command"
++        )
++
++    def target_callback(self, msg: ArmCommand) -> None:
++        command_mode = msg.command_mode or ArmCommand.MODE_JOINT_POSITION
++        if command_mode == ArmCommand.MODE_HOLD:
++            target = self.safe_target
++        elif command_mode == ArmCommand.MODE_STOW:
++            target = list(self.stow_joint_positions)
++        elif command_mode == ArmCommand.MODE_JOINT_POSITION:
++            target = self._ordered_positions(msg)
++        else:
++            self._reject_target(f"unsupported command_mode '{command_mode}'")
++            return
++
++        if target is None:
++            self._reject_target("joint_names must match configured arm joints")
++            return
++
++        error = self._validate_positions(target, check_jump=True)
++        if error is not None:
++            self._reject_target(error)
++            return
++
++        velocity_error = self._validate_command_velocities(msg)
++        if velocity_error is not None:
++            self._reject_target(velocity_error)
++            return
++
++        self.safe_target = list(target)
++        self.active_command_mode = command_mode
++        self.last_safe_target_time = time.monotonic()
++        self.last_timeout_warning_time = 0.0
++        self.reach_start_time = None
++        self.reached_target = False
++        self.invalid_target_pending = False
++        self.control_state = "TRACKING"
++        self.get_logger().info(
++            "Accepted /arm/target_joints "
++            + ", ".join(
++                f"{name}={position:.3f}"
++                for name, position in zip(self.joint_names, self.safe_target)
++            )
++        )
++
++    def controller_state_callback(self, msg: ArmState) -> None:
++        positions = self._ordered_state_values(msg.joint_names, msg.joint_positions)
++        if positions is None:
++            self.get_logger().warn(
++                "Ignored /arm/controller_state with mismatched joint_names"
++            )
++            return
++
++        velocities = self._ordered_state_values(msg.joint_names, msg.joint_velocities)
++        efforts = self._ordered_state_values(msg.joint_names, msg.joint_efforts)
++        self.current_positions = positions
++        self.current_velocities = velocities or [0.0] * len(self.joint_names)
++        self.current_efforts = efforts or [0.0] * len(self.joint_names)
++
++        state_msg = ArmState()
++        state_msg.header.stamp = self.get_clock().now().to_msg()
++        state_msg.header.frame_id = msg.header.frame_id or "arm_base"
++        state_msg.joint_names = list(self.joint_names)
++        state_msg.joint_positions = list(self.current_positions)
++        state_msg.joint_velocities = list(self.current_velocities)
++        state_msg.joint_efforts = list(self.current_efforts)
++        state_msg.end_effector_pose = msg.end_effector_pose
++        state_msg.contact_detected = msg.contact_detected
++        state_msg.state = msg.state
++        self.current_joint_state_pub.publish(state_msg)
++
++    def timer_callback(self) -> None:
++        self._publish_low_level_command()
++        self._update_reached_target()
++        self._update_control_state()
++        self._publish_bridge_state()
++
++    def _publish_low_level_command(self) -> None:
++        command = ArmCommand()
++        command.header.stamp = self.get_clock().now().to_msg()
++        command.header.frame_id = "arm_base"
++        command.command_mode = ArmCommand.MODE_JOINT_POSITION
++        command.joint_names = list(self.joint_names)
++        command.joint_positions = list(self.safe_target)
++        command.joint_velocities = [0.0] * len(self.joint_names)
++        command.joint_efforts = [0.0] * len(self.joint_names)
++        self.command_pub.publish(command)
++
++    def _validate_positions(
++        self, positions: Sequence[float], check_jump: bool
++    ) -> Optional[str]:
++        if len(positions) != len(self.joint_names):
++            return (
++                f"expected {len(self.joint_names)} joint positions, got "
++                f"{len(positions)}"
++            )
++
++        if not all(math.isfinite(value) for value in positions):
++            return "target contains non-finite joint positions"
++
++        for index, (name, position) in enumerate(zip(self.joint_names, positions)):
++            min_position = self.min_joint_positions[index]
++            max_position = self.max_joint_positions[index]
++            if position < min_position or position > max_position:
++                return (
++                    f"{name}={position:.3f} rad is outside "
++                    f"[{min_position:.3f}, {max_position:.3f}] rad"
++                )
++
++        if check_jump:
++            jump = max(
++                abs(position - previous)
++                for position, previous in zip(positions, self.safe_target)
++            )
++            if jump > self.target_jump_limit:
++                return (
++                    f"target jump {jump:.3f} rad exceeds target_jump_limit "
++                    f"{self.target_jump_limit:.3f} rad"
++                )
++
++        return None
++
++    def _validate_command_velocities(self, msg: ArmCommand) -> Optional[str]:
++        if not msg.joint_velocities:
++            return None
++
++        velocities = self._ordered_state_values(msg.joint_names, msg.joint_velocities)
++        if velocities is None:
++            return "joint_velocities must match configured arm joints"
++
++        for name, velocity, limit in zip(
++            self.joint_names, velocities, self.max_joint_velocities
++        ):
++            if not math.isfinite(velocity):
++                return "target contains non-finite joint velocities"
++            if abs(velocity) > limit:
++                return (
++                    f"{name} velocity {velocity:.3f} rad/s exceeds "
++                    f"max_joint_velocity {limit:.3f} rad/s"
++                )
++
++        return None
++
++    def _reject_target(self, reason: str) -> None:
++        self.get_logger().warn(f"Rejected /arm/target_joints: {reason}")
++        self.control_state = "INVALID_TARGET"
++        self.invalid_target_pending = True
++        self._publish_bridge_state()
++
++    def _target_timed_out(self, now: float) -> bool:
++        if self.command_timeout <= 0.0:
++            return False
++
++        return now - self.last_safe_target_time > self.command_timeout
++
++    def _warn_if_target_timed_out(self, now: float) -> None:
++        if not self._target_timed_out(now):
++            return
++        if now - self.last_timeout_warning_time < self.command_timeout:
++            return
++
++        self.get_logger().warn("Arm command timeout; holding last safe target")
++        self.last_timeout_warning_time = now
++
++    def _update_reached_target(self) -> None:
++        if self.current_positions is None:
++            self.reach_start_time = None
++            self.reached_target = False
++            return
++
++        max_error = max(
++            abs(current - target)
++            for current, target in zip(self.current_positions, self.safe_target)
++        )
++        if max_error > self.reach_tolerance:
++            self.reach_start_time = None
++            self.reached_target = False
++            return
++
++        now = time.monotonic()
++        if self.reach_start_time is None:
++            self.reach_start_time = now
++        self.reached_target = now - self.reach_start_time >= self.reach_hold_time
++
++    def _update_control_state(self) -> None:
++        if self.invalid_target_pending:
++            self.control_state = "INVALID_TARGET"
++            self.invalid_target_pending = False
++            return
++
++        now = time.monotonic()
++        if self._target_timed_out(now):
++            self._warn_if_target_timed_out(now)
++            self.control_state = "HOLDING"
++            return
++
++        if self.reached_target:
++            self.control_state = "REACHED"
++            return
++
++        self.control_state = "TRACKING"
++
++    def _publish_bridge_state(self) -> None:
++        target_msg = ArmState()
++        target_msg.header.stamp = self.get_clock().now().to_msg()
++        target_msg.header.frame_id = "arm_base"
++        target_msg.joint_names = list(self.joint_names)
++        target_msg.joint_positions = list(self.safe_target)
++        target_msg.joint_velocities = [0.0] * len(self.joint_names)
++        target_msg.joint_efforts = [0.0] * len(self.joint_names)
++        target_msg.state = self.active_command_mode
++        self.current_target_pub.publish(target_msg)
++
++        reached_msg = Bool()
++        reached_msg.data = self.reached_target
++        self.reached_target_pub.publish(reached_msg)
++
++        state_msg = String()
++        state_msg.data = self.control_state
++        self.control_state_pub.publish(state_msg)
++
++    def _ordered_positions(self, msg: ArmCommand) -> Optional[JointVector]:
++        return self._ordered_state_values(msg.joint_names, msg.joint_positions)
++
++    def _ordered_state_values(
++        self, joint_names: Sequence[str], values: Sequence[float]
++    ) -> Optional[JointVector]:
++        if not values:
++            return None
++        if len(values) != len(self.joint_names):
++            return None
++        if not joint_names:
++            return list(values)
++        if set(joint_names) != set(self.joint_names):
++            return None
++
++        value_by_joint: Dict[str, float] = dict(zip(joint_names, values))
++        return [float(value_by_joint[name]) for name in self.joint_names]
++
++    def _validate_config(self) -> None:
++        if not self.joint_names:
++            raise ValueError("joint_names must not be empty")
++        if len(set(self.joint_names)) != len(self.joint_names):
++            raise ValueError("joint_names must be unique")
++
++        expected_length = len(self.joint_names)
++        for parameter_name in (
++            "initial_joint_positions",
++            "stow_joint_positions",
++            "min_joint_positions",
++            "max_joint_positions",
++            "max_joint_velocities",
++        ):
++            values = getattr(self, parameter_name)
++            if len(values) != expected_length:
++                raise ValueError(
++                    f"{parameter_name} length {len(values)} does not match "
++                    f"joint_names length {expected_length}"
++                )
++            if not all(math.isfinite(value) for value in values):
++                raise ValueError(f"{parameter_name} contains non-finite values")
++
++        for name, min_position, max_position in zip(
++            self.joint_names, self.min_joint_positions, self.max_joint_positions
++        ):
++            if min_position > max_position:
++                raise ValueError(f"{name} min_joint_position exceeds max")
++
++        if any(limit <= 0.0 for limit in self.max_joint_velocities):
++            raise ValueError("max_joint_velocities must be positive")
++        if self.target_jump_limit <= 0.0:
++            raise ValueError("target_jump_limit must be positive")
++        if self.reach_tolerance <= 0.0:
++            raise ValueError("reach_tolerance must be positive")
++        if self.reach_hold_time < 0.0:
++            raise ValueError("reach_hold_time must be non-negative")
++        if self.command_period <= 0.0:
++            raise ValueError("command_period must be positive")
++
++    def _string_list_parameter(self, parameter_name: str) -> List[str]:
++        value = self.get_parameter(parameter_name).value
++        if not isinstance(value, (list, tuple)):
++            raise ValueError(f"{parameter_name} must be a list")
++
++        return [str(item) for item in value]
++
++    def _float_list_parameter(self, parameter_name: str) -> JointVector:
++        value = self.get_parameter(parameter_name).value
++        if not isinstance(value, (list, tuple)):
++            raise ValueError(f"{parameter_name} must be a list")
++
++        return [float(item) for item in value]
++
++
++def main(args=None) -> None:
++    rclpy.init(args=args)
++    node = ArmControlBridge()
++    try:
++        rclpy.spin(node)
++    except KeyboardInterrupt:
++        pass
++    finally:
++        node.destroy_node()
++        if rclpy.ok():
++            rclpy.shutdown()
+diff --git a/UAV_capture/px4_ros2_ws/src/aerial_manip_control/package.xml b/UAV_capture/px4_ros2_ws/src/aerial_manip_control/package.xml
+index bd749c3b0ed7865167ccabe5a91c96dbaa813950..f54e15ca4d57e07fe2d2519738ba716d0208882b
+--- a/UAV_capture/px4_ros2_ws/src/aerial_manip_control/package.xml
++++ b/UAV_capture/px4_ros2_ws/src/aerial_manip_control/package.xml
+@@ -10,6 +10,7 @@
+ 
+   <exec_depend>aerial_manip_msgs</exec_depend>
+   <exec_depend>rclpy</exec_depend>
++  <exec_depend>std_msgs</exec_depend>
+ 
+   <test_depend>ament_lint_auto</test_depend>
+   <test_depend>ament_lint_common</test_depend>
+diff --git a/UAV_capture/px4_ros2_ws/src/aerial_manip_control/setup.py b/UAV_capture/px4_ros2_ws/src/aerial_manip_control/setup.py
+index 4e3c7fecd5800217a9e59cccdd55cb7efe904d06..6e52e4cde67e4f78e609534d37174c9aad582112
+--- a/UAV_capture/px4_ros2_ws/src/aerial_manip_control/setup.py
++++ b/UAV_capture/px4_ros2_ws/src/aerial_manip_control/setup.py
+@@ -16,5 +16,9 @@
+     maintainer_email="clcwork@example.com",
+     description="Python control nodes for stage-2 aerial manipulation.",
+     license="Apache-2.0",
+-    entry_points={"console_scripts": []},
++    entry_points={
++        "console_scripts": [
++            "arm_control_bridge = aerial_manip_control.arm_control_bridge:main",
++        ]
++    },
+ )
+
+ succeeded in 1471ms:
+Starting >>> aerial_manip_msgs
+Finished <<< aerial_manip_msgs [0.33s]
+Starting >>> aerial_manip_control
+Finished <<< aerial_manip_control [0.89s]
+
+Summary: 2 packages finished [1.36s]
+
+diff --git a/UAV_capture/px4_ros2_ws/docs/ARM_CONTROL_API.md b/UAV_capture/px4_ros2_ws/docs/ARM_CONTROL_API.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..8265b34b857d5e13506f78d371df8553c5467837
+--- /dev/null
++++ b/UAV_capture/px4_ros2_ws/docs/ARM_CONTROL_API.md
+@@ -0,0 +1,63 @@
++# Arm Control API
++
++`arm_control_bridge` is the high-level joint command gate for the simplified
++UAV arm. External modules should publish desired joint targets to `/arm/*`
++topics and must not publish directly to low-level controller command topics.
++
++## Node
++
++```bash
++ros2 run aerial_manip_control arm_control_bridge
++```
++
++## High-level topics
++
++| Topic | Direction | Type | Purpose |
++| --- | --- | --- | --- |
++| `/arm/target_joints` | subscribe | `aerial_manip_msgs/msg/ArmCommand` | Validated high-level joint target input. |
++| `/arm/current_joint_state` | publish | `aerial_manip_msgs/msg/ArmState` | Current joint state normalized to configured joint order. |
++| `/arm/current_target` | publish | `aerial_manip_msgs/msg/ArmState` | Last accepted safe joint target. |
++| `/arm/reached_target` | publish | `std_msgs/msg/Bool` | True after the arm remains within tolerance for `reach_hold_time`. |
++| `/arm/control_state` | publish | `std_msgs/msg/String` | Bridge state: `TRACKING`, `REACHED`, `HOLDING`, or `INVALID_TARGET`. |
++
++## Low-level bridge topics
++
++Only the bridge should publish `/arm/controller_command`.
++
++| Topic | Direction | Type | Purpose |
++| --- | --- | --- | --- |
++| `/arm/controller_command` | publish | `aerial_manip_msgs/msg/ArmCommand` | Safe command forwarded to the low-level arm controller. |
++| `/arm/controller_state` | subscribe | `aerial_manip_msgs/msg/ArmState` | Low-level controller feedback consumed by the bridge. |
++
++## Command modes
++
++`/arm/target_joints.command_mode` supports:
++
++- `joint_position`: use `joint_positions` as the new target.
++- `hold`: keep the last accepted safe target.
++- `stow`: move to the configured `stow_joint_positions`.
++
++If `joint_names` is empty, joint arrays are interpreted in configured
++`joint_names` order. If `joint_names` is set, it must match the configured
++joint set; the bridge reorders values before publishing status and controller
++commands.
++
++## Safety parameters
++
++| Parameter | Default | Meaning |
++| --- | --- | --- |
++| `joint_names` | `["joint1", "joint2", "joint3"]` | Controlled joint names and canonical order. |
++| `initial_joint_positions` | `[0.0, 0.0, 0.0]` | Safe target used on startup. |
++| `stow_joint_positions` | `[0.0, 0.0, 0.0]` | Target used for `stow` commands. |
++| `min_joint_positions` | `[-1.57, -1.57, -1.57]` | Per-joint lower position limits in radians. |
++| `max_joint_positions` | `[1.57, 1.57, 1.57]` | Per-joint upper position limits in radians. |
++| `max_joint_velocities` | `[0.6, 0.6, 0.6]` | Per-joint velocity limits in radians per second. |
++| `target_jump_limit` | `0.35` | Maximum allowed per-command joint position jump in radians. |
++| `command_timeout` | `1.0` | Seconds before the bridge reports `HOLDING` while keeping the last safe target. |
++| `reach_tolerance` | `0.03` | Per-joint position tolerance for reached-target detection in radians. |
++| `reach_hold_time` | `0.5` | Seconds within tolerance before `/arm/reached_target` becomes true. |
++| `command_period` | `0.05` | Low-level command publish period in seconds. |
++
++The bridge rejects targets that contain non-finite values, violate joint
++limits, exceed `target_jump_limit`, include velocity values above
++`max_joint_velocities`, or use mismatched joint names.
+diff --git a/UAV_capture/px4_ros2_ws/src/aerial_manip_control/aerial_manip_control/arm_control_bridge.py b/UAV_capture/px4_ros2_ws/src/aerial_manip_control/aerial_manip_control/arm_control_bridge.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..814a5f6bf789cddeed37406a775f67a0d8674067
+--- /dev/null
++++ b/UAV_capture/px4_ros2_ws/src/aerial_manip_control/aerial_manip_control/arm_control_bridge.py
+@@ -0,0 +1,398 @@
++import math
++import time
++from typing import Dict, List, Optional, Sequence
++
++from aerial_manip_msgs.msg import ArmCommand, ArmState
++import rclpy
++from rclpy.node import Node
++from std_msgs.msg import Bool, String
++
++
++JointVector = List[float]
++
++
++class ArmControlBridge(Node):
++    """Validated high-level /arm target bridge for arm joint control."""
++
++    def __init__(self) -> None:
++        super().__init__("arm_control_bridge")
++
++        self.declare_parameter("joint_names", ["joint1", "joint2", "joint3"])
++        self.declare_parameter("initial_joint_positions", [0.0, 0.0, 0.0])
++        self.declare_parameter("stow_joint_positions", [0.0, 0.0, 0.0])
++        self.declare_parameter("min_joint_positions", [-1.57, -1.57, -1.57])
++        self.declare_parameter("max_joint_positions", [1.57, 1.57, 1.57])
++        self.declare_parameter("max_joint_velocities", [0.6, 0.6, 0.6])
++        self.declare_parameter("target_jump_limit", 0.35)
++        self.declare_parameter("command_timeout", 1.0)
++        self.declare_parameter("reach_tolerance", 0.03)
++        self.declare_parameter("reach_hold_time", 0.5)
++        self.declare_parameter("command_period", 0.05)
++
++        self.joint_names = self._string_list_parameter("joint_names")
++        self.initial_joint_positions = self._float_list_parameter(
++            "initial_joint_positions"
++        )
++        self.stow_joint_positions = self._float_list_parameter("stow_joint_positions")
++        self.min_joint_positions = self._float_list_parameter("min_joint_positions")
++        self.max_joint_positions = self._float_list_parameter("max_joint_positions")
++        self.max_joint_velocities = self._float_list_parameter("max_joint_velocities")
++        self.target_jump_limit = float(self.get_parameter("target_jump_limit").value)
++        self.command_timeout = float(self.get_parameter("command_timeout").value)
++        self.reach_tolerance = float(self.get_parameter("reach_tolerance").value)
++        self.reach_hold_time = float(self.get_parameter("reach_hold_time").value)
++        self.command_period = float(self.get_parameter("command_period").value)
++
++        self._validate_config()
++
++        self.safe_target = list(self.initial_joint_positions)
++        error = self._validate_positions(self.safe_target, check_jump=False)
++        if error is not None:
++            raise ValueError(f"Initial arm target is unsafe: {error}")
++
++        stow_error = self._validate_positions(
++            self.stow_joint_positions, check_jump=False
++        )
++        if stow_error is not None:
++            raise ValueError(f"Stow arm target is unsafe: {stow_error}")
++
++        self.current_positions: Optional[JointVector] = None
++        self.current_velocities: JointVector = [0.0] * len(self.joint_names)
++        self.current_efforts: JointVector = [0.0] * len(self.joint_names)
++        self.last_safe_target_time = time.monotonic()
++        self.last_timeout_warning_time = 0.0
++        self.reach_start_time: Optional[float] = None
++        self.reached_target = False
++        self.control_state = "HOLDING"
++        self.active_command_mode = ArmCommand.MODE_HOLD
++        self.invalid_target_pending = False
++
++        self.command_pub = self.create_publisher(
++            ArmCommand, "/arm/controller_command", 10
++        )
++        self.current_joint_state_pub = self.create_publisher(
++            ArmState, "/arm/current_joint_state", 10
++        )
++        self.current_target_pub = self.create_publisher(
++            ArmState, "/arm/current_target", 10
++        )
++        self.reached_target_pub = self.create_publisher(
++            Bool, "/arm/reached_target", 10
++        )
++        self.control_state_pub = self.create_publisher(
++            String, "/arm/control_state", 10
++        )
++        self.create_subscription(
++            ArmCommand, "/arm/target_joints", self.target_callback, 10
++        )
++        self.create_subscription(
++            ArmState, "/arm/controller_state", self.controller_state_callback, 10
++        )
++        self.timer = self.create_timer(self.command_period, self.timer_callback)
++        self.get_logger().info(
++            "Arm control bridge ready on /arm/target_joints; low-level arm "
++            "commands are published only on /arm/controller_command"
++        )
++
++    def target_callback(self, msg: ArmCommand) -> None:
++        command_mode = msg.command_mode or ArmCommand.MODE_JOINT_POSITION
++        if command_mode == ArmCommand.MODE_HOLD:
++            target = self.safe_target
++        elif command_mode == ArmCommand.MODE_STOW:
++            target = list(self.stow_joint_positions)
++        elif command_mode == ArmCommand.MODE_JOINT_POSITION:
++            target = self._ordered_positions(msg)
++        else:
++            self._reject_target(f"unsupported command_mode '{command_mode}'")
++            return
++
++        if target is None:
++            self._reject_target("joint_names must match configured arm joints")
++            return
++
++        error = self._validate_positions(target, check_jump=True)
++        if error is not None:
++            self._reject_target(error)
++            return
++
++        velocity_error = self._validate_command_velocities(msg)
++        if velocity_error is not None:
++            self._reject_target(velocity_error)
++            return
++
++        self.safe_target = list(target)
++        self.active_command_mode = command_mode
++        self.last_safe_target_time = time.monotonic()
++        self.last_timeout_warning_time = 0.0
++        self.reach_start_time = None
++        self.reached_target = False
++        self.invalid_target_pending = False
++        self.control_state = "TRACKING"
++        self.get_logger().info(
++            "Accepted /arm/target_joints "
++            + ", ".join(
++                f"{name}={position:.3f}"
++                for name, position in zip(self.joint_names, self.safe_target)
++            )
++        )
++
++    def controller_state_callback(self, msg: ArmState) -> None:
++        positions = self._ordered_state_values(msg.joint_names, msg.joint_positions)
++        if positions is None:
++            self.get_logger().warn(
++                "Ignored /arm/controller_state with mismatched joint_names"
++            )
++            return
++
++        velocities = self._ordered_state_values(msg.joint_names, msg.joint_velocities)
++        efforts = self._ordered_state_values(msg.joint_names, msg.joint_efforts)
++        self.current_positions = positions
++        self.current_velocities = velocities or [0.0] * len(self.joint_names)
++        self.current_efforts = efforts or [0.0] * len(self.joint_names)
++
++        state_msg = ArmState()
++        state_msg.header.stamp = self.get_clock().now().to_msg()
++        state_msg.header.frame_id = msg.header.frame_id or "arm_base"
++        state_msg.joint_names = list(self.joint_names)
++        state_msg.joint_positions = list(self.current_positions)
++        state_msg.joint_velocities = list(self.current_velocities)
++        state_msg.joint_efforts = list(self.current_efforts)
++        state_msg.end_effector_pose = msg.end_effector_pose
++        state_msg.contact_detected = msg.contact_detected
++        state_msg.state = msg.state
++        self.current_joint_state_pub.publish(state_msg)
++
++    def timer_callback(self) -> None:
++        self._publish_low_level_command()
++        self._update_reached_target()
++        self._update_control_state()
++        self._publish_bridge_state()
++
++    def _publish_low_level_command(self) -> None:
++        command = ArmCommand()
++        command.header.stamp = self.get_clock().now().to_msg()
++        command.header.frame_id = "arm_base"
++        command.command_mode = ArmCommand.MODE_JOINT_POSITION
++        command.joint_names = list(self.joint_names)
++        command.joint_positions = list(self.safe_target)
++        command.joint_velocities = [0.0] * len(self.joint_names)
++        command.joint_efforts = [0.0] * len(self.joint_names)
++        self.command_pub.publish(command)
++
++    def _validate_positions(
++        self, positions: Sequence[float], check_jump: bool
++    ) -> Optional[str]:
++        if len(positions) != len(self.joint_names):
++            return (
++                f"expected {len(self.joint_names)} joint positions, got "
++                f"{len(positions)}"
++            )
++
++        if not all(math.isfinite(value) for value in positions):
++            return "target contains non-finite joint positions"
++
++        for index, (name, position) in enumerate(zip(self.joint_names, positions)):
++            min_position = self.min_joint_positions[index]
++            max_position = self.max_joint_positions[index]
++            if position < min_position or position > max_position:
++                return (
++                    f"{name}={position:.3f} rad is outside "
++                    f"[{min_position:.3f}, {max_position:.3f}] rad"
++                )
++
++        if check_jump:
++            jump = max(
++                abs(position - previous)
++                for position, previous in zip(positions, self.safe_target)
++            )
++            if jump > self.target_jump_limit:
++                return (
++                    f"target jump {jump:.3f} rad exceeds target_jump_limit "
++                    f"{self.target_jump_limit:.3f} rad"
++                )
++
++        return None
++
++    def _validate_command_velocities(self, msg: ArmCommand) -> Optional[str]:
++        if not msg.joint_velocities:
++            return None
++
++        velocities = self._ordered_state_values(msg.joint_names, msg.joint_velocities)
++        if velocities is None:
++            return "joint_velocities must match configured arm joints"
++
++        for name, velocity, limit in zip(
++            self.joint_names, velocities, self.max_joint_velocities
++        ):
++            if not math.isfinite(velocity):
++                return "target contains non-finite joint velocities"
++            if abs(velocity) > limit:
++                return (
++                    f"{name} velocity {velocity:.3f} rad/s exceeds "
++                    f"max_joint_velocity {limit:.3f} rad/s"
++                )
++
++        return None
++
++    def _reject_target(self, reason: str) -> None:
++        self.get_logger().warn(f"Rejected /arm/target_joints: {reason}")
++        self.control_state = "INVALID_TARGET"
++        self.invalid_target_pending = True
++        self._publish_bridge_state()
++
++    def _target_timed_out(self, now: float) -> bool:
++        if self.command_timeout <= 0.0:
++            return False
++
++        return now - self.last_safe_target_time > self.command_timeout
++
++    def _warn_if_target_timed_out(self, now: float) -> None:
++        if not self._target_timed_out(now):
++            return
++        if now - self.last_timeout_warning_time < self.command_timeout:
++            return
++
++        self.get_logger().warn("Arm command timeout; holding last safe target")
++        self.last_timeout_warning_time = now
++
++    def _update_reached_target(self) -> None:
++        if self.current_positions is None:
++            self.reach_start_time = None
++            self.reached_target = False
++            return
++
++        max_error = max(
++            abs(current - target)
++            for current, target in zip(self.current_positions, self.safe_target)
++        )
++        if max_error > self.reach_tolerance:
++            self.reach_start_time = None
++            self.reached_target = False
++            return
++
++        now = time.monotonic()
++        if self.reach_start_time is None:
++            self.reach_start_time = now
++        self.reached_target = now - self.reach_start_time >= self.reach_hold_time
++
++    def _update_control_state(self) -> None:
++        if self.invalid_target_pending:
++            self.control_state = "INVALID_TARGET"
++            self.invalid_target_pending = False
++            return
++
++        now = time.monotonic()
++        if self._target_timed_out(now):
++            self._warn_if_target_timed_out(now)
++            self.control_state = "HOLDING"
++            return
++
++        if self.reached_target:
++            self.control_state = "REACHED"
++            return
++
++        self.control_state = "TRACKING"
++
++    def _publish_bridge_state(self) -> None:
++        target_msg = ArmState()
++        target_msg.header.stamp = self.get_clock().now().to_msg()
++        target_msg.header.frame_id = "arm_base"
++        target_msg.joint_names = list(self.joint_names)
++        target_msg.joint_positions = list(self.safe_target)
++        target_msg.joint_velocities = [0.0] * len(self.joint_names)
++        target_msg.joint_efforts = [0.0] * len(self.joint_names)
++        target_msg.state = self.active_command_mode
++        self.current_target_pub.publish(target_msg)
++
++        reached_msg = Bool()
++        reached_msg.data = self.reached_target
++        self.reached_target_pub.publish(reached_msg)
++
++        state_msg = String()
++        state_msg.data = self.control_state
++        self.control_state_pub.publish(state_msg)
++
++    def _ordered_positions(self, msg: ArmCommand) -> Optional[JointVector]:
++        return self._ordered_state_values(msg.joint_names, msg.joint_positions)
++
++    def _ordered_state_values(
++        self, joint_names: Sequence[str], values: Sequence[float]
++    ) -> Optional[JointVector]:
++        if not values:
++            return None
++        if len(values) != len(self.joint_names):
++            return None
++        if not joint_names:
++            return list(values)
++        if set(joint_names) != set(self.joint_names):
++            return None
++
++        value_by_joint: Dict[str, float] = dict(zip(joint_names, values))
++        return [float(value_by_joint[name]) for name in self.joint_names]
++
++    def _validate_config(self) -> None:
++        if not self.joint_names:
++            raise ValueError("joint_names must not be empty")
++        if len(set(self.joint_names)) != len(self.joint_names):
++            raise ValueError("joint_names must be unique")
++
++        expected_length = len(self.joint_names)
++        for parameter_name in (
++            "initial_joint_positions",
++            "stow_joint_positions",
++            "min_joint_positions",
++            "max_joint_positions",
++            "max_joint_velocities",
++        ):
++            values = getattr(self, parameter_name)
++            if len(values) != expected_length:
++                raise ValueError(
++                    f"{parameter_name} length {len(values)} does not match "
++                    f"joint_names length {expected_length}"
++                )
++            if not all(math.isfinite(value) for value in values):
++                raise ValueError(f"{parameter_name} contains non-finite values")
++
++        for name, min_position, max_position in zip(
++            self.joint_names, self.min_joint_positions, self.max_joint_positions
++        ):
++            if min_position > max_position:
++                raise ValueError(f"{name} min_joint_position exceeds max")
++
++        if any(limit <= 0.0 for limit in self.max_joint_velocities):
++            raise ValueError("max_joint_velocities must be positive")
++        if self.target_jump_limit <= 0.0:
++            raise ValueError("target_jump_limit must be positive")
++        if self.reach_tolerance <= 0.0:
++            raise ValueError("reach_tolerance must be positive")
++        if self.reach_hold_time < 0.0:
++            raise ValueError("reach_hold_time must be non-negative")
++        if self.command_period <= 0.0:
++            raise ValueError("command_period must be positive")
++
++    def _string_list_parameter(self, parameter_name: str) -> List[str]:
++        value = self.get_parameter(parameter_name).value
++        if not isinstance(value, (list, tuple)):
++            raise ValueError(f"{parameter_name} must be a list")
++
++        return [str(item) for item in value]
++
++    def _float_list_parameter(self, parameter_name: str) -> JointVector:
++        value = self.get_parameter(parameter_name).value
++        if not isinstance(value, (list, tuple)):
++            raise ValueError(f"{parameter_name} must be a list")
++
++        return [float(item) for item in value]
++
++
++def main(args=None) -> None:
++    rclpy.init(args=args)
++    node = ArmControlBridge()
++    try:
++        rclpy.spin(node)
++    except KeyboardInterrupt:
++        pass
++    finally:
++        node.destroy_node()
++        if rclpy.ok():
++            rclpy.shutdown()
+diff --git a/UAV_capture/px4_ros2_ws/src/aerial_manip_control/package.xml b/UAV_capture/px4_ros2_ws/src/aerial_manip_control/package.xml
+index bd749c3b0ed7865167ccabe5a91c96dbaa813950..f54e15ca4d57e07fe2d2519738ba716d0208882b
+--- a/UAV_capture/px4_ros2_ws/src/aerial_manip_control/package.xml
++++ b/UAV_capture/px4_ros2_ws/src/aerial_manip_control/package.xml
+@@ -10,6 +10,7 @@
+ 
+   <exec_depend>aerial_manip_msgs</exec_depend>
+   <exec_depend>rclpy</exec_depend>
++  <exec_depend>std_msgs</exec_depend>
+ 
+   <test_depend>ament_lint_auto</test_depend>
+   <test_depend>ament_lint_common</test_depend>
+diff --git a/UAV_capture/px4_ros2_ws/src/aerial_manip_control/setup.py b/UAV_capture/px4_ros2_ws/src/aerial_manip_control/setup.py
+index 4e3c7fecd5800217a9e59cccdd55cb7efe904d06..6e52e4cde67e4f78e609534d37174c9aad582112
+--- a/UAV_capture/px4_ros2_ws/src/aerial_manip_control/setup.py
++++ b/UAV_capture/px4_ros2_ws/src/aerial_manip_control/setup.py
+@@ -16,5 +16,9 @@
+     maintainer_email="clcwork@example.com",
+     description="Python control nodes for stage-2 aerial manipulation.",
+     license="Apache-2.0",
+-    entry_points={"console_scripts": []},
++    entry_points={
++        "console_scripts": [
++            "arm_control_bridge = aerial_manip_control.arm_control_bridge:main",
++        ]
++    },
+ )
+
+codex
+Validation passed for both required commands. I’m doing a quick source review pass now to catch any obvious edge cases before I close the task.
+exec
+/bin/bash -lc 'tail -n 40 codex-logs/015-add-arm-control-bridge.log' in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+# Task 015 validation 2026-05-27 18:36:23 CST
+
+$ python3 -m compileall src/aerial_manip_control
+Listing 'src/aerial_manip_control'...
+Listing 'src/aerial_manip_control/aerial_manip_control'...
+Compiling 'src/aerial_manip_control/aerial_manip_control/__init__.py'...
+Compiling 'src/aerial_manip_control/aerial_manip_control/arm_control_bridge.py'...
+Listing 'src/aerial_manip_control/resource'...
+Compiling 'src/aerial_manip_control/setup.py'...
+
+$ colcon build --packages-select aerial_manip_msgs aerial_manip_control
+Starting >>> aerial_manip_msgs
+Finished <<< aerial_manip_msgs [0.33s]
+Starting >>> aerial_manip_control
+Finished <<< aerial_manip_control [0.89s]
+
+Summary: 2 packages finished [1.36s]
+
+exec
+/bin/bash -lc "nl -ba src/aerial_manip_control/aerial_manip_control/arm_control_bridge.py | sed -n '1,260p'" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+     1	import math
+     2	import time
+     3	from typing import Dict, List, Optional, Sequence
+     4	
+     5	from aerial_manip_msgs.msg import ArmCommand, ArmState
+     6	import rclpy
+     7	from rclpy.node import Node
+     8	from std_msgs.msg import Bool, String
+     9	
+    10	
+    11	JointVector = List[float]
+    12	
+    13	
+    14	class ArmControlBridge(Node):
+    15	    """Validated high-level /arm target bridge for arm joint control."""
+    16	
+    17	    def __init__(self) -> None:
+    18	        super().__init__("arm_control_bridge")
+    19	
+    20	        self.declare_parameter("joint_names", ["joint1", "joint2", "joint3"])
+    21	        self.declare_parameter("initial_joint_positions", [0.0, 0.0, 0.0])
+    22	        self.declare_parameter("stow_joint_positions", [0.0, 0.0, 0.0])
+    23	        self.declare_parameter("min_joint_positions", [-1.57, -1.57, -1.57])
+    24	        self.declare_parameter("max_joint_positions", [1.57, 1.57, 1.57])
+    25	        self.declare_parameter("max_joint_velocities", [0.6, 0.6, 0.6])
+    26	        self.declare_parameter("target_jump_limit", 0.35)
+    27	        self.declare_parameter("command_timeout", 1.0)
+    28	        self.declare_parameter("reach_tolerance", 0.03)
+    29	        self.declare_parameter("reach_hold_time", 0.5)
+    30	        self.declare_parameter("command_period", 0.05)
+    31	
+    32	        self.joint_names = self._string_list_parameter("joint_names")
+    33	        self.initial_joint_positions = self._float_list_parameter(
+    34	            "initial_joint_positions"
+    35	        )
+    36	        self.stow_joint_positions = self._float_list_parameter("stow_joint_positions")
+    37	        self.min_joint_positions = self._float_list_parameter("min_joint_positions")
+    38	        self.max_joint_positions = self._float_list_parameter("max_joint_positions")
+    39	        self.max_joint_velocities = self._float_list_parameter("max_joint_velocities")
+    40	        self.target_jump_limit = float(self.get_parameter("target_jump_limit").value)
+    41	        self.command_timeout = float(self.get_parameter("command_timeout").value)
+    42	        self.reach_tolerance = float(self.get_parameter("reach_tolerance").value)
+    43	        self.reach_hold_time = float(self.get_parameter("reach_hold_time").value)
+    44	        self.command_period = float(self.get_parameter("command_period").value)
+    45	
+    46	        self._validate_config()
+    47	
+    48	        self.safe_target = list(self.initial_joint_positions)
+    49	        error = self._validate_positions(self.safe_target, check_jump=False)
+    50	        if error is not None:
+    51	            raise ValueError(f"Initial arm target is unsafe: {error}")
+    52	
+    53	        stow_error = self._validate_positions(
+    54	            self.stow_joint_positions, check_jump=False
+    55	        )
+    56	        if stow_error is not None:
+    57	            raise ValueError(f"Stow arm target is unsafe: {stow_error}")
+    58	
+    59	        self.current_positions: Optional[JointVector] = None
+    60	        self.current_velocities: JointVector = [0.0] * len(self.joint_names)
+    61	        self.current_efforts: JointVector = [0.0] * len(self.joint_names)
+    62	        self.last_safe_target_time = time.monotonic()
+    63	        self.last_timeout_warning_time = 0.0
+    64	        self.reach_start_time: Optional[float] = None
+    65	        self.reached_target = False
+    66	        self.control_state = "HOLDING"
+    67	        self.active_command_mode = ArmCommand.MODE_HOLD
+    68	        self.invalid_target_pending = False
+    69	
+    70	        self.command_pub = self.create_publisher(
+    71	            ArmCommand, "/arm/controller_command", 10
+    72	        )
+    73	        self.current_joint_state_pub = self.create_publisher(
+    74	            ArmState, "/arm/current_joint_state", 10
+    75	        )
+    76	        self.current_target_pub = self.create_publisher(
+    77	            ArmState, "/arm/current_target", 10
+    78	        )
+    79	        self.reached_target_pub = self.create_publisher(
+    80	            Bool, "/arm/reached_target", 10
+    81	        )
+    82	        self.control_state_pub = self.create_publisher(
+    83	            String, "/arm/control_state", 10
+    84	        )
+    85	        self.create_subscription(
+    86	            ArmCommand, "/arm/target_joints", self.target_callback, 10
+    87	        )
+    88	        self.create_subscription(
+    89	            ArmState, "/arm/controller_state", self.controller_state_callback, 10
+    90	        )
+    91	        self.timer = self.create_timer(self.command_period, self.timer_callback)
+    92	        self.get_logger().info(
+    93	            "Arm control bridge ready on /arm/target_joints; low-level arm "
+    94	            "commands are published only on /arm/controller_command"
+    95	        )
+    96	
+    97	    def target_callback(self, msg: ArmCommand) -> None:
+    98	        command_mode = msg.command_mode or ArmCommand.MODE_JOINT_POSITION
+    99	        if command_mode == ArmCommand.MODE_HOLD:
+   100	            target = self.safe_target
+   101	        elif command_mode == ArmCommand.MODE_STOW:
+   102	            target = list(self.stow_joint_positions)
+   103	        elif command_mode == ArmCommand.MODE_JOINT_POSITION:
+   104	            target = self._ordered_positions(msg)
+   105	        else:
+   106	            self._reject_target(f"unsupported command_mode '{command_mode}'")
+   107	            return
+   108	
+   109	        if target is None:
+   110	            self._reject_target("joint_names must match configured arm joints")
+   111	            return
+   112	
+   113	        error = self._validate_positions(target, check_jump=True)
+   114	        if error is not None:
+   115	            self._reject_target(error)
+   116	            return
+   117	
+   118	        velocity_error = self._validate_command_velocities(msg)
+   119	        if velocity_error is not None:
+   120	            self._reject_target(velocity_error)
+   121	            return
+   122	
+   123	        self.safe_target = list(target)
+   124	        self.active_command_mode = command_mode
+   125	        self.last_safe_target_time = time.monotonic()
+   126	        self.last_timeout_warning_time = 0.0
+   127	        self.reach_start_time = None
+   128	        self.reached_target = False
+   129	        self.invalid_target_pending = False
+   130	        self.control_state = "TRACKING"
+   131	        self.get_logger().info(
+   132	            "Accepted /arm/target_joints "
+   133	            + ", ".join(
+   134	                f"{name}={position:.3f}"
+   135	                for name, position in zip(self.joint_names, self.safe_target)
+   136	            )
+   137	        )
+   138	
+   139	    def controller_state_callback(self, msg: ArmState) -> None:
+   140	        positions = self._ordered_state_values(msg.joint_names, msg.joint_positions)
+   141	        if positions is None:
+   142	            self.get_logger().warn(
+   143	                "Ignored /arm/controller_state with mismatched joint_names"
+   144	            )
+   145	            return
+   146	
+   147	        velocities = self._ordered_state_values(msg.joint_names, msg.joint_velocities)
+   148	        efforts = self._ordered_state_values(msg.joint_names, msg.joint_efforts)
+   149	        self.current_positions = positions
+   150	        self.current_velocities = velocities or [0.0] * len(self.joint_names)
+   151	        self.current_efforts = efforts or [0.0] * len(self.joint_names)
+   152	
+   153	        state_msg = ArmState()
+   154	        state_msg.header.stamp = self.get_clock().now().to_msg()
+   155	        state_msg.header.frame_id = msg.header.frame_id or "arm_base"
+   156	        state_msg.joint_names = list(self.joint_names)
+   157	        state_msg.joint_positions = list(self.current_positions)
+   158	        state_msg.joint_velocities = list(self.current_velocities)
+   159	        state_msg.joint_efforts = list(self.current_efforts)
+   160	        state_msg.end_effector_pose = msg.end_effector_pose
+   161	        state_msg.contact_detected = msg.contact_detected
+   162	        state_msg.state = msg.state
+   163	        self.current_joint_state_pub.publish(state_msg)
+   164	
+   165	    def timer_callback(self) -> None:
+   166	        self._publish_low_level_command()
+   167	        self._update_reached_target()
+   168	        self._update_control_state()
+   169	        self._publish_bridge_state()
+   170	
+   171	    def _publish_low_level_command(self) -> None:
+   172	        command = ArmCommand()
+   173	        command.header.stamp = self.get_clock().now().to_msg()
+   174	        command.header.frame_id = "arm_base"
+   175	        command.command_mode = ArmCommand.MODE_JOINT_POSITION
+   176	        command.joint_names = list(self.joint_names)
+   177	        command.joint_positions = list(self.safe_target)
+   178	        command.joint_velocities = [0.0] * len(self.joint_names)
+   179	        command.joint_efforts = [0.0] * len(self.joint_names)
+   180	        self.command_pub.publish(command)
+   181	
+   182	    def _validate_positions(
+   183	        self, positions: Sequence[float], check_jump: bool
+   184	    ) -> Optional[str]:
+   185	        if len(positions) != len(self.joint_names):
+   186	            return (
+   187	                f"expected {len(self.joint_names)} joint positions, got "
+   188	                f"{len(positions)}"
+   189	            )
+   190	
+   191	        if not all(math.isfinite(value) for value in positions):
+   192	            return "target contains non-finite joint positions"
+   193	
+   194	        for index, (name, position) in enumerate(zip(self.joint_names, positions)):
+   195	            min_position = self.min_joint_positions[index]
+   196	            max_position = self.max_joint_positions[index]
+   197	            if position < min_position or position > max_position:
+   198	                return (
+   199	                    f"{name}={position:.3f} rad is outside "
+   200	                    f"[{min_position:.3f}, {max_position:.3f}] rad"
+   201	                )
+   202	
+   203	        if check_jump:
+   204	            jump = max(
+   205	                abs(position - previous)
+   206	                for position, previous in zip(positions, self.safe_target)
+   207	            )
+   208	            if jump > self.target_jump_limit:
+   209	                return (
+   210	                    f"target jump {jump:.3f} rad exceeds target_jump_limit "
+   211	                    f"{self.target_jump_limit:.3f} rad"
+   212	                )
+   213	
+   214	        return None
+   215	
+   216	    def _validate_command_velocities(self, msg: ArmCommand) -> Optional[str]:
+   217	        if not msg.joint_velocities:
+   218	            return None
+   219	
+   220	        velocities = self._ordered_state_values(msg.joint_names, msg.joint_velocities)
+   221	        if velocities is None:
+   222	            return "joint_velocities must match configured arm joints"
+   223	
+   224	        for name, velocity, limit in zip(
+   225	            self.joint_names, velocities, self.max_joint_velocities
+   226	        ):
+   227	            if not math.isfinite(velocity):
+   228	                return "target contains non-finite joint velocities"
+   229	            if abs(velocity) > limit:
+   230	                return (
+   231	                    f"{name} velocity {velocity:.3f} rad/s exceeds "
+   232	                    f"max_joint_velocity {limit:.3f} rad/s"
+   233	                )
+   234	
+   235	        return None
+   236	
+   237	    def _reject_target(self, reason: str) -> None:
+   238	        self.get_logger().warn(f"Rejected /arm/target_joints: {reason}")
+   239	        self.control_state = "INVALID_TARGET"
+   240	        self.invalid_target_pending = True
+   241	        self._publish_bridge_state()
+   242	
+   243	    def _target_timed_out(self, now: float) -> bool:
+   244	        if self.command_timeout <= 0.0:
+   245	            return False
+   246	
+   247	        return now - self.last_safe_target_time > self.command_timeout
+   248	
+   249	    def _warn_if_target_timed_out(self, now: float) -> None:
+   250	        if not self._target_timed_out(now):
+   251	            return
+   252	        if now - self.last_timeout_warning_time < self.command_timeout:
+   253	            return
+   254	
+   255	        self.get_logger().warn("Arm command timeout; holding last safe target")
+   256	        self.last_timeout_warning_time = now
+   257	
+   258	    def _update_reached_target(self) -> None:
+   259	        if self.current_positions is None:
+   260	            self.reach_start_time = None
+
+exec
+/bin/bash -lc "nl -ba docs/ARM_CONTROL_API.md | sed -n '1,220p'" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+     1	# Arm Control API
+     2	
+     3	`arm_control_bridge` is the high-level joint command gate for the simplified
+     4	UAV arm. External modules should publish desired joint targets to `/arm/*`
+     5	topics and must not publish directly to low-level controller command topics.
+     6	
+     7	## Node
+     8	
+     9	```bash
+    10	ros2 run aerial_manip_control arm_control_bridge
+    11	```
+    12	
+    13	## High-level topics
+    14	
+    15	| Topic | Direction | Type | Purpose |
+    16	| --- | --- | --- | --- |
+    17	| `/arm/target_joints` | subscribe | `aerial_manip_msgs/msg/ArmCommand` | Validated high-level joint target input. |
+    18	| `/arm/current_joint_state` | publish | `aerial_manip_msgs/msg/ArmState` | Current joint state normalized to configured joint order. |
+    19	| `/arm/current_target` | publish | `aerial_manip_msgs/msg/ArmState` | Last accepted safe joint target. |
+    20	| `/arm/reached_target` | publish | `std_msgs/msg/Bool` | True after the arm remains within tolerance for `reach_hold_time`. |
+    21	| `/arm/control_state` | publish | `std_msgs/msg/String` | Bridge state: `TRACKING`, `REACHED`, `HOLDING`, or `INVALID_TARGET`. |
+    22	
+    23	## Low-level bridge topics
+    24	
+    25	Only the bridge should publish `/arm/controller_command`.
+    26	
+    27	| Topic | Direction | Type | Purpose |
+    28	| --- | --- | --- | --- |
+    29	| `/arm/controller_command` | publish | `aerial_manip_msgs/msg/ArmCommand` | Safe command forwarded to the low-level arm controller. |
+    30	| `/arm/controller_state` | subscribe | `aerial_manip_msgs/msg/ArmState` | Low-level controller feedback consumed by the bridge. |
+    31	
+    32	## Command modes
+    33	
+    34	`/arm/target_joints.command_mode` supports:
+    35	
+    36	- `joint_position`: use `joint_positions` as the new target.
+    37	- `hold`: keep the last accepted safe target.
+    38	- `stow`: move to the configured `stow_joint_positions`.
+    39	
+    40	If `joint_names` is empty, joint arrays are interpreted in configured
+    41	`joint_names` order. If `joint_names` is set, it must match the configured
+    42	joint set; the bridge reorders values before publishing status and controller
+    43	commands.
+    44	
+    45	## Safety parameters
+    46	
+    47	| Parameter | Default | Meaning |
+    48	| --- | --- | --- |
+    49	| `joint_names` | `["joint1", "joint2", "joint3"]` | Controlled joint names and canonical order. |
+    50	| `initial_joint_positions` | `[0.0, 0.0, 0.0]` | Safe target used on startup. |
+    51	| `stow_joint_positions` | `[0.0, 0.0, 0.0]` | Target used for `stow` commands. |
+    52	| `min_joint_positions` | `[-1.57, -1.57, -1.57]` | Per-joint lower position limits in radians. |
+    53	| `max_joint_positions` | `[1.57, 1.57, 1.57]` | Per-joint upper position limits in radians. |
+    54	| `max_joint_velocities` | `[0.6, 0.6, 0.6]` | Per-joint velocity limits in radians per second. |
+    55	| `target_jump_limit` | `0.35` | Maximum allowed per-command joint position jump in radians. |
+    56	| `command_timeout` | `1.0` | Seconds before the bridge reports `HOLDING` while keeping the last safe target. |
+    57	| `reach_tolerance` | `0.03` | Per-joint position tolerance for reached-target detection in radians. |
+    58	| `reach_hold_time` | `0.5` | Seconds within tolerance before `/arm/reached_target` becomes true. |
+    59	| `command_period` | `0.05` | Low-level command publish period in seconds. |
+    60	
+    61	The bridge rejects targets that contain non-finite values, violate joint
+    62	limits, exceed `target_jump_limit`, include velocity values above
+    63	`max_joint_velocities`, or use mismatched joint names.
+
+diff --git a/UAV_capture/px4_ros2_ws/docs/ARM_CONTROL_API.md b/UAV_capture/px4_ros2_ws/docs/ARM_CONTROL_API.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..8265b34b857d5e13506f78d371df8553c5467837
+--- /dev/null
++++ b/UAV_capture/px4_ros2_ws/docs/ARM_CONTROL_API.md
+@@ -0,0 +1,63 @@
++# Arm Control API
++
++`arm_control_bridge` is the high-level joint command gate for the simplified
++UAV arm. External modules should publish desired joint targets to `/arm/*`
++topics and must not publish directly to low-level controller command topics.
++
++## Node
++
++```bash
++ros2 run aerial_manip_control arm_control_bridge
++```
++
++## High-level topics
++
++| Topic | Direction | Type | Purpose |
++| --- | --- | --- | --- |
++| `/arm/target_joints` | subscribe | `aerial_manip_msgs/msg/ArmCommand` | Validated high-level joint target input. |
++| `/arm/current_joint_state` | publish | `aerial_manip_msgs/msg/ArmState` | Current joint state normalized to configured joint order. |
++| `/arm/current_target` | publish | `aerial_manip_msgs/msg/ArmState` | Last accepted safe joint target. |
++| `/arm/reached_target` | publish | `std_msgs/msg/Bool` | True after the arm remains within tolerance for `reach_hold_time`. |
++| `/arm/control_state` | publish | `std_msgs/msg/String` | Bridge state: `TRACKING`, `REACHED`, `HOLDING`, or `INVALID_TARGET`. |
++
++## Low-level bridge topics
++
++Only the bridge should publish `/arm/controller_command`.
++
++| Topic | Direction | Type | Purpose |
++| --- | --- | --- | --- |
++| `/arm/controller_command` | publish | `aerial_manip_msgs/msg/ArmCommand` | Safe command forwarded to the low-level arm controller. |
++| `/arm/controller_state` | subscribe | `aerial_manip_msgs/msg/ArmState` | Low-level controller feedback consumed by the bridge. |
++
++## Command modes
++
++`/arm/target_joints.command_mode` supports:
++
++- `joint_position`: use `joint_positions` as the new target.
++- `hold`: keep the last accepted safe target.
++- `stow`: move to the configured `stow_joint_positions`.
++
++If `joint_names` is empty, joint arrays are interpreted in configured
++`joint_names` order. If `joint_names` is set, it must match the configured
++joint set; the bridge reorders values before publishing status and controller
++commands.
++
++## Safety parameters
++
++| Parameter | Default | Meaning |
++| --- | --- | --- |
++| `joint_names` | `["joint1", "joint2", "joint3"]` | Controlled joint names and canonical order. |
++| `initial_joint_positions` | `[0.0, 0.0, 0.0]` | Safe target used on startup. |
++| `stow_joint_positions` | `[0.0, 0.0, 0.0]` | Target used for `stow` commands. |
++| `min_joint_positions` | `[-1.57, -1.57, -1.57]` | Per-joint lower position limits in radians. |
++| `max_joint_positions` | `[1.57, 1.57, 1.57]` | Per-joint upper position limits in radians. |
++| `max_joint_velocities` | `[0.6, 0.6, 0.6]` | Per-joint velocity limits in radians per second. |
++| `target_jump_limit` | `0.35` | Maximum allowed per-command joint position jump in radians. |
++| `command_timeout` | `1.0` | Seconds before the bridge reports `HOLDING` while keeping the last safe target. |
++| `reach_tolerance` | `0.03` | Per-joint position tolerance for reached-target detection in radians. |
++| `reach_hold_time` | `0.5` | Seconds within tolerance before `/arm/reached_target` becomes true. |
++| `command_period` | `0.05` | Low-level command publish period in seconds. |
++
++The bridge rejects targets that contain non-finite values, violate joint
++limits, exceed `target_jump_limit`, include velocity values above
++`max_joint_velocities`, or use mismatched joint names.
+diff --git a/UAV_capture/px4_ros2_ws/src/aerial_manip_control/aerial_manip_control/arm_control_bridge.py b/UAV_capture/px4_ros2_ws/src/aerial_manip_control/aerial_manip_control/arm_control_bridge.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..814a5f6bf789cddeed37406a775f67a0d8674067
+--- /dev/null
++++ b/UAV_capture/px4_ros2_ws/src/aerial_manip_control/aerial_manip_control/arm_control_bridge.py
+@@ -0,0 +1,398 @@
++import math
++import time
++from typing import Dict, List, Optional, Sequence
++
++from aerial_manip_msgs.msg import ArmCommand, ArmState
++import rclpy
++from rclpy.node import Node
++from std_msgs.msg import Bool, String
++
++
++JointVector = List[float]
++
++
++class ArmControlBridge(Node):
++    """Validated high-level /arm target bridge for arm joint control."""
++
++    def __init__(self) -> None:
++        super().__init__("arm_control_bridge")
++
++        self.declare_parameter("joint_names", ["joint1", "joint2", "joint3"])
++        self.declare_parameter("initial_joint_positions", [0.0, 0.0, 0.0])
++        self.declare_parameter("stow_joint_positions", [0.0, 0.0, 0.0])
++        self.declare_parameter("min_joint_positions", [-1.57, -1.57, -1.57])
++        self.declare_parameter("max_joint_positions", [1.57, 1.57, 1.57])
++        self.declare_parameter("max_joint_velocities", [0.6, 0.6, 0.6])
++        self.declare_parameter("target_jump_limit", 0.35)
++        self.declare_parameter("command_timeout", 1.0)
++        self.declare_parameter("reach_tolerance", 0.03)
++        self.declare_parameter("reach_hold_time", 0.5)
++        self.declare_parameter("command_period", 0.05)
++
++        self.joint_names = self._string_list_parameter("joint_names")
++        self.initial_joint_positions = self._float_list_parameter(
++            "initial_joint_positions"
++        )
++        self.stow_joint_positions = self._float_list_parameter("stow_joint_positions")
++        self.min_joint_positions = self._float_list_parameter("min_joint_positions")
++        self.max_joint_positions = self._float_list_parameter("max_joint_positions")
++        self.max_joint_velocities = self._float_list_parameter("max_joint_velocities")
++        self.target_jump_limit = float(self.get_parameter("target_jump_limit").value)
++        self.command_timeout = float(self.get_parameter("command_timeout").value)
++        self.reach_tolerance = float(self.get_parameter("reach_tolerance").value)
++        self.reach_hold_time = float(self.get_parameter("reach_hold_time").value)
++        self.command_period = float(self.get_parameter("command_period").value)
++
++        self._validate_config()
++
++        self.safe_target = list(self.initial_joint_positions)
++        error = self._validate_positions(self.safe_target, check_jump=False)
++        if error is not None:
++            raise ValueError(f"Initial arm target is unsafe: {error}")
++
++        stow_error = self._validate_positions(
++            self.stow_joint_positions, check_jump=False
++        )
++        if stow_error is not None:
++            raise ValueError(f"Stow arm target is unsafe: {stow_error}")
++
++        self.current_positions: Optional[JointVector] = None
++        self.current_velocities: JointVector = [0.0] * len(self.joint_names)
++        self.current_efforts: JointVector = [0.0] * len(self.joint_names)
++        self.last_safe_target_time = time.monotonic()
++        self.last_timeout_warning_time = 0.0
++        self.reach_start_time: Optional[float] = None
++        self.reached_target = False
++        self.control_state = "HOLDING"
++        self.active_command_mode = ArmCommand.MODE_HOLD
++        self.invalid_target_pending = False
++
++        self.command_pub = self.create_publisher(
++            ArmCommand, "/arm/controller_command", 10
++        )
++        self.current_joint_state_pub = self.create_publisher(
++            ArmState, "/arm/current_joint_state", 10
++        )
++        self.current_target_pub = self.create_publisher(
++            ArmState, "/arm/current_target", 10
++        )
++        self.reached_target_pub = self.create_publisher(
++            Bool, "/arm/reached_target", 10
++        )
++        self.control_state_pub = self.create_publisher(
++            String, "/arm/control_state", 10
++        )
++        self.create_subscription(
++            ArmCommand, "/arm/target_joints", self.target_callback, 10
++        )
++        self.create_subscription(
++            ArmState, "/arm/controller_state", self.controller_state_callback, 10
++        )
++        self.timer = self.create_timer(self.command_period, self.timer_callback)
++        self.get_logger().info(
++            "Arm control bridge ready on /arm/target_joints; low-level arm "
++            "commands are published only on /arm/controller_command"
++        )
++
++    def target_callback(self, msg: ArmCommand) -> None:
++        command_mode = msg.command_mode or ArmCommand.MODE_JOINT_POSITION
++        if command_mode == ArmCommand.MODE_HOLD:
++            target = self.safe_target
++        elif command_mode == ArmCommand.MODE_STOW:
++            target = list(self.stow_joint_positions)
++        elif command_mode == ArmCommand.MODE_JOINT_POSITION:
++            target = self._ordered_positions(msg)
++        else:
++            self._reject_target(f"unsupported command_mode '{command_mode}'")
++            return
++
++        if target is None:
++            self._reject_target("joint_names must match configured arm joints")
++            return
++
++        error = self._validate_positions(target, check_jump=True)
++        if error is not None:
++            self._reject_target(error)
++            return
++
++        velocity_error = self._validate_command_velocities(msg)
++        if velocity_error is not None:
++            self._reject_target(velocity_error)
++            return
++
++        self.safe_target = list(target)
++        self.active_command_mode = command_mode
++        self.last_safe_target_time = time.monotonic()
++        self.last_timeout_warning_time = 0.0
++        self.reach_start_time = None
++        self.reached_target = False
++        self.invalid_target_pending = False
++        self.control_state = "TRACKING"
++        self.get_logger().info(
++            "Accepted /arm/target_joints "
++            + ", ".join(
++                f"{name}={position:.3f}"
++                for name, position in zip(self.joint_names, self.safe_target)
++            )
++        )
++
++    def controller_state_callback(self, msg: ArmState) -> None:
++        positions = self._ordered_state_values(msg.joint_names, msg.joint_positions)
++        if positions is None:
++            self.get_logger().warn(
++                "Ignored /arm/controller_state with mismatched joint_names"
++            )
++            return
++
++        velocities = self._ordered_state_values(msg.joint_names, msg.joint_velocities)
++        efforts = self._ordered_state_values(msg.joint_names, msg.joint_efforts)
++        self.current_positions = positions
++        self.current_velocities = velocities or [0.0] * len(self.joint_names)
++        self.current_efforts = efforts or [0.0] * len(self.joint_names)
++
++        state_msg = ArmState()
++        state_msg.header.stamp = self.get_clock().now().to_msg()
++        state_msg.header.frame_id = msg.header.frame_id or "arm_base"
++        state_msg.joint_names = list(self.joint_names)
++        state_msg.joint_positions = list(self.current_positions)
++        state_msg.joint_velocities = list(self.current_velocities)
++        state_msg.joint_efforts = list(self.current_efforts)
++        state_msg.end_effector_pose = msg.end_effector_pose
++        state_msg.contact_detected = msg.contact_detected
++        state_msg.state = msg.state
++        self.current_joint_state_pub.publish(state_msg)
++
++    def timer_callback(self) -> None:
++        self._publish_low_level_command()
++        self._update_reached_target()
++        self._update_control_state()
++        self._publish_bridge_state()
++
++    def _publish_low_level_command(self) -> None:
++        command = ArmCommand()
++        command.header.stamp = self.get_clock().now().to_msg()
++        command.header.frame_id = "arm_base"
++        command.command_mode = ArmCommand.MODE_JOINT_POSITION
++        command.joint_names = list(self.joint_names)
++        command.joint_positions = list(self.safe_target)
++        command.joint_velocities = [0.0] * len(self.joint_names)
++        command.joint_efforts = [0.0] * len(self.joint_names)
++        self.command_pub.publish(command)
++
++    def _validate_positions(
++        self, positions: Sequence[float], check_jump: bool
++    ) -> Optional[str]:
++        if len(positions) != len(self.joint_names):
++            return (
++                f"expected {len(self.joint_names)} joint positions, got "
++                f"{len(positions)}"
++            )
++
++        if not all(math.isfinite(value) for value in positions):
++            return "target contains non-finite joint positions"
++
++        for index, (name, position) in enumerate(zip(self.joint_names, positions)):
++            min_position = self.min_joint_positions[index]
++            max_position = self.max_joint_positions[index]
++            if position < min_position or position > max_position:
++                return (
++                    f"{name}={position:.3f} rad is outside "
++                    f"[{min_position:.3f}, {max_position:.3f}] rad"
++                )
++
++        if check_jump:
++            jump = max(
++                abs(position - previous)
++                for position, previous in zip(positions, self.safe_target)
++            )
++            if jump > self.target_jump_limit:
++                return (
++                    f"target jump {jump:.3f} rad exceeds target_jump_limit "
++                    f"{self.target_jump_limit:.3f} rad"
++                )
++
++        return None
++
++    def _validate_command_velocities(self, msg: ArmCommand) -> Optional[str]:
++        if not msg.joint_velocities:
++            return None
++
++        velocities = self._ordered_state_values(msg.joint_names, msg.joint_velocities)
++        if velocities is None:
++            return "joint_velocities must match configured arm joints"
++
++        for name, velocity, limit in zip(
++            self.joint_names, velocities, self.max_joint_velocities
++        ):
++            if not math.isfinite(velocity):
++                return "target contains non-finite joint velocities"
++            if abs(velocity) > limit:
++                return (
++                    f"{name} velocity {velocity:.3f} rad/s exceeds "
++                    f"max_joint_velocity {limit:.3f} rad/s"
++                )
++
++        return None
++
++    def _reject_target(self, reason: str) -> None:
++        self.get_logger().warn(f"Rejected /arm/target_joints: {reason}")
++        self.control_state = "INVALID_TARGET"
++        self.invalid_target_pending = True
++        self._publish_bridge_state()
++
++    def _target_timed_out(self, now: float) -> bool:
++        if self.command_timeout <= 0.0:
++            return False
++
++        return now - self.last_safe_target_time > self.command_timeout
++
++    def _warn_if_target_timed_out(self, now: float) -> None:
++        if not self._target_timed_out(now):
++            return
++        if now - self.last_timeout_warning_time < self.command_timeout:
++            return
++
++        self.get_logger().warn("Arm command timeout; holding last safe target")
++        self.last_timeout_warning_time = now
++
++    def _update_reached_target(self) -> None:
++        if self.current_positions is None:
++            self.reach_start_time = None
++            self.reached_target = False
++            return
++
++        max_error = max(
++            abs(current - target)
++            for current, target in zip(self.current_positions, self.safe_target)
++        )
++        if max_error > self.reach_tolerance:
++            self.reach_start_time = None
++            self.reached_target = False
++            return
++
++        now = time.monotonic()
++        if self.reach_start_time is None:
++            self.reach_start_time = now
++        self.reached_target = now - self.reach_start_time >= self.reach_hold_time
++
++    def _update_control_state(self) -> None:
++        if self.invalid_target_pending:
++            self.control_state = "INVALID_TARGET"
++            self.invalid_target_pending = False
++            return
++
++        now = time.monotonic()
++        if self._target_timed_out(now):
++            self._warn_if_target_timed_out(now)
++            self.control_state = "HOLDING"
++            return
++
++        if self.reached_target:
++            self.control_state = "REACHED"
++            return
++
++        self.control_state = "TRACKING"
++
++    def _publish_bridge_state(self) -> None:
++        target_msg = ArmState()
++        target_msg.header.stamp = self.get_clock().now().to_msg()
++        target_msg.header.frame_id = "arm_base"
++        target_msg.joint_names = list(self.joint_names)
++        target_msg.joint_positions = list(self.safe_target)
++        target_msg.joint_velocities = [0.0] * len(self.joint_names)
++        target_msg.joint_efforts = [0.0] * len(self.joint_names)
++        target_msg.state = self.active_command_mode
++        self.current_target_pub.publish(target_msg)
++
++        reached_msg = Bool()
++        reached_msg.data = self.reached_target
++        self.reached_target_pub.publish(reached_msg)
++
++        state_msg = String()
++        state_msg.data = self.control_state
++        self.control_state_pub.publish(state_msg)
++
++    def _ordered_positions(self, msg: ArmCommand) -> Optional[JointVector]:
++        return self._ordered_state_values(msg.joint_names, msg.joint_positions)
++
++    def _ordered_state_values(
++        self, joint_names: Sequence[str], values: Sequence[float]
++    ) -> Optional[JointVector]:
++        if not values:
++            return None
++        if len(values) != len(self.joint_names):
++            return None
++        if not joint_names:
++            return list(values)
++        if set(joint_names) != set(self.joint_names):
++            return None
++
++        value_by_joint: Dict[str, float] = dict(zip(joint_names, values))
++        return [float(value_by_joint[name]) for name in self.joint_names]
++
++    def _validate_config(self) -> None:
++        if not self.joint_names:
++            raise ValueError("joint_names must not be empty")
++        if len(set(self.joint_names)) != len(self.joint_names):
++            raise ValueError("joint_names must be unique")
++
++        expected_length = len(self.joint_names)
++        for parameter_name in (
++            "initial_joint_positions",
++            "stow_joint_positions",
++            "min_joint_positions",
++            "max_joint_positions",
++            "max_joint_velocities",
++        ):
++            values = getattr(self, parameter_name)
++            if len(values) != expected_length:
++                raise ValueError(
++                    f"{parameter_name} length {len(values)} does not match "
++                    f"joint_names length {expected_length}"
++                )
++            if not all(math.isfinite(value) for value in values):
++                raise ValueError(f"{parameter_name} contains non-finite values")
++
++        for name, min_position, max_position in zip(
++            self.joint_names, self.min_joint_positions, self.max_joint_positions
++        ):
++            if min_position > max_position:
++                raise ValueError(f"{name} min_joint_position exceeds max")
++
++        if any(limit <= 0.0 for limit in self.max_joint_velocities):
++            raise ValueError("max_joint_velocities must be positive")
++        if self.target_jump_limit <= 0.0:
++            raise ValueError("target_jump_limit must be positive")
++        if self.reach_tolerance <= 0.0:
++            raise ValueError("reach_tolerance must be positive")
++        if self.reach_hold_time < 0.0:
++            raise ValueError("reach_hold_time must be non-negative")
++        if self.command_period <= 0.0:
++            raise ValueError("command_period must be positive")
++
++    def _string_list_parameter(self, parameter_name: str) -> List[str]:
++        value = self.get_parameter(parameter_name).value
++        if not isinstance(value, (list, tuple)):
++            raise ValueError(f"{parameter_name} must be a list")
++
++        return [str(item) for item in value]
++
++    def _float_list_parameter(self, parameter_name: str) -> JointVector:
++        value = self.get_parameter(parameter_name).value
++        if not isinstance(value, (list, tuple)):
++            raise ValueError(f"{parameter_name} must be a list")
++
++        return [float(item) for item in value]
++
++
++def main(args=None) -> None:
++    rclpy.init(args=args)
++    node = ArmControlBridge()
++    try:
++        rclpy.spin(node)
++    except KeyboardInterrupt:
++        pass
++    finally:
++        node.destroy_node()
++        if rclpy.ok():
++            rclpy.shutdown()
+diff --git a/UAV_capture/px4_ros2_ws/src/aerial_manip_control/package.xml b/UAV_capture/px4_ros2_ws/src/aerial_manip_control/package.xml
+index bd749c3b0ed7865167ccabe5a91c96dbaa813950..f54e15ca4d57e07fe2d2519738ba716d0208882b
+--- a/UAV_capture/px4_ros2_ws/src/aerial_manip_control/package.xml
++++ b/UAV_capture/px4_ros2_ws/src/aerial_manip_control/package.xml
+@@ -10,6 +10,7 @@
+ 
+   <exec_depend>aerial_manip_msgs</exec_depend>
+   <exec_depend>rclpy</exec_depend>
++  <exec_depend>std_msgs</exec_depend>
+ 
+   <test_depend>ament_lint_auto</test_depend>
+   <test_depend>ament_lint_common</test_depend>
+diff --git a/UAV_capture/px4_ros2_ws/src/aerial_manip_control/setup.py b/UAV_capture/px4_ros2_ws/src/aerial_manip_control/setup.py
+index 4e3c7fecd5800217a9e59cccdd55cb7efe904d06..6e52e4cde67e4f78e609534d37174c9aad582112
+--- a/UAV_capture/px4_ros2_ws/src/aerial_manip_control/setup.py
++++ b/UAV_capture/px4_ros2_ws/src/aerial_manip_control/setup.py
+@@ -16,5 +16,9 @@
+     maintainer_email="clcwork@example.com",
+     description="Python control nodes for stage-2 aerial manipulation.",
+     license="Apache-2.0",
+-    entry_points={"console_scripts": []},
++    entry_points={
++        "console_scripts": [
++            "arm_control_bridge = aerial_manip_control.arm_control_bridge:main",
++        ]
++    },
+ )
+
+codex
+Implemented Task 015.
+
+`changed files`
+- [arm_control_bridge.py](/home/clcwork/UAV_capture/px4_ros2_ws/src/aerial_manip_control/aerial_manip_control/arm_control_bridge.py:1)
+- [setup.py](/home/clcwork/UAV_capture/px4_ros2_ws/src/aerial_manip_control/setup.py:1)
+- [package.xml](/home/clcwork/UAV_capture/px4_ros2_ws/src/aerial_manip_control/package.xml:1)
+- [ARM_CONTROL_API.md](/home/clcwork/UAV_capture/px4_ros2_ws/docs/ARM_CONTROL_API.md:1)
+- [015-add-arm-control-bridge.log](/home/clcwork/UAV_capture/px4_ros2_ws/codex-logs/015-add-arm-control-bridge.log:1)
+
+`commands run`
+- `python3 -m compileall src/aerial_manip_control`
+- `colcon build --packages-select aerial_manip_msgs aerial_manip_control`
+
+`test result`
+- PASS: compileall succeeded.
+- PASS: both ROS 2 packages built successfully.
+
+`known risks`
+- The bridge is validated by compile/build only; no live low-level arm controller or ROS topic integration smoke test was run.
+- Default joint names/limits are conservative placeholders and should be overridden for the actual simulated arm model.
+diff --git a/UAV_capture/px4_ros2_ws/docs/ARM_CONTROL_API.md b/UAV_capture/px4_ros2_ws/docs/ARM_CONTROL_API.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..8265b34b857d5e13506f78d371df8553c5467837
+--- /dev/null
++++ b/UAV_capture/px4_ros2_ws/docs/ARM_CONTROL_API.md
+@@ -0,0 +1,63 @@
++# Arm Control API
++
++`arm_control_bridge` is the high-level joint command gate for the simplified
++UAV arm. External modules should publish desired joint targets to `/arm/*`
++topics and must not publish directly to low-level controller command topics.
++
++## Node
++
++```bash
++ros2 run aerial_manip_control arm_control_bridge
++```
++
++## High-level topics
++
++| Topic | Direction | Type | Purpose |
++| --- | --- | --- | --- |
++| `/arm/target_joints` | subscribe | `aerial_manip_msgs/msg/ArmCommand` | Validated high-level joint target input. |
++| `/arm/current_joint_state` | publish | `aerial_manip_msgs/msg/ArmState` | Current joint state normalized to configured joint order. |
++| `/arm/current_target` | publish | `aerial_manip_msgs/msg/ArmState` | Last accepted safe joint target. |
++| `/arm/reached_target` | publish | `std_msgs/msg/Bool` | True after the arm remains within tolerance for `reach_hold_time`. |
++| `/arm/control_state` | publish | `std_msgs/msg/String` | Bridge state: `TRACKING`, `REACHED`, `HOLDING`, or `INVALID_TARGET`. |
++
++## Low-level bridge topics
++
++Only the bridge should publish `/arm/controller_command`.
++
++| Topic | Direction | Type | Purpose |
++| --- | --- | --- | --- |
++| `/arm/controller_command` | publish | `aerial_manip_msgs/msg/ArmCommand` | Safe command forwarded to the low-level arm controller. |
++| `/arm/controller_state` | subscribe | `aerial_manip_msgs/msg/ArmState` | Low-level controller feedback consumed by the bridge. |
++
++## Command modes
++
++`/arm/target_joints.command_mode` supports:
++
++- `joint_position`: use `joint_positions` as the new target.
++- `hold`: keep the last accepted safe target.
++- `stow`: move to the configured `stow_joint_positions`.
++
++If `joint_names` is empty, joint arrays are interpreted in configured
++`joint_names` order. If `joint_names` is set, it must match the configured
++joint set; the bridge reorders values before publishing status and controller
++commands.
++
++## Safety parameters
++
++| Parameter | Default | Meaning |
++| --- | --- | --- |
++| `joint_names` | `["joint1", "joint2", "joint3"]` | Controlled joint names and canonical order. |
++| `initial_joint_positions` | `[0.0, 0.0, 0.0]` | Safe target used on startup. |
++| `stow_joint_positions` | `[0.0, 0.0, 0.0]` | Target used for `stow` commands. |
++| `min_joint_positions` | `[-1.57, -1.57, -1.57]` | Per-joint lower position limits in radians. |
++| `max_joint_positions` | `[1.57, 1.57, 1.57]` | Per-joint upper position limits in radians. |
++| `max_joint_velocities` | `[0.6, 0.6, 0.6]` | Per-joint velocity limits in radians per second. |
++| `target_jump_limit` | `0.35` | Maximum allowed per-command joint position jump in radians. |
++| `command_timeout` | `1.0` | Seconds before the bridge reports `HOLDING` while keeping the last safe target. |
++| `reach_tolerance` | `0.03` | Per-joint position tolerance for reached-target detection in radians. |
++| `reach_hold_time` | `0.5` | Seconds within tolerance before `/arm/reached_target` becomes true. |
++| `command_period` | `0.05` | Low-level command publish period in seconds. |
++
++The bridge rejects targets that contain non-finite values, violate joint
++limits, exceed `target_jump_limit`, include velocity values above
++`max_joint_velocities`, or use mismatched joint names.
+diff --git a/UAV_capture/px4_ros2_ws/src/aerial_manip_control/aerial_manip_control/arm_control_bridge.py b/UAV_capture/px4_ros2_ws/src/aerial_manip_control/aerial_manip_control/arm_control_bridge.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..814a5f6bf789cddeed37406a775f67a0d8674067
+--- /dev/null
++++ b/UAV_capture/px4_ros2_ws/src/aerial_manip_control/aerial_manip_control/arm_control_bridge.py
+@@ -0,0 +1,398 @@
++import math
++import time
++from typing import Dict, List, Optional, Sequence
++
++from aerial_manip_msgs.msg import ArmCommand, ArmState
++import rclpy
++from rclpy.node import Node
++from std_msgs.msg import Bool, String
++
++
++JointVector = List[float]
++
++
++class ArmControlBridge(Node):
++    """Validated high-level /arm target bridge for arm joint control."""
++
++    def __init__(self) -> None:
++        super().__init__("arm_control_bridge")
++
++        self.declare_parameter("joint_names", ["joint1", "joint2", "joint3"])
++        self.declare_parameter("initial_joint_positions", [0.0, 0.0, 0.0])
++        self.declare_parameter("stow_joint_positions", [0.0, 0.0, 0.0])
++        self.declare_parameter("min_joint_positions", [-1.57, -1.57, -1.57])
++        self.declare_parameter("max_joint_positions", [1.57, 1.57, 1.57])
++        self.declare_parameter("max_joint_velocities", [0.6, 0.6, 0.6])
++        self.declare_parameter("target_jump_limit", 0.35)
++        self.declare_parameter("command_timeout", 1.0)
++        self.declare_parameter("reach_tolerance", 0.03)
++        self.declare_parameter("reach_hold_time", 0.5)
++        self.declare_parameter("command_period", 0.05)
++
++        self.joint_names = self._string_list_parameter("joint_names")
++        self.initial_joint_positions = self._float_list_parameter(
++            "initial_joint_positions"
++        )
++        self.stow_joint_positions = self._float_list_parameter("stow_joint_positions")
++        self.min_joint_positions = self._float_list_parameter("min_joint_positions")
++        self.max_joint_positions = self._float_list_parameter("max_joint_positions")
++        self.max_joint_velocities = self._float_list_parameter("max_joint_velocities")
++        self.target_jump_limit = float(self.get_parameter("target_jump_limit").value)
++        self.command_timeout = float(self.get_parameter("command_timeout").value)
++        self.reach_tolerance = float(self.get_parameter("reach_tolerance").value)
++        self.reach_hold_time = float(self.get_parameter("reach_hold_time").value)
++        self.command_period = float(self.get_parameter("command_period").value)
++
++        self._validate_config()
++
++        self.safe_target = list(self.initial_joint_positions)
++        error = self._validate_positions(self.safe_target, check_jump=False)
++        if error is not None:
++            raise ValueError(f"Initial arm target is unsafe: {error}")
++
++        stow_error = self._validate_positions(
++            self.stow_joint_positions, check_jump=False
++        )
++        if stow_error is not None:
++            raise ValueError(f"Stow arm target is unsafe: {stow_error}")
++
++        self.current_positions: Optional[JointVector] = None
++        self.current_velocities: JointVector = [0.0] * len(self.joint_names)
++        self.current_efforts: JointVector = [0.0] * len(self.joint_names)
++        self.last_safe_target_time = time.monotonic()
++        self.last_timeout_warning_time = 0.0
++        self.reach_start_time: Optional[float] = None
++        self.reached_target = False
++        self.control_state = "HOLDING"
++        self.active_command_mode = ArmCommand.MODE_HOLD
++        self.invalid_target_pending = False
++
++        self.command_pub = self.create_publisher(
++            ArmCommand, "/arm/controller_command", 10
++        )
++        self.current_joint_state_pub = self.create_publisher(
++            ArmState, "/arm/current_joint_state", 10
++        )
++        self.current_target_pub = self.create_publisher(
++            ArmState, "/arm/current_target", 10
++        )
++        self.reached_target_pub = self.create_publisher(
++            Bool, "/arm/reached_target", 10
++        )
++        self.control_state_pub = self.create_publisher(
++            String, "/arm/control_state", 10
++        )
++        self.create_subscription(
++            ArmCommand, "/arm/target_joints", self.target_callback, 10
++        )
++        self.create_subscription(
++            ArmState, "/arm/controller_state", self.controller_state_callback, 10
++        )
++        self.timer = self.create_timer(self.command_period, self.timer_callback)
++        self.get_logger().info(
++            "Arm control bridge ready on /arm/target_joints; low-level arm "
++            "commands are published only on /arm/controller_command"
++        )
++
++    def target_callback(self, msg: ArmCommand) -> None:
++        command_mode = msg.command_mode or ArmCommand.MODE_JOINT_POSITION
++        if command_mode == ArmCommand.MODE_HOLD:
++            target = self.safe_target
++        elif command_mode == ArmCommand.MODE_STOW:
++            target = list(self.stow_joint_positions)
++        elif command_mode == ArmCommand.MODE_JOINT_POSITION:
++            target = self._ordered_positions(msg)
++        else:
++            self._reject_target(f"unsupported command_mode '{command_mode}'")
++            return
++
++        if target is None:
++            self._reject_target("joint_names must match configured arm joints")
++            return
++
++        error = self._validate_positions(target, check_jump=True)
++        if error is not None:
++            self._reject_target(error)
++            return
++
++        velocity_error = self._validate_command_velocities(msg)
++        if velocity_error is not None:
++            self._reject_target(velocity_error)
++            return
++
++        self.safe_target = list(target)
++        self.active_command_mode = command_mode
++        self.last_safe_target_time = time.monotonic()
++        self.last_timeout_warning_time = 0.0
++        self.reach_start_time = None
++        self.reached_target = False
++        self.invalid_target_pending = False
++        self.control_state = "TRACKING"
++        self.get_logger().info(
++            "Accepted /arm/target_joints "
++            + ", ".join(
++                f"{name}={position:.3f}"
++                for name, position in zip(self.joint_names, self.safe_target)
++            )
++        )
++
++    def controller_state_callback(self, msg: ArmState) -> None:
++        positions = self._ordered_state_values(msg.joint_names, msg.joint_positions)
++        if positions is None:
++            self.get_logger().warn(
++                "Ignored /arm/controller_state with mismatched joint_names"
++            )
++            return
++
++        velocities = self._ordered_state_values(msg.joint_names, msg.joint_velocities)
++        efforts = self._ordered_state_values(msg.joint_names, msg.joint_efforts)
++        self.current_positions = positions
++        self.current_velocities = velocities or [0.0] * len(self.joint_names)
++        self.current_efforts = efforts or [0.0] * len(self.joint_names)
++
++        state_msg = ArmState()
++        state_msg.header.stamp = self.get_clock().now().to_msg()
++        state_msg.header.frame_id = msg.header.frame_id or "arm_base"
++        state_msg.joint_names = list(self.joint_names)
++        state_msg.joint_positions = list(self.current_positions)
++        state_msg.joint_velocities = list(self.current_velocities)
++        state_msg.joint_efforts = list(self.current_efforts)
++        state_msg.end_effector_pose = msg.end_effector_pose
++        state_msg.contact_detected = msg.contact_detected
++        state_msg.state = msg.state
++        self.current_joint_state_pub.publish(state_msg)
++
++    def timer_callback(self) -> None:
++        self._publish_low_level_command()
++        self._update_reached_target()
++        self._update_control_state()
++        self._publish_bridge_state()
++
++    def _publish_low_level_command(self) -> None:
++        command = ArmCommand()
++        command.header.stamp = self.get_clock().now().to_msg()
++        command.header.frame_id = "arm_base"
++        command.command_mode = ArmCommand.MODE_JOINT_POSITION
++        command.joint_names = list(self.joint_names)
++        command.joint_positions = list(self.safe_target)
++        command.joint_velocities = [0.0] * len(self.joint_names)
++        command.joint_efforts = [0.0] * len(self.joint_names)
++        self.command_pub.publish(command)
++
++    def _validate_positions(
++        self, positions: Sequence[float], check_jump: bool
++    ) -> Optional[str]:
++        if len(positions) != len(self.joint_names):
++            return (
++                f"expected {len(self.joint_names)} joint positions, got "
++                f"{len(positions)}"
++            )
++
++        if not all(math.isfinite(value) for value in positions):
++            return "target contains non-finite joint positions"
++
++        for index, (name, position) in enumerate(zip(self.joint_names, positions)):
++            min_position = self.min_joint_positions[index]
++            max_position = self.max_joint_positions[index]
++            if position < min_position or position > max_position:
++                return (
++                    f"{name}={position:.3f} rad is outside "
++                    f"[{min_position:.3f}, {max_position:.3f}] rad"
++                )
++
++        if check_jump:
++            jump = max(
++                abs(position - previous)
++                for position, previous in zip(positions, self.safe_target)
++            )
++            if jump > self.target_jump_limit:
++                return (
++                    f"target jump {jump:.3f} rad exceeds target_jump_limit "
++                    f"{self.target_jump_limit:.3f} rad"
++                )
++
++        return None
++
++    def _validate_command_velocities(self, msg: ArmCommand) -> Optional[str]:
++        if not msg.joint_velocities:
++            return None
++
++        velocities = self._ordered_state_values(msg.joint_names, msg.joint_velocities)
++        if velocities is None:
++            return "joint_velocities must match configured arm joints"
++
++        for name, velocity, limit in zip(
++            self.joint_names, velocities, self.max_joint_velocities
++        ):
++            if not math.isfinite(velocity):
++                return "target contains non-finite joint velocities"
++            if abs(velocity) > limit:
++                return (
++                    f"{name} velocity {velocity:.3f} rad/s exceeds "
++                    f"max_joint_velocity {limit:.3f} rad/s"
++                )
++
++        return None
++
++    def _reject_target(self, reason: str) -> None:
++        self.get_logger().warn(f"Rejected /arm/target_joints: {reason}")
++        self.control_state = "INVALID_TARGET"
++        self.invalid_target_pending = True
++        self._publish_bridge_state()
++
++    def _target_timed_out(self, now: float) -> bool:
++        if self.command_timeout <= 0.0:
++            return False
++
++        return now - self.last_safe_target_time > self.command_timeout
++
++    def _warn_if_target_timed_out(self, now: float) -> None:
++        if not self._target_timed_out(now):
++            return
++        if now - self.last_timeout_warning_time < self.command_timeout:
++            return
++
++        self.get_logger().warn("Arm command timeout; holding last safe target")
++        self.last_timeout_warning_time = now
++
++    def _update_reached_target(self) -> None:
++        if self.current_positions is None:
++            self.reach_start_time = None
++            self.reached_target = False
++            return
++
++        max_error = max(
++            abs(current - target)
++            for current, target in zip(self.current_positions, self.safe_target)
++        )
++        if max_error > self.reach_tolerance:
++            self.reach_start_time = None
++            self.reached_target = False
++            return
++
++        now = time.monotonic()
++        if self.reach_start_time is None:
++            self.reach_start_time = now
++        self.reached_target = now - self.reach_start_time >= self.reach_hold_time
++
++    def _update_control_state(self) -> None:
++        if self.invalid_target_pending:
++            self.control_state = "INVALID_TARGET"
++            self.invalid_target_pending = False
++            return
++
++        now = time.monotonic()
++        if self._target_timed_out(now):
++            self._warn_if_target_timed_out(now)
++            self.control_state = "HOLDING"
++            return
++
++        if self.reached_target:
++            self.control_state = "REACHED"
++            return
++
++        self.control_state = "TRACKING"
++
++    def _publish_bridge_state(self) -> None:
++        target_msg = ArmState()
++        target_msg.header.stamp = self.get_clock().now().to_msg()
++        target_msg.header.frame_id = "arm_base"
++        target_msg.joint_names = list(self.joint_names)
++        target_msg.joint_positions = list(self.safe_target)
++        target_msg.joint_velocities = [0.0] * len(self.joint_names)
++        target_msg.joint_efforts = [0.0] * len(self.joint_names)
++        target_msg.state = self.active_command_mode
++        self.current_target_pub.publish(target_msg)
++
++        reached_msg = Bool()
++        reached_msg.data = self.reached_target
++        self.reached_target_pub.publish(reached_msg)
++
++        state_msg = String()
++        state_msg.data = self.control_state
++        self.control_state_pub.publish(state_msg)
++
++    def _ordered_positions(self, msg: ArmCommand) -> Optional[JointVector]:
++        return self._ordered_state_values(msg.joint_names, msg.joint_positions)
++
++    def _ordered_state_values(
++        self, joint_names: Sequence[str], values: Sequence[float]
++    ) -> Optional[JointVector]:
++        if not values:
++            return None
++        if len(values) != len(self.joint_names):
++            return None
++        if not joint_names:
++            return list(values)
++        if set(joint_names) != set(self.joint_names):
++            return None
++
++        value_by_joint: Dict[str, float] = dict(zip(joint_names, values))
++        return [float(value_by_joint[name]) for name in self.joint_names]
++
++    def _validate_config(self) -> None:
++        if not self.joint_names:
++            raise ValueError("joint_names must not be empty")
++        if len(set(self.joint_names)) != len(self.joint_names):
++            raise ValueError("joint_names must be unique")
++
++        expected_length = len(self.joint_names)
++        for parameter_name in (
++            "initial_joint_positions",
++            "stow_joint_positions",
++            "min_joint_positions",
++            "max_joint_positions",
++            "max_joint_velocities",
++        ):
++            values = getattr(self, parameter_name)
++            if len(values) != expected_length:
++                raise ValueError(
++                    f"{parameter_name} length {len(values)} does not match "
++                    f"joint_names length {expected_length}"
++                )
++            if not all(math.isfinite(value) for value in values):
++                raise ValueError(f"{parameter_name} contains non-finite values")
++
++        for name, min_position, max_position in zip(
++            self.joint_names, self.min_joint_positions, self.max_joint_positions
++        ):
++            if min_position > max_position:
++                raise ValueError(f"{name} min_joint_position exceeds max")
++
++        if any(limit <= 0.0 for limit in self.max_joint_velocities):
++            raise ValueError("max_joint_velocities must be positive")
++        if self.target_jump_limit <= 0.0:
++            raise ValueError("target_jump_limit must be positive")
++        if self.reach_tolerance <= 0.0:
++            raise ValueError("reach_tolerance must be positive")
++        if self.reach_hold_time < 0.0:
++            raise ValueError("reach_hold_time must be non-negative")
++        if self.command_period <= 0.0:
++            raise ValueError("command_period must be positive")
++
++    def _string_list_parameter(self, parameter_name: str) -> List[str]:
++        value = self.get_parameter(parameter_name).value
++        if not isinstance(value, (list, tuple)):
++            raise ValueError(f"{parameter_name} must be a list")
++
++        return [str(item) for item in value]
++
++    def _float_list_parameter(self, parameter_name: str) -> JointVector:
++        value = self.get_parameter(parameter_name).value
++        if not isinstance(value, (list, tuple)):
++            raise ValueError(f"{parameter_name} must be a list")
++
++        return [float(item) for item in value]
++
++
++def main(args=None) -> None:
++    rclpy.init(args=args)
++    node = ArmControlBridge()
++    try:
++        rclpy.spin(node)
++    except KeyboardInterrupt:
++        pass
++    finally:
++        node.destroy_node()
++        if rclpy.ok():
++            rclpy.shutdown()
+diff --git a/UAV_capture/px4_ros2_ws/src/aerial_manip_control/package.xml b/UAV_capture/px4_ros2_ws/src/aerial_manip_control/package.xml
+index bd749c3b0ed7865167ccabe5a91c96dbaa813950..f54e15ca4d57e07fe2d2519738ba716d0208882b
+--- a/UAV_capture/px4_ros2_ws/src/aerial_manip_control/package.xml
++++ b/UAV_capture/px4_ros2_ws/src/aerial_manip_control/package.xml
+@@ -10,6 +10,7 @@
+ 
+   <exec_depend>aerial_manip_msgs</exec_depend>
+   <exec_depend>rclpy</exec_depend>
++  <exec_depend>std_msgs</exec_depend>
+ 
+   <test_depend>ament_lint_auto</test_depend>
+   <test_depend>ament_lint_common</test_depend>
+diff --git a/UAV_capture/px4_ros2_ws/src/aerial_manip_control/setup.py b/UAV_capture/px4_ros2_ws/src/aerial_manip_control/setup.py
+index 4e3c7fecd5800217a9e59cccdd55cb7efe904d06..6e52e4cde67e4f78e609534d37174c9aad582112
+--- a/UAV_capture/px4_ros2_ws/src/aerial_manip_control/setup.py
++++ b/UAV_capture/px4_ros2_ws/src/aerial_manip_control/setup.py
+@@ -16,5 +16,9 @@
+     maintainer_email="clcwork@example.com",
+     description="Python control nodes for stage-2 aerial manipulation.",
+     license="Apache-2.0",
+-    entry_points={"console_scripts": []},
++    entry_points={
++        "console_scripts": [
++            "arm_control_bridge = aerial_manip_control.arm_control_bridge:main",
++        ]
++    },
+ )
+
+tokens used
+55,645
+Implemented Task 015.
+
+`changed files`
+- [arm_control_bridge.py](/home/clcwork/UAV_capture/px4_ros2_ws/src/aerial_manip_control/aerial_manip_control/arm_control_bridge.py:1)
+- [setup.py](/home/clcwork/UAV_capture/px4_ros2_ws/src/aerial_manip_control/setup.py:1)
+- [package.xml](/home/clcwork/UAV_capture/px4_ros2_ws/src/aerial_manip_control/package.xml:1)
+- [ARM_CONTROL_API.md](/home/clcwork/UAV_capture/px4_ros2_ws/docs/ARM_CONTROL_API.md:1)
+- [015-add-arm-control-bridge.log](/home/clcwork/UAV_capture/px4_ros2_ws/codex-logs/015-add-arm-control-bridge.log:1)
+
+`commands run`
+- `python3 -m compileall src/aerial_manip_control`
+- `colcon build --packages-select aerial_manip_msgs aerial_manip_control`
+
+`test result`
+- PASS: compileall succeeded.
+- PASS: both ROS 2 packages built successfully.
+
+`known risks`
+- The bridge is validated by compile/build only; no live low-level arm controller or ROS topic integration smoke test was run.
+- Default joint names/limits are conservative placeholders and should be overridden for the actual simulated arm model.

@@ -1,0 +1,74 @@
+$ chmod +x scripts/check_demo_outputs.sh
+
+$ bash -n scripts/check_demo_outputs.sh
+
+$ ./scripts/check_demo_outputs.sh visualizations/demo01_hover/20260526_221722
+checking: visualizations/demo01_hover/20260526_221722
+checked files:
+  visualizations/demo01_hover/20260526_221722/trajectory.csv
+  visualizations/demo01_hover/20260526_221722/trajectory_3d.png
+  visualizations/demo01_hover/20260526_221722/xy_path.png
+  visualizations/demo01_hover/20260526_221722/height_curve.png
+  visualizations/demo01_hover/20260526_221722/speed_curve.png
+  visualizations/demo01_hover/20260526_221722/tracking_error.png
+  visualizations/demo01_hover/20260526_221722/summary.md
+  visualizations/demo01_hover/20260526_221722/result.txt
+CHECK=PASS
+
+$ ./scripts/check_demo_outputs.sh visualizations/demo02_waypoint_flight
+checking: visualizations/demo02_waypoint_flight/20260526_222121
+checked files:
+  visualizations/demo02_waypoint_flight/20260526_222121/trajectory.csv
+  visualizations/demo02_waypoint_flight/20260526_222121/trajectory_3d.png
+  visualizations/demo02_waypoint_flight/20260526_222121/xy_path.png
+  visualizations/demo02_waypoint_flight/20260526_222121/height_curve.png
+  visualizations/demo02_waypoint_flight/20260526_222121/speed_curve.png
+  visualizations/demo02_waypoint_flight/20260526_222121/tracking_error.png
+  visualizations/demo02_waypoint_flight/20260526_222121/summary.md
+  visualizations/demo02_waypoint_flight/20260526_222121/result.txt
+CHECK=PASS
+
+$ ./scripts/check_demo_outputs.sh visualizations/demo03_circle_trajectory
+checking: visualizations/demo03_circle_trajectory/20260526_222313
+checked files:
+  visualizations/demo03_circle_trajectory/20260526_222313/trajectory.csv
+  visualizations/demo03_circle_trajectory/20260526_222313/trajectory_3d.png
+  visualizations/demo03_circle_trajectory/20260526_222313/xy_path.png
+  visualizations/demo03_circle_trajectory/20260526_222313/height_curve.png
+  visualizations/demo03_circle_trajectory/20260526_222313/speed_curve.png
+  visualizations/demo03_circle_trajectory/20260526_222313/tracking_error.png
+  visualizations/demo03_circle_trajectory/20260526_222313/summary.md
+  visualizations/demo03_circle_trajectory/20260526_222313/result.txt
+CHECK=PASS
+
+$ ./scripts/check_demo_outputs.sh visualizations/demo04_external_setpoint
+checking: visualizations/demo04_external_setpoint/20260526_222502
+checked files:
+  visualizations/demo04_external_setpoint/20260526_222502/trajectory.csv
+  visualizations/demo04_external_setpoint/20260526_222502/trajectory_3d.png
+  visualizations/demo04_external_setpoint/20260526_222502/xy_path.png
+  visualizations/demo04_external_setpoint/20260526_222502/height_curve.png
+  visualizations/demo04_external_setpoint/20260526_222502/speed_curve.png
+  visualizations/demo04_external_setpoint/20260526_222502/tracking_error.png
+  visualizations/demo04_external_setpoint/20260526_222502/summary.md
+  visualizations/demo04_external_setpoint/20260526_222502/result.txt
+CHECK=PASS
+
+$ ./scripts/check_demo_outputs.sh logs/demo04_external_setpoint/20260526_222502
+checking: visualizations/demo04_external_setpoint/20260526_222502
+checked files:
+  visualizations/demo04_external_setpoint/20260526_222502/trajectory.csv
+  visualizations/demo04_external_setpoint/20260526_222502/trajectory_3d.png
+  visualizations/demo04_external_setpoint/20260526_222502/xy_path.png
+  visualizations/demo04_external_setpoint/20260526_222502/height_curve.png
+  visualizations/demo04_external_setpoint/20260526_222502/speed_curve.png
+  visualizations/demo04_external_setpoint/20260526_222502/tracking_error.png
+  visualizations/demo04_external_setpoint/20260526_222502/summary.md
+  visualizations/demo04_external_setpoint/20260526_222502/result.txt
+CHECK=PASS
+
+$ ./scripts/check_demo_outputs.sh logs/offboard_hover/20260526_080357
+checking: logs/offboard_hover/20260526_080357
+checked files:
+  logs/offboard_hover/20260526_080357/verify.log
+CHECK=PASS

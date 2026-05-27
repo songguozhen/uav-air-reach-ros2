@@ -1,0 +1,21 @@
+Task 019: Add UAV-Arm Approach Coordinator
+
+Planned changes:
+- Add aerial_manip_control approach_coordinator action server.
+- Wire console entry point and dependencies.
+- Document coordinator interfaces and safety limits.
+
+Validation:
+- python3 -m compileall src/aerial_manip_control
+  RESULT=PASS
+- colcon build --packages-select aerial_manip_msgs aerial_manip_control
+  RESULT=PASS
+- source install/setup.bash && ros2 action list || true
+  RESULT=PASS
+  NOTE=no actions listed because no action servers were running for this check.
+- source install/setup.bash && timeout 3s ros2 run aerial_manip_control approach_coordinator
+  RESULT=PASS
+  NOTE=node started and advertised /approach; timeout exited with code 124 as expected.
+- source install/setup.bash; ros2 run aerial_manip_control approach_coordinator & sleep 1; ros2 action list || true; kill/wait node
+  RESULT=PASS
+  OUTPUT=/approach

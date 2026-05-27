@@ -1,0 +1,27 @@
+Task 021 manual Codex run.
+
+Implemented a high-level LeRobot policy wrapper and ROS policy bridge in
+src/aerial_manip_policy. Validation results are recorded in the final report.
+
+Commands run:
+- python3 -m compileall src/aerial_manip_policy
+  Result: PASS
+- python3 - <<'PY' || true
+  import importlib.util
+  print("lerobot", "OK" if importlib.util.find_spec("lerobot") else "MISSING")
+  PY
+  Result: PASS command exit; output was "lerobot MISSING"
+- colcon build --packages-select aerial_manip_policy
+  Result: PASS
+- python3 -m aerial_manip_policy.train_lerobot_baseline --dataset-repo-id datasets/air_reach_v1 --policy-type act
+  Result: PASS command print; lerobot was not importable in this environment
+- source install/setup.bash && ros2 pkg executables aerial_manip_policy
+  Result: PASS; policy_bridge and train_lerobot_baseline are installed
+- source install/setup.bash && python3 action chunk parser smoke check
+  Result: PASS
+
+After a formatting-only policy_bridge.py line wrap:
+- python3 -m compileall src/aerial_manip_policy
+  Result: PASS
+- colcon build --packages-select aerial_manip_policy
+  Result: PASS

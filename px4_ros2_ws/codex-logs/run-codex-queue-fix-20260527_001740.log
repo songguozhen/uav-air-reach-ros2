@@ -1,0 +1,20 @@
+## bash -n run_codex_queue.sh
+status=0
+
+## ./run_codex_queue.sh --dry-run
+TASK /home/clcwork/UAV_capture/px4_ros2_ws/codex-tasks/001-audit-project-structure.md
+LOG  /home/clcwork/UAV_capture/px4_ros2_ws/codex-logs/001-audit-project-structure-20260527_001740.log
+DRY-RUN: codex exec < /home/clcwork/UAV_capture/px4_ros2_ws/codex-tasks/001-audit-project-structure.md | tee /home/clcwork/UAV_capture/px4_ros2_ws/codex-logs/001-audit-project-structure-20260527_001740.log
+TASK /home/clcwork/UAV_capture/px4_ros2_ws/codex-tasks/002-standardize-demo-visualization.md
+LOG  /home/clcwork/UAV_capture/px4_ros2_ws/codex-logs/002-standardize-demo-visualization-20260527_001740.log
+DRY-RUN: codex exec < /home/clcwork/UAV_capture/px4_ros2_ws/codex-tasks/002-standardize-demo-visualization.md | tee /home/clcwork/UAV_capture/px4_ros2_ws/codex-logs/002-standardize-demo-visualization-20260527_001740.log
+TASK /home/clcwork/UAV_capture/px4_ros2_ws/codex-tasks/003-add-demo-regression-checks.md
+LOG  /home/clcwork/UAV_capture/px4_ros2_ws/codex-logs/003-add-demo-regression-checks-20260527_001740.log
+DRY-RUN: codex exec < /home/clcwork/UAV_capture/px4_ros2_ws/codex-tasks/003-add-demo-regression-checks.md | tee /home/clcwork/UAV_capture/px4_ros2_ws/codex-logs/003-add-demo-regression-checks-20260527_001740.log
+TASK /home/clcwork/UAV_capture/px4_ros2_ws/codex-tasks/004-design-uav-control-api.md
+LOG  /home/clcwork/UAV_capture/px4_ros2_ws/codex-logs/004-design-uav-control-api-20260527_001740.log
+DRY-RUN: codex exec < /home/clcwork/UAV_capture/px4_ros2_ws/codex-tasks/004-design-uav-control-api.md | tee /home/clcwork/UAV_capture/px4_ros2_ws/codex-logs/004-design-uav-control-api-20260527_001740.log
+TASK /home/clcwork/UAV_capture/px4_ros2_ws/codex-tasks/005-plan-uav-arm-simulation.md
+LOG  /home/clcwork/UAV_capture/px4_ros2_ws/codex-logs/005-plan-uav-arm-simulation-20260527_001740.log
+DRY-RUN: codex exec < /home/clcwork/UAV_capture/px4_ros2_ws/codex-tasks/005-plan-uav-arm-simulation.md | tee /home/clcwork/UAV_capture/px4_ros2_ws/codex-logs/005-plan-uav-arm-simulation-20260527_001740.log
+status=0
