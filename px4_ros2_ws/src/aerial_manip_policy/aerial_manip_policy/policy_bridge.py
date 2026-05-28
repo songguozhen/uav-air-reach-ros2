@@ -18,6 +18,12 @@ from aerial_manip_policy.action_chunks import (
 )
 
 
+DEFAULT_ARM_JOINT_NAMES = [
+    "arm_shoulder_pitch_joint",
+    "arm_elbow_pitch_joint",
+]
+
+
 class PolicyBridge(Node):
     """Executes learned high-level action chunks through safe project topics."""
 
@@ -32,7 +38,7 @@ class PolicyBridge(Node):
         self.declare_parameter("min_altitude", 0.4)
         self.declare_parameter("max_altitude", 5.0)
         self.declare_parameter("max_uav_target_step", 0.5)
-        self.declare_parameter("joint_names", ["joint1", "joint2", "joint3"])
+        self.declare_parameter("joint_names", DEFAULT_ARM_JOINT_NAMES)
         self.declare_parameter("fallback_arm_mode", ArmCommand.MODE_HOLD)
         self.declare_parameter("policy_json", "")
         self.declare_parameter("policy_command", "")

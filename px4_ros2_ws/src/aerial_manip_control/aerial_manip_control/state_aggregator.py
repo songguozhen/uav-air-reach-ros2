@@ -2,6 +2,13 @@ from typing import List, Optional
 
 from aerial_manip_msgs.msg import ArmState, PlatformState, SafetyStatus
 from aerial_manip_msgs.msg import SystemObservation
+from aerial_manip_control.stage2_schema import (
+    CANONICAL_FRAMES,
+    DEFAULT_ARM_BASE_XYZ,
+    DEFAULT_CAMERA_XYZ,
+    PLATFORM_NED_FRAME,
+    ned_to_enu_xyz,
+)
 from geometry_msgs.msg import PointStamped, TransformStamped
 import rclpy
 from rclpy.executors import ExternalShutdownException
@@ -18,13 +25,13 @@ class StateAggregator(Node):
 
         self.declare_parameter("publish_period", 0.05)
         self.declare_parameter("state_timeout", 1.0)
-        self.declare_parameter("map_frame", "map")
-        self.declare_parameter("uav_frame", "uav/base_link")
-        self.declare_parameter("arm_base_frame", "uav/arm_base")
-        self.declare_parameter("ee_frame", "uav/ee_link")
-        self.declare_parameter("camera_frame", "uav/camera_link")
-        self.declare_parameter("arm_base_xyz", [0.0, 0.0, -0.08])
-        self.declare_parameter("camera_xyz", [0.12, 0.0, -0.04])
+        self.declare_parameter("map_frame", CANONICAL_FRAMES["map"])
+        self.declare_parameter("uav_frame", CANONICAL_FRAMES["uav_base"])
+        self.declare_parameter("arm_base_frame", CANONICAL_FRAMES["arm_base"])
+        self.declare_parameter("ee_frame", CANONICAL_FRAMES["ee"])
+        self.declare_parameter("camera_frame", CANONICAL_FRAMES["camera"])
+        self.declare_parameter("arm_base_xyz", list(DEFAULT_ARM_BASE_XYZ))
+        self.declare_parameter("camera_xyz", list(DEFAULT_CAMERA_XYZ))
 
         self.publish_period = float(self.get_parameter("publish_period").value)
         self.state_timeout = float(self.get_parameter("state_timeout").value)
@@ -117,7 +124,7 @@ class StateAggregator(Node):
     def _build_platform_state(self, stamp) -> PlatformState:
         platform = PlatformState()
         platform.header.stamp = stamp
-        platform.header.frame_id = "uav_local_ned"
+        platform.header.frame_id = PLATFORM_NED_FRAME
         platform.attitude.w = 1.0
         platform.nav_state = self.latest_uav_state
         if self.latest_uav_position is not None:
@@ -261,7 +268,7 @@ class StateAggregator(Node):
 
     @staticmethod
     def _ned_point_to_enu_xyz(x_ned: float, y_ned: float, z_ned: float):
-        return float(y_ned), float(x_ned), float(-z_ned)
+        return ned_to_enu_xyz((x_ned, y_ned, z_ned))
 
 
 def main(args=None) -> None:

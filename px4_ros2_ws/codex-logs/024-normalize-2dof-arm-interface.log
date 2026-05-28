@@ -1,0 +1,35 @@
+Task 024: Normalize 2-DOF Arm Interface
+Timestamp: 20260527_234410
+
+Summary:
+- Updated Stage 2 arm defaults to match the x500_arm_2dof SDF model:
+  - arm_shoulder_pitch_joint, limit [-0.7, 0.7] rad
+  - arm_elbow_pitch_joint, limit [-1.2, 1.2] rad
+- Updated arm bridge validation defaults, coordinator defaults/mapping, synthetic
+  Demo 10 arm plant, Demo 10 dry-run metrics, policy bridge defaults, and docs.
+- Preserved explicit custom joint_names compatibility by retaining length-based
+  vector validation and the previous generic coordinator mapping for custom
+  three-or-more joint configurations.
+
+Commands run:
+- python3 -m compileall src/aerial_manip_control src/aerial_manip_eval src/aerial_manip_policy scripts/check_demo_10.py
+  Result: PASS
+- colcon build --packages-select aerial_manip_msgs aerial_manip_control aerial_manip_eval aerial_manip_policy
+  Result: PASS, 4 packages finished
+- DEMO10_MODE=dry-run bash scripts/run_regression_demo_10.sh
+  Result: PASS, output_dir=logs/demo10_air_reach/20260527_234410
+- python3 scripts/check_demo_10.py logs/demo10_air_reach
+  Result: PASS, path=logs/demo10_air_reach/20260527_234410, mode=dry-run,
+  max_flight_error_m=0.067, final_endpoint_error_m=0.051,
+  target_visible_ratio=0.775
+
+Generated output:
+- logs/demo10_air_reach/20260527_234410/metrics.json
+- logs/demo10_air_reach/20260527_234410/result.txt
+- logs/demo10_air_reach/20260527_234410/summary.md
+- logs/demo10_air_reach/20260527_234410/sequence_events.jsonl
+- logs/demo10_air_reach/20260527_234410/runner.log
+
+Known risks:
+- Only Demo 10 dry-run was executed. No live PX4/Gazebo run was performed.
+- Existing older Demo 10 logs may still contain three-joint historical metrics.

@@ -38,6 +38,16 @@ map -> uav/base_link -> uav/arm_base -> uav/ee_link -> uav/camera_link
 body/link frames unless a later robot description provides more specific link
 conventions.
 
+These five frame names are canonical for the stage-2 regression surface:
+
+| Role | Frame |
+| --- | --- |
+| ROS world frame | `map` |
+| UAV base link | `uav/base_link` |
+| Arm base link | `uav/arm_base` |
+| End-effector link | `uav/ee_link` |
+| Camera link | `uav/camera_link` |
+
 Default fixed offsets:
 
 | Transform | Default translation |
@@ -72,6 +82,55 @@ while leaving existing UAV bridge topics unchanged. The current baseline does
 not yet consume UAV attitude, so `map -> uav/base_link` uses identity rotation.
 When attitude is added, FRD-to-FLU conversion should be added in this node or
 the existing UAV bridge, not in external vision, policy, or LeRobot modules.
+
+The lightweight schema regression enforces the conversion with these fixed
+cases and the inverse ENU-to-NED round trip:
+
+| NED input | Expected ENU output |
+| --- | --- |
+| `(0.0, 0.0, 0.0)` | `(0.0, 0.0, 0.0)` |
+| `(1.0, 2.0, -3.0)` | `(2.0, 1.0, 3.0)` |
+| `(-4.5, 0.25, 2.0)` | `(0.25, -4.5, -2.0)` |
+
+## Arm Schema
+
+The baseline arm schema is a 2-DOF pitch arm. The canonical joint order is:
+
+```text
+arm_shoulder_pitch_joint
+arm_elbow_pitch_joint
+```
+
+For `aerial_manip_msgs/msg/ArmCommand` and `aerial_manip_msgs/msg/ArmState`,
+the regression treats `joint_positions`, `joint_velocities`, and
+`joint_efforts` as vectors that must match this two-joint order when populated.
+The `.msg` definitions remain variable-length ROS arrays so commands can still
+be represented normally on the wire, but the stage-2 bridge defaults and dry-run
+artifacts are checked against exactly two joints.
+
+## Frame and Schema Regression
+
+Run the deterministic regression without PX4 or Gazebo:
+
+```bash
+python3 scripts/check_stage2_schema.py
+```
+
+The checker validates:
+
+- canonical frame names and the `map -> uav/base_link -> uav/arm_base ->
+  uav/ee_link -> uav/camera_link` chain;
+- NED-to-ENU conversion and ENU-to-NED round trip cases used by
+  `state_aggregator`;
+- canonical 2-DOF joint names, limits, velocity-vector lengths, and source
+  alignment with shared constants;
+- the arm and observation message fields used for the stage-2 schema.
+
+Each run emits a machine-readable report:
+
+```text
+logs/demo_06_state_agg/<timestamp>/tf_report.json
+```
 
 ## Safety Status
 

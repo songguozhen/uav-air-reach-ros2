@@ -67,8 +67,8 @@ Example JSON:
       "dt": 0.2,
       "uav_target_ned": [0.5, 0.0, -2.0],
       "arm_mode": "joint_position",
-      "arm_joint_names": ["joint1", "joint2", "joint3"],
-      "arm_joint_positions": [0.1, 0.0, -0.1]
+      "arm_joint_names": ["arm_shoulder_pitch_joint", "arm_elbow_pitch_joint"],
+      "arm_joint_positions": [0.1, 0.0]
     }
   ]
 }
@@ -107,6 +107,11 @@ The bridge also enforces coarse high-level limits before publishing:
 | `min_altitude` | `0.4` | Minimum altitude in meters, represented as `z <= -0.4`. |
 | `max_altitude` | `5.0` | Maximum altitude in meters, represented as `z >= -5.0`. |
 | `max_uav_target_step` | `0.5` | Maximum 3D step between emitted UAV targets. |
+
+The default arm action schema uses the two `x500_arm_2dof` SDF joints:
+`arm_shoulder_pitch_joint` and `arm_elbow_pitch_joint`. A policy may still emit
+explicit `arm_joint_names` for a custom configured bridge, but default action
+chunks should use two joint positions in that order.
 
 Coordinate convention follows the rest of the project: `/uav/target_position`
 is local PX4 NED, so 2 m positive altitude is published as `z = -2.0`.

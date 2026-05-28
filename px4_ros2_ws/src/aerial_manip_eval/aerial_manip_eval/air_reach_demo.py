@@ -15,6 +15,8 @@ from rclpy.node import Node
 
 
 Vector3 = Tuple[float, float, float]
+DEFAULT_ARM_MIN_POSITIONS = [-0.7, -1.2]
+DEFAULT_ARM_MAX_POSITIONS = [0.7, 1.2]
 
 
 class AirReachDemo(Node):
@@ -31,8 +33,8 @@ class AirReachDemo(Node):
         self.declare_parameter("max_flight_error_m", 0.55)
         self.declare_parameter("max_final_endpoint_error_m", 0.35)
         self.declare_parameter("min_target_visible_ratio", 0.20)
-        self.declare_parameter("joint_min_positions", [-1.57, -1.57, -1.57])
-        self.declare_parameter("joint_max_positions", [1.57, 1.57, 1.57])
+        self.declare_parameter("joint_min_positions", DEFAULT_ARM_MIN_POSITIONS)
+        self.declare_parameter("joint_max_positions", DEFAULT_ARM_MAX_POSITIONS)
 
         self.output_dir = output_dir
         self.output_dir.mkdir(parents=True, exist_ok=True)

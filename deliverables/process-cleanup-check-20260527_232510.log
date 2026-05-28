@@ -1,0 +1,7 @@
+# Process cleanup check 20260527_232510
+## Exact process-name checks
+## Gazebo default.sdf command checks
+ 105689 bash            /bin/bash -c STAMP=$(date +%Y%m%d_%H%M%S) LOG="deliverables/process-cleanup-check-${STAMP}.log" {   echo "# Process cleanup check ${STAMP}"   echo "## Exact process-name checks"   pgrep -a -x px4 || true   pgrep -a -x MicroXRCEAgent || true   pgrep -a -x gz || true   echo "## Gazebo default.sdf command checks"   ps -eo pid=,comm=,args= | awk '/[g]z sim/ || /[d]efault.sdf/ {print}' || true   echo "## tmux sessions"   tmux ls 2>/dev/null || true } | tee "$LOG" printf '%s\n' "$LOG"
+ 105691 bash            /bin/bash -c STAMP=$(date +%Y%m%d_%H%M%S) LOG="deliverables/process-cleanup-check-${STAMP}.log" {   echo "# Process cleanup check ${STAMP}"   echo "## Exact process-name checks"   pgrep -a -x px4 || true   pgrep -a -x MicroXRCEAgent || true   pgrep -a -x gz || true   echo "## Gazebo default.sdf command checks"   ps -eo pid=,comm=,args= | awk '/[g]z sim/ || /[d]efault.sdf/ {print}' || true   echo "## tmux sessions"   tmux ls 2>/dev/null || true } | tee "$LOG" printf '%s\n' "$LOG"
+## tmux sessions
+uav_codex: 1 windows (created Wed May 27 18:32:47 2026)

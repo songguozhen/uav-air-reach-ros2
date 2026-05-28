@@ -5,8 +5,16 @@ import time
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Tuple
 
+from aerial_manip_control.stage2_schema import (
+    CANONICAL_ARM_JOINT_NAMES,
+    DEFAULT_ARM_MAX_POSITIONS,
+    DEFAULT_ARM_MIN_POSITIONS,
+)
+
 
 Vector3 = Tuple[float, float, float]
+ARM_JOINT_NAMES = list(CANONICAL_ARM_JOINT_NAMES)
+ARM_JOINT_LIMITS = list(zip(DEFAULT_ARM_MIN_POSITIONS, DEFAULT_ARM_MAX_POSITIONS))
 
 
 def main() -> None:
@@ -49,14 +57,14 @@ def _build_samples() -> List[Dict[str, Any]]:
             position = (0.02 * math.sin(t), 0.02 * math.cos(t), -2.0 + 0.015 * math.sin(t))
             target_visible = False
             endpoint = (position[0] + 0.25, position[1], position[2] + 0.05)
-            joints = [0.0, 0.0, 0.0]
+            joints = [0.0, 0.0]
         elif index < 30:
             phase = "tag_detection"
             desired = (0.0, 0.0, -2.0)
             position = (0.02 * math.sin(t), 0.02 * math.cos(t), -2.0 + 0.015 * math.sin(t))
             target_visible = True
             endpoint = (position[0] + 0.25, position[1], position[2] + 0.05)
-            joints = [0.0, 0.0, 0.0]
+            joints = [0.0, 0.0]
         elif index < 62:
             phase = "coordinated_approach"
             ratio = (index - 30) / 31.0
@@ -72,14 +80,14 @@ def _build_samples() -> List[Dict[str, Any]]:
                 position[1] + 0.03 + 0.05 * ratio,
                 position[2] + 0.04 + 0.02 * ratio,
             )
-            joints = [0.08 * ratio, 0.20 * ratio, 0.05 * ratio]
+            joints = [0.12 * ratio, 0.20 * ratio]
         else:
             phase = "endpoint_hold"
             desired = (0.70, 0.12, -1.90)
             position = (0.70 + 0.01 * math.sin(t), 0.12, -1.90 + 0.01 * math.cos(t))
             target_visible = True
             endpoint = endpoint_final
-            joints = [0.08, 0.20, 0.05]
+            joints = [0.12, 0.20]
 
         samples.append(
             {
@@ -91,6 +99,7 @@ def _build_samples() -> List[Dict[str, Any]]:
                 "endpoint_position_ned": _point(endpoint),
                 "target_visible": target_visible,
                 "contact_detected": False,
+                "joint_names": ARM_JOINT_NAMES,
                 "joint_positions": joints,
             }
         )
@@ -133,7 +142,7 @@ def _compute_metrics(samples: List[Dict[str, Any]], timestamp: str) -> Dict[str,
         for sample in samples
         if sample["phase"] == "endpoint_hold"
     ]
-    joint_limits = [(-1.57, 1.57), (-1.57, 1.57), (-1.57, 1.57)]
+    joint_limits = ARM_JOINT_LIMITS
     violations = 0
     for sample in samples:
         for value, (lower, upper) in zip(sample["joint_positions"], joint_limits):
@@ -166,6 +175,7 @@ def _compute_metrics(samples: List[Dict[str, Any]], timestamp: str) -> Dict[str,
         },
         "joint_limits": {
             "violations": violations,
+            "joint_names": ARM_JOINT_NAMES,
             "limits_rad": joint_limits,
         },
         "target_visibility": {

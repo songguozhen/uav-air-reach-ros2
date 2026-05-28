@@ -55,9 +55,12 @@ the same way with `default_timeout`.
 6. On timeout, cancel, or `/approach_coordinator/stop=true`, command the UAV to
    hold its current high-level target and command the arm to `stow` or `hold`.
 
-The arm trim is deliberately simple. The default 3-joint mapping applies
-lateral residual to joint 1, forward residual to joint 2, and vertical residual
-to joint 3, then clamps by joint limits and `max_arm_joint_step`.
+The arm trim is deliberately simple. The default `x500_arm_2dof` mapping applies
+vertical residual to `arm_shoulder_pitch_joint` and forward residual to
+`arm_elbow_pitch_joint`, then clamps by joint limits and `max_arm_joint_step`.
+If a custom three-or-more joint configuration is supplied, the coordinator
+keeps the earlier generic mapping: lateral residual to joint 1, forward
+residual to joint 2, and vertical residual to joint 3.
 
 ## Safety Parameters
 
@@ -79,15 +82,15 @@ to joint 3, then clamps by joint limits and `max_arm_joint_step`.
 | `coarse_z_tolerance` | `0.20` | Vertical NED tolerance for switching to arm trim. |
 | `arm_reach_tolerance` | `0.18` | Local residual tolerance for action success. |
 | `arm_hold_time` | `0.5` | Time inside arm residual tolerance before success. |
-| `joint_names` | `["joint1", "joint2", "joint3"]` | Joint order used for `/arm/target_joints`. |
+| `joint_names` | `["arm_shoulder_pitch_joint", "arm_elbow_pitch_joint"]` | Joint order used for `/arm/target_joints`. |
 | `arm_stow_on_cancel` | `true` | Send `stow` instead of `hold` on cancel/stop/timeout. |
-| `arm_home_positions` | `[0.0, 0.0, 0.0]` | Fallback joint state if observation lacks arm joints. |
-| `min_joint_positions` | `[-1.57, -1.57, -1.57]` | Coordinator-side joint lower limits. |
-| `max_joint_positions` | `[1.57, 1.57, 1.57]` | Coordinator-side joint upper limits. |
+| `arm_home_positions` | `[0.0, 0.0]` | Fallback joint state if observation lacks arm joints. |
+| `min_joint_positions` | `[-0.7, -1.2]` | Coordinator-side joint lower limits. |
+| `max_joint_positions` | `[0.7, 1.2]` | Coordinator-side joint upper limits. |
 | `max_arm_joint_step` | `0.20` | Maximum per-command joint change. |
-| `arm_forward_gain` | `0.35` | Residual-x to joint-2 gain. |
-| `arm_lateral_gain` | `0.45` | Residual-y to joint-1 gain. |
-| `arm_vertical_gain` | `-0.35` | Residual-z to joint-3 gain. |
+| `arm_forward_gain` | `0.35` | Residual-x to elbow pitch gain for the default arm. |
+| `arm_lateral_gain` | `0.45` | Residual-y gain used only by custom generic joint mappings. |
+| `arm_vertical_gain` | `-0.35` | Residual-z to shoulder pitch gain for the default arm. |
 
 The UAV bridge and arm bridge still apply their own safety checks. Coordinator
 limits are an earlier high-level guard, not a replacement for bridge limits.

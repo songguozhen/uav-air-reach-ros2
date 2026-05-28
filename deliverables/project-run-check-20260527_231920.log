@@ -1,0 +1,10 @@
+# Project run check 20260527_231920
+PWD=/home/clcwork/UAV_capture/px4_ros2_ws
+## versions
+/usr/bin/python3
+Python 3.12.3
+/usr/bin/colcon
+/opt/ros/jazzy/bin/ros2
+/usr/bin/gz
+## source ROS
+/opt/ros/jazzy/setup.bash: line 8: AMENT_TRACE_SETUP_FILES: unbound variable

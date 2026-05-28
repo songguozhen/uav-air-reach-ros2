@@ -1,0 +1,11 @@
+Task 029 Add Stage 2 Evidence Validator
+timestamp: 20260528_001927
+
+commands:
+PASS python3 -m py_compile scripts/check_stage2_evidence.py
+PASS python3 scripts/check_stage2_evidence.py
+PASS python3 scripts/check_demo_10.py logs/demo10_air_reach
+
+outputs:
+CHECK=PASS report=deliverables/task-status.json dry_run=PASS live=PASS docs=PASS tasks=PASS
+CHECK=PASS path=logs/demo10_air_reach/20260528_001048 mode=dry-run max_flight_error_m=0.067 final_endpoint_error_m=0.051 target_visible_ratio=0.775

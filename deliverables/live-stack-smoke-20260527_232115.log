@@ -1,0 +1,81 @@
+# Live stack smoke 20260527_232115
+## start stack
+micro_xrce_agent: 1 windows (created Wed May 27 23:21:15 2026)
+px4_gz_x500: 1 windows (created Wed May 27 23:21:15 2026)
+uav_codex: 1 windows (created Wed May 27 18:32:47 2026)
+## tmux after start
+micro_xrce_agent: 1 windows (created Wed May 27 23:21:15 2026)
+px4_gz_x500: 1 windows (created Wed May 27 23:21:15 2026)
+uav_codex: 1 windows (created Wed May 27 18:32:47 2026)
+## px4 log tail
+[0/1] cd /home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/gz_bridge && /usr/bin/cmake -E env PX4_SIM_MODEL=gz_x500 GZ_IP=127.0.0.1 /home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/build/px4_sitl_default/bin/px4
+
+______  __   __    ___ 
+| ___ \ \ \ / /   /   |
+| |_/ /  \ V /   / /| |
+|  __/   /   \  / /_| |
+| |     / /^\ \ \___  |
+\_|     \/   \/     |_/
+
+px4 starting.
+
+INFO  [px4] startup script: /bin/sh etc/init.d-posix/rcS 0
+INFO  [init] found model autostart file as SYS_AUTOSTART=4001
+INFO  [param] selected parameter default file parameters.bson
+INFO  [param] importing from 'parameters.bson'
+INFO  [parameters] BSON document size 412 bytes, decoded 412 bytes (INT32:17, FLOAT:4)
+INFO  [param] selected parameter backup file parameters_backup.bson
+INFO  [dataman] data manager file './dataman' size is 1208528 bytes
+INFO  [init] Gazebo simulator 8.11.0
+INFO  [init] Starting gazebo with world: /home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/worlds/default.sdf
+INFO  [init] Waiting for Gazebo world...
+INFO  [init] Gazebo world is ready
+INFO  [init] Spawning Gazebo model
+[1;33mWarning [Utils.cc:132][0m [/sdf/model[@name="x500_base"]/link[@name="base_link"]/sensor[@name="air_pressure_sensor"]/gz_frame_id:/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/x500_base/model.sdf:L219]: XML Element[gz_frame_id], child of element[sensor], not defined in SDF. Copying[gz_frame_id] as children of [sensor].
+[1;33mWarning [Utils.cc:132][0m [/sdf/model[@name="x500_base"]/link[@name="base_link"]/sensor[@name="magnetometer_sensor"]/gz_frame_id:/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/x500_base/model.sdf:L233]: XML Element[gz_frame_id], child of element[sensor], not defined in SDF. Copying[gz_frame_id] as children of [sensor].
+[1;33mWarning [Utils.cc:132][0m [/sdf/model[@name="x500_base"]/link[@name="base_link"]/sensor[@name="imu_sensor"]/gz_frame_id:/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/x500_base/model.sdf:L259]: XML Element[gz_frame_id], child of element[sensor], not defined in SDF. Copying[gz_frame_id] as children of [sensor].
+[1;33mWarning [Utils.cc:132][0m [/sdf/model[@name="x500_base"]/link[@name="base_link"]/sensor[@name="navsat_sensor"]/gz_frame_id:/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models/x500_base/model.sdf:L311]: XML Element[gz_frame_id], child of element[sensor], not defined in SDF. Copying[gz_frame_id] as children of [sensor].
+INFO  [lockstep_scheduler] setting initial absolute time to 4044000 us
+INFO  [gz_bridge] world: default, model: x500_0
+INFO  [init] Setting camera to follow x500_0
+INFO  [init] Camera follow offset set to -2.0, -2.0, 2.0
+INFO  [commander] LED: open /dev/led0 failed (22)
+INFO  [tone_alarm] home set
+INFO  [uxrce_dds_client] init UDP agent IP:127.0.0.1, port:8888
+INFO  [mavlink] mode: Normal, data rate: 4000000 B/s on udp port 18570 remote port 14550
+INFO  [mavlink] mode: Onboard, data rate: 4000000 B/s on udp port 14580 remote port 14540
+INFO  [mavlink] mode: Onboard, data rate: 4000 B/s on udp port 14280 remote port 14030
+INFO  [mavlink] mode: Gimbal, data rate: 400000 B/s on udp port 13030 remote port 13280
+INFO  [logger] logger started (mode=all)
+INFO  [logger] Max log file size: 1024 MiB
+INFO  [logger] Start file log (type: full)
+INFO  [logger] [logger] ./log/2026-05-27/15_21_26.ulg	
+INFO  [logger] Opened full log file: ./log/2026-05-27/15_21_26.ulg
+INFO  [mavlink] MAVLink only on localhost (set param MAV_{i}_BROADCAST = 1 to enable network)
+INFO  [mavlink] MAVLink only on localhost (set param MAV_{i}_BROADCAST = 1 to enable network)
+INFO  [px4] Startup script returned successfully
+pxh> [2Kpxh> p[2Kpxh> pa[2Kpxh> par[2Kpxh> para[2Kpxh> param[2Kpxh> param [2Kpxh> param s[2Kpxh> param se[2Kpxh> param set[2Kpxh> param set [2Kpxh> param set N[2Kpxh> param set NA[2Kpxh> param set NAV[2Kpxh> param set NAV_[2Kpxh> param set NAV_D[2Kpxh> param set NAV_DL[2Kpxh> param set NAV_DLL[2Kpxh> param set NAV_DLL_[2Kpxh> param set NAV_DLL_A[2Kpxh> param set NAV_DLL_AC[2Kpxh> param set NAV_DLL_ACT[2Kpxh> param set NAV_DLL_ACT [2Kpxh> param set NAV_DLL_ACT 0
+pxh> [2Kpxh> c[2Kpxh> co[2Kpxh> com[2Kpxh> comm[2Kpxh> comma[2Kpxh> comman[2Kpxh> command[2Kpxh> commande[2Kpxh> commander[2Kpxh> commander [2Kpxh> commander c[2Kpxh> commander ch[2Kpxh> commander che[2Kpxh> commander chec[2Kpxh> commander check
+INFO  [commander] Preflight check: FAILED
+pxh> WARN  [health_and_arming_checks] Preflight Fail: no heading reference
+[2Kpxh> p[2Kpxh> pa[2Kpxh> par[2Kpxh> para[2Kpxh> param[2Kpxh> param [2Kpxh> param s[2Kpxh> param se[2Kpxh> param set[2Kpxh> param set [2Kpxh> param set N[2Kpxh> param set NA[2Kpxh> param set NAV[2Kpxh> param set NAV_[2Kpxh> param set NAV_D[2Kpxh> param set NAV_DL[2Kpxh> param set NAV_DLL[2Kpxh> param set NAV_DLL_[2Kpxh> param set NAV_DLL_A[2Kpxh> param set NAV_DLL_AC[2Kpxh> param set NAV_DLL_ACT[2Kpxh> param set NAV_DLL_ACT [2Kpxh> param set NAV_DLL_ACT 0
+pxh> [2Kpxh> c[2Kpxh> co[2Kpxh> com[2Kpxh> comm[2Kpxh> comma[2Kpxh> comman[2Kpxh> command[2Kpxh> commande[2Kpxh> commander[2Kpxh> commander [2Kpxh> commander c[2Kpxh> commander ch[2Kpxh> commander che[2Kpxh> commander chec[2Kpxh> commander check
+INFO  [commander] Preflight check: FAILED
+pxh> WARN  [health_and_arming_checks] Preflight Fail: no heading reference
+[2Kpxh> p[2Kpxh> pa[2Kpxh> par[2Kpxh> para[2Kpxh> param[2Kpxh> param [2Kpxh> param s[2Kpxh> param se[2Kpxh> param set[2Kpxh> param set [2Kpxh> param set N[2Kpxh> param set NA[2Kpxh> param set NAV[2Kpxh> param set NAV_[2Kpxh> param set NAV_D[2Kpxh> param set NAV_DL[2Kpxh> param set NAV_DLL[2Kpxh> param set NAV_DLL_[2Kpxh> param set NAV_DLL_A[2Kpxh> param set NAV_DLL_AC[2Kpxh> param set NAV_DLL_ACT[2Kpxh> param set NAV_DLL_ACT [2Kpxh> param set NAV_DLL_ACT 0
+pxh> [2Kpxh> c[2Kpxh> co[2Kpxh> com[2Kpxh> comm[2Kpxh> comma[2Kpxh> comman[2Kpxh> command[2Kpxh> commande[2Kpxh> commander[2Kpxh> commander [2Kpxh> commander c[2Kpxh> commander ch[2Kpxh> commander che[2Kpxh> commander chec[2Kpxh> commander check
+INFO  [commander] Preflight check: FAILED
+pxh> INFO  [commander] [32mReady for takeoff![0m
+## agent log tail
+[35m[1779895275.254738][m info     | [34mUDPv4AgentLinux.cpp[m | [37minit                    [m | [32mrunning...[m             | port: 8888
+[35m[1779895275.254937][m info     | [34mRoot.cpp          [m | [37mset_verbose_level       [m | [32mlogger setup[m           | verbose_level: 4
+[35m[1779895286.350678][m info     | [34mRoot.cpp          [m | [37mcreate_client           [m | [32mcreate[m                 | client_key: 0x00000001, session_id: 0x81
+[35m[1779895286.350716][m info     | [34mSessionManager.hpp[m | [37mestablish_session       [m | [32msession established[m    | client_key: 0x00000001, address: 127.0.0.1:7836
+[35m[1779895286.360341][m info     | [34mProxyClient.cpp   [m | [37mcreate_participant      [m | [32mparticipant created[m    | client_key: 0x00000001, participant_id: 0x001(1)
+## stop stack
+## processes after stop
+73462 tmux new-session -d -s uav_codex -n codex_queue cd /home/clcwork/UAV_capture/px4_ros2_ws && bash -lc './run_codex_queue.sh --from 015; status=$?; echo; echo "[codex queue exited status=$status at $(date --iso-8601=seconds)]"; exec bash'
+104491 /bin/bash -lc set -eo pipefail mkdir -p deliverables STAMP=$(date +%Y%m%d_%H%M%S) LOG="deliverables/live-stack-smoke-${STAMP}.log" {   echo "# Live stack smoke ${STAMP}"   echo "## start stack"   RESET_STACK=1 timeout 95s scripts/start_stack.sh   echo "## tmux after start"   tmux ls || true   echo "## px4 log tail"   tail -n 80 /tmp/px4_gz_x500_tmux.log 2>/dev/null || true   echo "## agent log tail"   tail -n 80 /tmp/micro_xrce_agent.log 2>/dev/null || true   echo "## stop stack"   scripts/stop_stack.sh || true   echo "## processes after stop"   pgrep -af 'gz sim|px4|MicroXRCEAgent' || true   echo "FINAL_RESULT=PASS" } 2>&1 | tee "$LOG" printf '%s\n' "$LOG"
+104499 /bin/bash -lc set -eo pipefail mkdir -p deliverables STAMP=$(date +%Y%m%d_%H%M%S) LOG="deliverables/live-stack-smoke-${STAMP}.log" {   echo "# Live stack smoke ${STAMP}"   echo "## start stack"   RESET_STACK=1 timeout 95s scripts/start_stack.sh   echo "## tmux after start"   tmux ls || true   echo "## px4 log tail"   tail -n 80 /tmp/px4_gz_x500_tmux.log 2>/dev/null || true   echo "## agent log tail"   tail -n 80 /tmp/micro_xrce_agent.log 2>/dev/null || true   echo "## stop stack"   scripts/stop_stack.sh || true   echo "## processes after stop"   pgrep -af 'gz sim|px4|MicroXRCEAgent' || true   echo "FINAL_RESULT=PASS" } 2>&1 | tee "$LOG" printf '%s\n' "$LOG"
+104768 gz sim --verbose=1 -r -s /home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/worlds/default.sdf
+FINAL_RESULT=PASS

@@ -27,6 +27,18 @@ bash scripts/run_regression_demo_10.sh
 python3 scripts/check_demo_10.py logs/demo10_air_reach
 ```
 
+Bounded live stack readiness smoke:
+
+```bash
+cd /home/clcwork/UAV_capture/px4_ros2_ws
+DEMO10_MODE=live-smoke RESET_STACK=1 bash scripts/run_regression_demo_10.sh
+```
+
+This starts PX4/Gazebo and Micro XRCE-DDS, waits for PX4 to print
+`Ready for takeoff`, records the readiness line in
+`logs/demo10_air_reach/<timestamp>/stack_readiness.txt`, and then runs
+`scripts/stop_stack.sh`.
+
 Live PX4/Gazebo regression:
 
 ```bash
@@ -38,6 +50,20 @@ The runner writes timestamped artifacts to:
 
 ```text
 logs/demo10_air_reach/<timestamp>/
+```
+
+`DEMO10_MODE=auto` remains a dry-run path. Use `DEMO10_MODE=live-smoke` before
+the full live mode when validating a machine or after a stale Gazebo/PX4
+cleanup issue.
+
+Latest bounded live-smoke result:
+
+```text
+timestamp: 20260528_001327
+path: logs/demo10_air_reach/20260528_001327
+result: RESULT=PASS mode=live-smoke reason=stack_ready
+readiness: STACK_READY=YES reason=ready_for_takeoff detail=PX4 reached Ready for takeoff
+cleanup: no PX4/Gazebo/MicroXRCEAgent stack process remained after scripts/stop_stack.sh
 ```
 
 ## Metrics

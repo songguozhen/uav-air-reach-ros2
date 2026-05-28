@@ -2,6 +2,12 @@ import math
 import time
 from typing import List, Optional, Sequence, Tuple
 
+from aerial_manip_control.stage2_schema import (
+    CANONICAL_ARM_JOINT_NAMES,
+    CANONICAL_FRAMES,
+    DEFAULT_ARM_MAX_POSITIONS,
+    DEFAULT_ARM_MIN_POSITIONS,
+)
 from aerial_manip_msgs.action import Approach
 from aerial_manip_msgs.msg import ArmCommand, SystemObservation, TaskStatus
 from geometry_msgs.msg import Point
@@ -14,6 +20,7 @@ from std_msgs.msg import Bool
 
 
 Vector3 = Tuple[float, float, float]
+DEFAULT_ARM_JOINT_NAMES = list(CANONICAL_ARM_JOINT_NAMES)
 
 
 class ApproachCoordinator(Node):
@@ -38,11 +45,11 @@ class ApproachCoordinator(Node):
         self.declare_parameter("coarse_z_tolerance", 0.20)
         self.declare_parameter("arm_reach_tolerance", 0.18)
         self.declare_parameter("arm_hold_time", 0.5)
-        self.declare_parameter("joint_names", ["joint1", "joint2", "joint3"])
+        self.declare_parameter("joint_names", DEFAULT_ARM_JOINT_NAMES)
         self.declare_parameter("arm_stow_on_cancel", True)
-        self.declare_parameter("arm_home_positions", [0.0, 0.0, 0.0])
-        self.declare_parameter("min_joint_positions", [-1.57, -1.57, -1.57])
-        self.declare_parameter("max_joint_positions", [1.57, 1.57, 1.57])
+        self.declare_parameter("arm_home_positions", [0.0, 0.0])
+        self.declare_parameter("min_joint_positions", list(DEFAULT_ARM_MIN_POSITIONS))
+        self.declare_parameter("max_joint_positions", list(DEFAULT_ARM_MAX_POSITIONS))
         self.declare_parameter("max_arm_joint_step", 0.20)
         self.declare_parameter("arm_forward_gain", 0.35)
         self.declare_parameter("arm_lateral_gain", 0.45)
@@ -280,12 +287,16 @@ class ApproachCoordinator(Node):
             current = list(self.arm_home_positions)
 
         target = list(current)
-        if len(target) >= 1:
-            target[0] += self.arm_lateral_gain * residual[1]
-        if len(target) >= 2:
+        if self._uses_default_2dof_arm():
+            target[0] += self.arm_vertical_gain * residual[2]
             target[1] += self.arm_forward_gain * residual[0]
-        if len(target) >= 3:
-            target[2] += self.arm_vertical_gain * residual[2]
+        else:
+            if len(target) >= 1:
+                target[0] += self.arm_lateral_gain * residual[1]
+            if len(target) >= 2:
+                target[1] += self.arm_forward_gain * residual[0]
+            if len(target) >= 3:
+                target[2] += self.arm_vertical_gain * residual[2]
 
         stepped = [
             current_value
@@ -320,7 +331,7 @@ class ApproachCoordinator(Node):
 
         msg = ArmCommand()
         msg.header.stamp = self.get_clock().now().to_msg()
-        msg.header.frame_id = "arm_base"
+        msg.header.frame_id = CANONICAL_FRAMES["arm_base"]
         msg.command_mode = ArmCommand.MODE_JOINT_POSITION
         msg.joint_names = list(self.joint_names)
         msg.joint_positions = [float(value) for value in joint_positions]
@@ -340,7 +351,7 @@ class ApproachCoordinator(Node):
 
         arm_msg = ArmCommand()
         arm_msg.header.stamp = self.get_clock().now().to_msg()
-        arm_msg.header.frame_id = "arm_base"
+        arm_msg.header.frame_id = CANONICAL_FRAMES["arm_base"]
         arm_msg.command_mode = (
             ArmCommand.MODE_STOW if self.arm_stow_on_cancel else ArmCommand.MODE_HOLD
         )
@@ -523,6 +534,9 @@ class ApproachCoordinator(Node):
         ):
             if min_value > max_value:
                 raise ValueError(f"{joint} min_joint_position exceeds max")
+
+    def _uses_default_2dof_arm(self) -> bool:
+        return self.joint_names == DEFAULT_ARM_JOINT_NAMES
 
     def _string_list_parameter(self, parameter_name: str) -> List[str]:
         value = self.get_parameter(parameter_name).value

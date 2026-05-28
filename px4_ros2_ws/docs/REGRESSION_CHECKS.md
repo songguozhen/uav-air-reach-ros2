@@ -120,6 +120,48 @@ and `stop_stack.sh` now clean the project Gazebo world process before reruns.
 Visualization-copy commands for Mac are documented in
 `docs/VISUALIZATION_GUIDE.md`.
 
+## Stage 2 Frame and Schema Check
+
+Task 026 adds a deterministic regression for the stage-2 frame boundary and
+2-DOF arm schema. It does not start PX4, Gazebo, Micro XRCE-DDS, or any ROS
+nodes.
+
+Run from the workspace root:
+
+```bash
+python3 scripts/check_stage2_schema.py
+```
+
+Passing output contains:
+
+```text
+CHECK=PASS report=logs/demo_06_state_agg/<timestamp>/tf_report.json
+```
+
+The generated `tf_report.json` uses
+`stage2_frame_schema_regression_v1` and records every enforced invariant. The
+checker currently enforces:
+
+- frame names: `map`, `uav/base_link`, `uav/arm_base`, `uav/ee_link`,
+  `uav/camera_link`;
+- TF chain: `map -> uav/base_link -> uav/arm_base -> uav/ee_link ->
+  uav/camera_link`;
+- NED-to-ENU TF conversion: `enu_x=ned_y`, `enu_y=ned_x`, `enu_z=-ned_z`;
+- NED/ENU round trips for `(0, 0, 0)`, `(1, 2, -3)`, and
+  `(-4.5, 0.25, 2.0)`;
+- 2-DOF arm joint names: `arm_shoulder_pitch_joint`,
+  `arm_elbow_pitch_joint`;
+- two-element arm vectors for positions, velocities, efforts, limits, and
+  default velocity limits;
+- `ArmCommand`, `ArmState`, `PlatformState`, and `SystemObservation` message
+  fields that make up the stage-2 state schema.
+
+Use a fixed timestamp when a reproducible report path is needed:
+
+```bash
+python3 scripts/check_stage2_schema.py --timestamp 20260527_026_regression
+```
+
 ## Demo 10 Air Reach Check
 
 Demo 10 combines the stage-2 UAV bridge, tag target pose, approach coordinator,
@@ -132,10 +174,58 @@ bash scripts/run_regression_demo_10.sh
 python3 scripts/check_demo_10.py logs/demo10_air_reach
 ```
 
+## Stage 2 Evidence Validator
+
+Task 029 adds an artifact-based Stage 2 validator so Task 012-022 completion can
+be checked against run evidence, docs, logs, and `.done` markers instead of
+queue markers alone:
+
+```bash
+python3 scripts/check_stage2_evidence.py
+```
+
+The validator writes:
+
+```text
+deliverables/task-status.json
+deliverables/task-summary.md
+```
+
+It reports Demo 10 dry-run and live/live-smoke evidence separately. The dry-run
+check validates the latest dry-run `metrics.json`, `result.txt`,
+`sequence_events.jsonl`, PASS result, required Demo 10 phase sequence, and
+metric thresholds. The live check validates the latest live or live-smoke PASS
+result and, for live-smoke runs, PX4 stack readiness in `stack_readiness.txt`.
+
+The same report verifies that Stage 2 frame, control, vision, dataset, policy,
+coordinator, and Demo 10 docs exist, then checks Task 012-022 task logs against
+their `.done` markers and records any mismatch.
+
 Default `DEMO10_MODE=auto` writes a deterministic dry-run artifact under:
 
 ```text
 logs/demo10_air_reach/<timestamp>/
+```
+
+Use the bounded live stack smoke before a longer live run:
+
+```bash
+DEMO10_MODE=live-smoke RESET_STACK=1 bash scripts/run_regression_demo_10.sh
+```
+
+The smoke starts PX4/Gazebo and Micro XRCE-DDS, waits for PX4 to reach
+`Ready for takeoff`, records the result in
+`logs/demo10_air_reach/<timestamp>/stack_readiness.txt`, and then stops the
+stack. If PX4 never reaches readiness, the file records the latest matching
+preflight failure line or a timeout.
+
+Latest bounded live-smoke check:
+
+```text
+timestamp: 20260528_001327
+result: RESULT=PASS mode=live-smoke reason=stack_ready
+readiness: STACK_READY=YES reason=ready_for_takeoff detail=PX4 reached Ready for takeoff
+process cleanup: PASS; only the pre-existing uav_codex tmux/log command lines matched the broad pgrep command
 ```
 
 Use a live stack only when PX4/Gazebo, Micro XRCE-DDS, ROS 2, and the stage-2
@@ -189,4 +279,6 @@ These checks are regression smoke checks, not full flight-quality validation.
 They verify that standard artifacts exist, required CSV columns are present, and
 the recorded PASS marker is present. They do not recompute trajectory metrics,
 inspect image contents, validate MP4 playback, or prove that the vehicle followed
-the expected path.
+the expected path. The stage-2 frame/schema checker validates static conversion
+and schema contracts only; it does not prove TF timing, live transforms, or arm
+controller dynamics.

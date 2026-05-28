@@ -46,12 +46,12 @@ commands.
 
 | Parameter | Default | Meaning |
 | --- | --- | --- |
-| `joint_names` | `["joint1", "joint2", "joint3"]` | Controlled joint names and canonical order. |
-| `initial_joint_positions` | `[0.0, 0.0, 0.0]` | Safe target used on startup. |
-| `stow_joint_positions` | `[0.0, 0.0, 0.0]` | Target used for `stow` commands. |
-| `min_joint_positions` | `[-1.57, -1.57, -1.57]` | Per-joint lower position limits in radians. |
-| `max_joint_positions` | `[1.57, 1.57, 1.57]` | Per-joint upper position limits in radians. |
-| `max_joint_velocities` | `[0.6, 0.6, 0.6]` | Per-joint velocity limits in radians per second. |
+| `joint_names` | `["arm_shoulder_pitch_joint", "arm_elbow_pitch_joint"]` | Controlled joint names and canonical order matching `x500_arm_2dof`. |
+| `initial_joint_positions` | `[0.0, 0.0]` | Safe target used on startup. |
+| `stow_joint_positions` | `[0.0, 0.0]` | Target used for `stow` commands. |
+| `min_joint_positions` | `[-0.7, -1.2]` | Per-joint lower position limits in radians from the SDF model. |
+| `max_joint_positions` | `[0.7, 1.2]` | Per-joint upper position limits in radians from the SDF model. |
+| `max_joint_velocities` | `[1.5, 1.5]` | Per-joint velocity limits in radians per second from the SDF model. |
 | `target_jump_limit` | `0.35` | Maximum allowed per-command joint position jump in radians. |
 | `command_timeout` | `1.0` | Seconds before the bridge reports `HOLDING` while keeping the last safe target. |
 | `reach_tolerance` | `0.03` | Per-joint position tolerance for reached-target detection in radians. |

@@ -51,8 +51,32 @@ future image topics can be added without changing the launch file.
 
 ## Smoke Run
 
-Use the existing model smoke world and launch the bridge in a sourced ROS 2
-environment:
+Task 027 adds a bounded smoke script for the complete front-camera bridge path:
+
+```bash
+bash scripts/smoke_vision_bridge.sh
+```
+
+The script checks:
+
+- local model, world, bridge config, and ArUco texture assets;
+- Gazebo publication of the configured camera image topic;
+- `ros_gz_bridge` package availability;
+- ROS 2 availability of `/vision/front/image_raw`;
+- target pose publication on `/vision/target_pose`.
+
+When `ros_gz_bridge` is available and the image stream produces a frame, the
+script writes:
+
+```text
+visualizations/demo_07_camera/<timestamp>/sample_frame.png
+```
+
+If a live frame cannot be captured, the same output directory contains
+`sample_frame_status.txt` with the bounded-check reason.
+
+The lower-level manual sequence is still useful for interactive debugging in a
+sourced ROS 2 environment:
 
 ```bash
 src/aerial_manip_gazebo/scripts/smoke_load_x500_arm_2dof.sh
@@ -62,3 +86,5 @@ ros2 topic hz /vision/front/image_raw
 
 If `ros_gz_bridge` is not installed, the package can still build, but runtime
 image bridging is unavailable until the ROS/Gazebo bridge package is installed.
+The smoke script reports this as `WARN` and does not substitute placeholder
+target data for the live image checks.

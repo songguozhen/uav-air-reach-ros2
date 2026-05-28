@@ -1,0 +1,37 @@
+Task 028: Harden Live Stack and Demo 10
+
+Timestamp: 20260528_001327 live-smoke validation
+
+Changed behavior:
+- scripts/stop_stack.sh now terminates both known Gazebo default.sdf command forms, PX4 SITL, and Micro XRCE-DDS udp4:8888 processes after killing known tmux sessions.
+- scripts/start_stack.sh records STACK_READY readiness status and supports STACK_SMOKE_ONLY=1 for bounded readiness checks that clean up immediately.
+- scripts/run_regression_demo_10.sh supports DEMO10_MODE=live-smoke, verifies readiness before full live Demo 10 nodes, cleans up on live failures, and keeps DEMO10_MODE=auto on dry-run.
+- Demo 10 dry-run now sets PYTHONPATH for local aerial_manip_eval, aerial_manip_control, and aerial_manip_vision sources.
+
+Commands run:
+- bash -n scripts/start_stack.sh
+- bash -n scripts/stop_stack.sh
+- bash -n scripts/run_regression_demo_10.sh
+- python3 -m py_compile scripts/check_demo_10.py
+- DEMO10_MODE=dry-run bash scripts/run_regression_demo_10.sh
+- DEMO10_MODE=live-smoke RESET_STACK=1 bash scripts/run_regression_demo_10.sh
+- RESET_STACK=1 timeout 95s scripts/start_stack.sh || true
+- scripts/stop_stack.sh
+- pgrep -af 'gz sim|px4|MicroXRCEAgent' || true
+- pgrep -af 'gz sim .*default\.sdf|px4_sitl_default/bin/px4|MicroXRCEAgent .*udp4' || true
+- python3 -m compileall src scripts
+
+Results:
+- PASS: shell syntax checks.
+- PASS: Python compile checks.
+- PASS: Demo 10 dry-run at logs/demo10_air_reach/20260528_001048.
+  CHECK=PASS mode=dry-run max_flight_error_m=0.067 final_endpoint_error_m=0.051 target_visible_ratio=0.775
+- PASS: Demo 10 live-smoke at logs/demo10_air_reach/20260528_001327.
+  STACK_READY=YES reason=ready_for_takeoff detail=PX4 reached Ready for takeoff
+  RESULT=PASS mode=live-smoke reason=stack_ready
+- PASS: required raw start_stack bounded command reached Ready for takeoff, then scripts/stop_stack.sh completed.
+- PASS: no real PX4/Gazebo/MicroXRCEAgent stack process remained. The broad required pgrep only matched a pre-existing uav_codex tmux command line, the prior Task 028 log tee, and the pgrep command itself.
+
+Known risks:
+- Full DEMO10_MODE=live was not run; Task 025 documentation still says live ros2_control prerequisites are missing, so Demo 10 remains on the current high-level UAV bridge, placeholder target, and synthetic arm path.
+- The broad required pgrep pattern can match unrelated command lines containing px4 in paths or log names; the tighter stack-process pattern had no real process matches.

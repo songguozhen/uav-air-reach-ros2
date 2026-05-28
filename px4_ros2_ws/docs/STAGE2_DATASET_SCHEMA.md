@@ -35,7 +35,7 @@ Default parameters:
 | --- | --- | --- |
 | `metadata.json` | recorder parameters | Schema version, episode id, task label, topics, frame note. |
 | `observations.jsonl` | `/system/observation` | Platform NED state, arm state, target pose, phase, task labels. |
-| `actions.jsonl` | `/uav/target_position`, `/arm/target_joints` | High-level UAV and arm actions only. |
+| `actions.jsonl` | `/uav/target_position`, `/arm/target_joints` | High-level UAV and arm actions only. Arm joint arrays default to `["arm_shoulder_pitch_joint", "arm_elbow_pitch_joint"]`. |
 | `task_status.jsonl` | `/task/status` | Task id, status code/name, message, progress. |
 | `images.jsonl` | configured image topics | Image metadata and relative raw image payload path. |
 | `images/<topic>/<index>.raw` | configured image topics | Raw `sensor_msgs/Image.data` bytes. |
@@ -44,6 +44,11 @@ Default parameters:
 The recorder does not publish to PX4 `/fmu/in/*` topics. UAV positions and UAV
 targets preserve the project PX4 local NED convention: `x` north, `y` east, and
 `z` down.
+
+The default arm schema follows the two joints exposed by the `x500_arm_2dof`
+SDF model: `arm_shoulder_pitch_joint` and `arm_elbow_pitch_joint`. Older
+episodes with explicit custom `joint_names` remain self-describing because each
+arm observation and action record stores the joint name array beside its values.
 
 ## LeRobot-Ready Export
 
@@ -73,3 +78,24 @@ nearest high-level action record, `done`, and `success`.
 LeRobot is optional for this baseline. If the `lerobot` Python package is not
 installed, the exporter still writes the JSONL fallback dataset and records
 `lerobot_package_available=false` in `meta/dataset.json`.
+
+## Evidence Validation
+
+Use the Stage 2 evidence validator after Demo 10 or queue runs:
+
+```bash
+python3 scripts/check_stage2_evidence.py
+```
+
+It records the current artifact-based status in:
+
+```text
+deliverables/task-status.json
+deliverables/task-summary.md
+```
+
+The validator checks the latest Demo 10 dry-run evidence, the latest
+live/live-smoke evidence, required Stage 2 documentation, and Task 012-022 log
+plus `.done` marker consistency. Dataset and policy completion should be judged
+from these artifacts together with the raw episode/export files, not from
+`.done` markers alone.

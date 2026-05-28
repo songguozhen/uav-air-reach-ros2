@@ -76,14 +76,38 @@ Placeholder mode publishes the documented static target pose at
 `uav/camera_link`. This is a wiring smoke test only; it is not a visual
 detection result.
 
+The Task 027 smoke script keeps this distinction explicit. Live checks launch
+the node with `publish_placeholder:=false`; if no detected pose appears before
+the timeout, the script reports `WARN` and writes
+`live_target_pose_status.txt`. Placeholder mode is launched separately only to
+verify the ROS topic wiring path.
+
 ## Smoke Checks
 
 Build and compile:
 
 ```bash
+bash -n scripts/smoke_vision_bridge.sh
 python3 -m compileall src/aerial_manip_vision
 colcon build --packages-select aerial_manip_vision aerial_manip_gazebo
 ```
+
+Run the bounded bridge smoke:
+
+```bash
+bash scripts/smoke_vision_bridge.sh | tee codex-logs/027-harden-vision-bridge-smoke.log
+```
+
+Expected outputs are under:
+
+```text
+visualizations/demo_07_camera/<timestamp>/
+```
+
+When `ros_gz_bridge` is missing, the smoke result is `WARN`, not `FAIL`, as
+long as the explicit placeholder `/vision/target_pose` check succeeds. When the
+bridge is present, `sample_frame.png` is saved if a frame is received; otherwise
+`sample_frame_status.txt` documents why capture did not complete.
 
 With a sourced workspace, verify placeholder topic wiring without starting
 Gazebo:

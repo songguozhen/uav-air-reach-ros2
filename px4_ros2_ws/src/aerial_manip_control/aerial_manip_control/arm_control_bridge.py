@@ -2,6 +2,13 @@ import math
 import time
 from typing import Dict, List, Optional, Sequence
 
+from aerial_manip_control.stage2_schema import (
+    CANONICAL_ARM_JOINT_NAMES,
+    CANONICAL_FRAMES,
+    DEFAULT_ARM_MAX_POSITIONS,
+    DEFAULT_ARM_MAX_VELOCITIES,
+    DEFAULT_ARM_MIN_POSITIONS,
+)
 from aerial_manip_msgs.msg import ArmCommand, ArmState
 import rclpy
 from rclpy.node import Node
@@ -9,6 +16,7 @@ from std_msgs.msg import Bool, String
 
 
 JointVector = List[float]
+DEFAULT_ARM_JOINT_NAMES = list(CANONICAL_ARM_JOINT_NAMES)
 
 
 class ArmControlBridge(Node):
@@ -17,12 +25,12 @@ class ArmControlBridge(Node):
     def __init__(self) -> None:
         super().__init__("arm_control_bridge")
 
-        self.declare_parameter("joint_names", ["joint1", "joint2", "joint3"])
-        self.declare_parameter("initial_joint_positions", [0.0, 0.0, 0.0])
-        self.declare_parameter("stow_joint_positions", [0.0, 0.0, 0.0])
-        self.declare_parameter("min_joint_positions", [-1.57, -1.57, -1.57])
-        self.declare_parameter("max_joint_positions", [1.57, 1.57, 1.57])
-        self.declare_parameter("max_joint_velocities", [0.6, 0.6, 0.6])
+        self.declare_parameter("joint_names", DEFAULT_ARM_JOINT_NAMES)
+        self.declare_parameter("initial_joint_positions", [0.0, 0.0])
+        self.declare_parameter("stow_joint_positions", [0.0, 0.0])
+        self.declare_parameter("min_joint_positions", list(DEFAULT_ARM_MIN_POSITIONS))
+        self.declare_parameter("max_joint_positions", list(DEFAULT_ARM_MAX_POSITIONS))
+        self.declare_parameter("max_joint_velocities", list(DEFAULT_ARM_MAX_VELOCITIES))
         self.declare_parameter("target_jump_limit", 0.35)
         self.declare_parameter("command_timeout", 1.0)
         self.declare_parameter("reach_tolerance", 0.03)
@@ -152,7 +160,7 @@ class ArmControlBridge(Node):
 
         state_msg = ArmState()
         state_msg.header.stamp = self.get_clock().now().to_msg()
-        state_msg.header.frame_id = msg.header.frame_id or "arm_base"
+        state_msg.header.frame_id = msg.header.frame_id or CANONICAL_FRAMES["arm_base"]
         state_msg.joint_names = list(self.joint_names)
         state_msg.joint_positions = list(self.current_positions)
         state_msg.joint_velocities = list(self.current_velocities)
@@ -171,7 +179,7 @@ class ArmControlBridge(Node):
     def _publish_low_level_command(self) -> None:
         command = ArmCommand()
         command.header.stamp = self.get_clock().now().to_msg()
-        command.header.frame_id = "arm_base"
+        command.header.frame_id = CANONICAL_FRAMES["arm_base"]
         command.command_mode = ArmCommand.MODE_JOINT_POSITION
         command.joint_names = list(self.joint_names)
         command.joint_positions = list(self.safe_target)
@@ -296,7 +304,7 @@ class ArmControlBridge(Node):
     def _publish_bridge_state(self) -> None:
         target_msg = ArmState()
         target_msg.header.stamp = self.get_clock().now().to_msg()
-        target_msg.header.frame_id = "arm_base"
+        target_msg.header.frame_id = CANONICAL_FRAMES["arm_base"]
         target_msg.joint_names = list(self.joint_names)
         target_msg.joint_positions = list(self.safe_target)
         target_msg.joint_velocities = [0.0] * len(self.joint_names)

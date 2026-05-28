@@ -1,0 +1,34 @@
+Task 025: Repair Arm ros2_control Integration
+Date: 2026-05-27
+
+Changed files:
+- src/aerial_manip_control/config/arm_controllers.yaml
+- src/aerial_manip_control/launch/arm_control.launch.py
+- src/aerial_manip_control/package.xml
+- src/aerial_manip_control/setup.py
+- src/aerial_manip_gazebo/models/x500_arm_2dof/model.sdf
+- src/aerial_manip_gazebo/package.xml
+- docs/STAGE2_CONTROL_NOTES.md
+
+Commands run:
+- python3 -m compileall src/aerial_manip_control
+- colcon build --packages-select aerial_manip_control aerial_manip_gazebo
+- ros2 pkg list | grep -E 'gz_ros2_control|controller_manager|joint_state_broadcaster|forward_command_controller' || true
+- ros2 control list_controllers || true
+- source install/setup.bash && ros2 launch aerial_manip_control arm_control.launch.py
+- source install/setup.bash && ros2 pkg list | grep -E 'gz_ros2_control|controller_manager|joint_state_broadcaster|forward_command_controller' || true
+- source install/setup.bash && ros2 control list_controllers || true
+- python3 XML parse check for src/aerial_manip_gazebo/models/x500_arm_2dof/model.sdf
+
+Results:
+- compileall: PASS
+- colcon build: PASS
+- package grep: PASS command completed, no matching live ros2_control packages installed
+- ros2 control list_controllers: WARN, ros2 control verb unavailable because controller_manager/ros2controlcli is missing
+- ros2 launch aerial_manip_control arm_control.launch.py: PASS graceful missing-dependency path
+  WARN: arm ros2_control launch skipped; missing ROS 2 packages: gz_ros2_control, controller_manager, joint_state_broadcaster, forward_command_controller.
+- SDF XML parse: PASS
+
+Known risks:
+- Live controller spawning and /arm_position_controller/commands publish were not run because gz_ros2_control, controller_manager, joint_state_broadcaster, and forward_command_controller are not installed in the active ROS 2 environment.
+- src/aerial_manip_control/setup.py was minimally updated to install the new launch/config files; without that packaging change, the required ros2 launch entry point was not discoverable.
