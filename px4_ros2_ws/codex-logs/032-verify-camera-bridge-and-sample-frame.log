@@ -1,0 +1,31 @@
+Vision Bridge Smoke
+timestamp=20260528_113542
+workspace=/home/clcwork/UAV_capture/px4_ros2_ws
+output_dir=/home/clcwork/UAV_capture/px4_ros2_ws/visualizations/demo_07_camera/20260528_113542
+
+PASS model:x500_arm_2dof                path=/home/clcwork/UAV_capture/px4_ros2_ws/src/aerial_manip_gazebo/models/x500_arm_2dof/model.sdf
+PASS model:fiducial_target              path=/home/clcwork/UAV_capture/px4_ros2_ws/src/aerial_manip_gazebo/models/fiducial_target_aruco/model.sdf
+PASS texture:aruco_4x4_23               path=/home/clcwork/UAV_capture/px4_ros2_ws/src/aerial_manip_gazebo/models/fiducial_target_aruco/materials/textures/aruco_4x4_23.png
+PASS world:x500_arm_2dof_smoke          path=/home/clcwork/UAV_capture/px4_ros2_ws/src/aerial_manip_gazebo/worlds/x500_arm_2dof_smoke.sdf
+PASS bridge_config                      path=/home/clcwork/UAV_capture/px4_ros2_ws/src/aerial_manip_gazebo/config/front_camera_bridge.yaml
+PASS model:camera_link                  pattern=<child>camera_link</child>
+PASS world:fiducial_include             pattern=model://fiducial_target_aruco
+PASS bridge:image_topic                 pattern=/vision/front/image_raw
+PASS bridge:camera_info_topic           pattern=/vision/front/camera_info
+PASS ros2_cli                           path=/opt/ros/jazzy/bin/ros2
+PASS gz_cli                             path=/opt/ros/jazzy/opt/gz_tools_vendor/bin/gz
+PASS px4_gz_models                      path=/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models
+PASS gazebo_server                      pid=140593 log=/home/clcwork/UAV_capture/px4_ros2_ws/visualizations/demo_07_camera/20260528_113542/gz_sim.log
+PASS gazebo_camera_topic                topic=/world/x500_arm_2dof_smoke/model/x500_arm_2dof/link/camera_link/sensor/camera/image
+PASS ros_pkg:aerial_manip_vision        prefix=/home/clcwork/UAV_capture/px4_ros2_ws/install/aerial_manip_vision
+PASS placeholder_target_pose            topic=/vision/target_pose output=/home/clcwork/UAV_capture/px4_ros2_ws/visualizations/demo_07_camera/20260528_113542/placeholder_target_pose.yaml
+PASS ros_pkg:ros_gz_bridge              prefix=/opt/ros/jazzy
+PASS ros_gz_bridge_process              pid=140891 log=/home/clcwork/UAV_capture/px4_ros2_ws/visualizations/demo_07_camera/20260528_113542/front_camera_bridge.log
+PASS ros_image_topic                    topic=/vision/front/image_raw
+PASS ros_camera_info_topic              topic=/vision/front/camera_info
+PASS sample_frame                       path=/home/clcwork/UAV_capture/px4_ros2_ws/visualizations/demo_07_camera/20260528_113542/sample_frame.png
+PASS live_target_pose                   topic=/vision/target_pose output=/home/clcwork/UAV_capture/px4_ros2_ws/visualizations/demo_07_camera/20260528_113542/live_target_pose.yaml
+
+SUMMARY pass=22 warn=0 fail=0
+output_dir=/home/clcwork/UAV_capture/px4_ros2_ws/visualizations/demo_07_camera/20260528_113542
+RESULT=PASS reason=vision_smoke_verified

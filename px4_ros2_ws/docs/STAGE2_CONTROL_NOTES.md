@@ -78,8 +78,26 @@ which live packages need to be installed.
 
 ## Live Verification Status
 
-As of Task 025, the current environment still lacks the required live
-`ros2_control` packages, so static build/compile checks and graceful
-missing-dependency behavior were verified. Live controller spawning and the
-one-shot `/arm_position_controller/commands` publish should be rerun after the
-missing packages are installed and Gazebo has loaded `x500_arm_2dof`.
+As of Task 033, the required live `ros2_control` ROS packages are available in
+the sourced workspace environment:
+
+```text
+gz_ros2_control
+controller_manager
+joint_state_broadcaster
+forward_command_controller
+```
+
+Running the controller launch with `source install/setup.bash` starts the
+expected two spawners:
+
+```text
+joint_state_broadcaster
+arm_position_controller
+```
+
+The standalone launch check then times out waiting for
+`/controller_manager/list_controllers` when Gazebo has not loaded the
+`x500_arm_2dof` model. That is expected for this isolated startup check; the
+next live controller validation should run with the model loaded so the
+`gz_ros2_control` plugin provides `/controller_manager`.

@@ -51,10 +51,13 @@ check_live_prereqs() {
     return 1
   fi
 
+  set +u
   if ! source install/setup.bash; then
+    set -u
     log "live prerequisite failed: could not source install/setup.bash"
     return 1
   fi
+  set -u
 
   local pkg
   for pkg in px4_offboard_hover aerial_manip_control aerial_manip_eval aerial_manip_vision; do
@@ -70,6 +73,19 @@ check_live_prereqs() {
 cleanup_live() {
   PIDS=""
   LIVE_CLEANED=0
+}
+
+sync_tmux_environment() {
+  local name
+
+  tmux start-server 2>/dev/null || return 0
+  for name in PATH GZ_CONFIG_PATH LD_LIBRARY_PATH CMAKE_PREFIX_PATH AMENT_PREFIX_PATH; do
+    if [ "${!name+x}" = "x" ]; then
+      tmux set-environment -g "$name" "${!name}" 2>/dev/null || true
+    else
+      tmux set-environment -gu "$name" 2>/dev/null || true
+    fi
+  done
 }
 
 stop_live_processes() {
@@ -121,6 +137,7 @@ run_live() {
   trap stop_live_processes EXIT INT TERM
 
   log "mode=live output_dir=${OUTPUT_DIR}"
+  sync_tmux_environment
   if ! READINESS_RESULT_FILE="$READINESS_FILE" \
     RESET_STACK="${RESET_STACK:-1}" \
     STACK_READY_TIMEOUT="${DEMO10_STACK_READY_TIMEOUT:-75}" \
@@ -157,7 +174,7 @@ run_live() {
     >>"${OUTPUT_DIR}/episode_recorder.log" 2>&1 &
   PIDS="${PIDS} $!"
 
-  sleep "${DEMO10_NODE_STARTUP_SEC:-5}"
+  sleep "${DEMO10_NODE_STARTUP_SEC:-12}"
   ros2 run aerial_manip_eval air_reach_demo --output-dir "$OUTPUT_DIR" \
     >>"${OUTPUT_DIR}/air_reach_demo.log" 2>&1
   python3 scripts/check_demo_10.py "$OUTPUT_DIR" 2>&1 | tee -a "$RUNNER_LOG"

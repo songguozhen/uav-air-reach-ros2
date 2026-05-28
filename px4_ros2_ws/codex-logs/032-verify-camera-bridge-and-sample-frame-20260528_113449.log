@@ -1,0 +1,2724 @@
+Reading prompt from stdin...
+OpenAI Codex v0.133.0
+--------
+workdir: /home/clcwork/UAV_capture/px4_ros2_ws
+model: gpt-5.5
+provider: openai
+approval: never
+sandbox: danger-full-access
+reasoning effort: medium
+reasoning summaries: none
+session id: 019e6ca6-2b8f-7c32-8bd0-29687c5d6965
+--------
+user
+# Required workspace rules
+
+# Codex Runbook
+
+This file is the required operating record for every Codex run in this
+workspace. Read it together with `AGENTS.md` before changing files or running
+simulation tasks.
+
+## Workspace
+
+Root workspace:
+
+```text
+/home/clcwork/UAV_capture/px4_ros2_ws
+```
+
+Related external paths:
+
+```text
+/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot
+/home/clcwork/Micro-XRCE-DDS-Agent/build
+/home/clcwork/miniconda3/envs/lerobot
+```
+
+This directory is not currently a git repository. Treat existing files,
+generated artifacts, logs, and user edits as persistent project state.
+
+## Current Project State
+
+Implemented ROS 2 package:
+
+```text
+src/px4_offboard_hover
+```
+
+Available PX4 offboard demos and tools:
+
+- Demo 01 hover: `scripts/run_demo01_hover.sh`
+- Demo 02 waypoint flight: `scripts/run_demo02_waypoint_flight.sh`
+- Demo 03 circle trajectory: `scripts/run_demo03_circle_trajectory.sh`
+- Demo 04 external setpoint / UAV bridge: `scripts/run_demo04_external_setpoint.sh`
+- Hover experiment: `scripts/run_hover_experiment.sh`
+- Trajectory recorder: `scripts/run_trajectory_recorder.sh`
+- Output checker: `scripts/check_demo_outputs.sh`
+- Stack startup and cleanup: `scripts/start_stack.sh`, `scripts/stop_stack.sh`
+
+Implemented UAV bridge:
+
+```text
+src/px4_offboard_hover/px4_offboard_hover/uav_control_bridge.py
+```
+
+The bridge exposes high-level UAV control topics:
+
+```text
+/uav/target_position      geometry_msgs/msg/Point
+/uav/current_position     geometry_msgs/msg/PointStamped
+/uav/current_target       geometry_msgs/msg/PointStamped
+/uav/reached_target       std_msgs/msg/Bool
+/uav/control_state        std_msgs/msg/String
+```
+
+External modules, including future vision, LeRobot, planner, and UAV-arm work,
+must use `/uav/*` topics by default. Do not publish directly to PX4
+`/fmu/in/*` topics from external modules unless a task explicitly requires it.
+
+Current bridge safety parameters include:
+
+```text
+initial_x
+initial_y
+initial_z
+yaw
+target_timeout
+max_altitude
+min_altitude
+max_horizontal_range
+target_jump_limit
+reach_xy_tolerance
+reach_z_tolerance
+reach_hold_time
+```
+
+Coordinate rule: `/uav/target_position` is local PX4 NED. Positive altitude is
+represented as negative `z`. For example, 2 m altitude is `z: -2.0`.
+
+Latest recorded full Demo 04 bridge simulation:
+
+```text
+timestamp: 20260527_085025
+visuals: visualizations/demo04_external_setpoint/20260527_085025
+logs: logs/demo04_external_setpoint/20260527_085025
+result: RESULT=PASS reason=ok
+checker: CHECK=PASS
+avg_error_3d_m: 0.20
+final_error_3d_m: 0.02
+final_position_ned: (-0.01, -0.01, -2.01)
+```
+
+The preceding run at `20260527_084530` failed because a stale Gazebo
+`default.sdf` server from an earlier day was still running. `RESET_STACK=1` and
+`scripts/stop_stack.sh` now clean this project Gazebo world process before
+reruns.
+
+## File Path Management
+
+Use these path rules consistently:
+
+- Use workspace-relative paths in commands and documentation when already under
+  `/home/clcwork/UAV_capture/px4_ros2_ws`.
+- Use absolute paths when referring to artifacts in final reports, cross-root
+  scripts, or external paths outside this workspace.
+- Keep source code under `src/`.
+- Keep reusable shell entry points under `scripts/`.
+- Keep task definitions under `codex-tasks/`.
+- Keep Codex execution logs and done markers under `codex-logs/`.
+- Keep project documentation under `docs/` or top-level Markdown files.
+- Keep simulation logs under `logs/<demo>/<timestamp>/`.
+- Keep visualization outputs under `visualizations/<demo>/<timestamp>/`.
+- Do not hand-edit generated build outputs under `build/`, `install/`, or
+  `log/build_*` unless the task is explicitly about generated artifacts.
+- Do not overwrite or delete existing timestamped `logs/` or
+  `visualizations/` directories.
+
+Stable generated Demo output names:
+
+```text
+trajectory.csv
+trajectory_3d.png
+xy_path.png
+height_curve.png
+speed_curve.png
+tracking_error.png
+trajectory.mp4
+summary.md
+result.txt
+```
+
+## Required Codex Run Procedure
+
+Every Codex run must follow this procedure:
+
+1. Confirm the working directory is the workspace root:
+
+   ```bash
+   cd /home/clcwork/UAV_capture/px4_ros2_ws
+   ```
+
+2. Read the governing files before planning edits:
+
+   ```text
+   AGENTS.md
+   codex.md
+   relevant codex-tasks/<task>.md
+   relevant docs/*.md or source files
+   ```
+
+3. Before editing, identify the exact files to touch and avoid unrelated
+   refactors.
+
+4. Preserve all existing user changes and generated results. Never run
+   destructive cleanup such as `git reset --hard`, broad `rm -rf`, or deleting
+   log/result directories unless the user explicitly asks.
+
+5. Use `apply_patch` for manual file edits. Use formatting/build tools only
+   after the target files are clear.
+
+6. Record the task execution in `codex-logs/`:
+
+   ```text
+   codex-logs/<task-stem>-<YYYYMMDD_HHMMSS>.log
+   codex-logs/<task-stem>.done
+   ```
+
+   `run_codex_queue.sh` creates these automatically. For manual one-off work,
+   create or preserve equivalent logs when practical.
+
+7. For shell script changes, run at least:
+
+   ```bash
+   bash -n <script>
+   ```
+
+8. For Python node changes, run at least one relevant Python check:
+
+   ```bash
+   python3 -m compileall src scripts
+   ```
+
+   Use `colcon build --packages-select <package>` when package metadata,
+   console entry points, dependencies, or ROS node code changed.
+
+9. For demo/output changes, run the relevant smoke checker:
+
+   ```bash
+   ./scripts/check_demo_outputs.sh visualizations/<demo>
+   ```
+
+10. For PX4/Gazebo simulation runs, prefer existing scripts. Use
+    `RESET_STACK=1` for reproducible runs, and call `scripts/stop_stack.sh`
+    before finishing unless the user explicitly wants the stack left running.
+
+11. If project state changes, update the appropriate Markdown record in the same
+    run. Examples:
+
+    ```text
+    codex.md
+    docs/REGRESSION_CHECKS.md
+    docs/UAV_CONTROL_API.md
+    docs/VISUALIZATION_GUIDE.md
+    TOOLS_AND_SCRIPTS_GUIDE.md
+    ```
+
+12. Final reports must include:
+
+    ```text
+    changed files
+    commands run
+    test result
+    known risks
+    output paths, when logs or visualizations were generated
+    ```
+
+## Codex Queue Requirements
+
+`run_codex_queue.sh` is the standard runner for queued task files. It must:
+
+- verify `AGENTS.md`, `codex.md`, `codex-tasks/`, and `codex-logs/` exist;
+- pass the contents of `codex.md` together with the task file to Codex;
+- write timestamped logs under `codex-logs/`;
+- create `.done` markers only after a task exits successfully;
+- support `--dry-run`, `--from <prefix>`, and `--task <file>`;
+- skip completed queued tasks unless `--task` is used.
+
+Before adding a new queued task, create a numbered Markdown file:
+
+```text
+codex-tasks/010-short-task-name.md
+```
+
+The task file should state:
+
+```text
+goal
+allowed files or directories
+required validation commands
+required documentation updates
+expected final report fields
+```
+
+## Current Validation Commands
+
+Known passing checks after the latest bridge work:
+
+```bash
+bash -n run_codex_queue.sh
+bash -n scripts/check_demo_outputs.sh
+bash -n scripts/run_demo04_external_setpoint.sh
+bash -n scripts/start_stack.sh
+bash -n scripts/stop_stack.sh
+python3 -m compileall src scripts
+colcon build --packages-select px4_offboard_hover
+./scripts/check_demo_outputs.sh visualizations/demo01_hover
+./scripts/check_demo_outputs.sh visualizations/demo02_waypoint_flight
+./scripts/check_demo_outputs.sh visualizations/demo03_circle_trajectory
+./scripts/check_demo_outputs.sh visualizations/demo04_external_setpoint
+```
+
+Latest full bridge simulation command:
+
+```bash
+./scripts/run_demo04_external_setpoint.sh
+./scripts/check_demo_outputs.sh visualizations/demo04_external_setpoint/20260527_085025
+```
+
+
+# Task file
+
+# Task 032: Verify Camera Bridge and Sample Frame
+
+## Task goal
+
+- Verify the Gazebo front-camera to ROS image bridge path.
+- Capture one real sample frame from the Stage 2 camera smoke world.
+- Keep the perception baseline geometry-only; do not add semantic vision or new camera models.
+
+## Allowed changes
+
+- `scripts/smoke_vision_bridge.sh`
+- `docs/STAGE2_VISION_BRIDGE.md`
+- `docs/STAGE2_TARGET_POSE.md`
+- `codex-logs/032-verify-camera-bridge-and-sample-frame.log`
+
+## Implementation requirements
+
+- Use the existing `smoke_vision_bridge.sh` as the main entry point.
+- Verify model assets, Gazebo camera topic availability, `ros_gz_bridge`, `/vision/front/image_raw`, `/vision/front/camera_info`, and target pose publishing.
+- If the bridge is available, save one frame under `visualizations/demo_07_camera/<timestamp>/sample_frame.png`.
+- If capture fails, keep `sample_frame_status.txt`, `front_camera_bridge.log`, `gz_sim.log`, and the exact failure reason.
+- Keep placeholder target publishing explicit; do not silently replace live image evidence with placeholder-only evidence.
+
+## Required commands
+
+```bash
+bash -n scripts/smoke_vision_bridge.sh
+bash scripts/smoke_vision_bridge.sh | tee codex-logs/032-verify-camera-bridge-and-sample-frame.log
+```
+
+## Deliverables
+
+- A timestamped `visualizations/demo_07_camera/<timestamp>/` directory.
+- `sample_frame.png` when the image bridge works, or a precise status file when it does not.
+- Updated vision docs if runtime behavior or limitations changed.
+
+## Final report requirements
+
+- `changed files`
+- `commands run`
+- `test result`
+- `known risks`
+- `sample frame path or failure status path`
+
+codex
+I’ll follow the workspace runbook for Task 032: first read the required project records and the existing smoke script/docs, then run the required validation and only patch the allowed files if the run exposes a fix or documentation update.
+exec
+/bin/bash -lc "sed -n '1,280p' codex.md" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+# Codex Runbook
+
+This file is the required operating record for every Codex run in this
+workspace. Read it together with `AGENTS.md` before changing files or running
+simulation tasks.
+
+## Workspace
+
+Root workspace:
+
+```text
+/home/clcwork/UAV_capture/px4_ros2_ws
+```
+
+Related external paths:
+
+```text
+/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot
+/home/clcwork/Micro-XRCE-DDS-Agent/build
+/home/clcwork/miniconda3/envs/lerobot
+```
+
+This directory is not currently a git repository. Treat existing files,
+generated artifacts, logs, and user edits as persistent project state.
+
+## Current Project State
+
+Implemented ROS 2 package:
+
+```text
+src/px4_offboard_hover
+```
+
+Available PX4 offboard demos and tools:
+
+- Demo 01 hover: `scripts/run_demo01_hover.sh`
+- Demo 02 waypoint flight: `scripts/run_demo02_waypoint_flight.sh`
+- Demo 03 circle trajectory: `scripts/run_demo03_circle_trajectory.sh`
+- Demo 04 external setpoint / UAV bridge: `scripts/run_demo04_external_setpoint.sh`
+- Hover experiment: `scripts/run_hover_experiment.sh`
+- Trajectory recorder: `scripts/run_trajectory_recorder.sh`
+- Output checker: `scripts/check_demo_outputs.sh`
+- Stack startup and cleanup: `scripts/start_stack.sh`, `scripts/stop_stack.sh`
+
+Implemented UAV bridge:
+
+```text
+src/px4_offboard_hover/px4_offboard_hover/uav_control_bridge.py
+```
+
+The bridge exposes high-level UAV control topics:
+
+```text
+/uav/target_position      geometry_msgs/msg/Point
+/uav/current_position     geometry_msgs/msg/PointStamped
+/uav/current_target       geometry_msgs/msg/PointStamped
+/uav/reached_target       std_msgs/msg/Bool
+/uav/control_state        std_msgs/msg/String
+```
+
+External modules, including future vision, LeRobot, planner, and UAV-arm work,
+must use `/uav/*` topics by default. Do not publish directly to PX4
+`/fmu/in/*` topics from external modules unless a task explicitly requires it.
+
+Current bridge safety parameters include:
+
+```text
+initial_x
+initial_y
+initial_z
+yaw
+target_timeout
+max_altitude
+min_altitude
+max_horizontal_range
+target_jump_limit
+reach_xy_tolerance
+reach_z_tolerance
+reach_hold_time
+```
+
+Coordinate rule: `/uav/target_position` is local PX4 NED. Positive altitude is
+represented as negative `z`. For example, 2 m altitude is `z: -2.0`.
+
+Latest recorded full Demo 04 bridge simulation:
+
+```text
+timestamp: 20260527_085025
+visuals: visualizations/demo04_external_setpoint/20260527_085025
+logs: logs/demo04_external_setpoint/20260527_085025
+result: RESULT=PASS reason=ok
+checker: CHECK=PASS
+avg_error_3d_m: 0.20
+final_error_3d_m: 0.02
+final_position_ned: (-0.01, -0.01, -2.01)
+```
+
+The preceding run at `20260527_084530` failed because a stale Gazebo
+`default.sdf` server from an earlier day was still running. `RESET_STACK=1` and
+`scripts/stop_stack.sh` now clean this project Gazebo world process before
+reruns.
+
+## File Path Management
+
+Use these path rules consistently:
+
+- Use workspace-relative paths in commands and documentation when already under
+  `/home/clcwork/UAV_capture/px4_ros2_ws`.
+- Use absolute paths when referring to artifacts in final reports, cross-root
+  scripts, or external paths outside this workspace.
+- Keep source code under `src/`.
+- Keep reusable shell entry points under `scripts/`.
+- Keep task definitions under `codex-tasks/`.
+- Keep Codex execution logs and done markers under `codex-logs/`.
+- Keep project documentation under `docs/` or top-level Markdown files.
+- Keep simulation logs under `logs/<demo>/<timestamp>/`.
+- Keep visualization outputs under `visualizations/<demo>/<timestamp>/`.
+- Do not hand-edit generated build outputs under `build/`, `install/`, or
+  `log/build_*` unless the task is explicitly about generated artifacts.
+- Do not overwrite or delete existing timestamped `logs/` or
+  `visualizations/` directories.
+
+Stable generated Demo output names:
+
+```text
+trajectory.csv
+trajectory_3d.png
+xy_path.png
+height_curve.png
+speed_curve.png
+tracking_error.png
+trajectory.mp4
+summary.md
+result.txt
+```
+
+## Required Codex Run Procedure
+
+Every Codex run must follow this procedure:
+
+1. Confirm the working directory is the workspace root:
+
+   ```bash
+   cd /home/clcwork/UAV_capture/px4_ros2_ws
+   ```
+
+2. Read the governing files before planning edits:
+
+   ```text
+   AGENTS.md
+   codex.md
+   relevant codex-tasks/<task>.md
+   relevant docs/*.md or source files
+   ```
+
+3. Before editing, identify the exact files to touch and avoid unrelated
+   refactors.
+
+4. Preserve all existing user changes and generated results. Never run
+   destructive cleanup such as `git reset --hard`, broad `rm -rf`, or deleting
+   log/result directories unless the user explicitly asks.
+
+5. Use `apply_patch` for manual file edits. Use formatting/build tools only
+   after the target files are clear.
+
+6. Record the task execution in `codex-logs/`:
+
+   ```text
+   codex-logs/<task-stem>-<YYYYMMDD_HHMMSS>.log
+   codex-logs/<task-stem>.done
+   ```
+
+   `run_codex_queue.sh` creates these automatically. For manual one-off work,
+   create or preserve equivalent logs when practical.
+
+7. For shell script changes, run at least:
+
+   ```bash
+   bash -n <script>
+   ```
+
+8. For Python node changes, run at least one relevant Python check:
+
+   ```bash
+   python3 -m compileall src scripts
+   ```
+
+   Use `colcon build --packages-select <package>` when package metadata,
+   console entry points, dependencies, or ROS node code changed.
+
+9. For demo/output changes, run the relevant smoke checker:
+
+   ```bash
+   ./scripts/check_demo_outputs.sh visualizations/<demo>
+   ```
+
+10. For PX4/Gazebo simulation runs, prefer existing scripts. Use
+    `RESET_STACK=1` for reproducible runs, and call `scripts/stop_stack.sh`
+    before finishing unless the user explicitly wants the stack left running.
+
+11. If project state changes, update the appropriate Markdown record in the same
+    run. Examples:
+
+    ```text
+    codex.md
+    docs/REGRESSION_CHECKS.md
+    docs/UAV_CONTROL_API.md
+    docs/VISUALIZATION_GUIDE.md
+    TOOLS_AND_SCRIPTS_GUIDE.md
+    ```
+
+12. Final reports must include:
+
+    ```text
+    changed files
+    commands run
+    test result
+    known risks
+    output paths, when logs or visualizations were generated
+    ```
+
+## Codex Queue Requirements
+
+`run_codex_queue.sh` is the standard runner for queued task files. It must:
+
+- verify `AGENTS.md`, `codex.md`, `codex-tasks/`, and `codex-logs/` exist;
+- pass the contents of `codex.md` together with the task file to Codex;
+- write timestamped logs under `codex-logs/`;
+- create `.done` markers only after a task exits successfully;
+- support `--dry-run`, `--from <prefix>`, and `--task <file>`;
+- skip completed queued tasks unless `--task` is used.
+
+Before adding a new queued task, create a numbered Markdown file:
+
+```text
+codex-tasks/010-short-task-name.md
+```
+
+The task file should state:
+
+```text
+goal
+allowed files or directories
+required validation commands
+required documentation updates
+expected final report fields
+```
+
+## Current Validation Commands
+
+Known passing checks after the latest bridge work:
+
+```bash
+bash -n run_codex_queue.sh
+bash -n scripts/check_demo_outputs.sh
+bash -n scripts/run_demo04_external_setpoint.sh
+bash -n scripts/start_stack.sh
+bash -n scripts/stop_stack.sh
+python3 -m compileall src scripts
+colcon build --packages-select px4_offboard_hover
+./scripts/check_demo_outputs.sh visualizations/demo01_hover
+./scripts/check_demo_outputs.sh visualizations/demo02_waypoint_flight
+./scripts/check_demo_outputs.sh visualizations/demo03_circle_trajectory
+./scripts/check_demo_outputs.sh visualizations/demo04_external_setpoint
+```
+
+Latest full bridge simulation command:
+
+```bash
+./scripts/run_demo04_external_setpoint.sh
+./scripts/check_demo_outputs.sh visualizations/demo04_external_setpoint/20260527_085025
+```
+
+
+exec
+/bin/bash -lc 'pwd && ls' in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+/home/clcwork/UAV_capture/px4_ros2_ws
+AGENTS.md
+BASIC_CONTROL_DEMOS.md
+OFFBOARD_HOVER_EXPERIMENT.md
+TOOLS_AND_SCRIPTS_GUIDE.md
+build
+codex-logs
+codex-tasks
+codex.md
+deliverables
+docs
+examples
+frames_2026-05-27_18.40.25.gv
+frames_2026-05-27_18.41.36.gv
+install
+log
+logs
+references
+run_codex_queue.sh
+scripts
+src
+tools
+visualizations
+
+exec
+/bin/bash -lc "sed -n '1,220p' codex-tasks/032-verify-camera-bridge-and-sample-frame.md" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+# Task 032: Verify Camera Bridge and Sample Frame
+
+## Task goal
+
+- Verify the Gazebo front-camera to ROS image bridge path.
+- Capture one real sample frame from the Stage 2 camera smoke world.
+- Keep the perception baseline geometry-only; do not add semantic vision or new camera models.
+
+## Allowed changes
+
+- `scripts/smoke_vision_bridge.sh`
+- `docs/STAGE2_VISION_BRIDGE.md`
+- `docs/STAGE2_TARGET_POSE.md`
+- `codex-logs/032-verify-camera-bridge-and-sample-frame.log`
+
+## Implementation requirements
+
+- Use the existing `smoke_vision_bridge.sh` as the main entry point.
+- Verify model assets, Gazebo camera topic availability, `ros_gz_bridge`, `/vision/front/image_raw`, `/vision/front/camera_info`, and target pose publishing.
+- If the bridge is available, save one frame under `visualizations/demo_07_camera/<timestamp>/sample_frame.png`.
+- If capture fails, keep `sample_frame_status.txt`, `front_camera_bridge.log`, `gz_sim.log`, and the exact failure reason.
+- Keep placeholder target publishing explicit; do not silently replace live image evidence with placeholder-only evidence.
+
+## Required commands
+
+```bash
+bash -n scripts/smoke_vision_bridge.sh
+bash scripts/smoke_vision_bridge.sh | tee codex-logs/032-verify-camera-bridge-and-sample-frame.log
+```
+
+## Deliverables
+
+- A timestamped `visualizations/demo_07_camera/<timestamp>/` directory.
+- `sample_frame.png` when the image bridge works, or a precise status file when it does not.
+- Updated vision docs if runtime behavior or limitations changed.
+
+## Final report requirements
+
+- `changed files`
+- `commands run`
+- `test result`
+- `known risks`
+- `sample frame path or failure status path`
+
+exec
+/bin/bash -lc "sed -n '1,240p' AGENTS.md" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+# Codex project rules
+
+These rules apply to the ROS2/PX4/LeRobot UAV simulation workspace at:
+
+```text
+/home/clcwork/UAV_capture/px4_ros2_ws
+```
+
+## Scope and workflow
+
+- 每次 Codex 运行都必须先读取并遵守 `codex.md`。`codex.md` 是当前项目状态、路径管理、日志记录和每次运行流程的主记录。
+- 修改前先理解项目结构，不要盲目改文件。
+- 每个任务只做当前 `codex-tasks/` 中对应 task 文件里的要求，不主动扩大范围。
+- 优先修改当前 ROS2 工作区 `/home/clcwork/UAV_capture/px4_ros2_ws` 下的脚本、文档和自定义包。
+- 不要随意更改 PX4-Autopilot 源码，除非任务文件明确要求。
+- 不要破坏已成功通过的 Demo 1-4：
+  - Demo 01 Offboard Hover
+  - Demo 02 Waypoint Flight
+  - Demo 03 Circle Trajectory
+  - Demo 04 External Setpoint Interface
+- 如果需要长时间运行实验，优先使用已有脚本和 tmux，不要随意新建后台进程。
+- 对于 PX4/Gazebo/Micro XRCE-DDS 相关任务，优先使用已有 `start_stack.sh`、`stop_stack.sh`、`run_*_experiment.sh` 和 `run_demo*.sh` 脚本。
+
+## Safety rules
+
+- 不要删除用户数据、日志、实验结果、模型 checkpoint、rosbag、`trajectory.csv`、可视化图片或视频。
+- 不要删除或改动 `.env`、secrets、production 配置、SSH key、token、代理配置、系统级配置。
+- 不要运行破坏性命令，例如 `git reset --hard`、批量删除日志或清空实验目录，除非任务文件明确要求且用户确认。
+- 如果工作区已有未提交修改，必须保留并绕开无关修改，不要回滚用户改动。
+
+## Validation requirements
+
+- 修改代码后必须运行相关测试、检查脚本或最小可复现实验。
+- 修改 shell 脚本后必须确保可执行权限正确，并至少运行 `bash -n <script>`。
+- 修改 Python 节点后必须至少运行 `python3 -m compileall`、`python3 -m py_compile` 或相关 pytest。
+- 如果测试失败，先尝试修复；仍失败则在最终报告里写清楚原因。
+- 每次执行任务应把输出日志保存到 `codex-logs/`。
+
+## Demo and visualization rules
+
+- 对于可视化任务，优先复用现有 `trajectory.csv`、日志和 plotting/recorder 脚本，不要重复造轮子。
+- Demo 1-4 的展示输出应保持稳定命名：
+  - `trajectory.csv`
+  - `trajectory_3d.png`
+  - `xy_path.png`
+  - `height_curve.png`
+  - `speed_curve.png`
+  - `tracking_error.png`
+  - `trajectory.mp4`
+  - `summary.md`
+  - `result.txt`
+- 不要删除或覆盖已有 `visualizations/<demo>/<timestamp>/` 结果目录。
+
+## UAV high-level control bridge rules
+
+- 后续视觉、任务规划、LeRobot 和机械臂相关任务必须优先通过 `/uav/*` 高层 ROS2 topic 接入无人机控制。
+- 不要让外部模块直接发布 `/fmu/in/offboard_control_mode`、`/fmu/in/trajectory_setpoint` 或 `/fmu/in/vehicle_command`。
+- PX4 `/fmu/in/*` 发布逻辑应集中在一个可审计的 UAV bridge 或现有 Offboard 控制基类内。
+- 新增 UAV bridge 节点时必须至少包含：
+  - 参数化安全限制，例如最大高度、最小高度、最大水平范围、目标跳变限制和目标超时。
+  - 当前安全目标和控制状态输出。
+  - 明确的 NED 坐标系说明，正高度输入必须转换为 PX4 `z=-altitude` 后再发给 PX4。
+  - `python3 -m compileall` 或等价 Python 检查。
+- Demo 04 可以继续作为外部目标点接口示例，但新的回归任务应优先验证通过 UAV bridge 跑通的路径。
+
+## LeRobot and UAV-arm rules
+
+- 对于后续 LeRobot 接入任务，不要让 LeRobot 直接控制 PX4 底层电机或姿态，只允许通过高层接口或机械臂操作策略接入。
+- LeRobot、视觉模块或任务规划器应优先通过 `/uav/target_position` 等高层 ROS2 topic 接入。
+- 对于 UAV-arm 任务，先设计 2-DOF/3-DOF 简化机械臂仿真，不要直接引入复杂 6-DOF 重机械臂。
+- PX4 Offboard 保持飞行平台稳定，机械臂执行局部操作；不要把机械臂策略和 PX4 飞控底层控制混在一起。
+
+## Final report format
+
+每个任务结束时必须总结：
+
+- `changed files`: 改了哪些文件。
+- `commands run`: 跑了什么命令。
+- `test result`: 结果如何，PASS/FAIL。
+- `known risks`: 还有什么风险或未验证项。
+
+codex
+The task is tightly scoped to the camera smoke bridge script plus two docs. I’m reading those now along with existing generated camera outputs so I can tell whether the runtime behavior is already captured or needs a script/doc adjustment.
+exec
+/bin/bash -lc "sed -n '1,260p' docs/STAGE2_VISION_BRIDGE.md" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+# Stage 2 Vision Bridge
+
+Task: `017-add-front-camera-and-ros-gz-bridge`
+
+## Front RGB Camera
+
+The `x500_arm_2dof` model includes one forward-facing RGB camera by merging the
+local PX4 `mono_cam` model into the existing `x500` include-merge pattern used
+by `x500_mono_cam`.
+
+Model path:
+
+```text
+src/aerial_manip_gazebo/models/x500_arm_2dof/model.sdf
+```
+
+Camera placement:
+
+```text
+parent: base_link
+child: camera_link
+pose: 0.12 0 0.242 0 0 0
+```
+
+The camera is centered on the vehicle body rather than offset laterally. The
+first version intentionally exposes only one RGB stream.
+
+## ROS/Gazebo Bridge
+
+Bridge config:
+
+```text
+src/aerial_manip_gazebo/config/front_camera_bridge.yaml
+```
+
+Launch entry point:
+
+```bash
+ros2 launch aerial_manip_gazebo front_camera_bridge.launch.py
+```
+
+Bridged topics:
+
+| ROS 2 topic | ROS 2 type | Gazebo topic | Direction |
+| --- | --- | --- | --- |
+| `/vision/front/image_raw` | `sensor_msgs/msg/Image` | `/world/x500_arm_2dof_smoke/model/x500_arm_2dof/link/camera_link/sensor/camera/image` | Gazebo to ROS 2 |
+| `/vision/front/camera_info` | `sensor_msgs/msg/CameraInfo` | `/world/x500_arm_2dof_smoke/model/x500_arm_2dof/link/camera_link/sensor/camera/camera_info` | Gazebo to ROS 2 |
+
+The bridge is configured through YAML instead of command-line bridge pairs so
+future image topics can be added without changing the launch file.
+
+## Smoke Run
+
+Task 027 adds a bounded smoke script for the complete front-camera bridge path:
+
+```bash
+bash scripts/smoke_vision_bridge.sh
+```
+
+The script checks:
+
+- local model, world, bridge config, and ArUco texture assets;
+- Gazebo publication of the configured camera image topic;
+- `ros_gz_bridge` package availability;
+- ROS 2 availability of `/vision/front/image_raw`;
+- target pose publication on `/vision/target_pose`.
+
+When `ros_gz_bridge` is available and the image stream produces a frame, the
+script writes:
+
+```text
+visualizations/demo_07_camera/<timestamp>/sample_frame.png
+```
+
+If a live frame cannot be captured, the same output directory contains
+`sample_frame_status.txt` with the bounded-check reason.
+
+The lower-level manual sequence is still useful for interactive debugging in a
+sourced ROS 2 environment:
+
+```bash
+src/aerial_manip_gazebo/scripts/smoke_load_x500_arm_2dof.sh
+ros2 launch aerial_manip_gazebo front_camera_bridge.launch.py
+ros2 topic hz /vision/front/image_raw
+```
+
+If `ros_gz_bridge` is not installed, the package can still build, but runtime
+image bridging is unavailable until the ROS/Gazebo bridge package is installed.
+The smoke script reports this as `WARN` and does not substitute placeholder
+target data for the live image checks.
+
+exec
+/bin/bash -lc "sed -n '1,260p' scripts/smoke_vision_bridge.sh" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+#!/usr/bin/env bash
+set -euo pipefail
+
+WORKSPACE_ROOT="${WORKSPACE_ROOT:-/home/clcwork/UAV_capture/px4_ros2_ws}"
+PX4_GZ_MODELS="${PX4_GZ_MODELS:-/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models}"
+PX4_GZ_PLUGIN_PATH="${PX4_GZ_PLUGIN_PATH:-/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/gz_plugins}"
+TIMESTAMP="${TIMESTAMP:-$(date +%Y%m%d_%H%M%S)}"
+OUTPUT_DIR="${OUTPUT_DIR:-${WORKSPACE_ROOT}/visualizations/demo_07_camera/${TIMESTAMP}}"
+
+GAZEBO_PACKAGE_DIR="${WORKSPACE_ROOT}/src/aerial_manip_gazebo"
+VISION_PACKAGE_DIR="${WORKSPACE_ROOT}/src/aerial_manip_vision"
+WORLD_FILE="${GAZEBO_PACKAGE_DIR}/worlds/x500_arm_2dof_smoke.sdf"
+MODEL_FILE="${GAZEBO_PACKAGE_DIR}/models/x500_arm_2dof/model.sdf"
+TARGET_MODEL_FILE="${GAZEBO_PACKAGE_DIR}/models/fiducial_target_aruco/model.sdf"
+TARGET_TEXTURE_FILE="${GAZEBO_PACKAGE_DIR}/models/fiducial_target_aruco/materials/textures/aruco_4x4_23.png"
+BRIDGE_CONFIG="${GAZEBO_PACKAGE_DIR}/config/front_camera_bridge.yaml"
+
+GZ_IMAGE_TOPIC="/world/x500_arm_2dof_smoke/model/x500_arm_2dof/link/camera_link/sensor/camera/image"
+ROS_IMAGE_TOPIC="/vision/front/image_raw"
+ROS_CAMERA_INFO_TOPIC="/vision/front/camera_info"
+ROS_TARGET_POSE_TOPIC="/vision/target_pose"
+
+GZ_STARTUP_TIMEOUT="${GZ_STARTUP_TIMEOUT:-20}"
+ROS_TOPIC_TIMEOUT="${ROS_TOPIC_TIMEOUT:-15}"
+IMAGE_CAPTURE_TIMEOUT="${IMAGE_CAPTURE_TIMEOUT:-20}"
+TARGET_POSE_TIMEOUT="${TARGET_POSE_TIMEOUT:-15}"
+
+pass_count=0
+warn_count=0
+fail_count=0
+pids=()
+
+cd "$WORKSPACE_ROOT"
+mkdir -p "$OUTPUT_DIR"
+
+cleanup() {
+  local pid
+  for pid in "${pids[@]}"; do
+    if kill -0 "$pid" >/dev/null 2>&1; then
+      kill "$pid" >/dev/null 2>&1 || true
+    fi
+  done
+  wait "${pids[@]}" >/dev/null 2>&1 || true
+}
+trap cleanup EXIT
+
+report() {
+  local status="$1"
+  local name="$2"
+  local detail="$3"
+
+  printf '%-4s %-34s %s\n' "$status" "$name" "$detail"
+  case "$status" in
+    PASS) pass_count=$((pass_count + 1)) ;;
+    WARN) warn_count=$((warn_count + 1)) ;;
+    FAIL) fail_count=$((fail_count + 1)) ;;
+  esac
+}
+
+check_file() {
+  local name="$1"
+  local path="$2"
+
+  if [ -s "$path" ]; then
+    report PASS "$name" "path=$path"
+  else
+    report FAIL "$name" "missing_or_empty=$path"
+  fi
+}
+
+check_contains() {
+  local name="$1"
+  local path="$2"
+  local pattern="$3"
+
+  if [ -s "$path" ] && grep -Fq "$pattern" "$path"; then
+    report PASS "$name" "pattern=$pattern"
+  else
+    report FAIL "$name" "missing_pattern=$pattern path=$path"
+  fi
+}
+
+source_ros_environment() {
+  local restore_nounset=0
+  case "$-" in
+    *u*)
+      restore_nounset=1
+      set +u
+      ;;
+  esac
+
+  if [ -f /opt/ros/jazzy/setup.bash ]; then
+    # shellcheck disable=SC1091
+    source /opt/ros/jazzy/setup.bash
+  fi
+
+  if [ -f "${WORKSPACE_ROOT}/install/setup.bash" ]; then
+    # shellcheck disable=SC1091
+    source "${WORKSPACE_ROOT}/install/setup.bash"
+  fi
+
+  if [ "$restore_nounset" -eq 1 ]; then
+    set -u
+  fi
+}
+
+configure_gazebo_environment() {
+  if [ -n "${GZ_SIM_RESOURCE_PATH:-}" ]; then
+    export GZ_SIM_RESOURCE_PATH="${GAZEBO_PACKAGE_DIR}/models:${PX4_GZ_MODELS}:${GZ_SIM_RESOURCE_PATH}"
+  else
+    export GZ_SIM_RESOURCE_PATH="${GAZEBO_PACKAGE_DIR}/models:${PX4_GZ_MODELS}"
+  fi
+
+  if [ -d "$PX4_GZ_PLUGIN_PATH" ]; then
+    if [ -n "${GZ_SIM_SYSTEM_PLUGIN_PATH:-}" ]; then
+      export GZ_SIM_SYSTEM_PLUGIN_PATH="${PX4_GZ_PLUGIN_PATH}:${GZ_SIM_SYSTEM_PLUGIN_PATH}"
+    else
+      export GZ_SIM_SYSTEM_PLUGIN_PATH="${PX4_GZ_PLUGIN_PATH}"
+    fi
+  fi
+}
+
+wait_for_gz_topic() {
+  local topic="$1"
+  local timeout_sec="$2"
+  local deadline=$((SECONDS + timeout_sec))
+
+  while [ "$SECONDS" -lt "$deadline" ]; do
+    if gz topic -l 2>/dev/null | grep -Fxq "$topic"; then
+      return 0
+    fi
+    sleep 1
+  done
+  return 1
+}
+
+wait_for_ros_topic() {
+  local topic="$1"
+  local timeout_sec="$2"
+  local deadline=$((SECONDS + timeout_sec))
+
+  while [ "$SECONDS" -lt "$deadline" ]; do
+    if ros2 topic list 2>/dev/null | grep -Fxq "$topic"; then
+      return 0
+    fi
+    sleep 1
+  done
+  return 1
+}
+
+start_gazebo_server() {
+  configure_gazebo_environment
+  timeout 60s gz sim -s -r "$WORLD_FILE" >"${OUTPUT_DIR}/gz_sim.log" 2>&1 &
+  local pid=$!
+  pids+=("$pid")
+  sleep 2
+  if kill -0 "$pid" >/dev/null 2>&1; then
+    report PASS "gazebo_server" "pid=$pid log=${OUTPUT_DIR}/gz_sim.log"
+    return 0
+  fi
+
+  report FAIL "gazebo_server" "failed_to_start log=${OUTPUT_DIR}/gz_sim.log"
+  return 1
+}
+
+start_camera_bridge() {
+  ros2 launch aerial_manip_gazebo front_camera_bridge.launch.py >"${OUTPUT_DIR}/front_camera_bridge.log" 2>&1 &
+  local pid=$!
+  pids+=("$pid")
+  sleep 2
+  if kill -0 "$pid" >/dev/null 2>&1; then
+    report PASS "ros_gz_bridge_process" "pid=$pid log=${OUTPUT_DIR}/front_camera_bridge.log"
+    return 0
+  fi
+
+  report WARN "ros_gz_bridge_process" "failed_to_start log=${OUTPUT_DIR}/front_camera_bridge.log"
+  return 1
+}
+
+capture_sample_frame() {
+  local output_png="${OUTPUT_DIR}/sample_frame.png"
+  local capture_log="${OUTPUT_DIR}/sample_frame_capture.log"
+
+  if SMOKE_IMAGE_TOPIC="$ROS_IMAGE_TOPIC" SMOKE_IMAGE_OUT="$output_png" \
+    timeout "${IMAGE_CAPTURE_TIMEOUT}s" python3 - <<'PY' >"$capture_log" 2>&1
+import os
+import sys
+
+import cv2
+from cv_bridge import CvBridge
+import rclpy
+from rclpy.node import Node
+from sensor_msgs.msg import Image
+
+
+class FrameGrabber(Node):
+    def __init__(self, topic: str, output_path: str) -> None:
+        super().__init__("vision_smoke_frame_grabber")
+        self.bridge = CvBridge()
+        self.output_path = output_path
+        self.saved = False
+        self.create_subscription(Image, topic, self.image_callback, 10)
+
+    def image_callback(self, msg: Image) -> None:
+        if self.saved:
+            return
+        try:
+            frame = self.bridge.imgmsg_to_cv2(msg, desired_encoding="bgr8")
+        except Exception:
+            frame = self.bridge.imgmsg_to_cv2(msg, desired_encoding="passthrough")
+        if not cv2.imwrite(self.output_path, frame):
+            raise RuntimeError(f"cv2.imwrite failed for {self.output_path}")
+        self.saved = True
+
+
+def main() -> int:
+    topic = os.environ["SMOKE_IMAGE_TOPIC"]
+    output_path = os.environ["SMOKE_IMAGE_OUT"]
+    rclpy.init()
+    node = FrameGrabber(topic, output_path)
+    try:
+        while rclpy.ok() and not node.saved:
+            rclpy.spin_once(node, timeout_sec=0.25)
+    finally:
+        node.destroy_node()
+        rclpy.shutdown()
+    return 0 if os.path.exists(output_path) else 1
+
+
+sys.exit(main())
+PY
+  then
+    report PASS "sample_frame" "path=$output_png"
+    return 0
+  fi
+
+  printf 'sample_frame=not_captured\nreason=no image message was converted before timeout\nlog=%s\n' "$capture_log" >"${OUTPUT_DIR}/sample_frame_status.txt"
+  report WARN "sample_frame" "not_captured status=${OUTPUT_DIR}/sample_frame_status.txt"
+  return 1
+}
+
+verify_placeholder_target_pose() {
+  ros2 launch aerial_manip_vision tag_target_pose.launch.py publish_placeholder:=true >"${OUTPUT_DIR}/placeholder_target_pose.log" 2>&1 &
+  local pid=$!
+  pids+=("$pid")
+  sleep 2
+
+  if timeout "${TARGET_POSE_TIMEOUT}s" ros2 topic echo "$ROS_TARGET_POSE_TOPIC" --once >"${OUTPUT_DIR}/placeholder_target_pose.yaml" 2>"${OUTPUT_DIR}/placeholder_target_pose.err"; then
+    report PASS "placeholder_target_pose" "topic=$ROS_TARGET_POSE_TOPIC output=${OUTPUT_DIR}/placeholder_target_pose.yaml"
+  else
+    report FAIL "placeholder_target_pose" "no_message topic=$ROS_TARGET_POSE_TOPIC log=${OUTPUT_DIR}/placeholder_target_pose.log"
+  fi
+
+  kill "$pid" >/dev/null 2>&1 || true
+  wait "$pid" >/dev/null 2>&1 || true
+}
+
+verify_live_target_pose() {
+  ros2 launch aerial_manip_vision tag_target_pose.launch.py publish_placeholder:=false >"${OUTPUT_DIR}/live_target_pose.log" 2>&1 &
+  local pid=$!
+
+exec
+/bin/bash -lc "sed -n '1,260p' docs/STAGE2_TARGET_POSE.md" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+# Stage 2 Target Pose
+
+Task: `018-add-tag-target-pose-estimation`
+
+## Simulation Target
+
+The stage-2 smoke world now includes a local ArUco target model:
+
+```text
+src/aerial_manip_gazebo/models/fiducial_target_aruco
+```
+
+World include:
+
+```text
+src/aerial_manip_gazebo/worlds/x500_arm_2dof_smoke.sdf
+```
+
+The marker is `DICT_4X4_50`, id `23`, with a physical marker size of `0.50 m`.
+It is placed at:
+
+```text
+pose: 2.0 0 0.5 0 -1.57079632679 0
+```
+
+This puts the target in front of the x500 smoke model and rotates the marker
+plane to face the forward camera.
+
+## Pose Node
+
+Run:
+
+```bash
+ros2 launch aerial_manip_vision tag_target_pose.launch.py
+```
+
+The node subscribes to:
+
+| Topic | Type | Notes |
+| --- | --- | --- |
+| `/vision/front/image_raw` | `sensor_msgs/msg/Image` | Front camera image from the ROS/Gazebo bridge. |
+| `/vision/front/camera_info` | `sensor_msgs/msg/CameraInfo` | Camera intrinsics used by OpenCV pose estimation. |
+
+The node publishes:
+
+| Topic | Type | Frame |
+| --- | --- | --- |
+| `/vision/target_pose` | `geometry_msgs/msg/PoseStamped` | `uav/camera_link` using OpenCV camera optical axes. |
+| `/vision/target_pose_in_uav_frame` | `geometry_msgs/msg/PoseStamped` | `uav/base_link` using FLU axes. |
+
+The camera optical to UAV FLU conversion is:
+
+```text
+uav_x = camera_z
+uav_y = -camera_x
+uav_z = -camera_y
+```
+
+Then the configured camera offset is added. The default
+`camera_xyz_in_uav_frame` is `[0.12, 0.0, 0.242]`, matching the SDF camera
+mount on `x500_arm_2dof`.
+
+## Detector and Placeholder Modes
+
+The active Python environment exposes OpenCV ArUco support, so the default node
+uses `cv2.aruco.detectMarkers` and `cv2.aruco.estimatePoseSingleMarkers`.
+
+If camera bridging or detector support is unavailable, run:
+
+```bash
+ros2 launch aerial_manip_vision tag_target_pose.launch.py publish_placeholder:=true
+```
+
+Placeholder mode publishes the documented static target pose at
+`[2.0, 0.0, 0.5]` in `uav/base_link` and the corresponding relative pose in
+`uav/camera_link`. This is a wiring smoke test only; it is not a visual
+detection result.
+
+The Task 027 smoke script keeps this distinction explicit. Live checks launch
+the node with `publish_placeholder:=false`; if no detected pose appears before
+the timeout, the script reports `WARN` and writes
+`live_target_pose_status.txt`. Placeholder mode is launched separately only to
+verify the ROS topic wiring path.
+
+## Smoke Checks
+
+Build and compile:
+
+```bash
+bash -n scripts/smoke_vision_bridge.sh
+python3 -m compileall src/aerial_manip_vision
+colcon build --packages-select aerial_manip_vision aerial_manip_gazebo
+```
+
+Run the bounded bridge smoke:
+
+```bash
+bash scripts/smoke_vision_bridge.sh | tee codex-logs/027-harden-vision-bridge-smoke.log
+```
+
+Expected outputs are under:
+
+```text
+visualizations/demo_07_camera/<timestamp>/
+```
+
+When `ros_gz_bridge` is missing, the smoke result is `WARN`, not `FAIL`, as
+long as the explicit placeholder `/vision/target_pose` check succeeds. When the
+bridge is present, `sample_frame.png` is saved if a frame is received; otherwise
+`sample_frame_status.txt` documents why capture did not complete.
+
+With a sourced workspace, verify placeholder topic wiring without starting
+Gazebo:
+
+```bash
+ros2 launch aerial_manip_vision tag_target_pose.launch.py publish_placeholder:=true
+ros2 topic echo /vision/target_pose --once
+ros2 topic echo /vision/target_pose_in_uav_frame --once
+```
+
+For visual detection, also start the smoke world and front camera bridge:
+
+```bash
+src/aerial_manip_gazebo/scripts/smoke_load_x500_arm_2dof.sh
+ros2 launch aerial_manip_gazebo front_camera_bridge.launch.py
+ros2 launch aerial_manip_vision tag_target_pose.launch.py
+```
+
+Current warning: `ros_gz_bridge` was previously recorded as missing in the
+stage-2 environment audit, so live image detection depends on installing or
+exposing the ROS/Gazebo bridge package.
+
+exec
+/bin/bash -lc 'find visualizations/demo_07_camera -maxdepth 2 -type f | sort | tail -40' in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+visualizations/demo_07_camera/20260528_000310/gz_sim.log
+visualizations/demo_07_camera/20260528_000310/placeholder_target_pose.err
+visualizations/demo_07_camera/20260528_000310/placeholder_target_pose.log
+visualizations/demo_07_camera/20260528_000310/placeholder_target_pose.yaml
+visualizations/demo_07_camera/20260528_000310/sample_frame_status.txt
+
+exec
+/bin/bash -lc "sed -n '261,620p' scripts/smoke_vision_bridge.sh" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+  pids+=("$pid")
+  sleep 2
+
+  if timeout "${TARGET_POSE_TIMEOUT}s" ros2 topic echo "$ROS_TARGET_POSE_TOPIC" --once >"${OUTPUT_DIR}/live_target_pose.yaml" 2>"${OUTPUT_DIR}/live_target_pose.err"; then
+    report PASS "live_target_pose" "topic=$ROS_TARGET_POSE_TOPIC output=${OUTPUT_DIR}/live_target_pose.yaml"
+  else
+    printf 'live_target_pose=not_observed\nreason=no detected target pose before timeout; placeholder mode was not enabled for this live check\nlog=%s\n' "${OUTPUT_DIR}/live_target_pose.log" >"${OUTPUT_DIR}/live_target_pose_status.txt"
+    report WARN "live_target_pose" "not_observed status=${OUTPUT_DIR}/live_target_pose_status.txt"
+  fi
+
+  kill "$pid" >/dev/null 2>&1 || true
+  wait "$pid" >/dev/null 2>&1 || true
+}
+
+printf 'Vision Bridge Smoke\n'
+printf 'timestamp=%s\n' "$TIMESTAMP"
+printf 'workspace=%s\n' "$WORKSPACE_ROOT"
+printf 'output_dir=%s\n\n' "$OUTPUT_DIR"
+
+check_file "model:x500_arm_2dof" "$MODEL_FILE"
+check_file "model:fiducial_target" "$TARGET_MODEL_FILE"
+check_file "texture:aruco_4x4_23" "$TARGET_TEXTURE_FILE"
+check_file "world:x500_arm_2dof_smoke" "$WORLD_FILE"
+check_file "bridge_config" "$BRIDGE_CONFIG"
+check_contains "model:camera_link" "$MODEL_FILE" "<child>camera_link</child>"
+check_contains "world:fiducial_include" "$WORLD_FILE" "model://fiducial_target_aruco"
+check_contains "bridge:image_topic" "$BRIDGE_CONFIG" "$ROS_IMAGE_TOPIC"
+check_contains "bridge:camera_info_topic" "$BRIDGE_CONFIG" "$ROS_CAMERA_INFO_TOPIC"
+
+source_ros_environment
+
+if command -v ros2 >/dev/null 2>&1; then
+  report PASS "ros2_cli" "path=$(command -v ros2)"
+else
+  report FAIL "ros2_cli" "missing; source /opt/ros/jazzy/setup.bash and install/setup.bash"
+fi
+
+if command -v gz >/dev/null 2>&1; then
+  report PASS "gz_cli" "path=$(command -v gz)"
+else
+  report FAIL "gz_cli" "missing command=gz"
+fi
+
+if [ -d "$PX4_GZ_MODELS" ]; then
+  report PASS "px4_gz_models" "path=$PX4_GZ_MODELS"
+else
+  report FAIL "px4_gz_models" "missing=$PX4_GZ_MODELS"
+fi
+
+if [ "$fail_count" -eq 0 ] && command -v gz >/dev/null 2>&1; then
+  if start_gazebo_server && wait_for_gz_topic "$GZ_IMAGE_TOPIC" "$GZ_STARTUP_TIMEOUT"; then
+    report PASS "gazebo_camera_topic" "topic=$GZ_IMAGE_TOPIC"
+  else
+    report FAIL "gazebo_camera_topic" "missing topic=$GZ_IMAGE_TOPIC log=${OUTPUT_DIR}/gz_sim.log"
+  fi
+fi
+
+if command -v ros2 >/dev/null 2>&1 && ros2 pkg prefix aerial_manip_vision >/dev/null 2>&1; then
+  report PASS "ros_pkg:aerial_manip_vision" "prefix=$(ros2 pkg prefix aerial_manip_vision)"
+  verify_placeholder_target_pose
+else
+  report FAIL "ros_pkg:aerial_manip_vision" "missing; run colcon build --packages-select aerial_manip_vision"
+fi
+
+if command -v ros2 >/dev/null 2>&1 && ros2 pkg prefix ros_gz_bridge >/dev/null 2>&1; then
+  report PASS "ros_pkg:ros_gz_bridge" "prefix=$(ros2 pkg prefix ros_gz_bridge)"
+  if [ "$fail_count" -eq 0 ] && start_camera_bridge; then
+    if wait_for_ros_topic "$ROS_IMAGE_TOPIC" "$ROS_TOPIC_TIMEOUT"; then
+      report PASS "ros_image_topic" "topic=$ROS_IMAGE_TOPIC"
+      capture_sample_frame || true
+      verify_live_target_pose
+    else
+      printf 'sample_frame=not_captured\nreason=%s did not appear before timeout\n' "$ROS_IMAGE_TOPIC" >"${OUTPUT_DIR}/sample_frame_status.txt"
+      report WARN "ros_image_topic" "missing topic=$ROS_IMAGE_TOPIC status=${OUTPUT_DIR}/sample_frame_status.txt"
+    fi
+  fi
+else
+  printf 'sample_frame=not_captured\nreason=ros_gz_bridge package is not available; live image bridge skipped\n' >"${OUTPUT_DIR}/sample_frame_status.txt"
+  report WARN "ros_pkg:ros_gz_bridge" "missing; skipped live bridge and sample capture"
+fi
+
+printf '\nSUMMARY pass=%d warn=%d fail=%d\n' "$pass_count" "$warn_count" "$fail_count"
+printf 'output_dir=%s\n' "$OUTPUT_DIR"
+
+if [ "$fail_count" -gt 0 ]; then
+  printf 'RESULT=FAIL reason=critical_vision_smoke_check_failed\n'
+  exit 1
+fi
+
+if [ "$warn_count" -gt 0 ]; then
+  printf 'RESULT=WARN reason=vision_smoke_completed_with_warnings\n'
+else
+  printf 'RESULT=PASS reason=vision_smoke_verified\n'
+fi
+
+codex
+One gap is visible before running: the script checks the bridge config for `/vision/front/camera_info`, but it does not verify the ROS camera-info topic at runtime. I’m going to make that explicit and make skipped bridge cases leave a `front_camera_bridge.log` note, then run the exact required commands.
+apply patch
+patch: completed
+/home/clcwork/UAV_capture/px4_ros2_ws/scripts/smoke_vision_bridge.sh
+diff --git a/px4_ros2_ws/scripts/smoke_vision_bridge.sh b/px4_ros2_ws/scripts/smoke_vision_bridge.sh
+index 5853d3a8d8f36b2468a06912c1ae07c9f04e59f9..bc1c717a63939e79c5f90be76bc782828ac2de2b
+--- a/px4_ros2_ws/scripts/smoke_vision_bridge.sh
++++ b/px4_ros2_ws/scripts/smoke_vision_bridge.sh
+@@ -327,14 +327,25 @@
+   if [ "$fail_count" -eq 0 ] && start_camera_bridge; then
+     if wait_for_ros_topic "$ROS_IMAGE_TOPIC" "$ROS_TOPIC_TIMEOUT"; then
+       report PASS "ros_image_topic" "topic=$ROS_IMAGE_TOPIC"
+-      capture_sample_frame || true
+-      verify_live_target_pose
+     else
+       printf 'sample_frame=not_captured\nreason=%s did not appear before timeout\n' "$ROS_IMAGE_TOPIC" >"${OUTPUT_DIR}/sample_frame_status.txt"
+       report WARN "ros_image_topic" "missing topic=$ROS_IMAGE_TOPIC status=${OUTPUT_DIR}/sample_frame_status.txt"
+     fi
++
++    if wait_for_ros_topic "$ROS_CAMERA_INFO_TOPIC" "$ROS_TOPIC_TIMEOUT"; then
++      report PASS "ros_camera_info_topic" "topic=$ROS_CAMERA_INFO_TOPIC"
++    else
++      printf 'sample_frame=not_captured\nreason=%s did not appear before timeout\n' "$ROS_CAMERA_INFO_TOPIC" >"${OUTPUT_DIR}/sample_frame_status.txt"
++      report WARN "ros_camera_info_topic" "missing topic=$ROS_CAMERA_INFO_TOPIC status=${OUTPUT_DIR}/sample_frame_status.txt"
++    fi
++
++    if wait_for_ros_topic "$ROS_IMAGE_TOPIC" 1 && wait_for_ros_topic "$ROS_CAMERA_INFO_TOPIC" 1; then
++      capture_sample_frame || true
++      verify_live_target_pose
++    fi
+   fi
+ else
++  printf 'front_camera_bridge=not_started\nreason=ros_gz_bridge package is not available\n' >"${OUTPUT_DIR}/front_camera_bridge.log"
+   printf 'sample_frame=not_captured\nreason=ros_gz_bridge package is not available; live image bridge skipped\n' >"${OUTPUT_DIR}/sample_frame_status.txt"
+   report WARN "ros_pkg:ros_gz_bridge" "missing; skipped live bridge and sample capture"
+ fi
+
+diff --git a/px4_ros2_ws/scripts/smoke_vision_bridge.sh b/px4_ros2_ws/scripts/smoke_vision_bridge.sh
+index 5853d3a8d8f36b2468a06912c1ae07c9f04e59f9..bc1c717a63939e79c5f90be76bc782828ac2de2b
+--- a/px4_ros2_ws/scripts/smoke_vision_bridge.sh
++++ b/px4_ros2_ws/scripts/smoke_vision_bridge.sh
+@@ -327,14 +327,25 @@
+   if [ "$fail_count" -eq 0 ] && start_camera_bridge; then
+     if wait_for_ros_topic "$ROS_IMAGE_TOPIC" "$ROS_TOPIC_TIMEOUT"; then
+       report PASS "ros_image_topic" "topic=$ROS_IMAGE_TOPIC"
+-      capture_sample_frame || true
+-      verify_live_target_pose
+     else
+       printf 'sample_frame=not_captured\nreason=%s did not appear before timeout\n' "$ROS_IMAGE_TOPIC" >"${OUTPUT_DIR}/sample_frame_status.txt"
+       report WARN "ros_image_topic" "missing topic=$ROS_IMAGE_TOPIC status=${OUTPUT_DIR}/sample_frame_status.txt"
+     fi
++
++    if wait_for_ros_topic "$ROS_CAMERA_INFO_TOPIC" "$ROS_TOPIC_TIMEOUT"; then
++      report PASS "ros_camera_info_topic" "topic=$ROS_CAMERA_INFO_TOPIC"
++    else
++      printf 'sample_frame=not_captured\nreason=%s did not appear before timeout\n' "$ROS_CAMERA_INFO_TOPIC" >"${OUTPUT_DIR}/sample_frame_status.txt"
++      report WARN "ros_camera_info_topic" "missing topic=$ROS_CAMERA_INFO_TOPIC status=${OUTPUT_DIR}/sample_frame_status.txt"
++    fi
++
++    if wait_for_ros_topic "$ROS_IMAGE_TOPIC" 1 && wait_for_ros_topic "$ROS_CAMERA_INFO_TOPIC" 1; then
++      capture_sample_frame || true
++      verify_live_target_pose
++    fi
+   fi
+ else
++  printf 'front_camera_bridge=not_started\nreason=ros_gz_bridge package is not available\n' >"${OUTPUT_DIR}/front_camera_bridge.log"
+   printf 'sample_frame=not_captured\nreason=ros_gz_bridge package is not available; live image bridge skipped\n' >"${OUTPUT_DIR}/sample_frame_status.txt"
+   report WARN "ros_pkg:ros_gz_bridge" "missing; skipped live bridge and sample capture"
+ fi
+
+exec
+/bin/bash -lc 'bash -n scripts/smoke_vision_bridge.sh' in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+diff --git a/px4_ros2_ws/scripts/smoke_vision_bridge.sh b/px4_ros2_ws/scripts/smoke_vision_bridge.sh
+index 5853d3a8d8f36b2468a06912c1ae07c9f04e59f9..bc1c717a63939e79c5f90be76bc782828ac2de2b
+--- a/px4_ros2_ws/scripts/smoke_vision_bridge.sh
++++ b/px4_ros2_ws/scripts/smoke_vision_bridge.sh
+@@ -327,14 +327,25 @@
+   if [ "$fail_count" -eq 0 ] && start_camera_bridge; then
+     if wait_for_ros_topic "$ROS_IMAGE_TOPIC" "$ROS_TOPIC_TIMEOUT"; then
+       report PASS "ros_image_topic" "topic=$ROS_IMAGE_TOPIC"
+-      capture_sample_frame || true
+-      verify_live_target_pose
+     else
+       printf 'sample_frame=not_captured\nreason=%s did not appear before timeout\n' "$ROS_IMAGE_TOPIC" >"${OUTPUT_DIR}/sample_frame_status.txt"
+       report WARN "ros_image_topic" "missing topic=$ROS_IMAGE_TOPIC status=${OUTPUT_DIR}/sample_frame_status.txt"
+     fi
++
++    if wait_for_ros_topic "$ROS_CAMERA_INFO_TOPIC" "$ROS_TOPIC_TIMEOUT"; then
++      report PASS "ros_camera_info_topic" "topic=$ROS_CAMERA_INFO_TOPIC"
++    else
++      printf 'sample_frame=not_captured\nreason=%s did not appear before timeout\n' "$ROS_CAMERA_INFO_TOPIC" >"${OUTPUT_DIR}/sample_frame_status.txt"
++      report WARN "ros_camera_info_topic" "missing topic=$ROS_CAMERA_INFO_TOPIC status=${OUTPUT_DIR}/sample_frame_status.txt"
++    fi
++
++    if wait_for_ros_topic "$ROS_IMAGE_TOPIC" 1 && wait_for_ros_topic "$ROS_CAMERA_INFO_TOPIC" 1; then
++      capture_sample_frame || true
++      verify_live_target_pose
++    fi
+   fi
+ else
++  printf 'front_camera_bridge=not_started\nreason=ros_gz_bridge package is not available\n' >"${OUTPUT_DIR}/front_camera_bridge.log"
+   printf 'sample_frame=not_captured\nreason=ros_gz_bridge package is not available; live image bridge skipped\n' >"${OUTPUT_DIR}/sample_frame_status.txt"
+   report WARN "ros_pkg:ros_gz_bridge" "missing; skipped live bridge and sample capture"
+ fi
+
+codex
+The syntax check passed. I’m starting the bounded smoke run now; it will create the Task 032 log and a timestamped camera output directory, and I’ll inspect the result artifacts before deciding on any doc updates.
+exec
+/bin/bash -lc 'bash scripts/smoke_vision_bridge.sh | tee codex-logs/032-verify-camera-bridge-and-sample-frame.log' in /home/clcwork/UAV_capture/px4_ros2_ws
+diff --git a/px4_ros2_ws/scripts/smoke_vision_bridge.sh b/px4_ros2_ws/scripts/smoke_vision_bridge.sh
+index 5853d3a8d8f36b2468a06912c1ae07c9f04e59f9..bc1c717a63939e79c5f90be76bc782828ac2de2b
+--- a/px4_ros2_ws/scripts/smoke_vision_bridge.sh
++++ b/px4_ros2_ws/scripts/smoke_vision_bridge.sh
+@@ -327,14 +327,25 @@
+   if [ "$fail_count" -eq 0 ] && start_camera_bridge; then
+     if wait_for_ros_topic "$ROS_IMAGE_TOPIC" "$ROS_TOPIC_TIMEOUT"; then
+       report PASS "ros_image_topic" "topic=$ROS_IMAGE_TOPIC"
+-      capture_sample_frame || true
+-      verify_live_target_pose
+     else
+       printf 'sample_frame=not_captured\nreason=%s did not appear before timeout\n' "$ROS_IMAGE_TOPIC" >"${OUTPUT_DIR}/sample_frame_status.txt"
+       report WARN "ros_image_topic" "missing topic=$ROS_IMAGE_TOPIC status=${OUTPUT_DIR}/sample_frame_status.txt"
+     fi
++
++    if wait_for_ros_topic "$ROS_CAMERA_INFO_TOPIC" "$ROS_TOPIC_TIMEOUT"; then
++      report PASS "ros_camera_info_topic" "topic=$ROS_CAMERA_INFO_TOPIC"
++    else
++      printf 'sample_frame=not_captured\nreason=%s did not appear before timeout\n' "$ROS_CAMERA_INFO_TOPIC" >"${OUTPUT_DIR}/sample_frame_status.txt"
++      report WARN "ros_camera_info_topic" "missing topic=$ROS_CAMERA_INFO_TOPIC status=${OUTPUT_DIR}/sample_frame_status.txt"
++    fi
++
++    if wait_for_ros_topic "$ROS_IMAGE_TOPIC" 1 && wait_for_ros_topic "$ROS_CAMERA_INFO_TOPIC" 1; then
++      capture_sample_frame || true
++      verify_live_target_pose
++    fi
+   fi
+ else
++  printf 'front_camera_bridge=not_started\nreason=ros_gz_bridge package is not available\n' >"${OUTPUT_DIR}/front_camera_bridge.log"
+   printf 'sample_frame=not_captured\nreason=ros_gz_bridge package is not available; live image bridge skipped\n' >"${OUTPUT_DIR}/sample_frame_status.txt"
+   report WARN "ros_pkg:ros_gz_bridge" "missing; skipped live bridge and sample capture"
+ fi
+
+ succeeded in 17443ms:
+PASS ros2_cli                           path=/opt/ros/jazzy/bin/ros2
+PASS gz_cli                             path=/opt/ros/jazzy/opt/gz_tools_vendor/bin/gz
+PASS px4_gz_models                      path=/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models
+PASS gazebo_server                      pid=140593 log=/home/clcwork/UAV_capture/px4_ros2_ws/visualizations/demo_07_camera/20260528_113542/gz_sim.log
+PASS gazebo_camera_topic                topic=/world/x500_arm_2dof_smoke/model/x500_arm_2dof/link/camera_link/sensor/camera/image
+PASS ros_pkg:aerial_manip_vision        prefix=/home/clcwork/UAV_capture/px4_ros2_ws/install/aerial_manip_vision
+PASS placeholder_target_pose            topic=/vision/target_pose output=/home/clcwork/UAV_capture/px4_ros2_ws/visualizations/demo_07_camera/20260528_113542/placeholder_target_pose.yaml
+PASS ros_pkg:ros_gz_bridge              prefix=/opt/ros/jazzy
+PASS ros_gz_bridge_process              pid=140891 log=/home/clcwork/UAV_capture/px4_ros2_ws/visualizations/demo_07_camera/20260528_113542/front_camera_bridge.log
+PASS ros_image_topic                    topic=/vision/front/image_raw
+PASS ros_camera_info_topic              topic=/vision/front/camera_info
+PASS sample_frame                       path=/home/clcwork/UAV_capture/px4_ros2_ws/visualizations/demo_07_camera/20260528_113542/sample_frame.png
+PASS live_target_pose                   topic=/vision/target_pose output=/home/clcwork/UAV_capture/px4_ros2_ws/visualizations/demo_07_camera/20260528_113542/live_target_pose.yaml
+
+SUMMARY pass=22 warn=0 fail=0
+output_dir=/home/clcwork/UAV_capture/px4_ros2_ws/visualizations/demo_07_camera/20260528_113542
+RESULT=PASS reason=vision_smoke_verified
+
+codex
+The smoke run passed and captured a real frame. I’m checking the output directory and making the docs match the now-verified behavior, especially the runtime camera-info check and latest sample-frame evidence.
+exec
+/bin/bash -lc "find visualizations/demo_07_camera/20260528_113542 -maxdepth 1 -type f -printf '%f %s bytes\\n' | sort" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+front_camera_bridge.log 776 bytes
+gz_sim.log 2256 bytes
+live_target_pose.err 0 bytes
+live_target_pose.log 389 bytes
+live_target_pose.yaml 207 bytes
+placeholder_target_pose.err 0 bytes
+placeholder_target_pose.log 389 bytes
+placeholder_target_pose.yaml 207 bytes
+sample_frame.png 39264 bytes
+sample_frame_capture.log 0 bytes
+
+exec
+/bin/bash -lc 'tail -40 codex-logs/032-verify-camera-bridge-and-sample-frame.log' in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+Vision Bridge Smoke
+timestamp=20260528_113542
+workspace=/home/clcwork/UAV_capture/px4_ros2_ws
+output_dir=/home/clcwork/UAV_capture/px4_ros2_ws/visualizations/demo_07_camera/20260528_113542
+
+PASS model:x500_arm_2dof                path=/home/clcwork/UAV_capture/px4_ros2_ws/src/aerial_manip_gazebo/models/x500_arm_2dof/model.sdf
+PASS model:fiducial_target              path=/home/clcwork/UAV_capture/px4_ros2_ws/src/aerial_manip_gazebo/models/fiducial_target_aruco/model.sdf
+PASS texture:aruco_4x4_23               path=/home/clcwork/UAV_capture/px4_ros2_ws/src/aerial_manip_gazebo/models/fiducial_target_aruco/materials/textures/aruco_4x4_23.png
+PASS world:x500_arm_2dof_smoke          path=/home/clcwork/UAV_capture/px4_ros2_ws/src/aerial_manip_gazebo/worlds/x500_arm_2dof_smoke.sdf
+PASS bridge_config                      path=/home/clcwork/UAV_capture/px4_ros2_ws/src/aerial_manip_gazebo/config/front_camera_bridge.yaml
+PASS model:camera_link                  pattern=<child>camera_link</child>
+PASS world:fiducial_include             pattern=model://fiducial_target_aruco
+PASS bridge:image_topic                 pattern=/vision/front/image_raw
+PASS bridge:camera_info_topic           pattern=/vision/front/camera_info
+PASS ros2_cli                           path=/opt/ros/jazzy/bin/ros2
+PASS gz_cli                             path=/opt/ros/jazzy/opt/gz_tools_vendor/bin/gz
+PASS px4_gz_models                      path=/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot/Tools/simulation/gz/models
+PASS gazebo_server                      pid=140593 log=/home/clcwork/UAV_capture/px4_ros2_ws/visualizations/demo_07_camera/20260528_113542/gz_sim.log
+PASS gazebo_camera_topic                topic=/world/x500_arm_2dof_smoke/model/x500_arm_2dof/link/camera_link/sensor/camera/image
+PASS ros_pkg:aerial_manip_vision        prefix=/home/clcwork/UAV_capture/px4_ros2_ws/install/aerial_manip_vision
+PASS placeholder_target_pose            topic=/vision/target_pose output=/home/clcwork/UAV_capture/px4_ros2_ws/visualizations/demo_07_camera/20260528_113542/placeholder_target_pose.yaml
+PASS ros_pkg:ros_gz_bridge              prefix=/opt/ros/jazzy
+PASS ros_gz_bridge_process              pid=140891 log=/home/clcwork/UAV_capture/px4_ros2_ws/visualizations/demo_07_camera/20260528_113542/front_camera_bridge.log
+PASS ros_image_topic                    topic=/vision/front/image_raw
+PASS ros_camera_info_topic              topic=/vision/front/camera_info
+PASS sample_frame                       path=/home/clcwork/UAV_capture/px4_ros2_ws/visualizations/demo_07_camera/20260528_113542/sample_frame.png
+PASS live_target_pose                   topic=/vision/target_pose output=/home/clcwork/UAV_capture/px4_ros2_ws/visualizations/demo_07_camera/20260528_113542/live_target_pose.yaml
+
+SUMMARY pass=22 warn=0 fail=0
+output_dir=/home/clcwork/UAV_capture/px4_ros2_ws/visualizations/demo_07_camera/20260528_113542
+RESULT=PASS reason=vision_smoke_verified
+
+exec
+/bin/bash -lc "pgrep -af 'gz sim|parameter_bridge|front_camera_bridge|tag_target_pose'" in /home/clcwork/UAV_capture/px4_ros2_ws
+ exited 1 in 0ms:
+exec
+/bin/bash -lc 'file visualizations/demo_07_camera/20260528_113542/sample_frame.png' in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+visualizations/demo_07_camera/20260528_113542/sample_frame.png: PNG image data, 1280 x 960, 8-bit/color RGB, non-interlaced
+
+diff --git a/px4_ros2_ws/scripts/smoke_vision_bridge.sh b/px4_ros2_ws/scripts/smoke_vision_bridge.sh
+index 5853d3a8d8f36b2468a06912c1ae07c9f04e59f9..bc1c717a63939e79c5f90be76bc782828ac2de2b
+--- a/px4_ros2_ws/scripts/smoke_vision_bridge.sh
++++ b/px4_ros2_ws/scripts/smoke_vision_bridge.sh
+@@ -327,14 +327,25 @@
+   if [ "$fail_count" -eq 0 ] && start_camera_bridge; then
+     if wait_for_ros_topic "$ROS_IMAGE_TOPIC" "$ROS_TOPIC_TIMEOUT"; then
+       report PASS "ros_image_topic" "topic=$ROS_IMAGE_TOPIC"
+-      capture_sample_frame || true
+-      verify_live_target_pose
+     else
+       printf 'sample_frame=not_captured\nreason=%s did not appear before timeout\n' "$ROS_IMAGE_TOPIC" >"${OUTPUT_DIR}/sample_frame_status.txt"
+       report WARN "ros_image_topic" "missing topic=$ROS_IMAGE_TOPIC status=${OUTPUT_DIR}/sample_frame_status.txt"
+     fi
++
++    if wait_for_ros_topic "$ROS_CAMERA_INFO_TOPIC" "$ROS_TOPIC_TIMEOUT"; then
++      report PASS "ros_camera_info_topic" "topic=$ROS_CAMERA_INFO_TOPIC"
++    else
++      printf 'sample_frame=not_captured\nreason=%s did not appear before timeout\n' "$ROS_CAMERA_INFO_TOPIC" >"${OUTPUT_DIR}/sample_frame_status.txt"
++      report WARN "ros_camera_info_topic" "missing topic=$ROS_CAMERA_INFO_TOPIC status=${OUTPUT_DIR}/sample_frame_status.txt"
++    fi
++
++    if wait_for_ros_topic "$ROS_IMAGE_TOPIC" 1 && wait_for_ros_topic "$ROS_CAMERA_INFO_TOPIC" 1; then
++      capture_sample_frame || true
++      verify_live_target_pose
++    fi
+   fi
+ else
++  printf 'front_camera_bridge=not_started\nreason=ros_gz_bridge package is not available\n' >"${OUTPUT_DIR}/front_camera_bridge.log"
+   printf 'sample_frame=not_captured\nreason=ros_gz_bridge package is not available; live image bridge skipped\n' >"${OUTPUT_DIR}/sample_frame_status.txt"
+   report WARN "ros_pkg:ros_gz_bridge" "missing; skipped live bridge and sample capture"
+ fi
+
+apply patch
+patch: completed
+/home/clcwork/UAV_capture/px4_ros2_ws/docs/STAGE2_VISION_BRIDGE.md
+diff --git a/px4_ros2_ws/docs/STAGE2_VISION_BRIDGE.md b/px4_ros2_ws/docs/STAGE2_VISION_BRIDGE.md
+index db5ce256bdf6c61fc5741c212f56b694f5996364..54113d93c993df4fe76948083088ef3bca7fb7d8
+--- a/px4_ros2_ws/docs/STAGE2_VISION_BRIDGE.md
++++ b/px4_ros2_ws/docs/STAGE2_VISION_BRIDGE.md
+@@ -51,8 +51,16 @@
+ 
+ ## Smoke Run
+ 
+-Task 027 adds a bounded smoke script for the complete front-camera bridge path:
++Task 027 added a bounded smoke script for the complete front-camera bridge path.
++Task 032 verified the same path with `ros_gz_bridge` available and captured a
++real sample frame:
+ 
++```text
++visualizations/demo_07_camera/20260528_113542/sample_frame.png
++```
++
++Run:
++
+ ```bash
+ bash scripts/smoke_vision_bridge.sh
+ ```
+@@ -63,6 +71,7 @@
+ - Gazebo publication of the configured camera image topic;
+ - `ros_gz_bridge` package availability;
+ - ROS 2 availability of `/vision/front/image_raw`;
++- ROS 2 availability of `/vision/front/camera_info`;
+ - target pose publication on `/vision/target_pose`.
+ 
+ When `ros_gz_bridge` is available and the image stream produces a frame, the
+diff --git a/px4_ros2_ws/scripts/smoke_vision_bridge.sh b/px4_ros2_ws/scripts/smoke_vision_bridge.sh
+index 5853d3a8d8f36b2468a06912c1ae07c9f04e59f9..bc1c717a63939e79c5f90be76bc782828ac2de2b
+--- a/px4_ros2_ws/scripts/smoke_vision_bridge.sh
++++ b/px4_ros2_ws/scripts/smoke_vision_bridge.sh
+@@ -327,14 +327,25 @@
+   if [ "$fail_count" -eq 0 ] && start_camera_bridge; then
+     if wait_for_ros_topic "$ROS_IMAGE_TOPIC" "$ROS_TOPIC_TIMEOUT"; then
+       report PASS "ros_image_topic" "topic=$ROS_IMAGE_TOPIC"
+-      capture_sample_frame || true
+-      verify_live_target_pose
+     else
+       printf 'sample_frame=not_captured\nreason=%s did not appear before timeout\n' "$ROS_IMAGE_TOPIC" >"${OUTPUT_DIR}/sample_frame_status.txt"
+       report WARN "ros_image_topic" "missing topic=$ROS_IMAGE_TOPIC status=${OUTPUT_DIR}/sample_frame_status.txt"
+     fi
++
++    if wait_for_ros_topic "$ROS_CAMERA_INFO_TOPIC" "$ROS_TOPIC_TIMEOUT"; then
++      report PASS "ros_camera_info_topic" "topic=$ROS_CAMERA_INFO_TOPIC"
++    else
++      printf 'sample_frame=not_captured\nreason=%s did not appear before timeout\n' "$ROS_CAMERA_INFO_TOPIC" >"${OUTPUT_DIR}/sample_frame_status.txt"
++      report WARN "ros_camera_info_topic" "missing topic=$ROS_CAMERA_INFO_TOPIC status=${OUTPUT_DIR}/sample_frame_status.txt"
++    fi
++
++    if wait_for_ros_topic "$ROS_IMAGE_TOPIC" 1 && wait_for_ros_topic "$ROS_CAMERA_INFO_TOPIC" 1; then
++      capture_sample_frame || true
++      verify_live_target_pose
++    fi
+   fi
+ else
++  printf 'front_camera_bridge=not_started\nreason=ros_gz_bridge package is not available\n' >"${OUTPUT_DIR}/front_camera_bridge.log"
+   printf 'sample_frame=not_captured\nreason=ros_gz_bridge package is not available; live image bridge skipped\n' >"${OUTPUT_DIR}/sample_frame_status.txt"
+   report WARN "ros_pkg:ros_gz_bridge" "missing; skipped live bridge and sample capture"
+ fi
+
+diff --git a/px4_ros2_ws/docs/STAGE2_VISION_BRIDGE.md b/px4_ros2_ws/docs/STAGE2_VISION_BRIDGE.md
+index db5ce256bdf6c61fc5741c212f56b694f5996364..54113d93c993df4fe76948083088ef3bca7fb7d8
+--- a/px4_ros2_ws/docs/STAGE2_VISION_BRIDGE.md
++++ b/px4_ros2_ws/docs/STAGE2_VISION_BRIDGE.md
+@@ -51,8 +51,16 @@
+ 
+ ## Smoke Run
+ 
+-Task 027 adds a bounded smoke script for the complete front-camera bridge path:
++Task 027 added a bounded smoke script for the complete front-camera bridge path.
++Task 032 verified the same path with `ros_gz_bridge` available and captured a
++real sample frame:
+ 
++```text
++visualizations/demo_07_camera/20260528_113542/sample_frame.png
++```
++
++Run:
++
+ ```bash
+ bash scripts/smoke_vision_bridge.sh
+ ```
+@@ -63,6 +71,7 @@
+ - Gazebo publication of the configured camera image topic;
+ - `ros_gz_bridge` package availability;
+ - ROS 2 availability of `/vision/front/image_raw`;
++- ROS 2 availability of `/vision/front/camera_info`;
+ - target pose publication on `/vision/target_pose`.
+ 
+ When `ros_gz_bridge` is available and the image stream produces a frame, the
+diff --git a/px4_ros2_ws/scripts/smoke_vision_bridge.sh b/px4_ros2_ws/scripts/smoke_vision_bridge.sh
+index 5853d3a8d8f36b2468a06912c1ae07c9f04e59f9..bc1c717a63939e79c5f90be76bc782828ac2de2b
+--- a/px4_ros2_ws/scripts/smoke_vision_bridge.sh
++++ b/px4_ros2_ws/scripts/smoke_vision_bridge.sh
+@@ -327,14 +327,25 @@
+   if [ "$fail_count" -eq 0 ] && start_camera_bridge; then
+     if wait_for_ros_topic "$ROS_IMAGE_TOPIC" "$ROS_TOPIC_TIMEOUT"; then
+       report PASS "ros_image_topic" "topic=$ROS_IMAGE_TOPIC"
+-      capture_sample_frame || true
+-      verify_live_target_pose
+     else
+       printf 'sample_frame=not_captured\nreason=%s did not appear before timeout\n' "$ROS_IMAGE_TOPIC" >"${OUTPUT_DIR}/sample_frame_status.txt"
+       report WARN "ros_image_topic" "missing topic=$ROS_IMAGE_TOPIC status=${OUTPUT_DIR}/sample_frame_status.txt"
+     fi
++
++    if wait_for_ros_topic "$ROS_CAMERA_INFO_TOPIC" "$ROS_TOPIC_TIMEOUT"; then
++      report PASS "ros_camera_info_topic" "topic=$ROS_CAMERA_INFO_TOPIC"
++    else
++      printf 'sample_frame=not_captured\nreason=%s did not appear before timeout\n' "$ROS_CAMERA_INFO_TOPIC" >"${OUTPUT_DIR}/sample_frame_status.txt"
++      report WARN "ros_camera_info_topic" "missing topic=$ROS_CAMERA_INFO_TOPIC status=${OUTPUT_DIR}/sample_frame_status.txt"
++    fi
++
++    if wait_for_ros_topic "$ROS_IMAGE_TOPIC" 1 && wait_for_ros_topic "$ROS_CAMERA_INFO_TOPIC" 1; then
++      capture_sample_frame || true
++      verify_live_target_pose
++    fi
+   fi
+ else
++  printf 'front_camera_bridge=not_started\nreason=ros_gz_bridge package is not available\n' >"${OUTPUT_DIR}/front_camera_bridge.log"
+   printf 'sample_frame=not_captured\nreason=ros_gz_bridge package is not available; live image bridge skipped\n' >"${OUTPUT_DIR}/sample_frame_status.txt"
+   report WARN "ros_pkg:ros_gz_bridge" "missing; skipped live bridge and sample capture"
+ fi
+
+apply patch
+patch: completed
+/home/clcwork/UAV_capture/px4_ros2_ws/docs/STAGE2_TARGET_POSE.md
+diff --git a/px4_ros2_ws/docs/STAGE2_TARGET_POSE.md b/px4_ros2_ws/docs/STAGE2_TARGET_POSE.md
+index 18a45283773805e91940e8a37f4c33427bf66981..0083a99e3013cb2eea03203813893b76d6d53fd0
+--- a/px4_ros2_ws/docs/STAGE2_TARGET_POSE.md
++++ b/px4_ros2_ws/docs/STAGE2_TARGET_POSE.md
+@@ -95,7 +95,7 @@
+ Run the bounded bridge smoke:
+ 
+ ```bash
+-bash scripts/smoke_vision_bridge.sh | tee codex-logs/027-harden-vision-bridge-smoke.log
++bash scripts/smoke_vision_bridge.sh | tee codex-logs/032-verify-camera-bridge-and-sample-frame.log
+ ```
+ 
+ Expected outputs are under:
+@@ -109,6 +109,14 @@
+ bridge is present, `sample_frame.png` is saved if a frame is received; otherwise
+ `sample_frame_status.txt` documents why capture did not complete.
+ 
++Task 032 verified the live bridge path in this workspace. The run passed the
++Gazebo camera topic, ROS image topic, ROS camera-info topic, placeholder target
++pose, live target pose, and sample-frame capture checks:
++
++```text
++visualizations/demo_07_camera/20260528_113542/sample_frame.png
++```
++
+ With a sourced workspace, verify placeholder topic wiring without starting
+ Gazebo:
+ 
+@@ -126,6 +134,7 @@
+ ros2 launch aerial_manip_vision tag_target_pose.launch.py
+ ```
+ 
+-Current warning: `ros_gz_bridge` was previously recorded as missing in the
+-stage-2 environment audit, so live image detection depends on installing or
+-exposing the ROS/Gazebo bridge package.
++Current status: `ros_gz_bridge` is available in the sourced ROS Jazzy
++environment used by Task 032. Live image detection still depends on launching
++the smoke world and front-camera bridge; placeholder mode remains a separate
++topic-wiring check and is not visual evidence.
+diff --git a/px4_ros2_ws/docs/STAGE2_VISION_BRIDGE.md b/px4_ros2_ws/docs/STAGE2_VISION_BRIDGE.md
+index db5ce256bdf6c61fc5741c212f56b694f5996364..54113d93c993df4fe76948083088ef3bca7fb7d8
+--- a/px4_ros2_ws/docs/STAGE2_VISION_BRIDGE.md
++++ b/px4_ros2_ws/docs/STAGE2_VISION_BRIDGE.md
+@@ -51,8 +51,16 @@
+ 
+ ## Smoke Run
+ 
+-Task 027 adds a bounded smoke script for the complete front-camera bridge path:
++Task 027 added a bounded smoke script for the complete front-camera bridge path.
++Task 032 verified the same path with `ros_gz_bridge` available and captured a
++real sample frame:
+ 
++```text
++visualizations/demo_07_camera/20260528_113542/sample_frame.png
++```
++
++Run:
++
+ ```bash
+ bash scripts/smoke_vision_bridge.sh
+ ```
+@@ -63,6 +71,7 @@
+ - Gazebo publication of the configured camera image topic;
+ - `ros_gz_bridge` package availability;
+ - ROS 2 availability of `/vision/front/image_raw`;
++- ROS 2 availability of `/vision/front/camera_info`;
+ - target pose publication on `/vision/target_pose`.
+ 
+ When `ros_gz_bridge` is available and the image stream produces a frame, the
+diff --git a/px4_ros2_ws/scripts/smoke_vision_bridge.sh b/px4_ros2_ws/scripts/smoke_vision_bridge.sh
+index 5853d3a8d8f36b2468a06912c1ae07c9f04e59f9..bc1c717a63939e79c5f90be76bc782828ac2de2b
+--- a/px4_ros2_ws/scripts/smoke_vision_bridge.sh
++++ b/px4_ros2_ws/scripts/smoke_vision_bridge.sh
+@@ -327,14 +327,25 @@
+   if [ "$fail_count" -eq 0 ] && start_camera_bridge; then
+     if wait_for_ros_topic "$ROS_IMAGE_TOPIC" "$ROS_TOPIC_TIMEOUT"; then
+       report PASS "ros_image_topic" "topic=$ROS_IMAGE_TOPIC"
+-      capture_sample_frame || true
+-      verify_live_target_pose
+     else
+       printf 'sample_frame=not_captured\nreason=%s did not appear before timeout\n' "$ROS_IMAGE_TOPIC" >"${OUTPUT_DIR}/sample_frame_status.txt"
+       report WARN "ros_image_topic" "missing topic=$ROS_IMAGE_TOPIC status=${OUTPUT_DIR}/sample_frame_status.txt"
+     fi
++
++    if wait_for_ros_topic "$ROS_CAMERA_INFO_TOPIC" "$ROS_TOPIC_TIMEOUT"; then
++      report PASS "ros_camera_info_topic" "topic=$ROS_CAMERA_INFO_TOPIC"
++    else
++      printf 'sample_frame=not_captured\nreason=%s did not appear before timeout\n' "$ROS_CAMERA_INFO_TOPIC" >"${OUTPUT_DIR}/sample_frame_status.txt"
++      report WARN "ros_camera_info_topic" "missing topic=$ROS_CAMERA_INFO_TOPIC status=${OUTPUT_DIR}/sample_frame_status.txt"
++    fi
++
++    if wait_for_ros_topic "$ROS_IMAGE_TOPIC" 1 && wait_for_ros_topic "$ROS_CAMERA_INFO_TOPIC" 1; then
++      capture_sample_frame || true
++      verify_live_target_pose
++    fi
+   fi
+ else
++  printf 'front_camera_bridge=not_started\nreason=ros_gz_bridge package is not available\n' >"${OUTPUT_DIR}/front_camera_bridge.log"
+   printf 'sample_frame=not_captured\nreason=ros_gz_bridge package is not available; live image bridge skipped\n' >"${OUTPUT_DIR}/sample_frame_status.txt"
+   report WARN "ros_pkg:ros_gz_bridge" "missing; skipped live bridge and sample capture"
+ fi
+
+diff --git a/px4_ros2_ws/docs/STAGE2_TARGET_POSE.md b/px4_ros2_ws/docs/STAGE2_TARGET_POSE.md
+index 18a45283773805e91940e8a37f4c33427bf66981..0083a99e3013cb2eea03203813893b76d6d53fd0
+--- a/px4_ros2_ws/docs/STAGE2_TARGET_POSE.md
++++ b/px4_ros2_ws/docs/STAGE2_TARGET_POSE.md
+@@ -95,7 +95,7 @@
+ Run the bounded bridge smoke:
+ 
+ ```bash
+-bash scripts/smoke_vision_bridge.sh | tee codex-logs/027-harden-vision-bridge-smoke.log
++bash scripts/smoke_vision_bridge.sh | tee codex-logs/032-verify-camera-bridge-and-sample-frame.log
+ ```
+ 
+ Expected outputs are under:
+@@ -109,6 +109,14 @@
+ bridge is present, `sample_frame.png` is saved if a frame is received; otherwise
+ `sample_frame_status.txt` documents why capture did not complete.
+ 
++Task 032 verified the live bridge path in this workspace. The run passed the
++Gazebo camera topic, ROS image topic, ROS camera-info topic, placeholder target
++pose, live target pose, and sample-frame capture checks:
++
++```text
++visualizations/demo_07_camera/20260528_113542/sample_frame.png
++```
++
+ With a sourced workspace, verify placeholder topic wiring without starting
+ Gazebo:
+ 
+@@ -126,6 +134,7 @@
+ ros2 launch aerial_manip_vision tag_target_pose.launch.py
+ ```
+ 
+-Current warning: `ros_gz_bridge` was previously recorded as missing in the
+-stage-2 environment audit, so live image detection depends on installing or
+-exposing the ROS/Gazebo bridge package.
++Current status: `ros_gz_bridge` is available in the sourced ROS Jazzy
++environment used by Task 032. Live image detection still depends on launching
++the smoke world and front-camera bridge; placeholder mode remains a separate
++topic-wiring check and is not visual evidence.
+diff --git a/px4_ros2_ws/docs/STAGE2_VISION_BRIDGE.md b/px4_ros2_ws/docs/STAGE2_VISION_BRIDGE.md
+index db5ce256bdf6c61fc5741c212f56b694f5996364..54113d93c993df4fe76948083088ef3bca7fb7d8
+--- a/px4_ros2_ws/docs/STAGE2_VISION_BRIDGE.md
++++ b/px4_ros2_ws/docs/STAGE2_VISION_BRIDGE.md
+@@ -51,8 +51,16 @@
+ 
+ ## Smoke Run
+ 
+-Task 027 adds a bounded smoke script for the complete front-camera bridge path:
++Task 027 added a bounded smoke script for the complete front-camera bridge path.
++Task 032 verified the same path with `ros_gz_bridge` available and captured a
++real sample frame:
+ 
++```text
++visualizations/demo_07_camera/20260528_113542/sample_frame.png
++```
++
++Run:
++
+ ```bash
+ bash scripts/smoke_vision_bridge.sh
+ ```
+@@ -63,6 +71,7 @@
+ - Gazebo publication of the configured camera image topic;
+ - `ros_gz_bridge` package availability;
+ - ROS 2 availability of `/vision/front/image_raw`;
++- ROS 2 availability of `/vision/front/camera_info`;
+ - target pose publication on `/vision/target_pose`.
+ 
+ When `ros_gz_bridge` is available and the image stream produces a frame, the
+diff --git a/px4_ros2_ws/scripts/smoke_vision_bridge.sh b/px4_ros2_ws/scripts/smoke_vision_bridge.sh
+index 5853d3a8d8f36b2468a06912c1ae07c9f04e59f9..bc1c717a63939e79c5f90be76bc782828ac2de2b
+--- a/px4_ros2_ws/scripts/smoke_vision_bridge.sh
++++ b/px4_ros2_ws/scripts/smoke_vision_bridge.sh
+@@ -327,14 +327,25 @@
+   if [ "$fail_count" -eq 0 ] && start_camera_bridge; then
+     if wait_for_ros_topic "$ROS_IMAGE_TOPIC" "$ROS_TOPIC_TIMEOUT"; then
+       report PASS "ros_image_topic" "topic=$ROS_IMAGE_TOPIC"
+-      capture_sample_frame || true
+-      verify_live_target_pose
+     else
+       printf 'sample_frame=not_captured\nreason=%s did not appear before timeout\n' "$ROS_IMAGE_TOPIC" >"${OUTPUT_DIR}/sample_frame_status.txt"
+       report WARN "ros_image_topic" "missing topic=$ROS_IMAGE_TOPIC status=${OUTPUT_DIR}/sample_frame_status.txt"
+     fi
++
++    if wait_for_ros_topic "$ROS_CAMERA_INFO_TOPIC" "$ROS_TOPIC_TIMEOUT"; then
++      report PASS "ros_camera_info_topic" "topic=$ROS_CAMERA_INFO_TOPIC"
++    else
++      printf 'sample_frame=not_captured\nreason=%s did not appear before timeout\n' "$ROS_CAMERA_INFO_TOPIC" >"${OUTPUT_DIR}/sample_frame_status.txt"
++      report WARN "ros_camera_info_topic" "missing topic=$ROS_CAMERA_INFO_TOPIC status=${OUTPUT_DIR}/sample_frame_status.txt"
++    fi
++
++    if wait_for_ros_topic "$ROS_IMAGE_TOPIC" 1 && wait_for_ros_topic "$ROS_CAMERA_INFO_TOPIC" 1; then
++      capture_sample_frame || true
++      verify_live_target_pose
++    fi
+   fi
+ else
++  printf 'front_camera_bridge=not_started\nreason=ros_gz_bridge package is not available\n' >"${OUTPUT_DIR}/front_camera_bridge.log"
+   printf 'sample_frame=not_captured\nreason=ros_gz_bridge package is not available; live image bridge skipped\n' >"${OUTPUT_DIR}/sample_frame_status.txt"
+   report WARN "ros_pkg:ros_gz_bridge" "missing; skipped live bridge and sample capture"
+ fi
+
+codex
+The docs now record the Task 032 evidence and no longer describe `ros_gz_bridge` as missing in the current sourced environment. I’m doing a final syntax check and checking the touched-file state/output paths before the handoff.
+exec
+/bin/bash -lc 'bash -n scripts/smoke_vision_bridge.sh' in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+exec
+/bin/bash -lc 'ls -l codex-logs/032-verify-camera-bridge-and-sample-frame.log visualizations/demo_07_camera/20260528_113542/sample_frame.png' in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+-rw-rw-r-- 1 clcwork clcwork  2935 May 28 11:36 codex-logs/032-verify-camera-bridge-and-sample-frame.log
+-rw-rw-r-- 1 clcwork clcwork 39264 May 28 11:35 visualizations/demo_07_camera/20260528_113542/sample_frame.png
+
+exec
+/bin/bash -lc "stat -c '%A %n' scripts/smoke_vision_bridge.sh" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+-rwxrwxr-x scripts/smoke_vision_bridge.sh
+
+exec
+/bin/bash -lc 'git status --short' in /home/clcwork/UAV_capture/px4_ros2_ws
+diff --git a/px4_ros2_ws/docs/STAGE2_TARGET_POSE.md b/px4_ros2_ws/docs/STAGE2_TARGET_POSE.md
+index 18a45283773805e91940e8a37f4c33427bf66981..0083a99e3013cb2eea03203813893b76d6d53fd0
+--- a/px4_ros2_ws/docs/STAGE2_TARGET_POSE.md
++++ b/px4_ros2_ws/docs/STAGE2_TARGET_POSE.md
+@@ -95,7 +95,7 @@
+ Run the bounded bridge smoke:
+ 
+ ```bash
+-bash scripts/smoke_vision_bridge.sh | tee codex-logs/027-harden-vision-bridge-smoke.log
++bash scripts/smoke_vision_bridge.sh | tee codex-logs/032-verify-camera-bridge-and-sample-frame.log
+ ```
+ 
+ Expected outputs are under:
+@@ -109,6 +109,14 @@
+ bridge is present, `sample_frame.png` is saved if a frame is received; otherwise
+ `sample_frame_status.txt` documents why capture did not complete.
+ 
++Task 032 verified the live bridge path in this workspace. The run passed the
++Gazebo camera topic, ROS image topic, ROS camera-info topic, placeholder target
++pose, live target pose, and sample-frame capture checks:
++
++```text
++visualizations/demo_07_camera/20260528_113542/sample_frame.png
++```
++
+ With a sourced workspace, verify placeholder topic wiring without starting
+ Gazebo:
+ 
+@@ -126,6 +134,7 @@
+ ros2 launch aerial_manip_vision tag_target_pose.launch.py
+ ```
+ 
+-Current warning: `ros_gz_bridge` was previously recorded as missing in the
+-stage-2 environment audit, so live image detection depends on installing or
+-exposing the ROS/Gazebo bridge package.
++Current status: `ros_gz_bridge` is available in the sourced ROS Jazzy
++environment used by Task 032. Live image detection still depends on launching
++the smoke world and front-camera bridge; placeholder mode remains a separate
++topic-wiring check and is not visual evidence.
+diff --git a/px4_ros2_ws/docs/STAGE2_VISION_BRIDGE.md b/px4_ros2_ws/docs/STAGE2_VISION_BRIDGE.md
+index db5ce256bdf6c61fc5741c212f56b694f5996364..54113d93c993df4fe76948083088ef3bca7fb7d8
+--- a/px4_ros2_ws/docs/STAGE2_VISION_BRIDGE.md
++++ b/px4_ros2_ws/docs/STAGE2_VISION_BRIDGE.md
+@@ -51,8 +51,16 @@
+ 
+ ## Smoke Run
+ 
+-Task 027 adds a bounded smoke script for the complete front-camera bridge path:
++Task 027 added a bounded smoke script for the complete front-camera bridge path.
++Task 032 verified the same path with `ros_gz_bridge` available and captured a
++real sample frame:
+ 
++```text
++visualizations/demo_07_camera/20260528_113542/sample_frame.png
++```
++
++Run:
++
+ ```bash
+ bash scripts/smoke_vision_bridge.sh
+ ```
+@@ -63,6 +71,7 @@
+ - Gazebo publication of the configured camera image topic;
+ - `ros_gz_bridge` package availability;
+ - ROS 2 availability of `/vision/front/image_raw`;
++- ROS 2 availability of `/vision/front/camera_info`;
+ - target pose publication on `/vision/target_pose`.
+ 
+ When `ros_gz_bridge` is available and the image stream produces a frame, the
+diff --git a/px4_ros2_ws/scripts/smoke_vision_bridge.sh b/px4_ros2_ws/scripts/smoke_vision_bridge.sh
+index 5853d3a8d8f36b2468a06912c1ae07c9f04e59f9..bc1c717a63939e79c5f90be76bc782828ac2de2b
+--- a/px4_ros2_ws/scripts/smoke_vision_bridge.sh
++++ b/px4_ros2_ws/scripts/smoke_vision_bridge.sh
+@@ -327,14 +327,25 @@
+   if [ "$fail_count" -eq 0 ] && start_camera_bridge; then
+     if wait_for_ros_topic "$ROS_IMAGE_TOPIC" "$ROS_TOPIC_TIMEOUT"; then
+       report PASS "ros_image_topic" "topic=$ROS_IMAGE_TOPIC"
+-      capture_sample_frame || true
+-      verify_live_target_pose
+     else
+       printf 'sample_frame=not_captured\nreason=%s did not appear before timeout\n' "$ROS_IMAGE_TOPIC" >"${OUTPUT_DIR}/sample_frame_status.txt"
+       report WARN "ros_image_topic" "missing topic=$ROS_IMAGE_TOPIC status=${OUTPUT_DIR}/sample_frame_status.txt"
+     fi
++
++    if wait_for_ros_topic "$ROS_CAMERA_INFO_TOPIC" "$ROS_TOPIC_TIMEOUT"; then
++      report PASS "ros_camera_info_topic" "topic=$ROS_CAMERA_INFO_TOPIC"
++    else
++      printf 'sample_frame=not_captured\nreason=%s did not appear before timeout\n' "$ROS_CAMERA_INFO_TOPIC" >"${OUTPUT_DIR}/sample_frame_status.txt"
++      report WARN "ros_camera_info_topic" "missing topic=$ROS_CAMERA_INFO_TOPIC status=${OUTPUT_DIR}/sample_frame_status.txt"
++    fi
++
++    if wait_for_ros_topic "$ROS_IMAGE_TOPIC" 1 && wait_for_ros_topic "$ROS_CAMERA_INFO_TOPIC" 1; then
++      capture_sample_frame || true
++      verify_live_target_pose
++    fi
+   fi
+ else
++  printf 'front_camera_bridge=not_started\nreason=ros_gz_bridge package is not available\n' >"${OUTPUT_DIR}/front_camera_bridge.log"
+   printf 'sample_frame=not_captured\nreason=ros_gz_bridge package is not available; live image bridge skipped\n' >"${OUTPUT_DIR}/sample_frame_status.txt"
+   report WARN "ros_pkg:ros_gz_bridge" "missing; skipped live bridge and sample capture"
+ fi
+
+ succeeded in 121ms:
+ M docs/STAGE2_ENVIRONMENT_AUDIT.md
+ M docs/STAGE2_RUNBOOK.md
+ M docs/STAGE2_TARGET_POSE.md
+ M docs/STAGE2_VISION_BRIDGE.md
+ M scripts/smoke_vision_bridge.sh
+?? codex-logs/031-install-and-verify-live-dependencies-20260528_113004.log
+?? codex-logs/031-install-and-verify-live-dependencies.done
+?? codex-logs/031-install-and-verify-live-dependencies.log
+?? codex-logs/032-verify-camera-bridge-and-sample-frame-20260528_113449.log
+?? codex-logs/032-verify-camera-bridge-and-sample-frame.log
+?? codex-tasks/031-install-and-verify-live-dependencies.md
+?? codex-tasks/032-verify-camera-bridge-and-sample-frame.md
+?? codex-tasks/033-verify-live-arm-control-and-demo10-smoke.md
+?? codex-tasks/034-run-full-live-demo10-and-record-evidence.md
+?? codex-tasks/035-generate-demo10-visualizations.md
+?? codex-tasks/036-build-simulation-showcase-deliverable.md
+
+exec
+/bin/bash -lc "sed -n '1,120p' visualizations/demo_07_camera/20260528_113542/live_target_pose.yaml && sed -n '1,120p' visualizations/demo_07_camera/20260528_113542/placeholder_target_pose.yaml" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+header:
+  stamp:
+    sec: 1779939360
+    nanosec: 682377707
+  frame_id: uav/camera_link
+pose:
+  position:
+    x: -0.0
+    y: -0.258
+    z: 1.88
+  orientation:
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+---
+header:
+  stamp:
+    sec: 1779939350
+    nanosec: 682207997
+  frame_id: uav/camera_link
+pose:
+  position:
+    x: -0.0
+    y: -0.258
+    z: 1.88
+  orientation:
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+---
+
+exec
+/bin/bash -lc 'git diff -- scripts/smoke_vision_bridge.sh docs/STAGE2_VISION_BRIDGE.md docs/STAGE2_TARGET_POSE.md' in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+diff --git a/px4_ros2_ws/docs/STAGE2_TARGET_POSE.md b/px4_ros2_ws/docs/STAGE2_TARGET_POSE.md
+index 18a4528..0083a99 100644
+--- a/px4_ros2_ws/docs/STAGE2_TARGET_POSE.md
++++ b/px4_ros2_ws/docs/STAGE2_TARGET_POSE.md
+@@ -95,7 +95,7 @@ colcon build --packages-select aerial_manip_vision aerial_manip_gazebo
+ Run the bounded bridge smoke:
+ 
+ ```bash
+-bash scripts/smoke_vision_bridge.sh | tee codex-logs/027-harden-vision-bridge-smoke.log
++bash scripts/smoke_vision_bridge.sh | tee codex-logs/032-verify-camera-bridge-and-sample-frame.log
+ ```
+ 
+ Expected outputs are under:
+@@ -109,6 +109,14 @@ long as the explicit placeholder `/vision/target_pose` check succeeds. When the
+ bridge is present, `sample_frame.png` is saved if a frame is received; otherwise
+ `sample_frame_status.txt` documents why capture did not complete.
+ 
++Task 032 verified the live bridge path in this workspace. The run passed the
++Gazebo camera topic, ROS image topic, ROS camera-info topic, placeholder target
++pose, live target pose, and sample-frame capture checks:
++
++```text
++visualizations/demo_07_camera/20260528_113542/sample_frame.png
++```
++
+ With a sourced workspace, verify placeholder topic wiring without starting
+ Gazebo:
+ 
+@@ -126,6 +134,7 @@ ros2 launch aerial_manip_gazebo front_camera_bridge.launch.py
+ ros2 launch aerial_manip_vision tag_target_pose.launch.py
+ ```
+ 
+-Current warning: `ros_gz_bridge` was previously recorded as missing in the
+-stage-2 environment audit, so live image detection depends on installing or
+-exposing the ROS/Gazebo bridge package.
++Current status: `ros_gz_bridge` is available in the sourced ROS Jazzy
++environment used by Task 032. Live image detection still depends on launching
++the smoke world and front-camera bridge; placeholder mode remains a separate
++topic-wiring check and is not visual evidence.
+diff --git a/px4_ros2_ws/docs/STAGE2_VISION_BRIDGE.md b/px4_ros2_ws/docs/STAGE2_VISION_BRIDGE.md
+index db5ce25..54113d9 100644
+--- a/px4_ros2_ws/docs/STAGE2_VISION_BRIDGE.md
++++ b/px4_ros2_ws/docs/STAGE2_VISION_BRIDGE.md
+@@ -51,7 +51,15 @@ future image topics can be added without changing the launch file.
+ 
+ ## Smoke Run
+ 
+-Task 027 adds a bounded smoke script for the complete front-camera bridge path:
++Task 027 added a bounded smoke script for the complete front-camera bridge path.
++Task 032 verified the same path with `ros_gz_bridge` available and captured a
++real sample frame:
++
++```text
++visualizations/demo_07_camera/20260528_113542/sample_frame.png
++```
++
++Run:
+ 
+ ```bash
+ bash scripts/smoke_vision_bridge.sh
+@@ -63,6 +71,7 @@ The script checks:
+ - Gazebo publication of the configured camera image topic;
+ - `ros_gz_bridge` package availability;
+ - ROS 2 availability of `/vision/front/image_raw`;
++- ROS 2 availability of `/vision/front/camera_info`;
+ - target pose publication on `/vision/target_pose`.
+ 
+ When `ros_gz_bridge` is available and the image stream produces a frame, the
+diff --git a/px4_ros2_ws/scripts/smoke_vision_bridge.sh b/px4_ros2_ws/scripts/smoke_vision_bridge.sh
+index 5853d3a..bc1c717 100755
+--- a/px4_ros2_ws/scripts/smoke_vision_bridge.sh
++++ b/px4_ros2_ws/scripts/smoke_vision_bridge.sh
+@@ -327,14 +327,25 @@ if command -v ros2 >/dev/null 2>&1 && ros2 pkg prefix ros_gz_bridge >/dev/null 2
+   if [ "$fail_count" -eq 0 ] && start_camera_bridge; then
+     if wait_for_ros_topic "$ROS_IMAGE_TOPIC" "$ROS_TOPIC_TIMEOUT"; then
+       report PASS "ros_image_topic" "topic=$ROS_IMAGE_TOPIC"
+-      capture_sample_frame || true
+-      verify_live_target_pose
+     else
+       printf 'sample_frame=not_captured\nreason=%s did not appear before timeout\n' "$ROS_IMAGE_TOPIC" >"${OUTPUT_DIR}/sample_frame_status.txt"
+       report WARN "ros_image_topic" "missing topic=$ROS_IMAGE_TOPIC status=${OUTPUT_DIR}/sample_frame_status.txt"
+     fi
++
++    if wait_for_ros_topic "$ROS_CAMERA_INFO_TOPIC" "$ROS_TOPIC_TIMEOUT"; then
++      report PASS "ros_camera_info_topic" "topic=$ROS_CAMERA_INFO_TOPIC"
++    else
++      printf 'sample_frame=not_captured\nreason=%s did not appear before timeout\n' "$ROS_CAMERA_INFO_TOPIC" >"${OUTPUT_DIR}/sample_frame_status.txt"
++      report WARN "ros_camera_info_topic" "missing topic=$ROS_CAMERA_INFO_TOPIC status=${OUTPUT_DIR}/sample_frame_status.txt"
++    fi
++
++    if wait_for_ros_topic "$ROS_IMAGE_TOPIC" 1 && wait_for_ros_topic "$ROS_CAMERA_INFO_TOPIC" 1; then
++      capture_sample_frame || true
++      verify_live_target_pose
++    fi
+   fi
+ else
++  printf 'front_camera_bridge=not_started\nreason=ros_gz_bridge package is not available\n' >"${OUTPUT_DIR}/front_camera_bridge.log"
+   printf 'sample_frame=not_captured\nreason=ros_gz_bridge package is not available; live image bridge skipped\n' >"${OUTPUT_DIR}/sample_frame_status.txt"
+   report WARN "ros_pkg:ros_gz_bridge" "missing; skipped live bridge and sample capture"
+ fi
+
+diff --git a/px4_ros2_ws/docs/STAGE2_TARGET_POSE.md b/px4_ros2_ws/docs/STAGE2_TARGET_POSE.md
+index 18a45283773805e91940e8a37f4c33427bf66981..0083a99e3013cb2eea03203813893b76d6d53fd0
+--- a/px4_ros2_ws/docs/STAGE2_TARGET_POSE.md
++++ b/px4_ros2_ws/docs/STAGE2_TARGET_POSE.md
+@@ -95,7 +95,7 @@
+ Run the bounded bridge smoke:
+ 
+ ```bash
+-bash scripts/smoke_vision_bridge.sh | tee codex-logs/027-harden-vision-bridge-smoke.log
++bash scripts/smoke_vision_bridge.sh | tee codex-logs/032-verify-camera-bridge-and-sample-frame.log
+ ```
+ 
+ Expected outputs are under:
+@@ -109,6 +109,14 @@
+ bridge is present, `sample_frame.png` is saved if a frame is received; otherwise
+ `sample_frame_status.txt` documents why capture did not complete.
+ 
++Task 032 verified the live bridge path in this workspace. The run passed the
++Gazebo camera topic, ROS image topic, ROS camera-info topic, placeholder target
++pose, live target pose, and sample-frame capture checks:
++
++```text
++visualizations/demo_07_camera/20260528_113542/sample_frame.png
++```
++
+ With a sourced workspace, verify placeholder topic wiring without starting
+ Gazebo:
+ 
+@@ -126,6 +134,7 @@
+ ros2 launch aerial_manip_vision tag_target_pose.launch.py
+ ```
+ 
+-Current warning: `ros_gz_bridge` was previously recorded as missing in the
+-stage-2 environment audit, so live image detection depends on installing or
+-exposing the ROS/Gazebo bridge package.
++Current status: `ros_gz_bridge` is available in the sourced ROS Jazzy
++environment used by Task 032. Live image detection still depends on launching
++the smoke world and front-camera bridge; placeholder mode remains a separate
++topic-wiring check and is not visual evidence.
+diff --git a/px4_ros2_ws/docs/STAGE2_VISION_BRIDGE.md b/px4_ros2_ws/docs/STAGE2_VISION_BRIDGE.md
+index db5ce256bdf6c61fc5741c212f56b694f5996364..54113d93c993df4fe76948083088ef3bca7fb7d8
+--- a/px4_ros2_ws/docs/STAGE2_VISION_BRIDGE.md
++++ b/px4_ros2_ws/docs/STAGE2_VISION_BRIDGE.md
+@@ -51,8 +51,16 @@
+ 
+ ## Smoke Run
+ 
+-Task 027 adds a bounded smoke script for the complete front-camera bridge path:
++Task 027 added a bounded smoke script for the complete front-camera bridge path.
++Task 032 verified the same path with `ros_gz_bridge` available and captured a
++real sample frame:
+ 
++```text
++visualizations/demo_07_camera/20260528_113542/sample_frame.png
++```
++
++Run:
++
+ ```bash
+ bash scripts/smoke_vision_bridge.sh
+ ```
+@@ -63,6 +71,7 @@
+ - Gazebo publication of the configured camera image topic;
+ - `ros_gz_bridge` package availability;
+ - ROS 2 availability of `/vision/front/image_raw`;
++- ROS 2 availability of `/vision/front/camera_info`;
+ - target pose publication on `/vision/target_pose`.
+ 
+ When `ros_gz_bridge` is available and the image stream produces a frame, the
+diff --git a/px4_ros2_ws/scripts/smoke_vision_bridge.sh b/px4_ros2_ws/scripts/smoke_vision_bridge.sh
+index 5853d3a8d8f36b2468a06912c1ae07c9f04e59f9..bc1c717a63939e79c5f90be76bc782828ac2de2b
+--- a/px4_ros2_ws/scripts/smoke_vision_bridge.sh
++++ b/px4_ros2_ws/scripts/smoke_vision_bridge.sh
+@@ -327,14 +327,25 @@
+   if [ "$fail_count" -eq 0 ] && start_camera_bridge; then
+     if wait_for_ros_topic "$ROS_IMAGE_TOPIC" "$ROS_TOPIC_TIMEOUT"; then
+       report PASS "ros_image_topic" "topic=$ROS_IMAGE_TOPIC"
+-      capture_sample_frame || true
+-      verify_live_target_pose
+     else
+       printf 'sample_frame=not_captured\nreason=%s did not appear before timeout\n' "$ROS_IMAGE_TOPIC" >"${OUTPUT_DIR}/sample_frame_status.txt"
+       report WARN "ros_image_topic" "missing topic=$ROS_IMAGE_TOPIC status=${OUTPUT_DIR}/sample_frame_status.txt"
+     fi
++
++    if wait_for_ros_topic "$ROS_CAMERA_INFO_TOPIC" "$ROS_TOPIC_TIMEOUT"; then
++      report PASS "ros_camera_info_topic" "topic=$ROS_CAMERA_INFO_TOPIC"
++    else
++      printf 'sample_frame=not_captured\nreason=%s did not appear before timeout\n' "$ROS_CAMERA_INFO_TOPIC" >"${OUTPUT_DIR}/sample_frame_status.txt"
++      report WARN "ros_camera_info_topic" "missing topic=$ROS_CAMERA_INFO_TOPIC status=${OUTPUT_DIR}/sample_frame_status.txt"
++    fi
++
++    if wait_for_ros_topic "$ROS_IMAGE_TOPIC" 1 && wait_for_ros_topic "$ROS_CAMERA_INFO_TOPIC" 1; then
++      capture_sample_frame || true
++      verify_live_target_pose
++    fi
+   fi
+ else
++  printf 'front_camera_bridge=not_started\nreason=ros_gz_bridge package is not available\n' >"${OUTPUT_DIR}/front_camera_bridge.log"
+   printf 'sample_frame=not_captured\nreason=ros_gz_bridge package is not available; live image bridge skipped\n' >"${OUTPUT_DIR}/sample_frame_status.txt"
+   report WARN "ros_pkg:ros_gz_bridge" "missing; skipped live bridge and sample capture"
+ fi
+
+exec
+/bin/bash -lc "nl -ba scripts/smoke_vision_bridge.sh | sed -n '320,355p'" in /home/clcwork/UAV_capture/px4_ros2_ws
+exec
+/bin/bash -lc "nl -ba docs/STAGE2_VISION_BRIDGE.md | sed -n '48,80p'" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+   320	  verify_placeholder_target_pose
+   321	else
+   322	  report FAIL "ros_pkg:aerial_manip_vision" "missing; run colcon build --packages-select aerial_manip_vision"
+   323	fi
+   324	
+   325	if command -v ros2 >/dev/null 2>&1 && ros2 pkg prefix ros_gz_bridge >/dev/null 2>&1; then
+   326	  report PASS "ros_pkg:ros_gz_bridge" "prefix=$(ros2 pkg prefix ros_gz_bridge)"
+   327	  if [ "$fail_count" -eq 0 ] && start_camera_bridge; then
+   328	    if wait_for_ros_topic "$ROS_IMAGE_TOPIC" "$ROS_TOPIC_TIMEOUT"; then
+   329	      report PASS "ros_image_topic" "topic=$ROS_IMAGE_TOPIC"
+   330	    else
+   331	      printf 'sample_frame=not_captured\nreason=%s did not appear before timeout\n' "$ROS_IMAGE_TOPIC" >"${OUTPUT_DIR}/sample_frame_status.txt"
+   332	      report WARN "ros_image_topic" "missing topic=$ROS_IMAGE_TOPIC status=${OUTPUT_DIR}/sample_frame_status.txt"
+   333	    fi
+   334	
+   335	    if wait_for_ros_topic "$ROS_CAMERA_INFO_TOPIC" "$ROS_TOPIC_TIMEOUT"; then
+   336	      report PASS "ros_camera_info_topic" "topic=$ROS_CAMERA_INFO_TOPIC"
+   337	    else
+   338	      printf 'sample_frame=not_captured\nreason=%s did not appear before timeout\n' "$ROS_CAMERA_INFO_TOPIC" >"${OUTPUT_DIR}/sample_frame_status.txt"
+   339	      report WARN "ros_camera_info_topic" "missing topic=$ROS_CAMERA_INFO_TOPIC status=${OUTPUT_DIR}/sample_frame_status.txt"
+   340	    fi
+   341	
+   342	    if wait_for_ros_topic "$ROS_IMAGE_TOPIC" 1 && wait_for_ros_topic "$ROS_CAMERA_INFO_TOPIC" 1; then
+   343	      capture_sample_frame || true
+   344	      verify_live_target_pose
+   345	    fi
+   346	  fi
+   347	else
+   348	  printf 'front_camera_bridge=not_started\nreason=ros_gz_bridge package is not available\n' >"${OUTPUT_DIR}/front_camera_bridge.log"
+   349	  printf 'sample_frame=not_captured\nreason=ros_gz_bridge package is not available; live image bridge skipped\n' >"${OUTPUT_DIR}/sample_frame_status.txt"
+   350	  report WARN "ros_pkg:ros_gz_bridge" "missing; skipped live bridge and sample capture"
+   351	fi
+   352	
+   353	printf '\nSUMMARY pass=%d warn=%d fail=%d\n' "$pass_count" "$warn_count" "$fail_count"
+   354	printf 'output_dir=%s\n' "$OUTPUT_DIR"
+   355	
+
+ succeeded in 0ms:
+    48	
+    49	The bridge is configured through YAML instead of command-line bridge pairs so
+    50	future image topics can be added without changing the launch file.
+    51	
+    52	## Smoke Run
+    53	
+    54	Task 027 added a bounded smoke script for the complete front-camera bridge path.
+    55	Task 032 verified the same path with `ros_gz_bridge` available and captured a
+    56	real sample frame:
+    57	
+    58	```text
+    59	visualizations/demo_07_camera/20260528_113542/sample_frame.png
+    60	```
+    61	
+    62	Run:
+    63	
+    64	```bash
+    65	bash scripts/smoke_vision_bridge.sh
+    66	```
+    67	
+    68	The script checks:
+    69	
+    70	- local model, world, bridge config, and ArUco texture assets;
+    71	- Gazebo publication of the configured camera image topic;
+    72	- `ros_gz_bridge` package availability;
+    73	- ROS 2 availability of `/vision/front/image_raw`;
+    74	- ROS 2 availability of `/vision/front/camera_info`;
+    75	- target pose publication on `/vision/target_pose`.
+    76	
+    77	When `ros_gz_bridge` is available and the image stream produces a frame, the
+    78	script writes:
+    79	
+    80	```text
+
+exec
+/bin/bash -lc "nl -ba docs/STAGE2_TARGET_POSE.md | sed -n '92,145p'" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+    92	colcon build --packages-select aerial_manip_vision aerial_manip_gazebo
+    93	```
+    94	
+    95	Run the bounded bridge smoke:
+    96	
+    97	```bash
+    98	bash scripts/smoke_vision_bridge.sh | tee codex-logs/032-verify-camera-bridge-and-sample-frame.log
+    99	```
+   100	
+   101	Expected outputs are under:
+   102	
+   103	```text
+   104	visualizations/demo_07_camera/<timestamp>/
+   105	```
+   106	
+   107	When `ros_gz_bridge` is missing, the smoke result is `WARN`, not `FAIL`, as
+   108	long as the explicit placeholder `/vision/target_pose` check succeeds. When the
+   109	bridge is present, `sample_frame.png` is saved if a frame is received; otherwise
+   110	`sample_frame_status.txt` documents why capture did not complete.
+   111	
+   112	Task 032 verified the live bridge path in this workspace. The run passed the
+   113	Gazebo camera topic, ROS image topic, ROS camera-info topic, placeholder target
+   114	pose, live target pose, and sample-frame capture checks:
+   115	
+   116	```text
+   117	visualizations/demo_07_camera/20260528_113542/sample_frame.png
+   118	```
+   119	
+   120	With a sourced workspace, verify placeholder topic wiring without starting
+   121	Gazebo:
+   122	
+   123	```bash
+   124	ros2 launch aerial_manip_vision tag_target_pose.launch.py publish_placeholder:=true
+   125	ros2 topic echo /vision/target_pose --once
+   126	ros2 topic echo /vision/target_pose_in_uav_frame --once
+   127	```
+   128	
+   129	For visual detection, also start the smoke world and front camera bridge:
+   130	
+   131	```bash
+   132	src/aerial_manip_gazebo/scripts/smoke_load_x500_arm_2dof.sh
+   133	ros2 launch aerial_manip_gazebo front_camera_bridge.launch.py
+   134	ros2 launch aerial_manip_vision tag_target_pose.launch.py
+   135	```
+   136	
+   137	Current status: `ros_gz_bridge` is available in the sourced ROS Jazzy
+   138	environment used by Task 032. Live image detection still depends on launching
+   139	the smoke world and front-camera bridge; placeholder mode remains a separate
+   140	topic-wiring check and is not visual evidence.
+
+diff --git a/px4_ros2_ws/docs/STAGE2_TARGET_POSE.md b/px4_ros2_ws/docs/STAGE2_TARGET_POSE.md
+index 18a45283773805e91940e8a37f4c33427bf66981..0083a99e3013cb2eea03203813893b76d6d53fd0
+--- a/px4_ros2_ws/docs/STAGE2_TARGET_POSE.md
++++ b/px4_ros2_ws/docs/STAGE2_TARGET_POSE.md
+@@ -95,7 +95,7 @@
+ Run the bounded bridge smoke:
+ 
+ ```bash
+-bash scripts/smoke_vision_bridge.sh | tee codex-logs/027-harden-vision-bridge-smoke.log
++bash scripts/smoke_vision_bridge.sh | tee codex-logs/032-verify-camera-bridge-and-sample-frame.log
+ ```
+ 
+ Expected outputs are under:
+@@ -109,6 +109,14 @@
+ bridge is present, `sample_frame.png` is saved if a frame is received; otherwise
+ `sample_frame_status.txt` documents why capture did not complete.
+ 
++Task 032 verified the live bridge path in this workspace. The run passed the
++Gazebo camera topic, ROS image topic, ROS camera-info topic, placeholder target
++pose, live target pose, and sample-frame capture checks:
++
++```text
++visualizations/demo_07_camera/20260528_113542/sample_frame.png
++```
++
+ With a sourced workspace, verify placeholder topic wiring without starting
+ Gazebo:
+ 
+@@ -126,6 +134,7 @@
+ ros2 launch aerial_manip_vision tag_target_pose.launch.py
+ ```
+ 
+-Current warning: `ros_gz_bridge` was previously recorded as missing in the
+-stage-2 environment audit, so live image detection depends on installing or
+-exposing the ROS/Gazebo bridge package.
++Current status: `ros_gz_bridge` is available in the sourced ROS Jazzy
++environment used by Task 032. Live image detection still depends on launching
++the smoke world and front-camera bridge; placeholder mode remains a separate
++topic-wiring check and is not visual evidence.
+diff --git a/px4_ros2_ws/docs/STAGE2_VISION_BRIDGE.md b/px4_ros2_ws/docs/STAGE2_VISION_BRIDGE.md
+index db5ce256bdf6c61fc5741c212f56b694f5996364..54113d93c993df4fe76948083088ef3bca7fb7d8
+--- a/px4_ros2_ws/docs/STAGE2_VISION_BRIDGE.md
++++ b/px4_ros2_ws/docs/STAGE2_VISION_BRIDGE.md
+@@ -51,8 +51,16 @@
+ 
+ ## Smoke Run
+ 
+-Task 027 adds a bounded smoke script for the complete front-camera bridge path:
++Task 027 added a bounded smoke script for the complete front-camera bridge path.
++Task 032 verified the same path with `ros_gz_bridge` available and captured a
++real sample frame:
+ 
++```text
++visualizations/demo_07_camera/20260528_113542/sample_frame.png
++```
++
++Run:
++
+ ```bash
+ bash scripts/smoke_vision_bridge.sh
+ ```
+@@ -63,6 +71,7 @@
+ - Gazebo publication of the configured camera image topic;
+ - `ros_gz_bridge` package availability;
+ - ROS 2 availability of `/vision/front/image_raw`;
++- ROS 2 availability of `/vision/front/camera_info`;
+ - target pose publication on `/vision/target_pose`.
+ 
+ When `ros_gz_bridge` is available and the image stream produces a frame, the
+diff --git a/px4_ros2_ws/scripts/smoke_vision_bridge.sh b/px4_ros2_ws/scripts/smoke_vision_bridge.sh
+index 5853d3a8d8f36b2468a06912c1ae07c9f04e59f9..bc1c717a63939e79c5f90be76bc782828ac2de2b
+--- a/px4_ros2_ws/scripts/smoke_vision_bridge.sh
++++ b/px4_ros2_ws/scripts/smoke_vision_bridge.sh
+@@ -327,14 +327,25 @@
+   if [ "$fail_count" -eq 0 ] && start_camera_bridge; then
+     if wait_for_ros_topic "$ROS_IMAGE_TOPIC" "$ROS_TOPIC_TIMEOUT"; then
+       report PASS "ros_image_topic" "topic=$ROS_IMAGE_TOPIC"
+-      capture_sample_frame || true
+-      verify_live_target_pose
+     else
+       printf 'sample_frame=not_captured\nreason=%s did not appear before timeout\n' "$ROS_IMAGE_TOPIC" >"${OUTPUT_DIR}/sample_frame_status.txt"
+       report WARN "ros_image_topic" "missing topic=$ROS_IMAGE_TOPIC status=${OUTPUT_DIR}/sample_frame_status.txt"
+     fi
++
++    if wait_for_ros_topic "$ROS_CAMERA_INFO_TOPIC" "$ROS_TOPIC_TIMEOUT"; then
++      report PASS "ros_camera_info_topic" "topic=$ROS_CAMERA_INFO_TOPIC"
++    else
++      printf 'sample_frame=not_captured\nreason=%s did not appear before timeout\n' "$ROS_CAMERA_INFO_TOPIC" >"${OUTPUT_DIR}/sample_frame_status.txt"
++      report WARN "ros_camera_info_topic" "missing topic=$ROS_CAMERA_INFO_TOPIC status=${OUTPUT_DIR}/sample_frame_status.txt"
++    fi
++
++    if wait_for_ros_topic "$ROS_IMAGE_TOPIC" 1 && wait_for_ros_topic "$ROS_CAMERA_INFO_TOPIC" 1; then
++      capture_sample_frame || true
++      verify_live_target_pose
++    fi
+   fi
+ else
++  printf 'front_camera_bridge=not_started\nreason=ros_gz_bridge package is not available\n' >"${OUTPUT_DIR}/front_camera_bridge.log"
+   printf 'sample_frame=not_captured\nreason=ros_gz_bridge package is not available; live image bridge skipped\n' >"${OUTPUT_DIR}/sample_frame_status.txt"
+   report WARN "ros_pkg:ros_gz_bridge" "missing; skipped live bridge and sample capture"
+ fi
+
+codex
+Task 032 completed.
+
+`changed files`:
+- [scripts/smoke_vision_bridge.sh](/home/clcwork/UAV_capture/px4_ros2_ws/scripts/smoke_vision_bridge.sh:325): added explicit runtime verification for `/vision/front/camera_info`; bridge-skip cases now leave `front_camera_bridge.log`.
+- [docs/STAGE2_VISION_BRIDGE.md](/home/clcwork/UAV_capture/px4_ros2_ws/docs/STAGE2_VISION_BRIDGE.md:52): documented Task 032 sample-frame evidence and camera-info check.
+- [docs/STAGE2_TARGET_POSE.md](/home/clcwork/UAV_capture/px4_ros2_ws/docs/STAGE2_TARGET_POSE.md:95): updated smoke command/status for Task 032.
+
+`commands run`:
+- `bash -n scripts/smoke_vision_bridge.sh`
+- `bash scripts/smoke_vision_bridge.sh | tee codex-logs/032-verify-camera-bridge-and-sample-frame.log`
+- Output inspections with `find`, `file`, `tail`, `pgrep`
+
+`test result`: PASS. Smoke result was `RESULT=PASS reason=vision_smoke_verified` with `22` passes, `0` warnings, `0` failures. No lingering `gz sim`, bridge, or target-pose processes were found after cleanup.
+
+`sample frame path`:
+- `/home/clcwork/UAV_capture/px4_ros2_ws/visualizations/demo_07_camera/20260528_113542/sample_frame.png`
+- PNG verified as `1280 x 960`.
+
+`known risks`:
+- This verifies one bounded smoke run and one captured frame only.
+- Per task scope, no semantic vision or new camera model behavior was added or validated.
+diff --git a/px4_ros2_ws/docs/STAGE2_TARGET_POSE.md b/px4_ros2_ws/docs/STAGE2_TARGET_POSE.md
+index 18a45283773805e91940e8a37f4c33427bf66981..0083a99e3013cb2eea03203813893b76d6d53fd0
+--- a/px4_ros2_ws/docs/STAGE2_TARGET_POSE.md
++++ b/px4_ros2_ws/docs/STAGE2_TARGET_POSE.md
+@@ -95,7 +95,7 @@
+ Run the bounded bridge smoke:
+ 
+ ```bash
+-bash scripts/smoke_vision_bridge.sh | tee codex-logs/027-harden-vision-bridge-smoke.log
++bash scripts/smoke_vision_bridge.sh | tee codex-logs/032-verify-camera-bridge-and-sample-frame.log
+ ```
+ 
+ Expected outputs are under:
+@@ -109,6 +109,14 @@
+ bridge is present, `sample_frame.png` is saved if a frame is received; otherwise
+ `sample_frame_status.txt` documents why capture did not complete.
+ 
++Task 032 verified the live bridge path in this workspace. The run passed the
++Gazebo camera topic, ROS image topic, ROS camera-info topic, placeholder target
++pose, live target pose, and sample-frame capture checks:
++
++```text
++visualizations/demo_07_camera/20260528_113542/sample_frame.png
++```
++
+ With a sourced workspace, verify placeholder topic wiring without starting
+ Gazebo:
+ 
+@@ -126,6 +134,7 @@
+ ros2 launch aerial_manip_vision tag_target_pose.launch.py
+ ```
+ 
+-Current warning: `ros_gz_bridge` was previously recorded as missing in the
+-stage-2 environment audit, so live image detection depends on installing or
+-exposing the ROS/Gazebo bridge package.
++Current status: `ros_gz_bridge` is available in the sourced ROS Jazzy
++environment used by Task 032. Live image detection still depends on launching
++the smoke world and front-camera bridge; placeholder mode remains a separate
++topic-wiring check and is not visual evidence.
+diff --git a/px4_ros2_ws/docs/STAGE2_VISION_BRIDGE.md b/px4_ros2_ws/docs/STAGE2_VISION_BRIDGE.md
+index db5ce256bdf6c61fc5741c212f56b694f5996364..54113d93c993df4fe76948083088ef3bca7fb7d8
+--- a/px4_ros2_ws/docs/STAGE2_VISION_BRIDGE.md
++++ b/px4_ros2_ws/docs/STAGE2_VISION_BRIDGE.md
+@@ -51,8 +51,16 @@
+ 
+ ## Smoke Run
+ 
+-Task 027 adds a bounded smoke script for the complete front-camera bridge path:
++Task 027 added a bounded smoke script for the complete front-camera bridge path.
++Task 032 verified the same path with `ros_gz_bridge` available and captured a
++real sample frame:
+ 
++```text
++visualizations/demo_07_camera/20260528_113542/sample_frame.png
++```
++
++Run:
++
+ ```bash
+ bash scripts/smoke_vision_bridge.sh
+ ```
+@@ -63,6 +71,7 @@
+ - Gazebo publication of the configured camera image topic;
+ - `ros_gz_bridge` package availability;
+ - ROS 2 availability of `/vision/front/image_raw`;
++- ROS 2 availability of `/vision/front/camera_info`;
+ - target pose publication on `/vision/target_pose`.
+ 
+ When `ros_gz_bridge` is available and the image stream produces a frame, the
+diff --git a/px4_ros2_ws/scripts/smoke_vision_bridge.sh b/px4_ros2_ws/scripts/smoke_vision_bridge.sh
+index 5853d3a8d8f36b2468a06912c1ae07c9f04e59f9..bc1c717a63939e79c5f90be76bc782828ac2de2b
+--- a/px4_ros2_ws/scripts/smoke_vision_bridge.sh
++++ b/px4_ros2_ws/scripts/smoke_vision_bridge.sh
+@@ -327,14 +327,25 @@
+   if [ "$fail_count" -eq 0 ] && start_camera_bridge; then
+     if wait_for_ros_topic "$ROS_IMAGE_TOPIC" "$ROS_TOPIC_TIMEOUT"; then
+       report PASS "ros_image_topic" "topic=$ROS_IMAGE_TOPIC"
+-      capture_sample_frame || true
+-      verify_live_target_pose
+     else
+       printf 'sample_frame=not_captured\nreason=%s did not appear before timeout\n' "$ROS_IMAGE_TOPIC" >"${OUTPUT_DIR}/sample_frame_status.txt"
+       report WARN "ros_image_topic" "missing topic=$ROS_IMAGE_TOPIC status=${OUTPUT_DIR}/sample_frame_status.txt"
+     fi
++
++    if wait_for_ros_topic "$ROS_CAMERA_INFO_TOPIC" "$ROS_TOPIC_TIMEOUT"; then
++      report PASS "ros_camera_info_topic" "topic=$ROS_CAMERA_INFO_TOPIC"
++    else
++      printf 'sample_frame=not_captured\nreason=%s did not appear before timeout\n' "$ROS_CAMERA_INFO_TOPIC" >"${OUTPUT_DIR}/sample_frame_status.txt"
++      report WARN "ros_camera_info_topic" "missing topic=$ROS_CAMERA_INFO_TOPIC status=${OUTPUT_DIR}/sample_frame_status.txt"
++    fi
++
++    if wait_for_ros_topic "$ROS_IMAGE_TOPIC" 1 && wait_for_ros_topic "$ROS_CAMERA_INFO_TOPIC" 1; then
++      capture_sample_frame || true
++      verify_live_target_pose
++    fi
+   fi
+ else
++  printf 'front_camera_bridge=not_started\nreason=ros_gz_bridge package is not available\n' >"${OUTPUT_DIR}/front_camera_bridge.log"
+   printf 'sample_frame=not_captured\nreason=ros_gz_bridge package is not available; live image bridge skipped\n' >"${OUTPUT_DIR}/sample_frame_status.txt"
+   report WARN "ros_pkg:ros_gz_bridge" "missing; skipped live bridge and sample capture"
+ fi
+
+tokens used
+31,422
+Task 032 completed.
+
+`changed files`:
+- [scripts/smoke_vision_bridge.sh](/home/clcwork/UAV_capture/px4_ros2_ws/scripts/smoke_vision_bridge.sh:325): added explicit runtime verification for `/vision/front/camera_info`; bridge-skip cases now leave `front_camera_bridge.log`.
+- [docs/STAGE2_VISION_BRIDGE.md](/home/clcwork/UAV_capture/px4_ros2_ws/docs/STAGE2_VISION_BRIDGE.md:52): documented Task 032 sample-frame evidence and camera-info check.
+- [docs/STAGE2_TARGET_POSE.md](/home/clcwork/UAV_capture/px4_ros2_ws/docs/STAGE2_TARGET_POSE.md:95): updated smoke command/status for Task 032.
+
+`commands run`:
+- `bash -n scripts/smoke_vision_bridge.sh`
+- `bash scripts/smoke_vision_bridge.sh | tee codex-logs/032-verify-camera-bridge-and-sample-frame.log`
+- Output inspections with `find`, `file`, `tail`, `pgrep`
+
+`test result`: PASS. Smoke result was `RESULT=PASS reason=vision_smoke_verified` with `22` passes, `0` warnings, `0` failures. No lingering `gz sim`, bridge, or target-pose processes were found after cleanup.
+
+`sample frame path`:
+- `/home/clcwork/UAV_capture/px4_ros2_ws/visualizations/demo_07_camera/20260528_113542/sample_frame.png`
+- PNG verified as `1280 x 960`.
+
+`known risks`:
+- This verifies one bounded smoke run and one captured frame only.
+- Per task scope, no semantic vision or new camera model behavior was added or validated.

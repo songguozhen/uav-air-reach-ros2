@@ -51,7 +51,15 @@ future image topics can be added without changing the launch file.
 
 ## Smoke Run
 
-Task 027 adds a bounded smoke script for the complete front-camera bridge path:
+Task 027 added a bounded smoke script for the complete front-camera bridge path.
+Task 032 verified the same path with `ros_gz_bridge` available and captured a
+real sample frame:
+
+```text
+visualizations/demo_07_camera/20260528_113542/sample_frame.png
+```
+
+Run:
 
 ```bash
 bash scripts/smoke_vision_bridge.sh
@@ -63,6 +71,7 @@ The script checks:
 - Gazebo publication of the configured camera image topic;
 - `ros_gz_bridge` package availability;
 - ROS 2 availability of `/vision/front/image_raw`;
+- ROS 2 availability of `/vision/front/camera_info`;
 - target pose publication on `/vision/target_pose`.
 
 When `ros_gz_bridge` is available and the image stream produces a frame, the

@@ -54,16 +54,32 @@ logs/demo10_air_reach/<timestamp>/
 
 `DEMO10_MODE=auto` remains a dry-run path. Use `DEMO10_MODE=live-smoke` before
 the full live mode when validating a machine or after a stale Gazebo/PX4
-cleanup issue.
+cleanup issue. The live runner syncs the sourced ROS/Gazebo environment into
+tmux before starting PX4/Gazebo and waits 12 seconds after launching the bridge
+nodes before starting `air_reach_demo`, so the initial hover target can settle
+before live flight-error metrics are sampled.
 
 Latest bounded live-smoke result:
 
 ```text
-timestamp: 20260528_001327
-path: logs/demo10_air_reach/20260528_001327
+timestamp: 20260528_113832
+path: logs/demo10_air_reach/20260528_113832
 result: RESULT=PASS mode=live-smoke reason=stack_ready
 readiness: STACK_READY=YES reason=ready_for_takeoff detail=PX4 reached Ready for takeoff
 cleanup: no PX4/Gazebo/MicroXRCEAgent stack process remained after scripts/stop_stack.sh
+```
+
+Latest full live result:
+
+```text
+timestamp: 20260528_114546
+path: logs/demo10_air_reach/20260528_114546
+result: RESULT=PASS reason=ok
+checker: CHECK=PASS
+max_flight_error_m: 0.061
+final_endpoint_error_m: 0.262
+target_visible_ratio: 1.000
+episode: logs/demo10_air_reach/20260528_114546/episodes/20260528_114546
 ```
 
 ## Metrics

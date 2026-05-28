@@ -16,10 +16,10 @@ bash scripts/check_stage2_environment.sh
 The script reports each item as `PASS`, `WARN`, or `FAIL`, lists exact missing
 ROS package names, and prints recheck commands. It does not install packages.
 
-Current result from `codex-logs/023-stage2-environment-preflight.log`:
+Current result from `codex-logs/031-install-and-verify-live-dependencies.log`:
 
 ```text
-RESULT=WARN live_ready=NO dry_run_ready=YES reason=missing_live_prerequisites
+RESULT=WARN live_ready=YES dry_run_ready=YES reason=optional_warnings
 ```
 
 ## Demo 10 Mode Rule
@@ -31,8 +31,8 @@ RESULT=FAIL
 live_ready=NO
 ```
 
-The current environment must stay dry-run because these live prerequisites are
-missing:
+The current environment now has these live prerequisites installed and visible
+to ROS 2 Jazzy:
 
 ```text
 ros_gz_bridge
@@ -57,7 +57,7 @@ DEMO10_MODE=dry-run bash scripts/run_regression_demo_10.sh
 python3 scripts/check_demo_10.py logs/demo10_air_reach
 ```
 
-Use the live runner only after the preflight reports `live_ready=YES`:
+Use the live runner when the preflight reports `live_ready=YES`:
 
 ```bash
 DEMO10_MODE=live RESET_STACK=1 bash scripts/run_regression_demo_10.sh

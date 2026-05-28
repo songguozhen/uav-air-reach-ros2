@@ -1,162 +1,504 @@
 {
-  "core_modules": [
-    {
-      "notes": "Demo 01-04 offboard control and UAV bridge package.",
-      "path": "src/px4_offboard_hover",
-      "status": "present"
-    },
-    {
-      "notes": "Stage 2 arm/platform/observation messages and Approach action.",
-      "path": "src/aerial_manip_msgs",
-      "status": "present"
-    },
-    {
-      "notes": "Arm bridge, state aggregator, approach coordinator, ros2_control launch/config.",
-      "path": "src/aerial_manip_control",
-      "status": "present"
-    },
-    {
-      "notes": "x500_arm_2dof model, smoke world, camera bridge config.",
-      "path": "src/aerial_manip_gazebo",
-      "status": "present"
-    },
-    {
-      "notes": "Target pose node with explicit placeholder support.",
-      "path": "src/aerial_manip_vision",
-      "status": "present"
-    },
-    {
-      "notes": "Demo 10 dry-run/live runner support, synthetic controller, episode recorder.",
-      "path": "src/aerial_manip_eval",
-      "status": "present"
-    },
-    {
-      "notes": "LeRobot baseline training and policy bridge scaffolding.",
-      "path": "src/aerial_manip_policy",
-      "status": "present"
-    }
-  ],
+  "schema_version": "project_audit_v2_simulation_showcase",
+  "project_name": "PX4 ROS2 UAV Capture / Stage 2 Aerial Manipulation Workspace",
+  "repository_path": "/home/clcwork/UAV_capture/px4_ros2_ws",
+  "generated_at": "2026-05-28T12:17:13+08:00",
+  "generated_at_utc": "2026-05-28T04:17:13+00:00",
+  "git_repository": false,
+  "overall_status": "Healthy",
   "detected_stack": [
     "ROS 2 Jazzy",
     "PX4 SITL",
-    "Gazebo Sim 8.11.0",
+    "Gazebo Sim",
     "Micro XRCE-DDS Agent",
-    "Python rclpy packages",
+    "Python/rclpy",
     "ament/colcon",
     "shell automation"
   ],
-  "generated_at": "2026-05-28T08:35:46+08:00",
-  "generated_at_utc": "2026-05-27T16:25:02+00:00",
-  "git_repository": false,
+  "core_modules": [
+    {
+      "path": "src/px4_offboard_hover",
+      "status": "present",
+      "notes": "Demo 01-04 offboard control and high-level UAV bridge."
+    },
+    {
+      "path": "src/aerial_manip_msgs",
+      "status": "present",
+      "notes": "Stage 2 arm/platform/observation messages and Approach action."
+    },
+    {
+      "path": "src/aerial_manip_control",
+      "status": "present",
+      "notes": "Arm bridge, state aggregator, and approach coordinator."
+    },
+    {
+      "path": "src/aerial_manip_gazebo",
+      "status": "present",
+      "notes": "x500 2-DOF arm model, camera, and smoke world assets."
+    },
+    {
+      "path": "src/aerial_manip_vision",
+      "status": "present",
+      "notes": "Target pose node with live and placeholder modes."
+    },
+    {
+      "path": "src/aerial_manip_eval",
+      "status": "present",
+      "notes": "Demo 10 runner, synthetic controller, recorder, and metrics."
+    },
+    {
+      "path": "src/aerial_manip_policy",
+      "status": "present",
+      "notes": "LeRobot training and policy bridge scaffolding."
+    }
+  ],
   "latest_artifacts": {
-    "demo10_dry_run": {
+    "demo_1_4": [
+      {
+        "id": "demo01_hover",
+        "title": "Demo 01 Offboard Hover",
+        "runner": "scripts/run_demo01_hover.sh",
+        "status": "PASS",
+        "path": "visualizations/demo01_hover/20260526_221722",
+        "result_line": "RESULT=PASS reason=ok",
+        "files": {
+          "trajectory.csv": {
+            "path": "visualizations/demo01_hover/20260526_221722/trajectory.csv",
+            "exists": true,
+            "size_bytes": 141802
+          },
+          "trajectory_3d.png": {
+            "path": "visualizations/demo01_hover/20260526_221722/trajectory_3d.png",
+            "exists": true,
+            "size_bytes": 300711
+          },
+          "xy_path.png": {
+            "path": "visualizations/demo01_hover/20260526_221722/xy_path.png",
+            "exists": true,
+            "size_bytes": 134274
+          },
+          "height_curve.png": {
+            "path": "visualizations/demo01_hover/20260526_221722/height_curve.png",
+            "exists": true,
+            "size_bytes": 56542
+          },
+          "speed_curve.png": {
+            "path": "visualizations/demo01_hover/20260526_221722/speed_curve.png",
+            "exists": true,
+            "size_bytes": 50489
+          },
+          "tracking_error.png": {
+            "path": "visualizations/demo01_hover/20260526_221722/tracking_error.png",
+            "exists": true,
+            "size_bytes": 78149
+          },
+          "trajectory.mp4": {
+            "path": "visualizations/demo01_hover/20260526_221722/trajectory.mp4",
+            "exists": true,
+            "size_bytes": 37991
+          },
+          "summary.md": {
+            "path": "visualizations/demo01_hover/20260526_221722/summary.md",
+            "exists": true,
+            "size_bytes": 594
+          },
+          "result.txt": {
+            "path": "visualizations/demo01_hover/20260526_221722/result.txt",
+            "exists": true,
+            "size_bytes": 22
+          }
+        }
+      },
+      {
+        "id": "demo02_waypoint_flight",
+        "title": "Demo 02 Waypoint Flight",
+        "runner": "scripts/run_demo02_waypoint_flight.sh",
+        "status": "PASS",
+        "path": "visualizations/demo02_waypoint_flight/20260526_222121",
+        "result_line": "RESULT=PASS reason=ok",
+        "files": {
+          "trajectory.csv": {
+            "path": "visualizations/demo02_waypoint_flight/20260526_222121/trajectory.csv",
+            "exists": true,
+            "size_bytes": 391649
+          },
+          "trajectory_3d.png": {
+            "path": "visualizations/demo02_waypoint_flight/20260526_222121/trajectory_3d.png",
+            "exists": true,
+            "size_bytes": 242382
+          },
+          "xy_path.png": {
+            "path": "visualizations/demo02_waypoint_flight/20260526_222121/xy_path.png",
+            "exists": true,
+            "size_bytes": 92114
+          },
+          "height_curve.png": {
+            "path": "visualizations/demo02_waypoint_flight/20260526_222121/height_curve.png",
+            "exists": true,
+            "size_bytes": 62707
+          },
+          "speed_curve.png": {
+            "path": "visualizations/demo02_waypoint_flight/20260526_222121/speed_curve.png",
+            "exists": true,
+            "size_bytes": 71534
+          },
+          "tracking_error.png": {
+            "path": "visualizations/demo02_waypoint_flight/20260526_222121/tracking_error.png",
+            "exists": true,
+            "size_bytes": 103638
+          },
+          "trajectory.mp4": {
+            "path": "visualizations/demo02_waypoint_flight/20260526_222121/trajectory.mp4",
+            "exists": true,
+            "size_bytes": 56219
+          },
+          "summary.md": {
+            "path": "visualizations/demo02_waypoint_flight/20260526_222121/summary.md",
+            "exists": true,
+            "size_bytes": 737
+          },
+          "result.txt": {
+            "path": "visualizations/demo02_waypoint_flight/20260526_222121/result.txt",
+            "exists": true,
+            "size_bytes": 22
+          }
+        }
+      },
+      {
+        "id": "demo03_circle_trajectory",
+        "title": "Demo 03 Circle Trajectory",
+        "runner": "scripts/run_demo03_circle_trajectory.sh",
+        "status": "PASS",
+        "path": "visualizations/demo03_circle_trajectory/20260526_222313",
+        "result_line": "RESULT=PASS reason=ok",
+        "files": {
+          "trajectory.csv": {
+            "path": "visualizations/demo03_circle_trajectory/20260526_222313/trajectory.csv",
+            "exists": true,
+            "size_bytes": 365688
+          },
+          "trajectory_3d.png": {
+            "path": "visualizations/demo03_circle_trajectory/20260526_222313/trajectory_3d.png",
+            "exists": true,
+            "size_bytes": 276417
+          },
+          "xy_path.png": {
+            "path": "visualizations/demo03_circle_trajectory/20260526_222313/xy_path.png",
+            "exists": true,
+            "size_bytes": 129625
+          },
+          "height_curve.png": {
+            "path": "visualizations/demo03_circle_trajectory/20260526_222313/height_curve.png",
+            "exists": true,
+            "size_bytes": 60801
+          },
+          "speed_curve.png": {
+            "path": "visualizations/demo03_circle_trajectory/20260526_222313/speed_curve.png",
+            "exists": true,
+            "size_bytes": 65497
+          },
+          "tracking_error.png": {
+            "path": "visualizations/demo03_circle_trajectory/20260526_222313/tracking_error.png",
+            "exists": true,
+            "size_bytes": 101267
+          },
+          "trajectory.mp4": {
+            "path": "visualizations/demo03_circle_trajectory/20260526_222313/trajectory.mp4",
+            "exists": true,
+            "size_bytes": 100593
+          },
+          "summary.md": {
+            "path": "visualizations/demo03_circle_trajectory/20260526_222313/summary.md",
+            "exists": true,
+            "size_bytes": 742
+          },
+          "result.txt": {
+            "path": "visualizations/demo03_circle_trajectory/20260526_222313/result.txt",
+            "exists": true,
+            "size_bytes": 22
+          }
+        }
+      },
+      {
+        "id": "demo04_external_setpoint",
+        "title": "Demo 04 External Setpoint / UAV Bridge",
+        "runner": "scripts/run_demo04_external_setpoint.sh",
+        "status": "PASS",
+        "path": "visualizations/demo04_external_setpoint/20260527_085025",
+        "result_line": "RESULT=PASS reason=ok",
+        "files": {
+          "trajectory.csv": {
+            "path": "visualizations/demo04_external_setpoint/20260527_085025/trajectory.csv",
+            "exists": true,
+            "size_bytes": 593994
+          },
+          "trajectory_3d.png": {
+            "path": "visualizations/demo04_external_setpoint/20260527_085025/trajectory_3d.png",
+            "exists": true,
+            "size_bytes": 281689
+          },
+          "xy_path.png": {
+            "path": "visualizations/demo04_external_setpoint/20260527_085025/xy_path.png",
+            "exists": true,
+            "size_bytes": 86319
+          },
+          "height_curve.png": {
+            "path": "visualizations/demo04_external_setpoint/20260527_085025/height_curve.png",
+            "exists": true,
+            "size_bytes": 64693
+          },
+          "speed_curve.png": {
+            "path": "visualizations/demo04_external_setpoint/20260527_085025/speed_curve.png",
+            "exists": true,
+            "size_bytes": 74411
+          },
+          "tracking_error.png": {
+            "path": "visualizations/demo04_external_setpoint/20260527_085025/tracking_error.png",
+            "exists": true,
+            "size_bytes": 114666
+          },
+          "trajectory.mp4": {
+            "path": "visualizations/demo04_external_setpoint/20260527_085025/trajectory.mp4",
+            "exists": true,
+            "size_bytes": 55456
+          },
+          "summary.md": {
+            "path": "visualizations/demo04_external_setpoint/20260527_085025/summary.md",
+            "exists": true,
+            "size_bytes": 749
+          },
+          "result.txt": {
+            "path": "visualizations/demo04_external_setpoint/20260527_085025/result.txt",
+            "exists": true,
+            "size_bytes": 22
+          }
+        }
+      }
+    ],
+    "demo07_camera": {
+      "status": "PASS",
+      "path": "visualizations/demo_07_camera/20260528_113542",
+      "sample_frame": "visualizations/demo_07_camera/20260528_113542/sample_frame.png",
+      "detail": "sample_frame=captured",
+      "live_target_pose": "visualizations/demo_07_camera/20260528_113542/live_target_pose.yaml",
+      "bridge_log": "visualizations/demo_07_camera/20260528_113542/front_camera_bridge.log"
+    },
+    "demo10_live": {
+      "status": "PASS",
+      "path": "logs/demo10_air_reach/20260528_114546",
+      "result": "RESULT=PASS reason=ok",
+      "readiness": "STACK_READY=YES reason=ready_for_takeoff detail=PX4 reached Ready for takeoff",
       "metrics_summary": {
+        "mode": "live",
+        "result": "PASS",
+        "timestamp": "20260528_114546",
+        "max_flight_error_m": 0.060930569146038636,
+        "flight_error_limit_m": 0.55,
+        "target_visible_ratio": 1.0,
+        "target_min_visible_ratio": 0.2,
+        "joint_limit_violations": 0,
+        "final_endpoint_error_m": 0.2618401300038162,
+        "final_endpoint_limit_m": 0.35,
+        "timed_out": false
+      }
+    },
+    "demo10_dry_run": {
+      "status": "PASS",
+      "path": "logs/demo10_air_reach/20260528_002122",
+      "result": "RESULT=PASS reason=ok",
+      "metrics_summary": {
+        "mode": "dry-run",
+        "result": "PASS",
+        "timestamp": "20260528_002122",
+        "max_flight_error_m": 0.06708203932499372,
+        "flight_error_limit_m": 0.45,
+        "target_visible_ratio": 0.775,
+        "target_min_visible_ratio": 0.5,
+        "joint_limit_violations": 0,
         "final_endpoint_error_m": 0.050990195135927896,
         "final_endpoint_limit_m": 0.18,
-        "flight_error_limit_m": 0.45,
-        "joint_limit_violations": 0,
-        "max_flight_error_m": 0.06708203932499372,
-        "target_min_visible_ratio": 0.5,
-        "target_visible_ratio": 0.775,
         "timed_out": false
-      },
-      "path": "logs/demo10_air_reach/20260528_002122",
-      "result": "RESULT=PASS reason=ok"
+      }
     },
-    "demo10_live_smoke": {
-      "path": "logs/demo10_air_reach/20260528_001327",
-      "readiness": "STACK_READY=YES reason=ready_for_takeoff detail=PX4 reached Ready for takeoff",
-      "result": "RESULT=PASS mode=live-smoke reason=stack_ready",
-      "status": "live_smoke_pass_full_live_unverified"
+    "demo10_visuals": {
+      "status": "PASS",
+      "path": "visualizations/demo10_air_reach/20260528_114546",
+      "mode": "live",
+      "result": "PASS",
+      "source_run_dir": "logs/demo10_air_reach/20260528_114546",
+      "files": [
+        {
+          "name": "phase_timeline.png",
+          "label": "Phase flow",
+          "path": "visualizations/demo10_air_reach/20260528_114546/phase_timeline.png",
+          "exists": true
+        },
+        {
+          "name": "trajectory_3d.png",
+          "label": "Trajectory",
+          "path": "visualizations/demo10_air_reach/20260528_114546/trajectory_3d.png",
+          "exists": true
+        },
+        {
+          "name": "joint_positions.png",
+          "label": "Arm joints",
+          "path": "visualizations/demo10_air_reach/20260528_114546/joint_positions.png",
+          "exists": true
+        },
+        {
+          "name": "flight_error.png",
+          "label": "Flight error",
+          "path": "visualizations/demo10_air_reach/20260528_114546/flight_error.png",
+          "exists": true
+        },
+        {
+          "name": "target_visibility.png",
+          "label": "Target visibility",
+          "path": "visualizations/demo10_air_reach/20260528_114546/target_visibility.png",
+          "exists": true
+        },
+        {
+          "name": "endpoint_error.png",
+          "label": "Endpoint error",
+          "path": "visualizations/demo10_air_reach/20260528_114546/endpoint_error.png",
+          "exists": true
+        }
+      ],
+      "missing": [],
+      "summary": {
+        "demo": "demo10_air_reach",
+        "generated_files": [
+          "trajectory_3d.png",
+          "phase_timeline.png",
+          "flight_error.png",
+          "target_visibility.png",
+          "joint_positions.png",
+          "endpoint_error.png",
+          "summary.json"
+        ],
+        "inputs": {
+          "episode_actions": 170,
+          "episode_observations": 439,
+          "episode_task_status": 1,
+          "metrics_json": "/home/clcwork/UAV_capture/px4_ros2_ws/logs/demo10_air_reach/20260528_114546/metrics.json",
+          "sequence_events_jsonl": "/home/clcwork/UAV_capture/px4_ros2_ws/logs/demo10_air_reach/20260528_114546/sequence_events.jsonl"
+        },
+        "metrics": {
+          "demo": "demo10_air_reach",
+          "final_endpoint_error": {
+            "contact_detected": false,
+            "error_m": 0.2618401300038162,
+            "limit_m": 0.35
+          },
+          "flight_error": {
+            "avg_m": 0.0421478359297262,
+            "limit_m": 0.55,
+            "max_m": 0.060930569146038636
+          },
+          "joint_limits": {
+            "limits_rad": [
+              [
+                -0.7,
+                0.7
+              ],
+              [
+                -1.2,
+                1.2
+              ]
+            ],
+            "violations": 0
+          },
+          "mode": "live",
+          "reason": "ok",
+          "result": "PASS",
+          "schema_version": "demo10_air_reach_metrics_v1",
+          "sequence": [
+            "stable_hover",
+            "tag_detection",
+            "coordinated_approach",
+            "endpoint_hold"
+          ],
+          "target_visibility": {
+            "min_visible_ratio": 0.2,
+            "total_samples": 143,
+            "visible_ratio": 1.0,
+            "visible_samples": 143
+          },
+          "task_timeout": {
+            "duration_sec": 8.319843385994318,
+            "limit_sec": 45.0,
+            "timed_out": false
+          },
+          "timestamp": "20260528_114546"
+        },
+        "mode": "live",
+        "reason": "ok",
+        "result": "PASS",
+        "source_run_dir": "/home/clcwork/UAV_capture/px4_ros2_ws/logs/demo10_air_reach/20260528_114546",
+        "status_label": "PASS",
+        "timestamp": "20260528_114546",
+        "visualization_dir": "/home/clcwork/UAV_capture/px4_ros2_ws/visualizations/demo10_air_reach/20260528_114546",
+        "warnings": []
+      }
     },
-    "vision_smoke": {
-      "path": "visualizations/demo_07_camera/20260528_000310",
-      "result": "RESULT=WARN reason=vision_smoke_completed_with_warnings",
-      "sample_frame_status": "sample_frame=not_captured; reason=ros_gz_bridge package is not available; live image bridge skipped"
+    "demo10_replay": {
+      "status": "PASS",
+      "path": "visualizations/demo10_air_reach/20260528_114546/trajectory_replay.html",
+      "file": "trajectory_replay.html",
+      "visualization_dir": "visualizations/demo10_air_reach/20260528_114546"
+    },
+    "stage2_environment": {
+      "live_ready": "PARTIAL",
+      "dry_run_ready": "YES",
+      "fallback_status": "Demo 10 visualization is live; dry-run fallback remains available.",
+      "remaining_dependency_risks": [
+        "ros_gz_bridge",
+        "gz_ros2_control",
+        "controller_manager",
+        "joint_state_broadcaster",
+        "forward_command_controller",
+        "joint_trajectory_controller"
+      ]
     }
   },
   "latest_validation": [
     {
+      "command": "python3 -m py_compile scripts/generate_simulation_showcase.py",
+      "status": "required",
+      "evidence": "codex-logs/036-build-simulation-showcase-deliverable.log"
+    },
+    {
+      "command": "python3 scripts/generate_simulation_showcase.py",
+      "status": "required",
+      "evidence": "codex-logs/036-build-simulation-showcase-deliverable.log"
+    },
+    {
       "command": "python3 -m compileall src scripts",
-      "evidence": "codex-logs/030-refresh-project-status-deliverables.log",
-      "status": "PASS"
+      "status": "required",
+      "evidence": "Task 036 validation command"
     },
     {
       "command": "bash -n run_codex_queue.sh",
-      "evidence": "codex-logs/030-refresh-project-status-deliverables.log",
-      "status": "PASS"
+      "status": "required",
+      "evidence": "Task 036 validation command"
     },
     {
-      "command": "DEMO10_MODE=dry-run bash scripts/run_regression_demo_10.sh",
-      "evidence": "logs/demo10_air_reach/20260528_002122",
-      "status": "PASS"
-    },
-    {
-      "command": "python3 scripts/check_demo_10.py logs/demo10_air_reach",
-      "evidence": "logs/demo10_air_reach/20260528_002122",
-      "status": "PASS"
-    },
-    {
-      "command": "bash scripts/check_stage2_environment.sh",
-      "evidence": "codex-logs/030-refresh-project-status-deliverables.log",
-      "status": "WARN"
+      "command": "python3 scripts/check_stage2_evidence.py",
+      "status": "required",
+      "evidence": "Task 036 validation command"
     }
   ],
-  "next_actions": [
-    "Install the missing ROS 2 Jazzy bridge/control packages when approved.",
-    "Rerun bash scripts/check_stage2_environment.sh and bash scripts/smoke_vision_bridge.sh after package installation.",
-    "Rerun DEMO10_MODE=live-smoke RESET_STACK=1 bash scripts/run_regression_demo_10.sh before full live Demo 10.",
-    "Run DEMO10_MODE=live RESET_STACK=1 bash scripts/run_regression_demo_10.sh only after live prerequisites pass."
-  ],
-  "overall_status": "Warning",
-  "project_name": "PX4 ROS2 UAV Capture / Stage 2 Aerial Manipulation Workspace",
-  "repository_path": "/home/clcwork/UAV_capture/px4_ros2_ws",
   "risks": [
-    "Full Demo 10 live path remains unverified; latest live evidence is bounded stack readiness only.",
-    "ros_gz_bridge is missing, so live ROS image bridge and camera sample-frame capture are unverified.",
-    "gz_ros2_control and controller packages are missing, so live arm controller spawning is unverified.",
-    "Active /usr/bin/python3 lacks LeRobot; use the conda LeRobot Python for training/policy tasks."
+    "Reproducibility still depends on local ROS/Gazebo bridge and controller packages.",
+    "Timestamped evidence is local to this workspace and should be regenerated after dependency changes.",
+    "LeRobot policy integration remains scaffolded; current Demo 10 evidence validates the scripted/control bridge path."
   ],
-  "schema_version": "project_audit_v1",
-  "validation_gaps": {
-    "camera_sample_frame": {
-      "detail": "sample_frame=not_captured; reason=ros_gz_bridge package is not available; live image bridge skipped",
-      "path": "visualizations/demo_07_camera/20260528_000310/sample_frame_status.txt",
-      "status": "not_captured"
-    },
-    "demo10_live": {
-      "path": "logs/demo10_air_reach/20260528_001327",
-      "readiness": "STACK_READY=YES reason=ready_for_takeoff detail=PX4 reached Ready for takeoff",
-      "result": "RESULT=PASS mode=live-smoke reason=stack_ready",
-      "status": "live_smoke_pass_full_live_unverified"
-    },
-    "dry_run_ready": "YES",
-    "lerobot_active_python": {
-      "detail": "missing package lerobot",
-      "python": "/usr/bin/python3",
-      "status": "WARN"
-    },
-    "lerobot_conda_python": {
-      "detail": "lerobot_version=0.5.2",
-      "python": "/home/clcwork/miniconda3/envs/lerobot/bin/python",
-      "status": "PASS"
-    },
-    "likely_debian_packages": [
-      "ros-jazzy-ros-gz-bridge",
-      "ros-jazzy-gz-ros2-control",
-      "ros-jazzy-controller-manager",
-      "ros-jazzy-joint-state-broadcaster",
-      "ros-jazzy-forward-command-controller",
-      "ros-jazzy-joint-trajectory-controller"
-    ],
-    "live_ready": "NO",
-    "missing_ros_packages": [
-      "ros_gz_bridge",
-      "gz_ros2_control",
-      "controller_manager",
-      "joint_state_broadcaster",
-      "forward_command_controller",
-      "joint_trajectory_controller"
-    ]
-  }
+  "next_actions": [
+    "Use deliverables/simulation_showcase.html for presentation review of current simulation effects.",
+    "Open the Demo 10 interactive replay from visualizations/demo10_air_reach/<timestamp>/trajectory_replay.html for path playback.",
+    "Rerun python3 scripts/generate_demo10_visualizations.py --latest-live after new Demo 10 live evidence.",
+    "Rerun python3 scripts/generate_demo10_replay.py --latest-live after new Demo 10 live evidence.",
+    "Rerun bash scripts/smoke_vision_bridge.sh after ROS/Gazebo bridge changes to refresh Demo 07 camera evidence.",
+    "Install or verify missing ROS/Gazebo control packages before claiming reproducible full live readiness on a fresh machine."
+  ]
 }

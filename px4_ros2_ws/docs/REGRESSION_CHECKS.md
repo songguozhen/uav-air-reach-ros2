@@ -235,6 +235,11 @@ packages are built and available:
 DEMO10_MODE=live RESET_STACK=1 bash scripts/run_regression_demo_10.sh
 ```
 
+The live runner syncs ROS/Gazebo environment variables into tmux before starting
+PX4/Gazebo and waits 12 seconds after bridge node startup before launching the
+Demo 10 task node. This avoids counting the initial offboard climb transient in
+live flight-error samples.
+
 The checker requires:
 
 ```text
@@ -261,6 +266,19 @@ stable_hover
 tag_detection
 coordinated_approach
 endpoint_hold
+```
+
+Latest full live check:
+
+```text
+timestamp: 20260528_114546
+path: logs/demo10_air_reach/20260528_114546
+result: RESULT=PASS reason=ok
+check: CHECK=PASS
+max_flight_error_m: 0.061
+final_endpoint_error_m: 0.262
+target_visible_ratio: 1.000
+episode: logs/demo10_air_reach/20260528_114546/episodes/20260528_114546
 ```
 
 ## Legacy Hover Check

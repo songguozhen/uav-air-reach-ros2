@@ -1,0 +1,6 @@
+SHOWCASE=PASS path=deliverables/simulation_showcase.html
+AUDIT=PASS path=deliverables/project-audit.json
+SUMMARY=PASS path=deliverables/project-summary.md
+STATUS=PASS path=deliverables/status.html link=simulation_showcase.html
+DEMO10_LIVE=PASS
+DEMO07_CAMERA=PASS

@@ -1,0 +1,2077 @@
+Reading prompt from stdin...
+OpenAI Codex v0.133.0
+--------
+workdir: /home/clcwork/UAV_capture/px4_ros2_ws
+model: gpt-5.5
+provider: openai
+approval: never
+sandbox: danger-full-access
+reasoning effort: medium
+reasoning summaries: none
+session id: 019e6ca8-5cd9-7db0-9933-8f6e8a8368aa
+--------
+user
+# Required workspace rules
+
+# Codex Runbook
+
+This file is the required operating record for every Codex run in this
+workspace. Read it together with `AGENTS.md` before changing files or running
+simulation tasks.
+
+## Workspace
+
+Root workspace:
+
+```text
+/home/clcwork/UAV_capture/px4_ros2_ws
+```
+
+Related external paths:
+
+```text
+/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot
+/home/clcwork/Micro-XRCE-DDS-Agent/build
+/home/clcwork/miniconda3/envs/lerobot
+```
+
+This directory is not currently a git repository. Treat existing files,
+generated artifacts, logs, and user edits as persistent project state.
+
+## Current Project State
+
+Implemented ROS 2 package:
+
+```text
+src/px4_offboard_hover
+```
+
+Available PX4 offboard demos and tools:
+
+- Demo 01 hover: `scripts/run_demo01_hover.sh`
+- Demo 02 waypoint flight: `scripts/run_demo02_waypoint_flight.sh`
+- Demo 03 circle trajectory: `scripts/run_demo03_circle_trajectory.sh`
+- Demo 04 external setpoint / UAV bridge: `scripts/run_demo04_external_setpoint.sh`
+- Hover experiment: `scripts/run_hover_experiment.sh`
+- Trajectory recorder: `scripts/run_trajectory_recorder.sh`
+- Output checker: `scripts/check_demo_outputs.sh`
+- Stack startup and cleanup: `scripts/start_stack.sh`, `scripts/stop_stack.sh`
+
+Implemented UAV bridge:
+
+```text
+src/px4_offboard_hover/px4_offboard_hover/uav_control_bridge.py
+```
+
+The bridge exposes high-level UAV control topics:
+
+```text
+/uav/target_position      geometry_msgs/msg/Point
+/uav/current_position     geometry_msgs/msg/PointStamped
+/uav/current_target       geometry_msgs/msg/PointStamped
+/uav/reached_target       std_msgs/msg/Bool
+/uav/control_state        std_msgs/msg/String
+```
+
+External modules, including future vision, LeRobot, planner, and UAV-arm work,
+must use `/uav/*` topics by default. Do not publish directly to PX4
+`/fmu/in/*` topics from external modules unless a task explicitly requires it.
+
+Current bridge safety parameters include:
+
+```text
+initial_x
+initial_y
+initial_z
+yaw
+target_timeout
+max_altitude
+min_altitude
+max_horizontal_range
+target_jump_limit
+reach_xy_tolerance
+reach_z_tolerance
+reach_hold_time
+```
+
+Coordinate rule: `/uav/target_position` is local PX4 NED. Positive altitude is
+represented as negative `z`. For example, 2 m altitude is `z: -2.0`.
+
+Latest recorded full Demo 04 bridge simulation:
+
+```text
+timestamp: 20260527_085025
+visuals: visualizations/demo04_external_setpoint/20260527_085025
+logs: logs/demo04_external_setpoint/20260527_085025
+result: RESULT=PASS reason=ok
+checker: CHECK=PASS
+avg_error_3d_m: 0.20
+final_error_3d_m: 0.02
+final_position_ned: (-0.01, -0.01, -2.01)
+```
+
+The preceding run at `20260527_084530` failed because a stale Gazebo
+`default.sdf` server from an earlier day was still running. `RESET_STACK=1` and
+`scripts/stop_stack.sh` now clean this project Gazebo world process before
+reruns.
+
+## File Path Management
+
+Use these path rules consistently:
+
+- Use workspace-relative paths in commands and documentation when already under
+  `/home/clcwork/UAV_capture/px4_ros2_ws`.
+- Use absolute paths when referring to artifacts in final reports, cross-root
+  scripts, or external paths outside this workspace.
+- Keep source code under `src/`.
+- Keep reusable shell entry points under `scripts/`.
+- Keep task definitions under `codex-tasks/`.
+- Keep Codex execution logs and done markers under `codex-logs/`.
+- Keep project documentation under `docs/` or top-level Markdown files.
+- Keep simulation logs under `logs/<demo>/<timestamp>/`.
+- Keep visualization outputs under `visualizations/<demo>/<timestamp>/`.
+- Do not hand-edit generated build outputs under `build/`, `install/`, or
+  `log/build_*` unless the task is explicitly about generated artifacts.
+- Do not overwrite or delete existing timestamped `logs/` or
+  `visualizations/` directories.
+
+Stable generated Demo output names:
+
+```text
+trajectory.csv
+trajectory_3d.png
+xy_path.png
+height_curve.png
+speed_curve.png
+tracking_error.png
+trajectory.mp4
+summary.md
+result.txt
+```
+
+## Required Codex Run Procedure
+
+Every Codex run must follow this procedure:
+
+1. Confirm the working directory is the workspace root:
+
+   ```bash
+   cd /home/clcwork/UAV_capture/px4_ros2_ws
+   ```
+
+2. Read the governing files before planning edits:
+
+   ```text
+   AGENTS.md
+   codex.md
+   relevant codex-tasks/<task>.md
+   relevant docs/*.md or source files
+   ```
+
+3. Before editing, identify the exact files to touch and avoid unrelated
+   refactors.
+
+4. Preserve all existing user changes and generated results. Never run
+   destructive cleanup such as `git reset --hard`, broad `rm -rf`, or deleting
+   log/result directories unless the user explicitly asks.
+
+5. Use `apply_patch` for manual file edits. Use formatting/build tools only
+   after the target files are clear.
+
+6. Record the task execution in `codex-logs/`:
+
+   ```text
+   codex-logs/<task-stem>-<YYYYMMDD_HHMMSS>.log
+   codex-logs/<task-stem>.done
+   ```
+
+   `run_codex_queue.sh` creates these automatically. For manual one-off work,
+   create or preserve equivalent logs when practical.
+
+7. For shell script changes, run at least:
+
+   ```bash
+   bash -n <script>
+   ```
+
+8. For Python node changes, run at least one relevant Python check:
+
+   ```bash
+   python3 -m compileall src scripts
+   ```
+
+   Use `colcon build --packages-select <package>` when package metadata,
+   console entry points, dependencies, or ROS node code changed.
+
+9. For demo/output changes, run the relevant smoke checker:
+
+   ```bash
+   ./scripts/check_demo_outputs.sh visualizations/<demo>
+   ```
+
+10. For PX4/Gazebo simulation runs, prefer existing scripts. Use
+    `RESET_STACK=1` for reproducible runs, and call `scripts/stop_stack.sh`
+    before finishing unless the user explicitly wants the stack left running.
+
+11. If project state changes, update the appropriate Markdown record in the same
+    run. Examples:
+
+    ```text
+    codex.md
+    docs/REGRESSION_CHECKS.md
+    docs/UAV_CONTROL_API.md
+    docs/VISUALIZATION_GUIDE.md
+    TOOLS_AND_SCRIPTS_GUIDE.md
+    ```
+
+12. Final reports must include:
+
+    ```text
+    changed files
+    commands run
+    test result
+    known risks
+    output paths, when logs or visualizations were generated
+    ```
+
+## Codex Queue Requirements
+
+`run_codex_queue.sh` is the standard runner for queued task files. It must:
+
+- verify `AGENTS.md`, `codex.md`, `codex-tasks/`, and `codex-logs/` exist;
+- pass the contents of `codex.md` together with the task file to Codex;
+- write timestamped logs under `codex-logs/`;
+- create `.done` markers only after a task exits successfully;
+- support `--dry-run`, `--from <prefix>`, and `--task <file>`;
+- skip completed queued tasks unless `--task` is used.
+
+Before adding a new queued task, create a numbered Markdown file:
+
+```text
+codex-tasks/010-short-task-name.md
+```
+
+The task file should state:
+
+```text
+goal
+allowed files or directories
+required validation commands
+required documentation updates
+expected final report fields
+```
+
+## Current Validation Commands
+
+Known passing checks after the latest bridge work:
+
+```bash
+bash -n run_codex_queue.sh
+bash -n scripts/check_demo_outputs.sh
+bash -n scripts/run_demo04_external_setpoint.sh
+bash -n scripts/start_stack.sh
+bash -n scripts/stop_stack.sh
+python3 -m compileall src scripts
+colcon build --packages-select px4_offboard_hover
+./scripts/check_demo_outputs.sh visualizations/demo01_hover
+./scripts/check_demo_outputs.sh visualizations/demo02_waypoint_flight
+./scripts/check_demo_outputs.sh visualizations/demo03_circle_trajectory
+./scripts/check_demo_outputs.sh visualizations/demo04_external_setpoint
+```
+
+Latest full bridge simulation command:
+
+```bash
+./scripts/run_demo04_external_setpoint.sh
+./scripts/check_demo_outputs.sh visualizations/demo04_external_setpoint/20260527_085025
+```
+
+
+# Task file
+
+# Task 033: Verify Live Arm Control and Demo 10 Smoke
+
+## Task goal
+
+- Verify live arm control launch behavior after the ros2_control dependencies are available.
+- Confirm Demo 10 live-smoke can bring PX4/Gazebo to `Ready for takeoff` and cleanly shut down.
+- Do not run the full Demo 10 live mission in this task.
+
+## Allowed changes
+
+- `scripts/run_regression_demo_10.sh`
+- `docs/STAGE2_CONTROL_NOTES.md`
+- `docs/STAGE2_AIR_REACH_DEMO.md`
+- `codex-logs/033-verify-live-arm-control-and-demo10-smoke.log`
+
+## Implementation requirements
+
+- Validate `aerial_manip_control arm_control.launch.py` startup.
+- Check that controller-related ROS packages and launch logs are consistent with the expected two-joint arm setup.
+- Run Demo 10 in `live-smoke` mode with `RESET_STACK=1`.
+- Ensure PX4/Gazebo/MicroXRCEAgent processes from this project are cleaned up before the task exits.
+- If live-smoke fails, preserve stack readiness logs and identify the failing preflight or startup stage.
+
+## Required commands
+
+```bash
+bash -n scripts/run_regression_demo_10.sh
+timeout 60s ros2 launch aerial_manip_control arm_control.launch.py || true
+DEMO10_MODE=live-smoke RESET_STACK=1 bash scripts/run_regression_demo_10.sh | tee codex-logs/033-verify-live-arm-control-and-demo10-smoke.log
+scripts/stop_stack.sh
+pgrep -af 'gz sim|px4|MicroXRCEAgent' || true
+```
+
+## Deliverables
+
+- Live-smoke evidence under `logs/demo10_air_reach/<timestamp>/`.
+- Updated docs if arm control or live-smoke behavior changed.
+- Confirmation that no project PX4/Gazebo/MicroXRCEAgent process was left behind.
+
+## Final report requirements
+
+- `changed files`
+- `commands run`
+- `test result`
+- `known risks`
+- `live-smoke output path`
+
+codex
+I’ll follow the workspace runbook for Task 033: first read the governing files and the demo/control scripts, then run the required checks and only edit the allowed files if the observed behavior needs documentation or script adjustment.
+exec
+/bin/bash -lc 'pwd && ls' in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+/home/clcwork/UAV_capture/px4_ros2_ws
+AGENTS.md
+BASIC_CONTROL_DEMOS.md
+OFFBOARD_HOVER_EXPERIMENT.md
+TOOLS_AND_SCRIPTS_GUIDE.md
+build
+codex-logs
+codex-tasks
+codex.md
+deliverables
+docs
+examples
+frames_2026-05-27_18.40.25.gv
+frames_2026-05-27_18.41.36.gv
+install
+log
+logs
+references
+run_codex_queue.sh
+scripts
+src
+tools
+visualizations
+
+exec
+/bin/bash -lc "sed -n '1,260p' codex.md" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+# Codex Runbook
+
+This file is the required operating record for every Codex run in this
+workspace. Read it together with `AGENTS.md` before changing files or running
+simulation tasks.
+
+## Workspace
+
+Root workspace:
+
+```text
+/home/clcwork/UAV_capture/px4_ros2_ws
+```
+
+Related external paths:
+
+```text
+/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot
+/home/clcwork/Micro-XRCE-DDS-Agent/build
+/home/clcwork/miniconda3/envs/lerobot
+```
+
+This directory is not currently a git repository. Treat existing files,
+generated artifacts, logs, and user edits as persistent project state.
+
+## Current Project State
+
+Implemented ROS 2 package:
+
+```text
+src/px4_offboard_hover
+```
+
+Available PX4 offboard demos and tools:
+
+- Demo 01 hover: `scripts/run_demo01_hover.sh`
+- Demo 02 waypoint flight: `scripts/run_demo02_waypoint_flight.sh`
+- Demo 03 circle trajectory: `scripts/run_demo03_circle_trajectory.sh`
+- Demo 04 external setpoint / UAV bridge: `scripts/run_demo04_external_setpoint.sh`
+- Hover experiment: `scripts/run_hover_experiment.sh`
+- Trajectory recorder: `scripts/run_trajectory_recorder.sh`
+- Output checker: `scripts/check_demo_outputs.sh`
+- Stack startup and cleanup: `scripts/start_stack.sh`, `scripts/stop_stack.sh`
+
+Implemented UAV bridge:
+
+```text
+src/px4_offboard_hover/px4_offboard_hover/uav_control_bridge.py
+```
+
+The bridge exposes high-level UAV control topics:
+
+```text
+/uav/target_position      geometry_msgs/msg/Point
+/uav/current_position     geometry_msgs/msg/PointStamped
+/uav/current_target       geometry_msgs/msg/PointStamped
+/uav/reached_target       std_msgs/msg/Bool
+/uav/control_state        std_msgs/msg/String
+```
+
+External modules, including future vision, LeRobot, planner, and UAV-arm work,
+must use `/uav/*` topics by default. Do not publish directly to PX4
+`/fmu/in/*` topics from external modules unless a task explicitly requires it.
+
+Current bridge safety parameters include:
+
+```text
+initial_x
+initial_y
+initial_z
+yaw
+target_timeout
+max_altitude
+min_altitude
+max_horizontal_range
+target_jump_limit
+reach_xy_tolerance
+reach_z_tolerance
+reach_hold_time
+```
+
+Coordinate rule: `/uav/target_position` is local PX4 NED. Positive altitude is
+represented as negative `z`. For example, 2 m altitude is `z: -2.0`.
+
+Latest recorded full Demo 04 bridge simulation:
+
+```text
+timestamp: 20260527_085025
+visuals: visualizations/demo04_external_setpoint/20260527_085025
+logs: logs/demo04_external_setpoint/20260527_085025
+result: RESULT=PASS reason=ok
+checker: CHECK=PASS
+avg_error_3d_m: 0.20
+final_error_3d_m: 0.02
+final_position_ned: (-0.01, -0.01, -2.01)
+```
+
+The preceding run at `20260527_084530` failed because a stale Gazebo
+`default.sdf` server from an earlier day was still running. `RESET_STACK=1` and
+`scripts/stop_stack.sh` now clean this project Gazebo world process before
+reruns.
+
+## File Path Management
+
+Use these path rules consistently:
+
+- Use workspace-relative paths in commands and documentation when already under
+  `/home/clcwork/UAV_capture/px4_ros2_ws`.
+- Use absolute paths when referring to artifacts in final reports, cross-root
+  scripts, or external paths outside this workspace.
+- Keep source code under `src/`.
+- Keep reusable shell entry points under `scripts/`.
+- Keep task definitions under `codex-tasks/`.
+- Keep Codex execution logs and done markers under `codex-logs/`.
+- Keep project documentation under `docs/` or top-level Markdown files.
+- Keep simulation logs under `logs/<demo>/<timestamp>/`.
+- Keep visualization outputs under `visualizations/<demo>/<timestamp>/`.
+- Do not hand-edit generated build outputs under `build/`, `install/`, or
+  `log/build_*` unless the task is explicitly about generated artifacts.
+- Do not overwrite or delete existing timestamped `logs/` or
+  `visualizations/` directories.
+
+Stable generated Demo output names:
+
+```text
+trajectory.csv
+trajectory_3d.png
+xy_path.png
+height_curve.png
+speed_curve.png
+tracking_error.png
+trajectory.mp4
+summary.md
+result.txt
+```
+
+## Required Codex Run Procedure
+
+Every Codex run must follow this procedure:
+
+1. Confirm the working directory is the workspace root:
+
+   ```bash
+   cd /home/clcwork/UAV_capture/px4_ros2_ws
+   ```
+
+2. Read the governing files before planning edits:
+
+   ```text
+   AGENTS.md
+   codex.md
+   relevant codex-tasks/<task>.md
+   relevant docs/*.md or source files
+   ```
+
+3. Before editing, identify the exact files to touch and avoid unrelated
+   refactors.
+
+4. Preserve all existing user changes and generated results. Never run
+   destructive cleanup such as `git reset --hard`, broad `rm -rf`, or deleting
+   log/result directories unless the user explicitly asks.
+
+5. Use `apply_patch` for manual file edits. Use formatting/build tools only
+   after the target files are clear.
+
+6. Record the task execution in `codex-logs/`:
+
+   ```text
+   codex-logs/<task-stem>-<YYYYMMDD_HHMMSS>.log
+   codex-logs/<task-stem>.done
+   ```
+
+   `run_codex_queue.sh` creates these automatically. For manual one-off work,
+   create or preserve equivalent logs when practical.
+
+7. For shell script changes, run at least:
+
+   ```bash
+   bash -n <script>
+   ```
+
+8. For Python node changes, run at least one relevant Python check:
+
+   ```bash
+   python3 -m compileall src scripts
+   ```
+
+   Use `colcon build --packages-select <package>` when package metadata,
+   console entry points, dependencies, or ROS node code changed.
+
+9. For demo/output changes, run the relevant smoke checker:
+
+   ```bash
+   ./scripts/check_demo_outputs.sh visualizations/<demo>
+   ```
+
+10. For PX4/Gazebo simulation runs, prefer existing scripts. Use
+    `RESET_STACK=1` for reproducible runs, and call `scripts/stop_stack.sh`
+    before finishing unless the user explicitly wants the stack left running.
+
+11. If project state changes, update the appropriate Markdown record in the same
+    run. Examples:
+
+    ```text
+    codex.md
+    docs/REGRESSION_CHECKS.md
+    docs/UAV_CONTROL_API.md
+    docs/VISUALIZATION_GUIDE.md
+    TOOLS_AND_SCRIPTS_GUIDE.md
+    ```
+
+12. Final reports must include:
+
+    ```text
+    changed files
+    commands run
+    test result
+    known risks
+    output paths, when logs or visualizations were generated
+    ```
+
+## Codex Queue Requirements
+
+`run_codex_queue.sh` is the standard runner for queued task files. It must:
+
+- verify `AGENTS.md`, `codex.md`, `codex-tasks/`, and `codex-logs/` exist;
+- pass the contents of `codex.md` together with the task file to Codex;
+- write timestamped logs under `codex-logs/`;
+- create `.done` markers only after a task exits successfully;
+- support `--dry-run`, `--from <prefix>`, and `--task <file>`;
+- skip completed queued tasks unless `--task` is used.
+
+Before adding a new queued task, create a numbered Markdown file:
+
+```text
+codex-tasks/010-short-task-name.md
+```
+
+The task file should state:
+
+```text
+goal
+allowed files or directories
+required validation commands
+required documentation updates
+expected final report fields
+```
+
+## Current Validation Commands
+
+Known passing checks after the latest bridge work:
+
+```bash
+bash -n run_codex_queue.sh
+bash -n scripts/check_demo_outputs.sh
+bash -n scripts/run_demo04_external_setpoint.sh
+bash -n scripts/start_stack.sh
+bash -n scripts/stop_stack.sh
+python3 -m compileall src scripts
+colcon build --packages-select px4_offboard_hover
+
+exec
+/bin/bash -lc "sed -n '1,240p' AGENTS.md" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+# Codex project rules
+
+These rules apply to the ROS2/PX4/LeRobot UAV simulation workspace at:
+
+```text
+/home/clcwork/UAV_capture/px4_ros2_ws
+```
+
+## Scope and workflow
+
+- 每次 Codex 运行都必须先读取并遵守 `codex.md`。`codex.md` 是当前项目状态、路径管理、日志记录和每次运行流程的主记录。
+- 修改前先理解项目结构，不要盲目改文件。
+- 每个任务只做当前 `codex-tasks/` 中对应 task 文件里的要求，不主动扩大范围。
+- 优先修改当前 ROS2 工作区 `/home/clcwork/UAV_capture/px4_ros2_ws` 下的脚本、文档和自定义包。
+- 不要随意更改 PX4-Autopilot 源码，除非任务文件明确要求。
+- 不要破坏已成功通过的 Demo 1-4：
+  - Demo 01 Offboard Hover
+  - Demo 02 Waypoint Flight
+  - Demo 03 Circle Trajectory
+  - Demo 04 External Setpoint Interface
+- 如果需要长时间运行实验，优先使用已有脚本和 tmux，不要随意新建后台进程。
+- 对于 PX4/Gazebo/Micro XRCE-DDS 相关任务，优先使用已有 `start_stack.sh`、`stop_stack.sh`、`run_*_experiment.sh` 和 `run_demo*.sh` 脚本。
+
+## Safety rules
+
+- 不要删除用户数据、日志、实验结果、模型 checkpoint、rosbag、`trajectory.csv`、可视化图片或视频。
+- 不要删除或改动 `.env`、secrets、production 配置、SSH key、token、代理配置、系统级配置。
+- 不要运行破坏性命令，例如 `git reset --hard`、批量删除日志或清空实验目录，除非任务文件明确要求且用户确认。
+- 如果工作区已有未提交修改，必须保留并绕开无关修改，不要回滚用户改动。
+
+## Validation requirements
+
+- 修改代码后必须运行相关测试、检查脚本或最小可复现实验。
+- 修改 shell 脚本后必须确保可执行权限正确，并至少运行 `bash -n <script>`。
+- 修改 Python 节点后必须至少运行 `python3 -m compileall`、`python3 -m py_compile` 或相关 pytest。
+- 如果测试失败，先尝试修复；仍失败则在最终报告里写清楚原因。
+- 每次执行任务应把输出日志保存到 `codex-logs/`。
+
+## Demo and visualization rules
+
+- 对于可视化任务，优先复用现有 `trajectory.csv`、日志和 plotting/recorder 脚本，不要重复造轮子。
+- Demo 1-4 的展示输出应保持稳定命名：
+  - `trajectory.csv`
+  - `trajectory_3d.png`
+  - `xy_path.png`
+  - `height_curve.png`
+  - `speed_curve.png`
+  - `tracking_error.png`
+  - `trajectory.mp4`
+  - `summary.md`
+  - `result.txt`
+- 不要删除或覆盖已有 `visualizations/<demo>/<timestamp>/` 结果目录。
+
+## UAV high-level control bridge rules
+
+- 后续视觉、任务规划、LeRobot 和机械臂相关任务必须优先通过 `/uav/*` 高层 ROS2 topic 接入无人机控制。
+- 不要让外部模块直接发布 `/fmu/in/offboard_control_mode`、`/fmu/in/trajectory_setpoint` 或 `/fmu/in/vehicle_command`。
+- PX4 `/fmu/in/*` 发布逻辑应集中在一个可审计的 UAV bridge 或现有 Offboard 控制基类内。
+- 新增 UAV bridge 节点时必须至少包含：
+  - 参数化安全限制，例如最大高度、最小高度、最大水平范围、目标跳变限制和目标超时。
+  - 当前安全目标和控制状态输出。
+  - 明确的 NED 坐标系说明，正高度输入必须转换为 PX4 `z=-altitude` 后再发给 PX4。
+  - `python3 -m compileall` 或等价 Python 检查。
+- Demo 04 可以继续作为外部目标点接口示例，但新的回归任务应优先验证通过 UAV bridge 跑通的路径。
+
+## LeRobot and UAV-arm rules
+
+- 对于后续 LeRobot 接入任务，不要让 LeRobot 直接控制 PX4 底层电机或姿态，只允许通过高层接口或机械臂操作策略接入。
+- LeRobot、视觉模块或任务规划器应优先通过 `/uav/target_position` 等高层 ROS2 topic 接入。
+- 对于 UAV-arm 任务，先设计 2-DOF/3-DOF 简化机械臂仿真，不要直接引入复杂 6-DOF 重机械臂。
+- PX4 Offboard 保持飞行平台稳定，机械臂执行局部操作；不要把机械臂策略和 PX4 飞控底层控制混在一起。
+
+## Final report format
+
+每个任务结束时必须总结：
+
+- `changed files`: 改了哪些文件。
+- `commands run`: 跑了什么命令。
+- `test result`: 结果如何，PASS/FAIL。
+- `known risks`: 还有什么风险或未验证项。
+
+exec
+/bin/bash -lc "sed -n '1,220p' codex-tasks/033-verify-live-arm-control-and-demo10-smoke.md 2>/dev/null || true" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+# Task 033: Verify Live Arm Control and Demo 10 Smoke
+
+## Task goal
+
+- Verify live arm control launch behavior after the ros2_control dependencies are available.
+- Confirm Demo 10 live-smoke can bring PX4/Gazebo to `Ready for takeoff` and cleanly shut down.
+- Do not run the full Demo 10 live mission in this task.
+
+## Allowed changes
+
+- `scripts/run_regression_demo_10.sh`
+- `docs/STAGE2_CONTROL_NOTES.md`
+- `docs/STAGE2_AIR_REACH_DEMO.md`
+- `codex-logs/033-verify-live-arm-control-and-demo10-smoke.log`
+
+## Implementation requirements
+
+- Validate `aerial_manip_control arm_control.launch.py` startup.
+- Check that controller-related ROS packages and launch logs are consistent with the expected two-joint arm setup.
+- Run Demo 10 in `live-smoke` mode with `RESET_STACK=1`.
+- Ensure PX4/Gazebo/MicroXRCEAgent processes from this project are cleaned up before the task exits.
+- If live-smoke fails, preserve stack readiness logs and identify the failing preflight or startup stage.
+
+## Required commands
+
+```bash
+bash -n scripts/run_regression_demo_10.sh
+timeout 60s ros2 launch aerial_manip_control arm_control.launch.py || true
+DEMO10_MODE=live-smoke RESET_STACK=1 bash scripts/run_regression_demo_10.sh | tee codex-logs/033-verify-live-arm-control-and-demo10-smoke.log
+scripts/stop_stack.sh
+pgrep -af 'gz sim|px4|MicroXRCEAgent' || true
+```
+
+## Deliverables
+
+- Live-smoke evidence under `logs/demo10_air_reach/<timestamp>/`.
+- Updated docs if arm control or live-smoke behavior changed.
+- Confirmation that no project PX4/Gazebo/MicroXRCEAgent process was left behind.
+
+## Final report requirements
+
+- `changed files`
+- `commands run`
+- `test result`
+- `known risks`
+- `live-smoke output path`
+
+codex
+I’ve confirmed the task file exists and the allowed change set is narrow. Next I’m reading the Demo 10 runner, the arm launch package layout, and the two Stage 2 docs so the verification matches the project’s expected behavior.
+exec
+/bin/bash -lc "sed -n '1,260p' scripts/run_regression_demo_10.sh" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+#!/usr/bin/env bash
+set -euo pipefail
+
+WORKSPACE_ROOT="/home/clcwork/UAV_capture/px4_ros2_ws"
+cd "$WORKSPACE_ROOT"
+
+DEMO_NAME="demo10_air_reach"
+TIMESTAMP="${TIMESTAMP:-$(date +%Y%m%d_%H%M%S)}"
+MODE="${DEMO10_MODE:-auto}"
+OUTPUT_DIR="logs/${DEMO_NAME}/${TIMESTAMP}"
+RUNNER_LOG="${OUTPUT_DIR}/runner.log"
+READINESS_FILE="${OUTPUT_DIR}/stack_readiness.txt"
+STAGE2_SOURCE_PYTHONPATH="${WORKSPACE_ROOT}/src/aerial_manip_eval:${WORKSPACE_ROOT}/src/aerial_manip_control:${WORKSPACE_ROOT}/src/aerial_manip_vision"
+
+mkdir -p "$OUTPUT_DIR"
+
+log() {
+  printf '[demo10] %s\n' "$*" | tee -a "$RUNNER_LOG"
+}
+
+run_dry() {
+  log "mode=dry-run output_dir=${OUTPUT_DIR}"
+  PYTHONPATH="${STAGE2_SOURCE_PYTHONPATH}${PYTHONPATH:+:${PYTHONPATH}}" \
+    python3 -m aerial_manip_eval.demo10_dry_run \
+      --output-dir "$OUTPUT_DIR" \
+      --timestamp "$TIMESTAMP" 2>&1 | tee -a "$RUNNER_LOG"
+  python3 scripts/check_demo_10.py "$OUTPUT_DIR" 2>&1 | tee -a "$RUNNER_LOG"
+}
+
+check_live_prereqs() {
+  local missing=0
+
+  if [ ! -f install/setup.bash ]; then
+    log "live prerequisite missing: install/setup.bash; run colcon build first"
+    missing=1
+  fi
+  if [ ! -d /home/clcwork/UAV_capture/px4_ws/PX4-Autopilot ]; then
+    log "live prerequisite missing: /home/clcwork/UAV_capture/px4_ws/PX4-Autopilot"
+    missing=1
+  fi
+  if [ ! -x /home/clcwork/Micro-XRCE-DDS-Agent/build/MicroXRCEAgent ]; then
+    log "live prerequisite missing: /home/clcwork/Micro-XRCE-DDS-Agent/build/MicroXRCEAgent"
+    missing=1
+  fi
+  if ! command -v tmux >/dev/null 2>&1; then
+    log "live prerequisite missing: tmux"
+    missing=1
+  fi
+
+  if [ "$missing" -ne 0 ]; then
+    return 1
+  fi
+
+  if ! source install/setup.bash; then
+    log "live prerequisite failed: could not source install/setup.bash"
+    return 1
+  fi
+
+  local pkg
+  for pkg in px4_offboard_hover aerial_manip_control aerial_manip_eval aerial_manip_vision; do
+    if ! ros2 pkg prefix "$pkg" >/dev/null 2>&1; then
+      log "live prerequisite missing: ROS 2 package ${pkg}"
+      missing=1
+    fi
+  done
+
+  [ "$missing" -eq 0 ]
+}
+
+cleanup_live() {
+  PIDS=""
+  LIVE_CLEANED=0
+}
+
+stop_live_processes() {
+  if [ "${LIVE_CLEANED:-0}" = "1" ]; then
+    return 0
+  fi
+  LIVE_CLEANED=1
+  for pid in ${PIDS:-}; do
+    kill "$pid" 2>/dev/null || true
+  done
+  if [ -n "${PIDS:-}" ]; then
+    wait $PIDS 2>/dev/null || true
+  fi
+  scripts/stop_stack.sh >>"$RUNNER_LOG" 2>&1 || true
+}
+
+run_live_smoke() {
+  log "mode=live-smoke output_dir=${OUTPUT_DIR}"
+  log "live smoke checks PX4 readiness only, then stops the stack"
+
+  if READINESS_RESULT_FILE="$READINESS_FILE" \
+    STACK_SMOKE_ONLY=1 \
+    STACK_READY_TIMEOUT="${DEMO10_STACK_READY_TIMEOUT:-75}" \
+    RESET_STACK="${RESET_STACK:-1}" \
+    scripts/start_stack.sh 2>&1 | tee -a "$RUNNER_LOG"; then
+    printf 'RESULT=PASS mode=live-smoke reason=stack_ready\n' >"${OUTPUT_DIR}/result.txt"
+    log "live smoke PASS: $(cat "$READINESS_FILE")"
+  else
+    printf 'RESULT=FAIL mode=live-smoke reason=stack_not_ready\n' >"${OUTPUT_DIR}/result.txt"
+    if [ -f "$READINESS_FILE" ]; then
+      log "live smoke FAIL: $(cat "$READINESS_FILE")"
+    else
+      log "live smoke FAIL: no readiness result was written"
+    fi
+    return 1
+  fi
+
+  cp /tmp/px4_gz_x500_tmux.log "${OUTPUT_DIR}/px4_gz_x500_tmux.log" 2>/dev/null || true
+  cp /tmp/micro_xrce_agent.log "${OUTPUT_DIR}/micro_xrce_agent.log" 2>/dev/null || true
+}
+
+run_live() {
+  if ! check_live_prereqs; then
+    printf 'RESULT=FAIL mode=live reason=missing_live_prerequisite\n' >"${OUTPUT_DIR}/result.txt"
+    return 2
+  fi
+
+  cleanup_live
+  trap stop_live_processes EXIT INT TERM
+
+  log "mode=live output_dir=${OUTPUT_DIR}"
+  if ! READINESS_RESULT_FILE="$READINESS_FILE" \
+    RESET_STACK="${RESET_STACK:-1}" \
+    STACK_READY_TIMEOUT="${DEMO10_STACK_READY_TIMEOUT:-75}" \
+    scripts/start_stack.sh 2>&1 | tee -a "$RUNNER_LOG"; then
+    log "start_stack.sh failed before live Demo 10 nodes could start"
+    return 2
+  fi
+  if ! grep -q '^STACK_READY=YES ' "$READINESS_FILE" 2>/dev/null; then
+    log "stack not ready; aborting live Demo 10 nodes: $(cat "$READINESS_FILE" 2>/dev/null || printf 'missing readiness file')"
+    printf 'RESULT=FAIL mode=live reason=stack_not_ready\n' >"${OUTPUT_DIR}/result.txt"
+    return 2
+  fi
+
+  ros2 run px4_offboard_hover uav_control_bridge >>"${OUTPUT_DIR}/uav_control_bridge.log" 2>&1 &
+  PIDS="${PIDS} $!"
+  ros2 run aerial_manip_control arm_control_bridge >>"${OUTPUT_DIR}/arm_control_bridge.log" 2>&1 &
+  PIDS="${PIDS} $!"
+  ros2 run aerial_manip_eval synthetic_arm_controller >>"${OUTPUT_DIR}/synthetic_arm_controller.log" 2>&1 &
+  PIDS="${PIDS} $!"
+  ros2 run aerial_manip_control state_aggregator >>"${OUTPUT_DIR}/state_aggregator.log" 2>&1 &
+  PIDS="${PIDS} $!"
+  ros2 run aerial_manip_vision tag_target_pose_node \
+    --ros-args -p publish_placeholder:=true \
+    >>"${OUTPUT_DIR}/tag_target_pose_node.log" 2>&1 &
+  PIDS="${PIDS} $!"
+  ros2 run aerial_manip_control approach_coordinator >>"${OUTPUT_DIR}/approach_coordinator.log" 2>&1 &
+  PIDS="${PIDS} $!"
+  ros2 run aerial_manip_eval episode_recorder \
+    --ros-args \
+    -p demo_name:="$DEMO_NAME" \
+    -p timestamp:="$TIMESTAMP" \
+    -p task_label:=air_reach \
+    -p task_id:=demo10_air_reach \
+    >>"${OUTPUT_DIR}/episode_recorder.log" 2>&1 &
+  PIDS="${PIDS} $!"
+
+  sleep "${DEMO10_NODE_STARTUP_SEC:-5}"
+  ros2 run aerial_manip_eval air_reach_demo --output-dir "$OUTPUT_DIR" \
+    >>"${OUTPUT_DIR}/air_reach_demo.log" 2>&1
+  python3 scripts/check_demo_10.py "$OUTPUT_DIR" 2>&1 | tee -a "$RUNNER_LOG"
+  stop_live_processes
+  trap - EXIT INT TERM
+}
+
+case "$MODE" in
+  dry-run)
+    run_dry
+    ;;
+  live-smoke)
+    run_live_smoke
+    ;;
+  live)
+    run_live
+    ;;
+  auto)
+    log "mode=auto using dry-run; set DEMO10_MODE=live-smoke for bounded stack readiness or DEMO10_MODE=live for full PX4/Gazebo execution"
+    run_dry
+    ;;
+  *)
+    log "unsupported DEMO10_MODE=${MODE}; use auto, dry-run, live-smoke, or live"
+    exit 2
+    ;;
+esac
+
+log "output_dir=${OUTPUT_DIR}"
+
+exec
+/bin/bash -lc "sed -n '1,260p' docs/STAGE2_AIR_REACH_DEMO.md" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+# Stage 2 Air Reach Demo
+
+Demo 10 is the repeatable stage-2 "air reach" regression. It exercises the
+high-level UAV bridge and arm bridge instead of publishing directly to PX4
+`/fmu/in/*` topics.
+
+## Sequence
+
+1. Stable hover: command `/uav/target_position` through the UAV bridge and wait
+   for a bounded hover error.
+2. Tag detection: wait for `/vision/target_pose_in_uav_frame`. The live runner
+   starts the tag node with `publish_placeholder:=true` when no camera detector
+   is available.
+3. Coordinated approach: send an `/approach` action goal so the approach
+   coordinator commands `/uav/target_position` and `/arm/target_joints`.
+4. Endpoint hold: hold the end-effector near the target. If contact sensing is
+   present, `contact_detected` is carried into the metrics; otherwise the
+   endpoint-distance criterion is used.
+
+## Commands
+
+Dry-run or automatic development regression:
+
+```bash
+cd /home/clcwork/UAV_capture/px4_ros2_ws
+bash scripts/run_regression_demo_10.sh
+python3 scripts/check_demo_10.py logs/demo10_air_reach
+```
+
+Bounded live stack readiness smoke:
+
+```bash
+cd /home/clcwork/UAV_capture/px4_ros2_ws
+DEMO10_MODE=live-smoke RESET_STACK=1 bash scripts/run_regression_demo_10.sh
+```
+
+This starts PX4/Gazebo and Micro XRCE-DDS, waits for PX4 to print
+`Ready for takeoff`, records the readiness line in
+`logs/demo10_air_reach/<timestamp>/stack_readiness.txt`, and then runs
+`scripts/stop_stack.sh`.
+
+Live PX4/Gazebo regression:
+
+```bash
+cd /home/clcwork/UAV_capture/px4_ros2_ws
+DEMO10_MODE=live RESET_STACK=1 bash scripts/run_regression_demo_10.sh
+```
+
+The runner writes timestamped artifacts to:
+
+```text
+logs/demo10_air_reach/<timestamp>/
+```
+
+`DEMO10_MODE=auto` remains a dry-run path. Use `DEMO10_MODE=live-smoke` before
+the full live mode when validating a machine or after a stale Gazebo/PX4
+cleanup issue.
+
+Latest bounded live-smoke result:
+
+```text
+timestamp: 20260528_001327
+path: logs/demo10_air_reach/20260528_001327
+result: RESULT=PASS mode=live-smoke reason=stack_ready
+readiness: STACK_READY=YES reason=ready_for_takeoff detail=PX4 reached Ready for takeoff
+cleanup: no PX4/Gazebo/MicroXRCEAgent stack process remained after scripts/stop_stack.sh
+```
+
+## Metrics
+
+`scripts/check_demo_10.py` validates `metrics.json`, `sequence_events.jsonl`,
+and `result.txt`. A PASS requires:
+
+| Metric | PASS criterion |
+| --- | --- |
+| Flight error | `flight_error.max_m <= flight_error.limit_m` |
+| Joint limits | `joint_limits.violations == 0` |
+| Target visibility | `target_visibility.visible_ratio >= target_visibility.min_visible_ratio` |
+| Task timeout | `task_timeout.timed_out == false` |
+| Final endpoint error | `final_endpoint_error.error_m <= final_endpoint_error.limit_m` |
+
+## Live Nodes
+
+`DEMO10_MODE=live` starts these nodes around the existing stack scripts:
+
+```text
+px4_offboard_hover/uav_control_bridge
+aerial_manip_control/arm_control_bridge
+aerial_manip_eval/synthetic_arm_controller
+aerial_manip_control/state_aggregator
+aerial_manip_vision/tag_target_pose_node
+aerial_manip_control/approach_coordinator
+aerial_manip_eval/episode_recorder
+aerial_manip_eval/air_reach_demo
+```
+
+The synthetic arm controller is only a lightweight 3-joint plant for regression
+closure. It can be replaced by a simulator-backed controller as long as the same
+`/arm/controller_state` and `/arm/controller_command` boundary is preserved.
+
+exec
+/bin/bash -lc "sed -n '1,260p' docs/STAGE2_CONTROL_NOTES.md" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+# Stage 2 Control Notes
+
+## Task 025 ros2_control Repair
+
+Task: `025-repair-arm-ros2-control-integration`
+
+The two-joint arm model now declares a minimal `gz_ros2_control` path:
+
+- SDF joints:
+  - `arm_shoulder_pitch_joint`
+  - `arm_elbow_pitch_joint`
+- Controller configuration:
+  - `joint_state_broadcaster`
+  - `arm_position_controller`
+- Controller command topic:
+  - `/arm_position_controller/commands`
+
+The controller YAML is:
+
+```text
+src/aerial_manip_control/config/arm_controllers.yaml
+```
+
+The controller launch entry point is:
+
+```bash
+ros2 launch aerial_manip_control arm_control.launch.py
+```
+
+The SDF plugin is attached in:
+
+```text
+src/aerial_manip_gazebo/models/x500_arm_2dof/model.sdf
+```
+
+The model uses `gz_ros2_control/GazeboSimSystem` with position command
+interfaces and position/velocity state interfaces for both arm joints. The
+plugin loads:
+
+```text
+$(find aerial_manip_control)/config/arm_controllers.yaml
+```
+
+## Command Scope
+
+This task does not add MoveIt 2 or trajectory planning. It also does not
+publish to PX4 `/fmu/in/*` topics. Arm actuation remains isolated to the arm
+controller path, and external modules should continue to use the high-level
+`/arm/*` bridge by default.
+
+For direct low-level controller smoke tests after Gazebo has loaded the model:
+
+```bash
+ros2 topic pub /arm_position_controller/commands std_msgs/msg/Float64MultiArray "{data: [0.2, -0.3]}" -1
+```
+
+## Missing Dependency Behavior
+
+The launch file checks for these ROS 2 packages before starting controller
+spawners:
+
+```text
+gz_ros2_control
+controller_manager
+joint_state_broadcaster
+forward_command_controller
+```
+
+If any are missing, the launch file exits without starting spawners and prints a
+clear line beginning with:
+
+```text
+WARN: arm ros2_control launch skipped
+```
+
+This keeps dry-run and non-live environments usable while documenting exactly
+which live packages need to be installed.
+
+## Live Verification Status
+
+As of Task 025, the current environment still lacks the required live
+`ros2_control` packages, so static build/compile checks and graceful
+missing-dependency behavior were verified. Live controller spawning and the
+one-shot `/arm_position_controller/commands` publish should be rerun after the
+missing packages are installed and Gazebo has loaded `x500_arm_2dof`.
+
+exec
+/bin/bash -lc "rg --files src | rg 'aerial_manip_control|arm_control|demo10|air_reach'" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+src/aerial_manip_eval/aerial_manip_eval/air_reach_demo.py
+src/aerial_manip_eval/aerial_manip_eval/demo10_dry_run.py
+src/aerial_manip_eval/aerial_manip_eval/synthetic_arm_controller.py
+src/aerial_manip_control/package.xml
+src/aerial_manip_control/setup.cfg
+src/aerial_manip_control/launch/arm_control.launch.py
+src/aerial_manip_control/aerial_manip_control/state_aggregator.py
+src/aerial_manip_control/aerial_manip_control/arm_control_bridge.py
+src/aerial_manip_control/aerial_manip_control/stage2_schema.py
+src/aerial_manip_control/aerial_manip_control/__init__.py
+src/aerial_manip_control/aerial_manip_control/approach_coordinator.py
+src/aerial_manip_control/setup.py
+src/aerial_manip_control/resource/aerial_manip_control
+src/aerial_manip_control/config/arm_controllers.yaml
+
+exec
+/bin/bash -lc "sed -n '1,240p' src/aerial_manip_control/launch/arm_control.launch.py" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+from launch import LaunchDescription
+from launch.actions import DeclareLaunchArgument, LogInfo, OpaqueFunction
+from launch.substitutions import LaunchConfiguration
+from launch_ros.actions import Node
+
+from ament_index_python.packages import (
+    PackageNotFoundError,
+    get_package_share_directory,
+)
+
+
+REQUIRED_PACKAGES = (
+    "gz_ros2_control",
+    "controller_manager",
+    "joint_state_broadcaster",
+    "forward_command_controller",
+)
+
+
+def _package_missing(package_name):
+    try:
+        get_package_share_directory(package_name)
+    except PackageNotFoundError:
+        return True
+    return False
+
+
+def _launch_setup(context, *args, **kwargs):
+    missing = [package for package in REQUIRED_PACKAGES if _package_missing(package)]
+    if missing:
+        return [
+            LogInfo(
+                msg=(
+                    "WARN: arm ros2_control launch skipped; missing ROS 2 "
+                    f"packages: {', '.join(missing)}. Install/provide these "
+                    "packages, rebuild, source the workspace, then rerun this "
+                    "launch file."
+                )
+            )
+        ]
+
+    controller_manager = LaunchConfiguration("controller_manager").perform(context)
+    controller_manager_timeout = LaunchConfiguration(
+        "controller_manager_timeout"
+    ).perform(context)
+
+    spawner_common_args = [
+        "--controller-manager",
+        controller_manager,
+        "--controller-manager-timeout",
+        controller_manager_timeout,
+    ]
+
+    return [
+        LogInfo(
+            msg=(
+                "Starting arm ros2_control spawners for a gz_ros2_control "
+                f"manager at {controller_manager}."
+            )
+        ),
+        Node(
+            package="controller_manager",
+            executable="spawner",
+            arguments=["joint_state_broadcaster", *spawner_common_args],
+            output="screen",
+        ),
+        Node(
+            package="controller_manager",
+            executable="spawner",
+            arguments=["arm_position_controller", *spawner_common_args],
+            output="screen",
+        ),
+    ]
+
+
+def generate_launch_description():
+    return LaunchDescription(
+        [
+            DeclareLaunchArgument(
+                "controller_manager",
+                default_value="/controller_manager",
+                description=(
+                    "Controller manager provided by the gz_ros2_control SDF plugin."
+                ),
+            ),
+            DeclareLaunchArgument(
+                "controller_manager_timeout",
+                default_value="10",
+                description="Seconds for controller spawners to wait for the manager.",
+            ),
+            OpaqueFunction(function=_launch_setup),
+        ]
+    )
+
+exec
+/bin/bash -lc "sed -n '1,220p' scripts/stop_stack.sh" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+#!/usr/bin/env bash
+set -euo pipefail
+
+PX4_DIR="${PX4_DIR:-/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot}"
+
+kill_tmux_session() {
+  tmux kill-session -t "$1" 2>/dev/null || true
+}
+
+terminate_matching() {
+  local pattern="$1"
+  local label="$2"
+
+  if ! pgrep -f "$pattern" >/dev/null 2>&1; then
+    return 0
+  fi
+
+  printf '[stop_stack] stopping %s\n' "$label"
+  pkill -TERM -f "$pattern" 2>/dev/null || true
+  sleep 2
+
+  if pgrep -f "$pattern" >/dev/null 2>&1; then
+    printf '[stop_stack] force stopping %s\n' "$label"
+    pkill -KILL -f "$pattern" 2>/dev/null || true
+  fi
+}
+
+wait_until_clear() {
+  local pattern="$1"
+  local label="$2"
+
+  for _ in $(seq 1 10); do
+    if ! pgrep -f "$pattern" >/dev/null 2>&1; then
+      return 0
+    fi
+    sleep 1
+  done
+
+  printf '[stop_stack] warning: process still matched after cleanup: %s\n' "$label" >&2
+  pgrep -af "$pattern" >&2 || true
+}
+
+kill_tmux_session px4_offboard_hover
+kill_tmux_session px4_demo02_waypoint_flight
+kill_tmux_session px4_demo03_circle_trajectory
+kill_tmux_session px4_demo04_external_setpoint
+kill_tmux_session px4_uav_control_bridge
+kill_tmux_session px4_demo04_target_sequence
+kill_tmux_session px4_trajectory_recorder
+kill_tmux_session micro_xrce_agent
+kill_tmux_session px4_gz_x500
+
+terminate_matching "gz sim .*${PX4_DIR}/Tools/simulation/gz/worlds/default\\.sdf" \
+  "Gazebo default.sdf with PX4 world path"
+terminate_matching "gz sim --verbose=1 -r -s .*default\\.sdf" \
+  "Gazebo server default.sdf"
+terminate_matching "px4_sitl_default/bin/px4" "PX4 SITL"
+terminate_matching "MicroXRCEAgent .*udp4 .*8888" "Micro XRCE-DDS Agent"
+
+wait_until_clear "gz sim .*${PX4_DIR}/Tools/simulation/gz/worlds/default\\.sdf" \
+  "Gazebo default.sdf with PX4 world path"
+wait_until_clear "gz sim --verbose=1 -r -s .*default\\.sdf" \
+  "Gazebo server default.sdf"
+wait_until_clear "px4_sitl_default/bin/px4" "PX4 SITL"
+wait_until_clear "MicroXRCEAgent .*udp4 .*8888" "Micro XRCE-DDS Agent"
+
+exec
+/bin/bash -lc "sed -n '1,220p' src/aerial_manip_control/config/arm_controllers.yaml" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+controller_manager:
+  ros__parameters:
+    update_rate: 100
+
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+
+    arm_position_controller:
+      type: forward_command_controller/ForwardCommandController
+
+joint_state_broadcaster:
+  ros__parameters:
+    joints:
+      - arm_shoulder_pitch_joint
+      - arm_elbow_pitch_joint
+    interfaces:
+      - position
+      - velocity
+
+arm_position_controller:
+  ros__parameters:
+    joints:
+      - arm_shoulder_pitch_joint
+      - arm_elbow_pitch_joint
+    interface_name: position
+
+exec
+/bin/bash -lc 'find logs/demo10_air_reach -maxdepth 2 -type f 2>/dev/null | sort | tail -40' in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+logs/demo10_air_reach/20260527_191627/result.txt
+logs/demo10_air_reach/20260527_191627/runner.log
+logs/demo10_air_reach/20260527_191627/sequence_events.jsonl
+logs/demo10_air_reach/20260527_191627/summary.md
+logs/demo10_air_reach/20260527_191707/metrics.json
+logs/demo10_air_reach/20260527_191707/result.txt
+logs/demo10_air_reach/20260527_191707/runner.log
+logs/demo10_air_reach/20260527_191707/sequence_events.jsonl
+logs/demo10_air_reach/20260527_191707/summary.md
+logs/demo10_air_reach/20260527_231936/metrics.json
+logs/demo10_air_reach/20260527_231936/result.txt
+logs/demo10_air_reach/20260527_231936/runner.log
+logs/demo10_air_reach/20260527_231936/sequence_events.jsonl
+logs/demo10_air_reach/20260527_231936/summary.md
+logs/demo10_air_reach/20260527_234410/metrics.json
+logs/demo10_air_reach/20260527_234410/result.txt
+logs/demo10_air_reach/20260527_234410/runner.log
+logs/demo10_air_reach/20260527_234410/sequence_events.jsonl
+logs/demo10_air_reach/20260527_234410/summary.md
+logs/demo10_air_reach/20260528_001022/runner.log
+logs/demo10_air_reach/20260528_001048/metrics.json
+logs/demo10_air_reach/20260528_001048/result.txt
+logs/demo10_air_reach/20260528_001048/runner.log
+logs/demo10_air_reach/20260528_001048/sequence_events.jsonl
+logs/demo10_air_reach/20260528_001048/summary.md
+logs/demo10_air_reach/20260528_001055/micro_xrce_agent.log
+logs/demo10_air_reach/20260528_001055/px4_gz_x500_tmux.log
+logs/demo10_air_reach/20260528_001055/result.txt
+logs/demo10_air_reach/20260528_001055/runner.log
+logs/demo10_air_reach/20260528_001055/stack_readiness.txt
+logs/demo10_air_reach/20260528_001327/micro_xrce_agent.log
+logs/demo10_air_reach/20260528_001327/px4_gz_x500_tmux.log
+logs/demo10_air_reach/20260528_001327/result.txt
+logs/demo10_air_reach/20260528_001327/runner.log
+logs/demo10_air_reach/20260528_001327/stack_readiness.txt
+logs/demo10_air_reach/20260528_002122/metrics.json
+logs/demo10_air_reach/20260528_002122/result.txt
+logs/demo10_air_reach/20260528_002122/runner.log
+logs/demo10_air_reach/20260528_002122/sequence_events.jsonl
+logs/demo10_air_reach/20260528_002122/summary.md
+
+codex
+The runner already has a bounded `live-smoke` path that only waits for stack readiness and writes `result.txt`; the arm controller launch is dependency-gated and should either spawn the two configured controllers or print the explicit skip warning. I’m starting with the required syntax and launch checks now.
+exec
+/bin/bash -lc 'bash -n scripts/run_regression_demo_10.sh' in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+exec
+/bin/bash -lc 'timeout 60s ros2 launch aerial_manip_control arm_control.launch.py || true' in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 135ms:
+Package 'aerial_manip_control' not found: "package 'aerial_manip_control' not found, searching: ['/opt/ros/jazzy']"
+
+codex
+The required launch command without sourcing the workspace only searched `/opt/ros/jazzy`, so it did not find the local package. I’m rerunning the same launch through `install/setup.bash`, which is the workspace’s normal ROS 2 environment path and what the Demo 10 runner expects.
+exec
+/bin/bash -lc "bash -lc 'source install/setup.bash && timeout 60s ros2 launch aerial_manip_control arm_control.launch.py || true'" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 20869ms:
+[INFO] [launch]: All log files can be found below /home/clcwork/.ros/log/2026-05-28-11-37-57-855027-clcwork-143295
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [launch.user]: Starting arm ros2_control spawners for a gz_ros2_control manager at /controller_manager.
+[INFO] [spawner-1]: process started with pid [143298]
+[INFO] [spawner-2]: process started with pid [143299]
+[spawner-1] [INFO] [1779939478.240877598] [spawner_joint_state_broadcaster]: waiting for service /controller_manager/list_controllers to become available...
+[spawner-1] [FATAL] [1779939488.245509634] [spawner_joint_state_broadcaster]: Could not contact service /controller_manager/list_controllers
+[spawner-2] [INFO] [1779939488.316295767] [spawner_arm_position_controller]: waiting for service /controller_manager/list_controllers to become available...
+[ERROR] [spawner-1]: process has died [pid 143298, exit code 1, cmd '/opt/ros/jazzy/lib/controller_manager/spawner joint_state_broadcaster --controller-manager /controller_manager --controller-manager-timeout 10 --ros-args'].
+[spawner-2] [FATAL] [1779939499.208199506] [spawner_arm_position_controller]: Could not contact service /controller_manager/list_controllers
+[ERROR] [spawner-2]: process has died [pid 143299, exit code 1, cmd '/opt/ros/jazzy/lib/controller_manager/spawner arm_position_controller --controller-manager /controller_manager --controller-manager-timeout 10 --ros-args'].
+
+codex
+With the sourced environment, `arm_control.launch.py` found the ros2_control packages and attempted the expected two spawners: `joint_state_broadcaster` and `arm_position_controller`. Both timed out because no Gazebo-loaded `/controller_manager` was running, which is consistent for this standalone launch check. Next I’m running the bounded Demo 10 live smoke with stack reset and logging to the task log.
+exec
+/bin/bash -lc "sed -n '1,220p' scripts/start_stack.sh" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PX4_DIR="${PX4_DIR:-/home/clcwork/UAV_capture/px4_ws/PX4-Autopilot}"
+AGENT_DIR="${AGENT_DIR:-/home/clcwork/Micro-XRCE-DDS-Agent/build}"
+RESET_STACK="${RESET_STACK:-0}"
+STACK_READY_TIMEOUT="${STACK_READY_TIMEOUT:-60}"
+STACK_SMOKE_ONLY="${STACK_SMOKE_ONLY:-0}"
+PX4_STACK_LOG="${PX4_STACK_LOG:-/tmp/px4_gz_x500_tmux.log}"
+XRCE_AGENT_LOG="${XRCE_AGENT_LOG:-/tmp/micro_xrce_agent.log}"
+READINESS_RESULT_FILE="${READINESS_RESULT_FILE:-}"
+
+record_readiness() {
+  local status="$1"
+  local reason="$2"
+  local detail="$3"
+  local line
+
+  line="STACK_READY=${status} reason=${reason} detail=${detail}"
+  printf '%s\n' "$line"
+  if [ -n "$READINESS_RESULT_FILE" ]; then
+    printf '%s\n' "$line" >"$READINESS_RESULT_FILE"
+  fi
+}
+
+latest_preflight_failure() {
+  grep -Ei \
+    "preflight.*fail|fail.*preflight|health checks failed|takeoff denied|arming denied|commander check.*fail" \
+    "$PX4_STACK_LOG" 2>/dev/null | tail -1 || true
+}
+
+if [ "$RESET_STACK" = "1" ]; then
+  "$SCRIPT_DIR/stop_stack.sh"
+  rm -f "$PX4_STACK_LOG" "$XRCE_AGENT_LOG" /tmp/px4_offboard_hover.log
+fi
+
+tmux has-session -t px4_gz_x500 2>/dev/null || \
+  tmux new-session -d -s px4_gz_x500 \
+    "cd \"$PX4_DIR\" && HEADLESS=1 make px4_sitl gz_x500 2>&1 | tee \"$PX4_STACK_LOG\""
+
+tmux has-session -t micro_xrce_agent 2>/dev/null || \
+  tmux new-session -d -s micro_xrce_agent \
+    "cd \"$AGENT_DIR\" && ./MicroXRCEAgent udp4 -p 8888 2>&1 | tee \"$XRCE_AGENT_LOG\""
+
+ready=0
+failure_detail=""
+for _ in $(seq 1 "$STACK_READY_TIMEOUT"); do
+  if grep -q "Ready for takeoff" "$PX4_STACK_LOG" 2>/dev/null; then
+    record_readiness YES ready_for_takeoff "PX4 reached Ready for takeoff"
+    ready=1
+    break
+  fi
+  failure_detail="$(latest_preflight_failure)"
+  if [ "$STACK_SMOKE_ONLY" != "1" ] && grep -q "Preflight check: OK" "$PX4_STACK_LOG" 2>/dev/null; then
+    record_readiness YES preflight_check_ok "PX4 reported Preflight check: OK"
+    ready=1
+    break
+  fi
+  if grep -q "pxh>" "$PX4_STACK_LOG" 2>/dev/null; then
+    tmux send-keys -t px4_gz_x500 "param set NAV_DLL_ACT 0" C-m
+    tmux send-keys -t px4_gz_x500 "commander check" C-m
+  fi
+  sleep 1
+done
+
+if [ "$ready" -ne 1 ]; then
+  if [ -z "$failure_detail" ]; then
+    failure_detail="$(latest_preflight_failure)"
+  fi
+  if [ -n "$failure_detail" ]; then
+    record_readiness NO preflight_failure "$failure_detail"
+  else
+    record_readiness NO timeout "no Ready for takeoff or preflight failure within ${STACK_READY_TIMEOUT}s"
+  fi
+fi
+
+tmux ls
+
+if [ "$STACK_SMOKE_ONLY" = "1" ]; then
+  "$SCRIPT_DIR/stop_stack.sh"
+  [ "$ready" -eq 1 ]
+fi
+
+exec
+/bin/bash -lc "bash -lc 'source install/setup.bash && for pkg in gz_ros2_control controller_manager joint_state_broadcaster forward_command_controller; do printf \"%s \" \""'$pkg"; ros2 pkg prefix "$pkg" || true; done'"'" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 673ms:
+/opt/ros/jazzy
+controller_manager /opt/ros/jazzy
+joint_state_broadcaster /opt/ros/jazzy
+forward_command_controller /opt/ros/jazzy
+
+exec
+/bin/bash -lc 'DEMO10_MODE=live-smoke RESET_STACK=1 bash scripts/run_regression_demo_10.sh | tee codex-logs/033-verify-live-arm-control-and-demo10-smoke.log' in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 15178ms:
+STACK_READY=YES reason=ready_for_takeoff detail=PX4 reached Ready for takeoff
+micro_xrce_agent: 1 windows (created Thu May 28 11:38:32 2026)
+px4_gz_x500: 1 windows (created Thu May 28 11:38:32 2026)
+uav_codex: 2 windows (created Wed May 27 18:32:47 2026)
+uav_visual_queue: 1 windows (created Thu May 28 11:30:04 2026)
+[stop_stack] stopping Gazebo default.sdf with PX4 world path
+[demo10] live smoke PASS: STACK_READY=YES reason=ready_for_takeoff detail=PX4 reached Ready for takeoff
+[demo10] output_dir=logs/demo10_air_reach/20260528_113832
+
+codex
+The live-smoke run reached `Ready for takeoff` and the runner invoked `stop_stack.sh`. I’m still running the explicit cleanup and process check from the task, then I’ll update the Stage 2 docs with the current live verification status.
+exec
+/bin/bash -lc scripts/stop_stack.sh in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+exec
+/bin/bash -lc "pgrep -af 'gz sim|px4|MicroXRCEAgent' || true" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+73462 tmux new-session -d -s uav_codex -n codex_queue cd /home/clcwork/UAV_capture/px4_ros2_ws && bash -lc './run_codex_queue.sh --from 015; status=$?; echo; echo "[codex queue exited status=$status at $(date --iso-8601=seconds)]"; exec bash'
+142387 tee /home/clcwork/UAV_capture/px4_ros2_ws/codex-logs/033-verify-live-arm-control-and-demo10-smoke-20260528_113713.log
+144473 /bin/bash -c pgrep -af 'gz sim|px4|MicroXRCEAgent' || true
+
+exec
+/bin/bash -lc 'tail -80 codex-logs/033-verify-live-arm-control-and-demo10-smoke.log' in /home/clcwork/UAV_capture/px4_ros2_ws
+exec
+/bin/bash -lc "find logs/demo10_air_reach/20260528_113832 -maxdepth 1 -type f -printf '%f\\n' | sort" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+[demo10] mode=live-smoke output_dir=logs/demo10_air_reach/20260528_113832
+[demo10] live smoke checks PX4 readiness only, then stops the stack
+STACK_READY=YES reason=ready_for_takeoff detail=PX4 reached Ready for takeoff
+micro_xrce_agent: 1 windows (created Thu May 28 11:38:32 2026)
+px4_gz_x500: 1 windows (created Thu May 28 11:38:32 2026)
+uav_codex: 2 windows (created Wed May 27 18:32:47 2026)
+uav_visual_queue: 1 windows (created Thu May 28 11:30:04 2026)
+[stop_stack] stopping Gazebo default.sdf with PX4 world path
+[demo10] live smoke PASS: STACK_READY=YES reason=ready_for_takeoff detail=PX4 reached Ready for takeoff
+[demo10] output_dir=logs/demo10_air_reach/20260528_113832
+
+ succeeded in 0ms:
+micro_xrce_agent.log
+px4_gz_x500_tmux.log
+result.txt
+runner.log
+stack_readiness.txt
+
+exec
+/bin/bash -lc 'tail -80 logs/demo10_air_reach/20260528_113832/runner.log' in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+[demo10] mode=live-smoke output_dir=logs/demo10_air_reach/20260528_113832
+[demo10] live smoke checks PX4 readiness only, then stops the stack
+STACK_READY=YES reason=ready_for_takeoff detail=PX4 reached Ready for takeoff
+micro_xrce_agent: 1 windows (created Thu May 28 11:38:32 2026)
+px4_gz_x500: 1 windows (created Thu May 28 11:38:32 2026)
+uav_codex: 2 windows (created Wed May 27 18:32:47 2026)
+uav_visual_queue: 1 windows (created Thu May 28 11:30:04 2026)
+[stop_stack] stopping Gazebo default.sdf with PX4 world path
+[demo10] live smoke PASS: STACK_READY=YES reason=ready_for_takeoff detail=PX4 reached Ready for takeoff
+[demo10] output_dir=logs/demo10_air_reach/20260528_113832
+
+exec
+/bin/bash -lc "for f in logs/demo10_air_reach/20260528_113832/result.txt logs/demo10_air_reach/20260528_113832/stack_readiness.txt; do printf '%s: ' \""'$f"; tr '"'\\n' ' ' < \""'$f"; printf '"'\\n'; done" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+logs/demo10_air_reach/20260528_113832/result.txt: RESULT=PASS mode=live-smoke reason=stack_ready 
+logs/demo10_air_reach/20260528_113832/stack_readiness.txt: STACK_READY=YES reason=ready_for_takeoff detail=PX4 reached Ready for takeoff 
+
+codex
+The new smoke artifacts are complete under `logs/demo10_air_reach/20260528_113832`, with `RESULT=PASS` and the readiness file showing `STACK_READY=YES`. I’m updating only the allowed Stage 2 docs to replace the stale dependency status and latest smoke record.
+apply patch
+patch: completed
+/home/clcwork/UAV_capture/px4_ros2_ws/docs/STAGE2_AIR_REACH_DEMO.md
+/home/clcwork/UAV_capture/px4_ros2_ws/docs/STAGE2_CONTROL_NOTES.md
+diff --git a/px4_ros2_ws/docs/STAGE2_AIR_REACH_DEMO.md b/px4_ros2_ws/docs/STAGE2_AIR_REACH_DEMO.md
+index 2436decd3dfb53d8db30a80c4c118f9d5375f23c..714f3bd32212c81a0dbe163317f52d47f0c8cdc2
+--- a/px4_ros2_ws/docs/STAGE2_AIR_REACH_DEMO.md
++++ b/px4_ros2_ws/docs/STAGE2_AIR_REACH_DEMO.md
+@@ -59,8 +59,8 @@
+ Latest bounded live-smoke result:
+ 
+ ```text
+-timestamp: 20260528_001327
+-path: logs/demo10_air_reach/20260528_001327
++timestamp: 20260528_113832
++path: logs/demo10_air_reach/20260528_113832
+ result: RESULT=PASS mode=live-smoke reason=stack_ready
+ readiness: STACK_READY=YES reason=ready_for_takeoff detail=PX4 reached Ready for takeoff
+ cleanup: no PX4/Gazebo/MicroXRCEAgent stack process remained after scripts/stop_stack.sh
+diff --git a/px4_ros2_ws/docs/STAGE2_CONTROL_NOTES.md b/px4_ros2_ws/docs/STAGE2_CONTROL_NOTES.md
+index 82bd6a5d8463e06f6eb5e4b327eb8495f0ae402a..6778df528791abdfb0576839c8ddb26cc74b4952
+--- a/px4_ros2_ws/docs/STAGE2_CONTROL_NOTES.md
++++ b/px4_ros2_ws/docs/STAGE2_CONTROL_NOTES.md
+@@ -78,8 +78,26 @@
+ 
+ ## Live Verification Status
+ 
+-As of Task 025, the current environment still lacks the required live
+-`ros2_control` packages, so static build/compile checks and graceful
+-missing-dependency behavior were verified. Live controller spawning and the
+-one-shot `/arm_position_controller/commands` publish should be rerun after the
+-missing packages are installed and Gazebo has loaded `x500_arm_2dof`.
++As of Task 033, the required live `ros2_control` ROS packages are available in
++the sourced workspace environment:
++
++```text
++gz_ros2_control
++controller_manager
++joint_state_broadcaster
++forward_command_controller
++```
++
++Running the controller launch with `source install/setup.bash` starts the
++expected two spawners:
++
++```text
++joint_state_broadcaster
++arm_position_controller
++```
++
++The standalone launch check then times out waiting for
++`/controller_manager/list_controllers` when Gazebo has not loaded the
++`x500_arm_2dof` model. That is expected for this isolated startup check; the
++next live controller validation should run with the model loaded so the
++`gz_ros2_control` plugin provides `/controller_manager`.
+
+diff --git a/px4_ros2_ws/docs/STAGE2_AIR_REACH_DEMO.md b/px4_ros2_ws/docs/STAGE2_AIR_REACH_DEMO.md
+index 2436decd3dfb53d8db30a80c4c118f9d5375f23c..714f3bd32212c81a0dbe163317f52d47f0c8cdc2
+--- a/px4_ros2_ws/docs/STAGE2_AIR_REACH_DEMO.md
++++ b/px4_ros2_ws/docs/STAGE2_AIR_REACH_DEMO.md
+@@ -59,8 +59,8 @@
+ Latest bounded live-smoke result:
+ 
+ ```text
+-timestamp: 20260528_001327
+-path: logs/demo10_air_reach/20260528_001327
++timestamp: 20260528_113832
++path: logs/demo10_air_reach/20260528_113832
+ result: RESULT=PASS mode=live-smoke reason=stack_ready
+ readiness: STACK_READY=YES reason=ready_for_takeoff detail=PX4 reached Ready for takeoff
+ cleanup: no PX4/Gazebo/MicroXRCEAgent stack process remained after scripts/stop_stack.sh
+diff --git a/px4_ros2_ws/docs/STAGE2_CONTROL_NOTES.md b/px4_ros2_ws/docs/STAGE2_CONTROL_NOTES.md
+index 82bd6a5d8463e06f6eb5e4b327eb8495f0ae402a..6778df528791abdfb0576839c8ddb26cc74b4952
+--- a/px4_ros2_ws/docs/STAGE2_CONTROL_NOTES.md
++++ b/px4_ros2_ws/docs/STAGE2_CONTROL_NOTES.md
+@@ -78,8 +78,26 @@
+ 
+ ## Live Verification Status
+ 
+-As of Task 025, the current environment still lacks the required live
+-`ros2_control` packages, so static build/compile checks and graceful
+-missing-dependency behavior were verified. Live controller spawning and the
+-one-shot `/arm_position_controller/commands` publish should be rerun after the
+-missing packages are installed and Gazebo has loaded `x500_arm_2dof`.
++As of Task 033, the required live `ros2_control` ROS packages are available in
++the sourced workspace environment:
++
++```text
++gz_ros2_control
++controller_manager
++joint_state_broadcaster
++forward_command_controller
++```
++
++Running the controller launch with `source install/setup.bash` starts the
++expected two spawners:
++
++```text
++joint_state_broadcaster
++arm_position_controller
++```
++
++The standalone launch check then times out waiting for
++`/controller_manager/list_controllers` when Gazebo has not loaded the
++`x500_arm_2dof` model. That is expected for this isolated startup check; the
++next live controller validation should run with the model loaded so the
++`gz_ros2_control` plugin provides `/controller_manager`.
+
+exec
+/bin/bash -lc 'bash -n scripts/run_regression_demo_10.sh' in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+exec
+/bin/bash -lc "pgrep -af 'gz sim .*default\\.sdf|px4_sitl_default/bin/px4|MicroXRCEAgent .*udp4 .*8888' || true" in /home/clcwork/UAV_capture/px4_ros2_ws
+exec
+/bin/bash -lc 'git diff -- docs/STAGE2_CONTROL_NOTES.md docs/STAGE2_AIR_REACH_DEMO.md scripts/run_regression_demo_10.sh codex-logs/033-verify-live-arm-control-and-demo10-smoke.log 2>/dev/null || true' in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+144648 /bin/bash -c pgrep -af 'gz sim .*default\.sdf|px4_sitl_default/bin/px4|MicroXRCEAgent .*udp4 .*8888' || true
+
+ succeeded in 0ms:
+diff --git a/px4_ros2_ws/docs/STAGE2_AIR_REACH_DEMO.md b/px4_ros2_ws/docs/STAGE2_AIR_REACH_DEMO.md
+index 2436dec..714f3bd 100644
+--- a/px4_ros2_ws/docs/STAGE2_AIR_REACH_DEMO.md
++++ b/px4_ros2_ws/docs/STAGE2_AIR_REACH_DEMO.md
+@@ -59,8 +59,8 @@ cleanup issue.
+ Latest bounded live-smoke result:
+ 
+ ```text
+-timestamp: 20260528_001327
+-path: logs/demo10_air_reach/20260528_001327
++timestamp: 20260528_113832
++path: logs/demo10_air_reach/20260528_113832
+ result: RESULT=PASS mode=live-smoke reason=stack_ready
+ readiness: STACK_READY=YES reason=ready_for_takeoff detail=PX4 reached Ready for takeoff
+ cleanup: no PX4/Gazebo/MicroXRCEAgent stack process remained after scripts/stop_stack.sh
+diff --git a/px4_ros2_ws/docs/STAGE2_CONTROL_NOTES.md b/px4_ros2_ws/docs/STAGE2_CONTROL_NOTES.md
+index 82bd6a5..6778df5 100644
+--- a/px4_ros2_ws/docs/STAGE2_CONTROL_NOTES.md
++++ b/px4_ros2_ws/docs/STAGE2_CONTROL_NOTES.md
+@@ -78,8 +78,26 @@ which live packages need to be installed.
+ 
+ ## Live Verification Status
+ 
+-As of Task 025, the current environment still lacks the required live
+-`ros2_control` packages, so static build/compile checks and graceful
+-missing-dependency behavior were verified. Live controller spawning and the
+-one-shot `/arm_position_controller/commands` publish should be rerun after the
+-missing packages are installed and Gazebo has loaded `x500_arm_2dof`.
++As of Task 033, the required live `ros2_control` ROS packages are available in
++the sourced workspace environment:
++
++```text
++gz_ros2_control
++controller_manager
++joint_state_broadcaster
++forward_command_controller
++```
++
++Running the controller launch with `source install/setup.bash` starts the
++expected two spawners:
++
++```text
++joint_state_broadcaster
++arm_position_controller
++```
++
++The standalone launch check then times out waiting for
++`/controller_manager/list_controllers` when Gazebo has not loaded the
++`x500_arm_2dof` model. That is expected for this isolated startup check; the
++next live controller validation should run with the model loaded so the
++`gz_ros2_control` plugin provides `/controller_manager`.
+
+diff --git a/px4_ros2_ws/docs/STAGE2_AIR_REACH_DEMO.md b/px4_ros2_ws/docs/STAGE2_AIR_REACH_DEMO.md
+index 2436decd3dfb53d8db30a80c4c118f9d5375f23c..714f3bd32212c81a0dbe163317f52d47f0c8cdc2
+--- a/px4_ros2_ws/docs/STAGE2_AIR_REACH_DEMO.md
++++ b/px4_ros2_ws/docs/STAGE2_AIR_REACH_DEMO.md
+@@ -59,8 +59,8 @@
+ Latest bounded live-smoke result:
+ 
+ ```text
+-timestamp: 20260528_001327
+-path: logs/demo10_air_reach/20260528_001327
++timestamp: 20260528_113832
++path: logs/demo10_air_reach/20260528_113832
+ result: RESULT=PASS mode=live-smoke reason=stack_ready
+ readiness: STACK_READY=YES reason=ready_for_takeoff detail=PX4 reached Ready for takeoff
+ cleanup: no PX4/Gazebo/MicroXRCEAgent stack process remained after scripts/stop_stack.sh
+diff --git a/px4_ros2_ws/docs/STAGE2_CONTROL_NOTES.md b/px4_ros2_ws/docs/STAGE2_CONTROL_NOTES.md
+index 82bd6a5d8463e06f6eb5e4b327eb8495f0ae402a..6778df528791abdfb0576839c8ddb26cc74b4952
+--- a/px4_ros2_ws/docs/STAGE2_CONTROL_NOTES.md
++++ b/px4_ros2_ws/docs/STAGE2_CONTROL_NOTES.md
+@@ -78,8 +78,26 @@
+ 
+ ## Live Verification Status
+ 
+-As of Task 025, the current environment still lacks the required live
+-`ros2_control` packages, so static build/compile checks and graceful
+-missing-dependency behavior were verified. Live controller spawning and the
+-one-shot `/arm_position_controller/commands` publish should be rerun after the
+-missing packages are installed and Gazebo has loaded `x500_arm_2dof`.
++As of Task 033, the required live `ros2_control` ROS packages are available in
++the sourced workspace environment:
++
++```text
++gz_ros2_control
++controller_manager
++joint_state_broadcaster
++forward_command_controller
++```
++
++Running the controller launch with `source install/setup.bash` starts the
++expected two spawners:
++
++```text
++joint_state_broadcaster
++arm_position_controller
++```
++
++The standalone launch check then times out waiting for
++`/controller_manager/list_controllers` when Gazebo has not loaded the
++`x500_arm_2dof` model. That is expected for this isolated startup check; the
++next live controller validation should run with the model loaded so the
++`gz_ros2_control` plugin provides `/controller_manager`.
+
+codex
+The broad `pgrep` pattern naturally matches the check command itself and an unrelated queue/log process path containing `px4`. I’m doing one stricter `ps` filter against the actual stack executables so the cleanup result is unambiguous.
+exec
+/bin/bash -lc "ps -eo pid=,args= | awk '/gz sim .*default\\.sdf|px4_sitl_default\\/bin\\/px4|MicroXRCEAgent .*udp4 .*8888/ && "'$0 !~ /awk/ {print}'"'" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+diff --git a/px4_ros2_ws/docs/STAGE2_AIR_REACH_DEMO.md b/px4_ros2_ws/docs/STAGE2_AIR_REACH_DEMO.md
+index 2436decd3dfb53d8db30a80c4c118f9d5375f23c..714f3bd32212c81a0dbe163317f52d47f0c8cdc2
+--- a/px4_ros2_ws/docs/STAGE2_AIR_REACH_DEMO.md
++++ b/px4_ros2_ws/docs/STAGE2_AIR_REACH_DEMO.md
+@@ -59,8 +59,8 @@
+ Latest bounded live-smoke result:
+ 
+ ```text
+-timestamp: 20260528_001327
+-path: logs/demo10_air_reach/20260528_001327
++timestamp: 20260528_113832
++path: logs/demo10_air_reach/20260528_113832
+ result: RESULT=PASS mode=live-smoke reason=stack_ready
+ readiness: STACK_READY=YES reason=ready_for_takeoff detail=PX4 reached Ready for takeoff
+ cleanup: no PX4/Gazebo/MicroXRCEAgent stack process remained after scripts/stop_stack.sh
+diff --git a/px4_ros2_ws/docs/STAGE2_CONTROL_NOTES.md b/px4_ros2_ws/docs/STAGE2_CONTROL_NOTES.md
+index 82bd6a5d8463e06f6eb5e4b327eb8495f0ae402a..6778df528791abdfb0576839c8ddb26cc74b4952
+--- a/px4_ros2_ws/docs/STAGE2_CONTROL_NOTES.md
++++ b/px4_ros2_ws/docs/STAGE2_CONTROL_NOTES.md
+@@ -78,8 +78,26 @@
+ 
+ ## Live Verification Status
+ 
+-As of Task 025, the current environment still lacks the required live
+-`ros2_control` packages, so static build/compile checks and graceful
+-missing-dependency behavior were verified. Live controller spawning and the
+-one-shot `/arm_position_controller/commands` publish should be rerun after the
+-missing packages are installed and Gazebo has loaded `x500_arm_2dof`.
++As of Task 033, the required live `ros2_control` ROS packages are available in
++the sourced workspace environment:
++
++```text
++gz_ros2_control
++controller_manager
++joint_state_broadcaster
++forward_command_controller
++```
++
++Running the controller launch with `source install/setup.bash` starts the
++expected two spawners:
++
++```text
++joint_state_broadcaster
++arm_position_controller
++```
++
++The standalone launch check then times out waiting for
++`/controller_manager/list_controllers` when Gazebo has not loaded the
++`x500_arm_2dof` model. That is expected for this isolated startup check; the
++next live controller validation should run with the model loaded so the
++`gz_ros2_control` plugin provides `/controller_manager`.
+
+exec
+/bin/bash -lc 'ls -l codex-logs/033-verify-live-arm-control-and-demo10-smoke.log logs/demo10_air_reach/20260528_113832' in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+-rw-rw-r-- 1 clcwork clcwork  683 May 28 11:38 codex-logs/033-verify-live-arm-control-and-demo10-smoke.log
+
+logs/demo10_air_reach/20260528_113832:
+total 24
+-rw-rw-r-- 1 clcwork clcwork  848 May 28 11:38 micro_xrce_agent.log
+-rw-rw-r-- 1 clcwork clcwork 5609 May 28 11:38 px4_gz_x500_tmux.log
+-rw-rw-r-- 1 clcwork clcwork   47 May 28 11:38 result.txt
+-rw-rw-r-- 1 clcwork clcwork  683 May 28 11:38 runner.log
+-rw-rw-r-- 1 clcwork clcwork   78 May 28 11:38 stack_readiness.txt
+
+exec
+/bin/bash -lc "if [ -f logs/demo10_air_reach/20260528_113832/px4_gz_x500_tmux.log ]; then rg -n 'Ready for takeoff|Preflight|ERROR|FAIL' logs/demo10_air_reach/20260528_113832/px4_gz_x500_tmux.log | tail -20; fi" in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+33:WARN  [health_and_arming_checks] Preflight Fail: system power unavailable
+50:INFO  [commander] Preflight check: FAILED
+51:pxh> WARN  [health_and_arming_checks] Preflight Fail: no heading reference
+54:INFO  [commander] Preflight check: FAILED
+55:pxh> INFO  [commander] [32mReady for takeoff![0m
+
+exec
+/bin/bash -lc 'if [ -f logs/demo10_air_reach/20260528_113832/micro_xrce_agent.log ]; then tail -40 logs/demo10_air_reach/20260528_113832/micro_xrce_agent.log; fi' in /home/clcwork/UAV_capture/px4_ros2_ws
+ succeeded in 0ms:
+[35m[1779939512.518304][m info     | [34mUDPv4AgentLinux.cpp[m | [37minit                    [m | [32mrunning...[m             | port: 8888
+[35m[1779939512.518471][m info     | [34mRoot.cpp          [m | [37mset_verbose_level       [m | [32mlogger setup[m           | verbose_level: 4
+[35m[1779939523.610295][m info     | [34mRoot.cpp          [m | [37mcreate_client           [m | [32mcreate[m                 | client_key: 0x00000001, session_id: 0x81
+[35m[1779939523.610332][m info     | [34mSessionManager.hpp[m | [37mestablish_session       [m | [32msession established[m    | client_key: 0x00000001, address: 127.0.0.1:60072
+[35m[1779939523.617574][m info     | [34mProxyClient.cpp   [m | [37mcreate_participant      [m | [32mparticipant created[m    | client_key: 0x00000001, participant_id: 0x001(1)
+
+diff --git a/px4_ros2_ws/docs/STAGE2_AIR_REACH_DEMO.md b/px4_ros2_ws/docs/STAGE2_AIR_REACH_DEMO.md
+index 2436decd3dfb53d8db30a80c4c118f9d5375f23c..714f3bd32212c81a0dbe163317f52d47f0c8cdc2
+--- a/px4_ros2_ws/docs/STAGE2_AIR_REACH_DEMO.md
++++ b/px4_ros2_ws/docs/STAGE2_AIR_REACH_DEMO.md
+@@ -59,8 +59,8 @@
+ Latest bounded live-smoke result:
+ 
+ ```text
+-timestamp: 20260528_001327
+-path: logs/demo10_air_reach/20260528_001327
++timestamp: 20260528_113832
++path: logs/demo10_air_reach/20260528_113832
+ result: RESULT=PASS mode=live-smoke reason=stack_ready
+ readiness: STACK_READY=YES reason=ready_for_takeoff detail=PX4 reached Ready for takeoff
+ cleanup: no PX4/Gazebo/MicroXRCEAgent stack process remained after scripts/stop_stack.sh
+diff --git a/px4_ros2_ws/docs/STAGE2_CONTROL_NOTES.md b/px4_ros2_ws/docs/STAGE2_CONTROL_NOTES.md
+index 82bd6a5d8463e06f6eb5e4b327eb8495f0ae402a..6778df528791abdfb0576839c8ddb26cc74b4952
+--- a/px4_ros2_ws/docs/STAGE2_CONTROL_NOTES.md
++++ b/px4_ros2_ws/docs/STAGE2_CONTROL_NOTES.md
+@@ -78,8 +78,26 @@
+ 
+ ## Live Verification Status
+ 
+-As of Task 025, the current environment still lacks the required live
+-`ros2_control` packages, so static build/compile checks and graceful
+-missing-dependency behavior were verified. Live controller spawning and the
+-one-shot `/arm_position_controller/commands` publish should be rerun after the
+-missing packages are installed and Gazebo has loaded `x500_arm_2dof`.
++As of Task 033, the required live `ros2_control` ROS packages are available in
++the sourced workspace environment:
++
++```text
++gz_ros2_control
++controller_manager
++joint_state_broadcaster
++forward_command_controller
++```
++
++Running the controller launch with `source install/setup.bash` starts the
++expected two spawners:
++
++```text
++joint_state_broadcaster
++arm_position_controller
++```
++
++The standalone launch check then times out waiting for
++`/controller_manager/list_controllers` when Gazebo has not loaded the
++`x500_arm_2dof` model. That is expected for this isolated startup check; the
++next live controller validation should run with the model loaded so the
++`gz_ros2_control` plugin provides `/controller_manager`.
+
+codex
+**changed files**
+- [docs/STAGE2_CONTROL_NOTES.md](/home/clcwork/UAV_capture/px4_ros2_ws/docs/STAGE2_CONTROL_NOTES.md)
+- [docs/STAGE2_AIR_REACH_DEMO.md](/home/clcwork/UAV_capture/px4_ros2_ws/docs/STAGE2_AIR_REACH_DEMO.md)
+- [codex-logs/033-verify-live-arm-control-and-demo10-smoke.log](/home/clcwork/UAV_capture/px4_ros2_ws/codex-logs/033-verify-live-arm-control-and-demo10-smoke.log)
+
+**commands run**
+- `bash -n scripts/run_regression_demo_10.sh`
+- `timeout 60s ros2 launch aerial_manip_control arm_control.launch.py || true`
+- `source install/setup.bash && timeout 60s ros2 launch aerial_manip_control arm_control.launch.py || true`
+- `source install/setup.bash && ros2 pkg prefix ...`
+- `DEMO10_MODE=live-smoke RESET_STACK=1 bash scripts/run_regression_demo_10.sh | tee codex-logs/033-verify-live-arm-control-and-demo10-smoke.log`
+- `scripts/stop_stack.sh`
+- `pgrep -af 'gz sim|px4|MicroXRCEAgent' || true`
+- stricter `ps` filter for actual stack executables
+
+**test result**
+PASS. Demo 10 live-smoke reached `Ready for takeoff` and wrote:
+`RESULT=PASS mode=live-smoke reason=stack_ready`
+
+Live-smoke output path:
+`logs/demo10_air_reach/20260528_113832/`
+
+Arm control launch status: with `install/setup.bash` sourced, required controller packages are present and the expected two spawners start: `joint_state_broadcaster` and `arm_position_controller`. In standalone launch they time out waiting for `/controller_manager/list_controllers`, which is expected without the Gazebo model/plugin running.
+
+Cleanup confirmed: no actual `gz sim`, PX4 SITL, or `MicroXRCEAgent udp4 8888` stack processes remained after `scripts/stop_stack.sh`.
+
+**known risks**
+- This task did not run the full Demo 10 live mission, per task scope.
+- Controller spawning still needs validation while `x500_arm_2dof` is loaded in Gazebo so `gz_ros2_control` provides `/controller_manager`.
+diff --git a/px4_ros2_ws/docs/STAGE2_AIR_REACH_DEMO.md b/px4_ros2_ws/docs/STAGE2_AIR_REACH_DEMO.md
+index 2436decd3dfb53d8db30a80c4c118f9d5375f23c..714f3bd32212c81a0dbe163317f52d47f0c8cdc2
+--- a/px4_ros2_ws/docs/STAGE2_AIR_REACH_DEMO.md
++++ b/px4_ros2_ws/docs/STAGE2_AIR_REACH_DEMO.md
+@@ -59,8 +59,8 @@
+ Latest bounded live-smoke result:
+ 
+ ```text
+-timestamp: 20260528_001327
+-path: logs/demo10_air_reach/20260528_001327
++timestamp: 20260528_113832
++path: logs/demo10_air_reach/20260528_113832
+ result: RESULT=PASS mode=live-smoke reason=stack_ready
+ readiness: STACK_READY=YES reason=ready_for_takeoff detail=PX4 reached Ready for takeoff
+ cleanup: no PX4/Gazebo/MicroXRCEAgent stack process remained after scripts/stop_stack.sh
+diff --git a/px4_ros2_ws/docs/STAGE2_CONTROL_NOTES.md b/px4_ros2_ws/docs/STAGE2_CONTROL_NOTES.md
+index 82bd6a5d8463e06f6eb5e4b327eb8495f0ae402a..6778df528791abdfb0576839c8ddb26cc74b4952
+--- a/px4_ros2_ws/docs/STAGE2_CONTROL_NOTES.md
++++ b/px4_ros2_ws/docs/STAGE2_CONTROL_NOTES.md
+@@ -78,8 +78,26 @@
+ 
+ ## Live Verification Status
+ 
+-As of Task 025, the current environment still lacks the required live
+-`ros2_control` packages, so static build/compile checks and graceful
+-missing-dependency behavior were verified. Live controller spawning and the
+-one-shot `/arm_position_controller/commands` publish should be rerun after the
+-missing packages are installed and Gazebo has loaded `x500_arm_2dof`.
++As of Task 033, the required live `ros2_control` ROS packages are available in
++the sourced workspace environment:
++
++```text
++gz_ros2_control
++controller_manager
++joint_state_broadcaster
++forward_command_controller
++```
++
++Running the controller launch with `source install/setup.bash` starts the
++expected two spawners:
++
++```text
++joint_state_broadcaster
++arm_position_controller
++```
++
++The standalone launch check then times out waiting for
++`/controller_manager/list_controllers` when Gazebo has not loaded the
++`x500_arm_2dof` model. That is expected for this isolated startup check; the
++next live controller validation should run with the model loaded so the
++`gz_ros2_control` plugin provides `/controller_manager`.
+
+tokens used
+61,569
+**changed files**
+- [docs/STAGE2_CONTROL_NOTES.md](/home/clcwork/UAV_capture/px4_ros2_ws/docs/STAGE2_CONTROL_NOTES.md)
+- [docs/STAGE2_AIR_REACH_DEMO.md](/home/clcwork/UAV_capture/px4_ros2_ws/docs/STAGE2_AIR_REACH_DEMO.md)
+- [codex-logs/033-verify-live-arm-control-and-demo10-smoke.log](/home/clcwork/UAV_capture/px4_ros2_ws/codex-logs/033-verify-live-arm-control-and-demo10-smoke.log)
+
+**commands run**
+- `bash -n scripts/run_regression_demo_10.sh`
+- `timeout 60s ros2 launch aerial_manip_control arm_control.launch.py || true`
+- `source install/setup.bash && timeout 60s ros2 launch aerial_manip_control arm_control.launch.py || true`
+- `source install/setup.bash && ros2 pkg prefix ...`
+- `DEMO10_MODE=live-smoke RESET_STACK=1 bash scripts/run_regression_demo_10.sh | tee codex-logs/033-verify-live-arm-control-and-demo10-smoke.log`
+- `scripts/stop_stack.sh`
+- `pgrep -af 'gz sim|px4|MicroXRCEAgent' || true`
+- stricter `ps` filter for actual stack executables
+
+**test result**
+PASS. Demo 10 live-smoke reached `Ready for takeoff` and wrote:
+`RESULT=PASS mode=live-smoke reason=stack_ready`
+
+Live-smoke output path:
+`logs/demo10_air_reach/20260528_113832/`
+
+Arm control launch status: with `install/setup.bash` sourced, required controller packages are present and the expected two spawners start: `joint_state_broadcaster` and `arm_position_controller`. In standalone launch they time out waiting for `/controller_manager/list_controllers`, which is expected without the Gazebo model/plugin running.
+
+Cleanup confirmed: no actual `gz sim`, PX4 SITL, or `MicroXRCEAgent udp4 8888` stack processes remained after `scripts/stop_stack.sh`.
+
+**known risks**
+- This task did not run the full Demo 10 live mission, per task scope.
+- Controller spawning still needs validation while `x500_arm_2dof` is loaded in Gazebo so `gz_ros2_control` provides `/controller_manager`.

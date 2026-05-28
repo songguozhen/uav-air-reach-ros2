@@ -1,8 +1,8 @@
 # Stage 2 Environment Audit
 
-Task: `023-stage2-environment-preflight`
+Task: `031-install-and-verify-live-dependencies`
 
-Audit date: 2026-05-27
+Audit date: 2026-05-28
 
 Workspace:
 
@@ -19,19 +19,19 @@ bash scripts/check_stage2_environment.sh
 Raw command log:
 
 ```text
-codex-logs/023-stage2-environment-preflight.log
+codex-logs/031-install-and-verify-live-dependencies.log
 ```
 
 ## Current Status
 
 Status: `WARN`
 
-Live Stage 2 / Demo 10 readiness: `NO`
+Live Stage 2 / Demo 10 readiness: `YES`
 
 Dry-run readiness: `YES`
 
-No packages were installed and no runtime code or package manifests were
-changed during this audit.
+Installed the missing ROS 2 Jazzy live dependencies with `apt-get` during this
+audit. No runtime code or package manifests were changed.
 
 ## PASS Items
 
@@ -56,6 +56,13 @@ changed during this audit.
   - `src/aerial_manip_gazebo/models/x500_arm_2dof/model.sdf`
   - `src/aerial_manip_gazebo/models/fiducial_target_aruco/model.sdf`
   - `src/aerial_manip_gazebo/worlds/x500_arm_2dof_smoke.sdf`
+- Required ROS 2 Jazzy live packages are visible through `ros2 pkg prefix`:
+  - `ros_gz_bridge`
+  - `gz_ros2_control`
+  - `controller_manager`
+  - `joint_state_broadcaster`
+  - `forward_command_controller`
+  - `joint_trajectory_controller`
 - LeRobot is available in the project conda environment:
   `/home/clcwork/miniconda3/envs/lerobot/bin/python` reports `lerobot`
   version `0.5.2`.
@@ -65,29 +72,11 @@ changed during this audit.
 - The active `/usr/bin/python3` environment cannot import `lerobot`.
   Use `/home/clcwork/miniconda3/envs/lerobot/bin/python` or activate the
   `lerobot` conda environment for LeRobot training and policy work.
-- The following ROS 2 packages are missing from the active ROS 2 Jazzy
-  environment:
-  - `ros_gz_bridge`
-  - `gz_ros2_control`
-  - `controller_manager`
-  - `joint_state_broadcaster`
-  - `forward_command_controller`
-  - `joint_trajectory_controller`
 
-## Concrete Missing Packages
+## Installed Packages
 
-Missing ROS package names:
-
-```text
-ros_gz_bridge
-gz_ros2_control
-controller_manager
-joint_state_broadcaster
-forward_command_controller
-joint_trajectory_controller
-```
-
-Likely Debian package names for ROS 2 Jazzy:
+The following Debian packages were installed for live Stage 2 / Demo 10
+readiness:
 
 ```text
 ros-jazzy-ros-gz-bridge
@@ -98,8 +87,14 @@ ros-jazzy-forward-command-controller
 ros-jazzy-joint-trajectory-controller
 ```
 
-These were not installed in this task. Recheck after any future dependency
-installation with:
+Final preflight result:
+
+```text
+SUMMARY pass=20 warn=1 fail=0
+RESULT=WARN live_ready=YES dry_run_ready=YES reason=optional_warnings
+```
+
+Recheck package visibility with:
 
 ```bash
 ros2 pkg prefix ros_gz_bridge
@@ -108,16 +103,15 @@ ros2 pkg prefix controller_manager
 ros2 pkg prefix joint_state_broadcaster
 ros2 pkg prefix forward_command_controller
 ros2 pkg prefix joint_trajectory_controller
-/usr/bin/python3 -c 'import importlib.util; print(importlib.util.find_spec("lerobot"))'
 ```
 
 ## Stage 2 Readiness
 
-Task 012-022 dry-run paths can continue. The current environment should keep
-Demo 10 in dry-run or automatic dry-run mode because live ROS/Gazebo bridge and
-ros2_control prerequisites are missing.
+Task 012-022 dry-run paths can continue. The current environment now passes the
+live ROS/Gazebo bridge and ros2_control prerequisite checks for Demo 10.
 
-Use `DEMO10_MODE=live` only after `bash scripts/check_stage2_environment.sh`
-reports `live_ready=YES`. A warning for active `/usr/bin/python3` missing
-`lerobot` does not by itself block Demo 10 live runs, because the dedicated
-LeRobot conda Python is available for policy work.
+`DEMO10_MODE=live` is allowed from the dependency preflight perspective when
+`bash scripts/check_stage2_environment.sh` continues to report
+`live_ready=YES`. A warning for active `/usr/bin/python3` missing `lerobot`
+does not by itself block Demo 10 live runs, because the dedicated LeRobot conda
+Python is available for policy work.

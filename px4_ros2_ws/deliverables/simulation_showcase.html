@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Simulation Showcase - PX4 ROS2 UAV Capture</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f7f9;
+      --panel: #ffffff;
+      --ink: #20242b;
+      --muted: #626d7a;
+      --line: #d9dee7;
+      --head: #273244;
+      --good: #116149;
+      --warn: #8a5a00;
+      --bad: #aa2b1d;
+      --info: #295f8f;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font: 14px/1.55 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    header {
+      background: var(--head);
+      color: #fff;
+      padding: 24px max(18px, calc((100vw - 1180px) / 2));
+    }
+    main { max-width: 1180px; margin: 0 auto; padding: 18px; }
+    section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    h1 { margin: 0 0 8px; font-size: 28px; line-height: 1.2; letter-spacing: 0; }
+    h2 { margin: 0 0 12px; font-size: 19px; letter-spacing: 0; }
+    h3 { margin: 12px 0 8px; font-size: 15px; }
+    a { color: var(--info); overflow-wrap: anywhere; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px; }
+    img { display: block; width: 100%; height: auto; border: 1px solid var(--line); border-radius: 6px; background: #f2f4f7; }
+    ul { margin: 8px 0 0 20px; padding: 0; }
+    li { margin: 4px 0; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border-top: 1px solid var(--line); padding: 8px; text-align: left; vertical-align: top; }
+    th { background: #f8fafc; }
+    .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .card { border: 1px solid var(--line); border-radius: 8px; padding: 12px; background: #fbfcfe; }
+    .status { display: inline-block; border: 1px solid currentColor; border-radius: 999px; padding: 2px 8px; font-size: 12px; font-weight: 700; }
+    .PASS, .Healthy { color: var(--good); background: #eef8f4; }
+    .WARN, .Warning, .UNVERIFIED, .MISSING { color: var(--warn); background: #fff7e8; }
+    .FAIL { color: var(--bad); background: #fff0ee; }
+    .muted { color: var(--muted); }
+    .artifact-links { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 8px; }
+    .artifact-links a, .artifact-links span { border: 1px solid var(--line); border-radius: 999px; padding: 3px 8px; background: #fff; text-decoration: none; font-size: 12px; }
+    .hero-line { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    .hero-line a { color: #dbeafe; }
+    .table-wrap { overflow-x: auto; }
+    footer { max-width: 1180px; margin: 0 auto; padding: 0 18px 24px; color: var(--muted); }
+    @media (max-width: 900px) { .grid, .grid.two { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>PX4 ROS2 UAV Capture Simulation Showcase</h1>
+    <div class="hero-line">
+      <span>Generated: 2026-05-28T12:17:13+08:00</span>
+      <span>Workspace: <code>/home/clcwork/UAV_capture/px4_ros2_ws</code></span>
+      <a href="status.html">Project status page</a>
+    </div>
+  </header>
+  <main>
+    <section>
+      <h2>Project Simulation Status</h2>
+      <div class="grid">
+        <div class="card"><span class="muted">Overall</span><h3><span class="status Healthy">Healthy</span></h3></div>
+        <div class="card"><span class="muted">Latest live Demo 10</span><h3><span class="status PASS">PASS</span></h3><code>logs/demo10_air_reach/20260528_114546</code></div>
+        <div class="card"><span class="muted">Latest camera sample</span><h3><span class="status PASS">PASS</span></h3><code>visualizations/demo_07_camera/20260528_113542</code></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Demo 01-04 Trajectory and Video Artifacts</h2>
+      <div class="grid two">
+        <div class="card">
+  <h3>Demo 01 Offboard Hover <span class="status PASS">PASS</span></h3>
+  <p><code>visualizations/demo01_hover/20260526_221722</code></p>
+  <p>RESULT=PASS reason=ok</p>
+  <a href="../visualizations/demo01_hover/20260526_221722/trajectory_3d.png"><img src="../visualizations/demo01_hover/20260526_221722/trajectory_3d.png" alt="Demo 01 Offboard Hover trajectory_3d.png"></a>
+<a href="../visualizations/demo01_hover/20260526_221722/xy_path.png"><img src="../visualizations/demo01_hover/20260526_221722/xy_path.png" alt="Demo 01 Offboard Hover xy_path.png"></a>
+  <div class="artifact-links"><a href="../visualizations/demo01_hover/20260526_221722/trajectory.csv">trajectory.csv</a><a href="../visualizations/demo01_hover/20260526_221722/trajectory_3d.png">trajectory_3d.png</a><a href="../visualizations/demo01_hover/20260526_221722/xy_path.png">xy_path.png</a><a href="../visualizations/demo01_hover/20260526_221722/height_curve.png">height_curve.png</a><a href="../visualizations/demo01_hover/20260526_221722/speed_curve.png">speed_curve.png</a><a href="../visualizations/demo01_hover/20260526_221722/tracking_error.png">tracking_error.png</a><a href="../visualizations/demo01_hover/20260526_221722/trajectory.mp4">trajectory.mp4</a><a href="../visualizations/demo01_hover/20260526_221722/summary.md">summary.md</a><a href="../visualizations/demo01_hover/20260526_221722/result.txt">result.txt</a></div>
+</div>
+<div class="card">
+  <h3>Demo 02 Waypoint Flight <span class="status PASS">PASS</span></h3>
+  <p><code>visualizations/demo02_waypoint_flight/20260526_222121</code></p>
+  <p>RESULT=PASS reason=ok</p>
+  <a href="../visualizations/demo02_waypoint_flight/20260526_222121/trajectory_3d.png"><img src="../visualizations/demo02_waypoint_flight/20260526_222121/trajectory_3d.png" alt="Demo 02 Waypoint Flight trajectory_3d.png"></a>
+<a href="../visualizations/demo02_waypoint_flight/20260526_222121/xy_path.png"><img src="../visualizations/demo02_waypoint_flight/20260526_222121/xy_path.png" alt="Demo 02 Waypoint Flight xy_path.png"></a>
+  <div class="artifact-links"><a href="../visualizations/demo02_waypoint_flight/20260526_222121/trajectory.csv">trajectory.csv</a><a href="../visualizations/demo02_waypoint_flight/20260526_222121/trajectory_3d.png">trajectory_3d.png</a><a href="../visualizations/demo02_waypoint_flight/20260526_222121/xy_path.png">xy_path.png</a><a href="../visualizations/demo02_waypoint_flight/20260526_222121/height_curve.png">height_curve.png</a><a href="../visualizations/demo02_waypoint_flight/20260526_222121/speed_curve.png">speed_curve.png</a><a href="../visualizations/demo02_waypoint_flight/20260526_222121/tracking_error.png">tracking_error.png</a><a href="../visualizations/demo02_waypoint_flight/20260526_222121/trajectory.mp4">trajectory.mp4</a><a href="../visualizations/demo02_waypoint_flight/20260526_222121/summary.md">summary.md</a><a href="../visualizations/demo02_waypoint_flight/20260526_222121/result.txt">result.txt</a></div>
+</div>
+<div class="card">
+  <h3>Demo 03 Circle Trajectory <span class="status PASS">PASS</span></h3>
+  <p><code>visualizations/demo03_circle_trajectory/20260526_222313</code></p>
+  <p>RESULT=PASS reason=ok</p>
+  <a href="../visualizations/demo03_circle_trajectory/20260526_222313/trajectory_3d.png"><img src="../visualizations/demo03_circle_trajectory/20260526_222313/trajectory_3d.png" alt="Demo 03 Circle Trajectory trajectory_3d.png"></a>
+<a href="../visualizations/demo03_circle_trajectory/20260526_222313/xy_path.png"><img src="../visualizations/demo03_circle_trajectory/20260526_222313/xy_path.png" alt="Demo 03 Circle Trajectory xy_path.png"></a>
+  <div class="artifact-links"><a href="../visualizations/demo03_circle_trajectory/20260526_222313/trajectory.csv">trajectory.csv</a><a href="../visualizations/demo03_circle_trajectory/20260526_222313/trajectory_3d.png">trajectory_3d.png</a><a href="../visualizations/demo03_circle_trajectory/20260526_222313/xy_path.png">xy_path.png</a><a href="../visualizations/demo03_circle_trajectory/20260526_222313/height_curve.png">height_curve.png</a><a href="../visualizations/demo03_circle_trajectory/20260526_222313/speed_curve.png">speed_curve.png</a><a href="../visualizations/demo03_circle_trajectory/20260526_222313/tracking_error.png">tracking_error.png</a><a href="../visualizations/demo03_circle_trajectory/20260526_222313/trajectory.mp4">trajectory.mp4</a><a href="../visualizations/demo03_circle_trajectory/20260526_222313/summary.md">summary.md</a><a href="../visualizations/demo03_circle_trajectory/20260526_222313/result.txt">result.txt</a></div>
+</div>
+<div class="card">
+  <h3>Demo 04 External Setpoint / UAV Bridge <span class="status PASS">PASS</span></h3>
+  <p><code>visualizations/demo04_external_setpoint/20260527_085025</code></p>
+  <p>RESULT=PASS reason=ok</p>
+  <a href="../visualizations/demo04_external_setpoint/20260527_085025/trajectory_3d.png"><img src="../visualizations/demo04_external_setpoint/20260527_085025/trajectory_3d.png" alt="Demo 04 External Setpoint / UAV Bridge trajectory_3d.png"></a>
+<a href="../visualizations/demo04_external_setpoint/20260527_085025/xy_path.png"><img src="../visualizations/demo04_external_setpoint/20260527_085025/xy_path.png" alt="Demo 04 External Setpoint / UAV Bridge xy_path.png"></a>
+  <div class="artifact-links"><a href="../visualizations/demo04_external_setpoint/20260527_085025/trajectory.csv">trajectory.csv</a><a href="../visualizations/demo04_external_setpoint/20260527_085025/trajectory_3d.png">trajectory_3d.png</a><a href="../visualizations/demo04_external_setpoint/20260527_085025/xy_path.png">xy_path.png</a><a href="../visualizations/demo04_external_setpoint/20260527_085025/height_curve.png">height_curve.png</a><a href="../visualizations/demo04_external_setpoint/20260527_085025/speed_curve.png">speed_curve.png</a><a href="../visualizations/demo04_external_setpoint/20260527_085025/tracking_error.png">tracking_error.png</a><a href="../visualizations/demo04_external_setpoint/20260527_085025/trajectory.mp4">trajectory.mp4</a><a href="../visualizations/demo04_external_setpoint/20260527_085025/summary.md">summary.md</a><a href="../visualizations/demo04_external_setpoint/20260527_085025/result.txt">result.txt</a></div>
+</div>
+      </div>
+    </section>
+
+    <section>
+  <h2>Demo 07 Camera Evidence</h2>
+  <p><span class="status PASS">PASS</span> <code>visualizations/demo_07_camera/20260528_113542</code> - sample_frame=captured</p>
+  <a href="../visualizations/demo_07_camera/20260528_113542/sample_frame.png"><img src="../visualizations/demo_07_camera/20260528_113542/sample_frame.png" alt="Demo 07 camera sample frame"></a>
+  <div class="artifact-links"><a href="../visualizations/demo_07_camera/20260528_113542/live_target_pose.yaml">live_target_pose.yaml</a><a href="../visualizations/demo_07_camera/20260528_113542/front_camera_bridge.log">front_camera_bridge.log</a></div>
+</section>
+
+    <section>
+  <h2>Demo 10 Air-Reach Phase Flow and Metrics</h2>
+  <p><span class="status PASS">PASS</span> run <code>logs/demo10_air_reach/20260528_114546</code>; visualization mode <code>live</code>.</p>
+  <div class="card">
+  <h3>Interactive path replay</h3>
+  <p>Animated top and side views for UAV flight, commanded target, end-effector path, and 2-DOF arm state.</p>
+  <div class="artifact-links"><a href="../visualizations/demo10_air_reach/20260528_114546/trajectory_replay.html">Open trajectory_replay.html</a></div>
+</div>
+  <div class="grid two">
+    <div class="card">
+  <h3>Phase flow</h3>
+  <a href="../visualizations/demo10_air_reach/20260528_114546/phase_timeline.png"><img src="../visualizations/demo10_air_reach/20260528_114546/phase_timeline.png" alt="Demo 10 Phase flow"></a>
+</div><div class="card">
+  <h3>Trajectory</h3>
+  <a href="../visualizations/demo10_air_reach/20260528_114546/trajectory_3d.png"><img src="../visualizations/demo10_air_reach/20260528_114546/trajectory_3d.png" alt="Demo 10 Trajectory"></a>
+</div><div class="card">
+  <h3>Arm joints</h3>
+  <a href="../visualizations/demo10_air_reach/20260528_114546/joint_positions.png"><img src="../visualizations/demo10_air_reach/20260528_114546/joint_positions.png" alt="Demo 10 Arm joints"></a>
+</div><div class="card">
+  <h3>Flight error</h3>
+  <a href="../visualizations/demo10_air_reach/20260528_114546/flight_error.png"><img src="../visualizations/demo10_air_reach/20260528_114546/flight_error.png" alt="Demo 10 Flight error"></a>
+</div><div class="card">
+  <h3>Target visibility</h3>
+  <a href="../visualizations/demo10_air_reach/20260528_114546/target_visibility.png"><img src="../visualizations/demo10_air_reach/20260528_114546/target_visibility.png" alt="Demo 10 Target visibility"></a>
+</div><div class="card">
+  <h3>Endpoint error</h3>
+  <a href="../visualizations/demo10_air_reach/20260528_114546/endpoint_error.png"><img src="../visualizations/demo10_air_reach/20260528_114546/endpoint_error.png" alt="Demo 10 Endpoint error"></a>
+</div>
+  </div>
+  <h3>Metrics</h3>
+  <div class="table-wrap"><table><tbody><tr><th>mode</th><td>live</td></tr>
+<tr><th>result</th><td>PASS</td></tr>
+<tr><th>timestamp</th><td>20260528_114546</td></tr>
+<tr><th>max_flight_error_m</th><td>0.0609</td></tr>
+<tr><th>flight_error_limit_m</th><td>0.5500</td></tr>
+<tr><th>target_visible_ratio</th><td>1.0000</td></tr>
+<tr><th>target_min_visible_ratio</th><td>0.2000</td></tr>
+<tr><th>joint_limit_violations</th><td>0</td></tr>
+<tr><th>final_endpoint_error_m</th><td>0.2618</td></tr>
+<tr><th>final_endpoint_limit_m</th><td>0.3500</td></tr>
+<tr><th>timed_out</th><td>False</td></tr></tbody></table></div>
+  <div class="artifact-links">
+    <a href="../visualizations/demo10_air_reach/20260528_114546/summary.json">summary.json</a>
+    <a href="../visualizations/demo10_air_reach/20260528_114546/trajectory_replay.html">trajectory_replay.html</a>
+    <a href="../logs/demo10_air_reach/20260528_114546/metrics.json">metrics.json</a>
+    <a href="../logs/demo10_air_reach/20260528_114546/result.txt">result.txt</a>
+  </div>
+</section>
+
+    <section>
+      <h2>Live / Dry-run / Fallback Status</h2>
+      <div class="table-wrap">
+        <table>
+          <tbody>
+            <tr><th>Live status</th><td>PARTIAL; full live Demo 10 evidence is PASS.</td></tr>
+            <tr><th>Dry-run status</th><td>YES; latest dry-run path: <code>logs/demo10_air_reach/20260528_002122</code>.</td></tr>
+            <tr><th>Fallback status</th><td>Demo 10 visualization is live; dry-run fallback remains available.</td></tr>
+            <tr><th>Remaining dependency risks</th><td><code>ros_gz_bridge</code>, <code>gz_ros2_control</code>, <code>controller_manager</code>, <code>joint_state_broadcaster</code>, <code>forward_command_controller</code>, <code>joint_trajectory_controller</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>Risks and Next Actions</h2>
+      <div class="grid two">
+        <div><h3>Risks</h3><ul><li>Reproducibility still depends on local ROS/Gazebo bridge and controller packages.</li>
+<li>Timestamped evidence is local to this workspace and should be regenerated after dependency changes.</li>
+<li>LeRobot policy integration remains scaffolded; current Demo 10 evidence validates the scripted/control bridge path.</li></ul></div>
+        <div><h3>Next Actions</h3><ul><li>Use deliverables/simulation_showcase.html for presentation review of current simulation effects.</li>
+<li>Open the Demo 10 interactive replay from visualizations/demo10_air_reach/&lt;timestamp&gt;/trajectory_replay.html for path playback.</li>
+<li>Rerun python3 scripts/generate_demo10_visualizations.py --latest-live after new Demo 10 live evidence.</li>
+<li>Rerun python3 scripts/generate_demo10_replay.py --latest-live after new Demo 10 live evidence.</li>
+<li>Rerun bash scripts/smoke_vision_bridge.sh after ROS/Gazebo bridge changes to refresh Demo 07 camera evidence.</li>
+<li>Install or verify missing ROS/Gazebo control packages before claiming reproducible full live readiness on a fresh machine.</li></ul></div>
+      </div>
+    </section>
+  </main>
+  <footer>Generated by Codex. Local relative links are intended for this workspace checkout.</footer>
+</body>
+</html>

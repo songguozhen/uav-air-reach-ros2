@@ -40,6 +40,60 @@ the `trajectory_recorder` ROS 2 node and writes the same standard file names.
 | Demo 03 Circle Trajectory | `scripts/run_demo03_circle_trajectory.sh` | `visualizations/demo03_circle_trajectory/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
 | Demo 04 External Setpoint Bridge | `scripts/run_demo04_external_setpoint.sh` | `visualizations/demo04_external_setpoint/<timestamp>/` | `trajectory.csv`, `trajectory_3d.png`, `xy_path.png`, `height_curve.png`, `speed_curve.png` |
 
+## Demo 10 Air-Reach Visualizations
+
+Demo 10 presentation plots are generated offline from the evidence under
+`logs/demo10_air_reach/<timestamp>/`:
+
+```bash
+python3 scripts/generate_demo10_visualizations.py --latest-live
+```
+
+The `--latest-live` mode selects the newest successful `mode=live` run with
+episode recorder observations and actions. If no sufficient live run exists, it
+falls back to the newest successful dry-run evidence and writes
+`mode=dry-run fallback` in `summary.json` and plot titles.
+
+To render a specific run:
+
+```bash
+python3 scripts/generate_demo10_visualizations.py \
+  --run-dir logs/demo10_air_reach/<timestamp>
+```
+
+Inputs are used when present:
+
+| Input | Purpose |
+| --- | --- |
+| `metrics.json` | PASS/WARN labels, limits, aggregate flight, visibility, joint, timeout, and endpoint metrics. |
+| `sequence_events.jsonl` | Phase start times for the sequence timeline. |
+| `episodes/<episode>/observations.jsonl` | UAV position, target visibility, arm joint positions, and endpoint samples. |
+| `episodes/<episode>/actions.jsonl` | UAV target commands and arm joint commands. |
+| `episodes/<episode>/task_status.jsonl` | Task completion status for the generated summary. |
+
+Outputs are written to:
+
+```text
+visualizations/demo10_air_reach/<timestamp>/
+```
+
+The generated files are:
+
+| File | Purpose |
+| --- | --- |
+| `trajectory_3d.png` | UAV NED trajectory with commanded UAV target path. |
+| `phase_timeline.png` | Stable hover, tag detection, coordinated approach, and endpoint hold timing. |
+| `flight_error.png` | UAV tracking error against the latest target command, or aggregate metrics when samples are unavailable. |
+| `target_visibility.png` | Target visibility samples or aggregate visible ratio. |
+| `joint_positions.png` | Recorded arm joint positions with configured joint limit bands when available. |
+| `endpoint_error.png` | End-effector target error samples or final endpoint error metric. |
+| `summary.json` | Source paths, mode, PASS/WARN status, metrics, warnings, and generated file list. |
+
+When a live run lacks a specific stream, the script still creates the expected
+plot and labels the missing data with a WARN placeholder. Dry-run fallback
+summaries must be treated as presentation placeholders, not live flight
+evidence.
+
 ## Generate New Results
 
 Run demos from the workspace root:
@@ -132,6 +186,22 @@ done
 ```
 
 ## View Results Locally
+
+Generate the current presentation-oriented simulation showcase:
+
+```bash
+python3 scripts/generate_simulation_showcase.py
+```
+
+Open the generated page from the workspace:
+
+```text
+deliverables/simulation_showcase.html
+```
+
+The showcase links the latest verified Demo 01-04 trajectory artifacts, Demo 07
+camera sample or capture status, and Demo 10 phase/trajectory/arm/error
+visualizations. It does not overwrite timestamped visualization directories.
 
 Open PNG files from the timestamped visualization directory with an image viewer:
 

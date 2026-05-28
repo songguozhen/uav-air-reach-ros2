@@ -95,7 +95,7 @@ colcon build --packages-select aerial_manip_vision aerial_manip_gazebo
 Run the bounded bridge smoke:
 
 ```bash
-bash scripts/smoke_vision_bridge.sh | tee codex-logs/027-harden-vision-bridge-smoke.log
+bash scripts/smoke_vision_bridge.sh | tee codex-logs/032-verify-camera-bridge-and-sample-frame.log
 ```
 
 Expected outputs are under:
@@ -108,6 +108,14 @@ When `ros_gz_bridge` is missing, the smoke result is `WARN`, not `FAIL`, as
 long as the explicit placeholder `/vision/target_pose` check succeeds. When the
 bridge is present, `sample_frame.png` is saved if a frame is received; otherwise
 `sample_frame_status.txt` documents why capture did not complete.
+
+Task 032 verified the live bridge path in this workspace. The run passed the
+Gazebo camera topic, ROS image topic, ROS camera-info topic, placeholder target
+pose, live target pose, and sample-frame capture checks:
+
+```text
+visualizations/demo_07_camera/20260528_113542/sample_frame.png
+```
 
 With a sourced workspace, verify placeholder topic wiring without starting
 Gazebo:
@@ -126,6 +134,7 @@ ros2 launch aerial_manip_gazebo front_camera_bridge.launch.py
 ros2 launch aerial_manip_vision tag_target_pose.launch.py
 ```
 
-Current warning: `ros_gz_bridge` was previously recorded as missing in the
-stage-2 environment audit, so live image detection depends on installing or
-exposing the ROS/Gazebo bridge package.
+Current status: `ros_gz_bridge` is available in the sourced ROS Jazzy
+environment used by Task 032. Live image detection still depends on launching
+the smoke world and front-camera bridge; placeholder mode remains a separate
+topic-wiring check and is not visual evidence.

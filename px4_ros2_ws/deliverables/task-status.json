@@ -1,603 +1,255 @@
 {
-  "generated_at": "2026-05-28T08:35:46+08:00",
-  "generated_at_utc": "2026-05-27T16:25:02+00:00",
-  "latest_validation": [
-    {
-      "command": "python3 -m compileall src scripts",
-      "evidence": "codex-logs/030-refresh-project-status-deliverables.log",
-      "status": "PASS"
+  "demo10": {
+    "dry_run": {
+      "failures": [],
+      "metrics_summary": {
+        "final_endpoint_error_m": 0.050990195135927896,
+        "final_endpoint_limit_m": 0.18,
+        "flight_error_limit_m": 0.45,
+        "joint_limit_violations": 0,
+        "max_flight_error_m": 0.06708203932499372,
+        "target_min_visible_ratio": 0.5,
+        "target_visible_ratio": 0.775,
+        "timed_out": false
+      },
+      "mode": "dry-run",
+      "path": "logs/demo10_air_reach/20260528_002122",
+      "required_files": [
+        {
+          "exists": true,
+          "path": "logs/demo10_air_reach/20260528_002122/metrics.json",
+          "size_bytes": 1168
+        },
+        {
+          "exists": true,
+          "path": "logs/demo10_air_reach/20260528_002122/result.txt",
+          "size_bytes": 22
+        },
+        {
+          "exists": true,
+          "path": "logs/demo10_air_reach/20260528_002122/sequence_events.jsonl",
+          "size_bytes": 582
+        }
+      ],
+      "result": "PASS",
+      "sequence_phases": [
+        "stable_hover",
+        "tag_detection",
+        "coordinated_approach",
+        "endpoint_hold"
+      ],
+      "status": "PASS",
+      "timestamp": "20260528_002122"
     },
-    {
-      "command": "bash -n run_codex_queue.sh",
-      "evidence": "codex-logs/030-refresh-project-status-deliverables.log",
+    "live": {
+      "failures": [],
+      "mode": null,
+      "path": "logs/demo10_air_reach/20260528_114546",
+      "result_line": "RESULT=PASS reason=ok",
+      "stack_readiness": "STACK_READY=YES reason=ready_for_takeoff detail=PX4 reached Ready for takeoff",
       "status": "PASS"
-    },
-    {
-      "command": "DEMO10_MODE=dry-run bash scripts/run_regression_demo_10.sh",
-      "evidence": "logs/demo10_air_reach/20260528_002122",
-      "status": "PASS"
-    },
-    {
-      "command": "python3 scripts/check_demo_10.py logs/demo10_air_reach",
-      "evidence": "logs/demo10_air_reach/20260528_002122",
-      "status": "PASS"
-    },
-    {
-      "command": "bash scripts/check_stage2_environment.sh",
-      "evidence": "codex-logs/030-refresh-project-status-deliverables.log",
-      "status": "WARN"
     }
-  ],
-  "live_validation_gaps": {
-    "camera_sample_frame": {
-      "detail": "sample_frame=not_captured; reason=ros_gz_bridge package is not available; live image bridge skipped",
-      "path": "visualizations/demo_07_camera/20260528_000310/sample_frame_status.txt",
-      "status": "not_captured"
-    },
-    "demo10_live": {
-      "path": "logs/demo10_air_reach/20260528_001327",
-      "readiness": "STACK_READY=YES reason=ready_for_takeoff detail=PX4 reached Ready for takeoff",
-      "result": "RESULT=PASS mode=live-smoke reason=stack_ready",
-      "status": "live_smoke_pass_full_live_unverified"
-    },
-    "dry_run_ready": "YES",
-    "lerobot_active_python": {
-      "detail": "missing package lerobot",
-      "python": "/usr/bin/python3",
-      "status": "WARN"
-    },
-    "lerobot_conda_python": {
-      "detail": "lerobot_version=0.5.2",
-      "python": "/home/clcwork/miniconda3/envs/lerobot/bin/python",
-      "status": "PASS"
-    },
-    "likely_debian_packages": [
-      "ros-jazzy-ros-gz-bridge",
-      "ros-jazzy-gz-ros2-control",
-      "ros-jazzy-controller-manager",
-      "ros-jazzy-joint-state-broadcaster",
-      "ros-jazzy-forward-command-controller",
-      "ros-jazzy-joint-trajectory-controller"
+  },
+  "generated_at": "2026-05-28T04:08:09+00:00",
+  "overall_status": "PASS",
+  "schema_version": "stage2_evidence_validation_v1",
+  "stage2_docs": {
+    "failures": [],
+    "required": [
+      {
+        "exists": true,
+        "name": "frames",
+        "path": "docs/STAGE2_FRAMES_AND_STATE.md",
+        "size_bytes": 4810
+      },
+      {
+        "exists": true,
+        "name": "control",
+        "path": "docs/STAGE2_CONTROL_NOTES.md",
+        "size_bytes": 2640
+      },
+      {
+        "exists": true,
+        "name": "vision",
+        "path": "docs/STAGE2_VISION_BRIDGE.md",
+        "size_bytes": 2880
+      },
+      {
+        "exists": true,
+        "name": "dataset",
+        "path": "docs/STAGE2_DATASET_SCHEMA.md",
+        "size_bytes": 3647
+      },
+      {
+        "exists": true,
+        "name": "policy",
+        "path": "docs/STAGE2_LEROBOT_POLICY.md",
+        "size_bytes": 3934
+      },
+      {
+        "exists": true,
+        "name": "coordinator",
+        "path": "docs/STAGE2_COORDINATOR.md",
+        "size_bytes": 5167
+      },
+      {
+        "exists": true,
+        "name": "demo10",
+        "path": "docs/STAGE2_AIR_REACH_DEMO.md",
+        "size_bytes": 3946
+      }
     ],
-    "live_ready": "NO",
-    "missing_ros_packages": [
-      "ros_gz_bridge",
-      "gz_ros2_control",
-      "controller_manager",
-      "joint_state_broadcaster",
-      "forward_command_controller",
-      "joint_trajectory_controller"
+    "status": "PASS"
+  },
+  "task_evidence": {
+    "mismatches": [],
+    "status": "PASS",
+    "task_range": "012-022",
+    "tasks": [
+      {
+        "done_exists": true,
+        "done_marker": "codex-logs/012-create-aerial-manip-packages.done",
+        "log_count": 2,
+        "log_files": [
+          "codex-logs/012-create-aerial-manip-packages-20260527_172821.log",
+          "codex-logs/012-create-aerial-manip-packages.log"
+        ],
+        "mismatch": null,
+        "stem": "012-create-aerial-manip-packages",
+        "task": "012",
+        "task_file": "codex-tasks/012-create-aerial-manip-packages.md"
+      },
+      {
+        "done_exists": true,
+        "done_marker": "codex-logs/013-add-x500-arm-2dof-model.done",
+        "log_count": 2,
+        "log_files": [
+          "codex-logs/013-add-x500-arm-2dof-model-20260527_173347.log",
+          "codex-logs/013-add-x500-arm-2dof-model.log"
+        ],
+        "mismatch": null,
+        "stem": "013-add-x500-arm-2dof-model",
+        "task": "013",
+        "task_file": "codex-tasks/013-add-x500-arm-2dof-model.md"
+      },
+      {
+        "done_exists": true,
+        "done_marker": "codex-logs/014-add-arm-ros2-control-loop.done",
+        "log_count": 1,
+        "log_files": [
+          "codex-logs/014-add-arm-ros2-control-loop-20260527_174119.log"
+        ],
+        "mismatch": null,
+        "stem": "014-add-arm-ros2-control-loop",
+        "task": "014",
+        "task_file": "codex-tasks/014-add-arm-ros2-control-loop.md"
+      },
+      {
+        "done_exists": true,
+        "done_marker": "codex-logs/015-add-arm-control-bridge.done",
+        "log_count": 3,
+        "log_files": [
+          "codex-logs/015-add-arm-control-bridge-20260527_174221.log",
+          "codex-logs/015-add-arm-control-bridge-20260527_183247.log",
+          "codex-logs/015-add-arm-control-bridge.log"
+        ],
+        "mismatch": null,
+        "stem": "015-add-arm-control-bridge",
+        "task": "015",
+        "task_file": "codex-tasks/015-add-arm-control-bridge.md"
+      },
+      {
+        "done_exists": true,
+        "done_marker": "codex-logs/016-add-state-aggregator-and-tf-baseline.done",
+        "log_count": 2,
+        "log_files": [
+          "codex-logs/016-add-state-aggregator-and-tf-baseline-20260527_183659.log",
+          "codex-logs/016-add-state-aggregator-and-tf-baseline.log"
+        ],
+        "mismatch": null,
+        "stem": "016-add-state-aggregator-and-tf-baseline",
+        "task": "016",
+        "task_file": "codex-tasks/016-add-state-aggregator-and-tf-baseline.md"
+      },
+      {
+        "done_exists": true,
+        "done_marker": "codex-logs/017-add-front-camera-and-ros-gz-bridge.done",
+        "log_count": 2,
+        "log_files": [
+          "codex-logs/017-add-front-camera-and-ros-gz-bridge-20260527_184228.log",
+          "codex-logs/017-add-front-camera-and-ros-gz-bridge.log"
+        ],
+        "mismatch": null,
+        "stem": "017-add-front-camera-and-ros-gz-bridge",
+        "task": "017",
+        "task_file": "codex-tasks/017-add-front-camera-and-ros-gz-bridge.md"
+      },
+      {
+        "done_exists": true,
+        "done_marker": "codex-logs/018-add-tag-target-pose-estimation.done",
+        "log_count": 2,
+        "log_files": [
+          "codex-logs/018-add-tag-target-pose-estimation-20260527_184819.log",
+          "codex-logs/018-add-tag-target-pose-estimation.log"
+        ],
+        "mismatch": null,
+        "stem": "018-add-tag-target-pose-estimation",
+        "task": "018",
+        "task_file": "codex-tasks/018-add-tag-target-pose-estimation.md"
+      },
+      {
+        "done_exists": true,
+        "done_marker": "codex-logs/019-add-uav-arm-approach-coordinator.done",
+        "log_count": 2,
+        "log_files": [
+          "codex-logs/019-add-uav-arm-approach-coordinator-20260527_185331.log",
+          "codex-logs/019-add-uav-arm-approach-coordinator.log"
+        ],
+        "mismatch": null,
+        "stem": "019-add-uav-arm-approach-coordinator",
+        "task": "019",
+        "task_file": "codex-tasks/019-add-uav-arm-approach-coordinator.md"
+      },
+      {
+        "done_exists": true,
+        "done_marker": "codex-logs/020-add-episode-recorder-and-lerobot-export.done",
+        "log_count": 2,
+        "log_files": [
+          "codex-logs/020-add-episode-recorder-and-lerobot-export-20260527_185851.log",
+          "codex-logs/020-add-episode-recorder-and-lerobot-export.log"
+        ],
+        "mismatch": null,
+        "stem": "020-add-episode-recorder-and-lerobot-export",
+        "task": "020",
+        "task_file": "codex-tasks/020-add-episode-recorder-and-lerobot-export.md"
+      },
+      {
+        "done_exists": true,
+        "done_marker": "codex-logs/021-add-lerobot-baseline-training-and-policy-bridge.done",
+        "log_count": 2,
+        "log_files": [
+          "codex-logs/021-add-lerobot-baseline-training-and-policy-bridge-20260527_190347.log",
+          "codex-logs/021-add-lerobot-baseline-training-and-policy-bridge.log"
+        ],
+        "mismatch": null,
+        "stem": "021-add-lerobot-baseline-training-and-policy-bridge",
+        "task": "021",
+        "task_file": "codex-tasks/021-add-lerobot-baseline-training-and-policy-bridge.md"
+      },
+      {
+        "done_exists": true,
+        "done_marker": "codex-logs/022-add-air-reach-demo-and-regression.done",
+        "log_count": 2,
+        "log_files": [
+          "codex-logs/022-add-air-reach-demo-and-regression-20260527_190830.log",
+          "codex-logs/022-add-air-reach-demo-and-regression.log"
+        ],
+        "mismatch": null,
+        "stem": "022-add-air-reach-demo-and-regression",
+        "task": "022",
+        "task_file": "codex-tasks/022-add-air-reach-demo-and-regression.md"
+      }
     ]
   },
-  "queue_runner_path": "run_codex_queue.sh",
-  "repository_path": "/home/clcwork/UAV_capture/px4_ros2_ws",
-  "schema_version": "task_status_v2",
-  "summary_counts": {
-    "blocked": 0,
-    "completed_like": 30,
-    "current_run": 0,
-    "dry_run_validated_or_only": 2,
-    "failed": 0,
-    "pending": 0,
-    "total": 30,
-    "warning_statuses": 3
-  },
-  "task_count_by_status": {
-    "completed": 25,
-    "completed_live_smoke_only": 1,
-    "completed_with_warnings": 3,
-    "current_run": 0
-  },
-  "tasks": [
-    {
-      "done_exists": true,
-      "done_marker": "codex-logs/001-audit-project-structure.done",
-      "key_errors": [],
-      "latest_log": "codex-logs/001-audit-project-structure.log",
-      "likely_cause": "No known blocking issue in task evidence.",
-      "matched_logs": [
-        "codex-logs/001-audit-project-structure-20260527_001340.log",
-        "codex-logs/001-audit-project-structure-20260527_001912.log",
-        "codex-logs/001-audit-project-structure.log"
-      ],
-      "next_action": "No immediate action recorded.",
-      "status": "completed",
-      "task": "001",
-      "task_file": "codex-tasks/001-audit-project-structure.md",
-      "title": "Task 001: Audit Project Structure",
-      "validation_level": "task_log"
-    },
-    {
-      "done_exists": true,
-      "done_marker": "codex-logs/002-standardize-demo-visualization.done",
-      "key_errors": [],
-      "latest_log": "codex-logs/002-standardize-demo-visualization.log",
-      "likely_cause": "No known blocking issue in task evidence.",
-      "matched_logs": [
-        "codex-logs/002-standardize-demo-visualization-20260527_002105.log",
-        "codex-logs/002-standardize-demo-visualization.log"
-      ],
-      "next_action": "No immediate action recorded.",
-      "status": "completed",
-      "task": "002",
-      "task_file": "codex-tasks/002-standardize-demo-visualization.md",
-      "title": "Task 002: Standardize Demo Visualization",
-      "validation_level": "task_log"
-    },
-    {
-      "done_exists": true,
-      "done_marker": "codex-logs/003-add-demo-regression-checks.done",
-      "key_errors": [],
-      "latest_log": "codex-logs/003-add-demo-regression-checks.log",
-      "likely_cause": "No known blocking issue in task evidence.",
-      "matched_logs": [
-        "codex-logs/003-add-demo-regression-checks-20260527_002316.log",
-        "codex-logs/003-add-demo-regression-checks.log"
-      ],
-      "next_action": "No immediate action recorded.",
-      "status": "completed",
-      "task": "003",
-      "task_file": "codex-tasks/003-add-demo-regression-checks.md",
-      "title": "Task 003: Add Demo Regression Checks",
-      "validation_level": "task_log"
-    },
-    {
-      "done_exists": true,
-      "done_marker": "codex-logs/004-design-uav-control-api.done",
-      "key_errors": [],
-      "latest_log": "codex-logs/004-design-uav-control-api.log",
-      "likely_cause": "No known blocking issue in task evidence.",
-      "matched_logs": [
-        "codex-logs/004-design-uav-control-api-20260527_002532.log",
-        "codex-logs/004-design-uav-control-api.log"
-      ],
-      "next_action": "No immediate action recorded.",
-      "status": "completed",
-      "task": "004",
-      "task_file": "codex-tasks/004-design-uav-control-api.md",
-      "title": "Task 004: Design UAV Control API",
-      "validation_level": "task_log"
-    },
-    {
-      "done_exists": true,
-      "done_marker": "codex-logs/005-plan-uav-arm-simulation.done",
-      "key_errors": [],
-      "latest_log": "codex-logs/005-plan-uav-arm-simulation.log",
-      "likely_cause": "No known blocking issue in task evidence.",
-      "matched_logs": [
-        "codex-logs/005-plan-uav-arm-simulation-20260527_002806.log",
-        "codex-logs/005-plan-uav-arm-simulation.log"
-      ],
-      "next_action": "No immediate action recorded.",
-      "status": "completed",
-      "task": "005",
-      "task_file": "codex-tasks/005-plan-uav-arm-simulation.md",
-      "title": "Task 005: Plan UAV Arm Simulation",
-      "validation_level": "task_log"
-    },
-    {
-      "done_exists": true,
-      "done_marker": "codex-logs/006-implement-uav-control-bridge.done",
-      "key_errors": [],
-      "latest_log": "codex-logs/006-implement-uav-control-bridge.log",
-      "likely_cause": "No known blocking issue in task evidence.",
-      "matched_logs": [
-        "codex-logs/006-implement-uav-control-bridge-20260527_082911.log",
-        "codex-logs/006-implement-uav-control-bridge.log"
-      ],
-      "next_action": "No immediate action recorded.",
-      "status": "completed",
-      "task": "006",
-      "task_file": "codex-tasks/006-implement-uav-control-bridge.md",
-      "title": "Task 006: Implement UAV Control Bridge",
-      "validation_level": "task_log"
-    },
-    {
-      "done_exists": true,
-      "done_marker": "codex-logs/007-add-uav-state-feedback.done",
-      "key_errors": [],
-      "latest_log": "codex-logs/007-add-uav-state-feedback.log",
-      "likely_cause": "No known blocking issue in task evidence.",
-      "matched_logs": [
-        "codex-logs/007-add-uav-state-feedback-20260527_083233.log",
-        "codex-logs/007-add-uav-state-feedback.log"
-      ],
-      "next_action": "No immediate action recorded.",
-      "status": "completed",
-      "task": "007",
-      "task_file": "codex-tasks/007-add-uav-state-feedback.md",
-      "title": "Task 007: Add UAV State Feedback",
-      "validation_level": "task_log"
-    },
-    {
-      "done_exists": true,
-      "done_marker": "codex-logs/008-add-uav-bridge-demo-and-checks.done",
-      "key_errors": [],
-      "latest_log": "codex-logs/008-add-uav-bridge-demo-and-checks.log",
-      "likely_cause": "No known blocking issue in task evidence.",
-      "matched_logs": [
-        "codex-logs/008-add-uav-bridge-demo-and-checks-20260527_083508.log",
-        "codex-logs/008-add-uav-bridge-demo-and-checks.log"
-      ],
-      "next_action": "No immediate action recorded.",
-      "status": "completed",
-      "task": "008",
-      "task_file": "codex-tasks/008-add-uav-bridge-demo-and-checks.md",
-      "title": "Task 008: Add UAV Bridge Demo and Checks",
-      "validation_level": "task_log"
-    },
-    {
-      "done_exists": true,
-      "done_marker": "codex-logs/009-document-uav-bridge-usage.done",
-      "key_errors": [],
-      "latest_log": "codex-logs/009-document-uav-bridge-usage.log",
-      "likely_cause": "No known blocking issue in task evidence.",
-      "matched_logs": [
-        "codex-logs/009-document-uav-bridge-usage-20260527_083850.log",
-        "codex-logs/009-document-uav-bridge-usage.log"
-      ],
-      "next_action": "No immediate action recorded.",
-      "status": "completed",
-      "task": "009",
-      "task_file": "codex-tasks/009-document-uav-bridge-usage.md",
-      "title": "Task 009: Document UAV Bridge Usage",
-      "validation_level": "task_log"
-    },
-    {
-      "done_exists": true,
-      "done_marker": "codex-logs/010-download-stage2-materials.done",
-      "key_errors": [],
-      "latest_log": "codex-logs/010-download-stage2-materials.log",
-      "likely_cause": "No known blocking issue in task evidence.",
-      "matched_logs": [
-        "codex-logs/010-download-stage2-materials.log"
-      ],
-      "next_action": "No immediate action recorded.",
-      "status": "completed",
-      "task": "010",
-      "task_file": "codex-tasks/010-download-stage2-materials.md",
-      "title": "Task 010: Download Stage 2 Materials",
-      "validation_level": "task_log"
-    },
-    {
-      "done_exists": true,
-      "done_marker": "codex-logs/011-audit-stage2-environment.done",
-      "key_errors": [],
-      "latest_log": "codex-logs/011-audit-stage2-environment.log",
-      "likely_cause": "No known blocking issue in task evidence.",
-      "matched_logs": [
-        "codex-logs/011-audit-stage2-environment-20260527_172517.log",
-        "codex-logs/011-audit-stage2-environment.log"
-      ],
-      "next_action": "No immediate action recorded.",
-      "status": "completed",
-      "task": "011",
-      "task_file": "codex-tasks/011-audit-stage2-environment.md",
-      "title": "Task 011: Audit Stage 2 Environment",
-      "validation_level": "task_log"
-    },
-    {
-      "done_exists": true,
-      "done_marker": "codex-logs/012-create-aerial-manip-packages.done",
-      "key_errors": [],
-      "latest_log": "codex-logs/012-create-aerial-manip-packages.log",
-      "likely_cause": "No known blocking issue in task evidence.",
-      "matched_logs": [
-        "codex-logs/012-create-aerial-manip-packages-20260527_172821.log",
-        "codex-logs/012-create-aerial-manip-packages.log"
-      ],
-      "next_action": "No immediate action recorded.",
-      "status": "completed",
-      "task": "012",
-      "task_file": "codex-tasks/012-create-aerial-manip-packages.md",
-      "title": "Task 012: Create Aerial Manipulation Package Skeleton",
-      "validation_level": "task_log"
-    },
-    {
-      "done_exists": true,
-      "done_marker": "codex-logs/013-add-x500-arm-2dof-model.done",
-      "key_errors": [],
-      "latest_log": "codex-logs/013-add-x500-arm-2dof-model.log",
-      "likely_cause": "No known blocking issue in task evidence.",
-      "matched_logs": [
-        "codex-logs/013-add-x500-arm-2dof-model-20260527_173347.log",
-        "codex-logs/013-add-x500-arm-2dof-model.log"
-      ],
-      "next_action": "No immediate action recorded.",
-      "status": "completed",
-      "task": "013",
-      "task_file": "codex-tasks/013-add-x500-arm-2dof-model.md",
-      "title": "Task 013: Add x500_arm_2dof Model",
-      "validation_level": "task_log"
-    },
-    {
-      "done_exists": true,
-      "done_marker": "codex-logs/014-add-arm-ros2-control-loop.done",
-      "key_errors": [],
-      "latest_log": "codex-logs/014-add-arm-ros2-control-loop-20260527_174119.log",
-      "likely_cause": "No known blocking issue in task evidence.",
-      "matched_logs": [
-        "codex-logs/014-add-arm-ros2-control-loop-20260527_174119.log"
-      ],
-      "next_action": "No immediate action recorded.",
-      "status": "completed",
-      "task": "014",
-      "task_file": "codex-tasks/014-add-arm-ros2-control-loop.md",
-      "title": "Task 014: Add Arm ros2_control Loop",
-      "validation_level": "task_log"
-    },
-    {
-      "done_exists": true,
-      "done_marker": "codex-logs/015-add-arm-control-bridge.done",
-      "key_errors": [],
-      "latest_log": "codex-logs/015-add-arm-control-bridge.log",
-      "likely_cause": "No known blocking issue in task evidence.",
-      "matched_logs": [
-        "codex-logs/015-add-arm-control-bridge-20260527_174221.log",
-        "codex-logs/015-add-arm-control-bridge-20260527_183247.log",
-        "codex-logs/015-add-arm-control-bridge.log"
-      ],
-      "next_action": "No immediate action recorded.",
-      "status": "completed",
-      "task": "015",
-      "task_file": "codex-tasks/015-add-arm-control-bridge.md",
-      "title": "Task 015: Add arm_control_bridge",
-      "validation_level": "task_log"
-    },
-    {
-      "done_exists": true,
-      "done_marker": "codex-logs/016-add-state-aggregator-and-tf-baseline.done",
-      "key_errors": [],
-      "latest_log": "codex-logs/016-add-state-aggregator-and-tf-baseline.log",
-      "likely_cause": "No known blocking issue in task evidence.",
-      "matched_logs": [
-        "codex-logs/016-add-state-aggregator-and-tf-baseline-20260527_183659.log",
-        "codex-logs/016-add-state-aggregator-and-tf-baseline.log"
-      ],
-      "next_action": "No immediate action recorded.",
-      "status": "completed",
-      "task": "016",
-      "task_file": "codex-tasks/016-add-state-aggregator-and-tf-baseline.md",
-      "title": "Task 016: Add State Aggregator and TF Baseline",
-      "validation_level": "task_log"
-    },
-    {
-      "done_exists": true,
-      "done_marker": "codex-logs/017-add-front-camera-and-ros-gz-bridge.done",
-      "key_errors": [],
-      "latest_log": "codex-logs/017-add-front-camera-and-ros-gz-bridge.log",
-      "likely_cause": "No known blocking issue in task evidence.",
-      "matched_logs": [
-        "codex-logs/017-add-front-camera-and-ros-gz-bridge-20260527_184228.log",
-        "codex-logs/017-add-front-camera-and-ros-gz-bridge.log"
-      ],
-      "next_action": "No immediate action recorded.",
-      "status": "completed",
-      "task": "017",
-      "task_file": "codex-tasks/017-add-front-camera-and-ros-gz-bridge.md",
-      "title": "Task 017: Add Front Camera and ros_gz_bridge",
-      "validation_level": "task_log"
-    },
-    {
-      "done_exists": true,
-      "done_marker": "codex-logs/018-add-tag-target-pose-estimation.done",
-      "key_errors": [],
-      "latest_log": "codex-logs/018-add-tag-target-pose-estimation.log",
-      "likely_cause": "No known blocking issue in task evidence.",
-      "matched_logs": [
-        "codex-logs/018-add-tag-target-pose-estimation-20260527_184819.log",
-        "codex-logs/018-add-tag-target-pose-estimation.log"
-      ],
-      "next_action": "No immediate action recorded.",
-      "status": "completed",
-      "task": "018",
-      "task_file": "codex-tasks/018-add-tag-target-pose-estimation.md",
-      "title": "Task 018: Add Tag Target Pose Estimation",
-      "validation_level": "task_log"
-    },
-    {
-      "done_exists": true,
-      "done_marker": "codex-logs/019-add-uav-arm-approach-coordinator.done",
-      "key_errors": [],
-      "latest_log": "codex-logs/019-add-uav-arm-approach-coordinator.log",
-      "likely_cause": "No known blocking issue in task evidence.",
-      "matched_logs": [
-        "codex-logs/019-add-uav-arm-approach-coordinator-20260527_185331.log",
-        "codex-logs/019-add-uav-arm-approach-coordinator.log"
-      ],
-      "next_action": "No immediate action recorded.",
-      "status": "completed",
-      "task": "019",
-      "task_file": "codex-tasks/019-add-uav-arm-approach-coordinator.md",
-      "title": "Task 019: Add UAV-Arm Approach Coordinator",
-      "validation_level": "task_log"
-    },
-    {
-      "done_exists": true,
-      "done_marker": "codex-logs/020-add-episode-recorder-and-lerobot-export.done",
-      "key_errors": [],
-      "latest_log": "codex-logs/020-add-episode-recorder-and-lerobot-export.log",
-      "likely_cause": "No known blocking issue in task evidence.",
-      "matched_logs": [
-        "codex-logs/020-add-episode-recorder-and-lerobot-export-20260527_185851.log",
-        "codex-logs/020-add-episode-recorder-and-lerobot-export.log"
-      ],
-      "next_action": "No immediate action recorded.",
-      "status": "completed",
-      "task": "020",
-      "task_file": "codex-tasks/020-add-episode-recorder-and-lerobot-export.md",
-      "title": "Task 020: Add Episode Recorder and LeRobot Export",
-      "validation_level": "task_log"
-    },
-    {
-      "done_exists": true,
-      "done_marker": "codex-logs/021-add-lerobot-baseline-training-and-policy-bridge.done",
-      "key_errors": [],
-      "latest_log": "codex-logs/021-add-lerobot-baseline-training-and-policy-bridge.log",
-      "likely_cause": "No known blocking issue in task evidence.",
-      "matched_logs": [
-        "codex-logs/021-add-lerobot-baseline-training-and-policy-bridge-20260527_190347.log",
-        "codex-logs/021-add-lerobot-baseline-training-and-policy-bridge.log"
-      ],
-      "next_action": "No immediate action recorded.",
-      "status": "completed",
-      "task": "021",
-      "task_file": "codex-tasks/021-add-lerobot-baseline-training-and-policy-bridge.md",
-      "title": "Task 021: Add LeRobot Baseline Training and Policy Bridge",
-      "validation_level": "task_log"
-    },
-    {
-      "done_exists": true,
-      "done_marker": "codex-logs/022-add-air-reach-demo-and-regression.done",
-      "key_errors": [],
-      "latest_log": "codex-logs/022-add-air-reach-demo-and-regression.log",
-      "likely_cause": "No known blocking issue in task evidence.",
-      "matched_logs": [
-        "codex-logs/022-add-air-reach-demo-and-regression-20260527_190830.log",
-        "codex-logs/022-add-air-reach-demo-and-regression.log"
-      ],
-      "next_action": "No immediate action recorded.",
-      "status": "completed",
-      "task": "022",
-      "task_file": "codex-tasks/022-add-air-reach-demo-and-regression.md",
-      "title": "Task 022: Add Air Reach Demo and Regression",
-      "validation_level": "task_log"
-    },
-    {
-      "done_exists": true,
-      "done_marker": "codex-logs/023-stage2-environment-preflight.done",
-      "key_errors": [],
-      "latest_log": "codex-logs/023-stage2-environment-preflight.log",
-      "likely_cause": "Live Stage 2 prerequisites are missing; dry-run paths remain usable.",
-      "matched_logs": [
-        "codex-logs/023-stage2-environment-preflight-20260527_233400.log",
-        "codex-logs/023-stage2-environment-preflight.log"
-      ],
-      "next_action": "Install missing ROS 2 Jazzy bridge/control packages, then rerun bash scripts/check_stage2_environment.sh.",
-      "status": "completed_with_warnings",
-      "task": "023",
-      "task_file": "codex-tasks/023-stage2-environment-preflight.md",
-      "title": "Task 023: Stage 2 Environment Preflight",
-      "validation_level": "preflight_warn"
-    },
-    {
-      "done_exists": true,
-      "done_marker": "codex-logs/024-normalize-2dof-arm-interface.done",
-      "key_errors": [],
-      "latest_log": "codex-logs/024-normalize-2dof-arm-interface.log",
-      "likely_cause": "2-DOF arm defaults validated by compile/build and Demo 10 dry-run, not by live hardware/controller execution.",
-      "matched_logs": [
-        "codex-logs/024-normalize-2dof-arm-interface-20260527_233931.log",
-        "codex-logs/024-normalize-2dof-arm-interface.log"
-      ],
-      "next_action": "Keep two canonical arm joints unless a later task explicitly expands the model.",
-      "status": "completed",
-      "task": "024",
-      "task_file": "codex-tasks/024-normalize-2dof-arm-interface.md",
-      "title": "Task 024: Normalize 2-DOF Arm Interface",
-      "validation_level": "dry_run_validated"
-    },
-    {
-      "done_exists": true,
-      "done_marker": "codex-logs/025-repair-arm-ros2-control-integration.done",
-      "key_errors": [],
-      "latest_log": "codex-logs/025-repair-arm-ros2-control-integration.log",
-      "likely_cause": "ros2_control launch/config exists, but live controller spawning is unverified because required packages are missing.",
-      "matched_logs": [
-        "codex-logs/025-repair-arm-ros2-control-integration-20260527_234519.log",
-        "codex-logs/025-repair-arm-ros2-control-integration.log"
-      ],
-      "next_action": "After installing ros2_control packages, run ros2 launch aerial_manip_control arm_control.launch.py.",
-      "status": "completed_with_warnings",
-      "task": "025",
-      "task_file": "codex-tasks/025-repair-arm-ros2-control-integration.md",
-      "title": "Task 025: Repair Arm ros2_control Integration",
-      "validation_level": "static_build_only"
-    },
-    {
-      "done_exists": true,
-      "done_marker": "codex-logs/026-add-frame-and-schema-regression.done",
-      "key_errors": [],
-      "latest_log": "codex-logs/026-add-frame-and-schema-regression.log",
-      "likely_cause": "Frame/schema regression is deterministic and offline; no live TF tree was exercised.",
-      "matched_logs": [
-        "codex-logs/026-add-frame-and-schema-regression-20260527_235126.log",
-        "codex-logs/026-add-frame-and-schema-regression.log"
-      ],
-      "next_action": "Run python3 scripts/check_stage2_schema.py after message or frame-boundary edits.",
-      "status": "completed",
-      "task": "026",
-      "task_file": "codex-tasks/026-add-frame-and-schema-regression.md",
-      "title": "Task 026: Add Frame and Schema Regression",
-      "validation_level": "offline_regression"
-    },
-    {
-      "done_exists": true,
-      "done_marker": "codex-logs/027-harden-vision-bridge-smoke.done",
-      "key_errors": [],
-      "latest_log": "codex-logs/027-harden-vision-bridge-smoke.log",
-      "likely_cause": "Vision smoke verified assets, Gazebo camera topic, and placeholder target pose; no sample frame was captured because ros_gz_bridge is missing.",
-      "matched_logs": [
-        "codex-logs/027-harden-vision-bridge-smoke-20260527_235812.log",
-        "codex-logs/027-harden-vision-bridge-smoke.log"
-      ],
-      "next_action": "Install ros_gz_bridge and rerun bash scripts/smoke_vision_bridge.sh to capture sample_frame.png.",
-      "status": "completed_with_warnings",
-      "task": "027",
-      "task_file": "codex-tasks/027-harden-vision-bridge-smoke.md",
-      "title": "Task 027: Harden Vision Bridge Smoke",
-      "validation_level": "smoke_warn"
-    },
-    {
-      "done_exists": true,
-      "done_marker": "codex-logs/028-harden-live-stack-and-demo10.done",
-      "key_errors": [],
-      "latest_log": "codex-logs/028-harden-live-stack-and-demo10.log",
-      "likely_cause": "Demo 10 full live mode was not run; latest bounded live-smoke reached PX4 Ready for takeoff and cleaned up.",
-      "matched_logs": [
-        "codex-logs/028-harden-live-stack-and-demo10-20260528_000358.log",
-        "codex-logs/028-harden-live-stack-and-demo10.log"
-      ],
-      "next_action": "Run DEMO10_MODE=live RESET_STACK=1 bash scripts/run_regression_demo_10.sh only after live dependencies are present.",
-      "status": "completed_live_smoke_only",
-      "task": "028",
-      "task_file": "codex-tasks/028-harden-live-stack-and-demo10.md",
-      "title": "Task 028: Harden Live Stack and Demo 10",
-      "validation_level": "dry_run_and_live_smoke"
-    },
-    {
-      "done_exists": true,
-      "done_marker": "codex-logs/029-add-stage2-evidence-validator.done",
-      "key_errors": [],
-      "latest_log": "codex-logs/029-add-stage2-evidence-validator.log",
-      "likely_cause": "Stage 2 evidence validator covers Task 012-022 plus Demo 10 dry-run/live-smoke evidence.",
-      "matched_logs": [
-        "codex-logs/029-add-stage2-evidence-validator-20260528_001458.log",
-        "codex-logs/029-add-stage2-evidence-validator.log"
-      ],
-      "next_action": "Rerun python3 scripts/check_stage2_evidence.py after new Demo 10 live/dry-run evidence is created.",
-      "status": "completed",
-      "task": "029",
-      "task_file": "codex-tasks/029-add-stage2-evidence-validator.md",
-      "title": "Task 029: Add Stage 2 Evidence Validator",
-      "validation_level": "artifact_validator"
-    },
-    {
-      "done_exists": true,
-      "done_marker": "codex-logs/030-refresh-project-status-deliverables.done",
-      "key_errors": [],
-      "latest_log": "codex-logs/030-refresh-project-status-deliverables.log",
-      "likely_cause": "Status deliverables and HTML were refreshed and verified; queue exited with status 0.",
-      "matched_logs": [
-        "codex-logs/030-refresh-project-status-deliverables-20260528_002012.log",
-        "codex-logs/030-refresh-project-status-deliverables.log"
-      ],
-      "next_action": "Use deliverables/status.html for presentation; install missing live dependencies before full live Demo 10.",
-      "status": "completed",
-      "task": "030",
-      "task_file": "codex-tasks/030-refresh-project-status-deliverables.md",
-      "title": "Task 030: Refresh Project Status Deliverables",
-      "validation_level": "report_refresh"
-    }
-  ]
+  "workspace": "/home/clcwork/UAV_capture/px4_ros2_ws"
 }

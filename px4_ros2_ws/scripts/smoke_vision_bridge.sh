@@ -327,14 +327,25 @@ if command -v ros2 >/dev/null 2>&1 && ros2 pkg prefix ros_gz_bridge >/dev/null 2
   if [ "$fail_count" -eq 0 ] && start_camera_bridge; then
     if wait_for_ros_topic "$ROS_IMAGE_TOPIC" "$ROS_TOPIC_TIMEOUT"; then
       report PASS "ros_image_topic" "topic=$ROS_IMAGE_TOPIC"
-      capture_sample_frame || true
-      verify_live_target_pose
     else
       printf 'sample_frame=not_captured\nreason=%s did not appear before timeout\n' "$ROS_IMAGE_TOPIC" >"${OUTPUT_DIR}/sample_frame_status.txt"
       report WARN "ros_image_topic" "missing topic=$ROS_IMAGE_TOPIC status=${OUTPUT_DIR}/sample_frame_status.txt"
     fi
+
+    if wait_for_ros_topic "$ROS_CAMERA_INFO_TOPIC" "$ROS_TOPIC_TIMEOUT"; then
+      report PASS "ros_camera_info_topic" "topic=$ROS_CAMERA_INFO_TOPIC"
+    else
+      printf 'sample_frame=not_captured\nreason=%s did not appear before timeout\n' "$ROS_CAMERA_INFO_TOPIC" >"${OUTPUT_DIR}/sample_frame_status.txt"
+      report WARN "ros_camera_info_topic" "missing topic=$ROS_CAMERA_INFO_TOPIC status=${OUTPUT_DIR}/sample_frame_status.txt"
+    fi
+
+    if wait_for_ros_topic "$ROS_IMAGE_TOPIC" 1 && wait_for_ros_topic "$ROS_CAMERA_INFO_TOPIC" 1; then
+      capture_sample_frame || true
+      verify_live_target_pose
+    fi
   fi
 else
+  printf 'front_camera_bridge=not_started\nreason=ros_gz_bridge package is not available\n' >"${OUTPUT_DIR}/front_camera_bridge.log"
   printf 'sample_frame=not_captured\nreason=ros_gz_bridge package is not available; live image bridge skipped\n' >"${OUTPUT_DIR}/sample_frame_status.txt"
   report WARN "ros_pkg:ros_gz_bridge" "missing; skipped live bridge and sample capture"
 fi

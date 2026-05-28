@@ -1,0 +1,8 @@
+VISUALIZATION=PASS run_dir=/home/clcwork/UAV_capture/px4_ros2_ws/logs/demo10_air_reach/20260528_114546 output_dir=/home/clcwork/UAV_capture/px4_ros2_ws/visualizations/demo10_air_reach/20260528_114546 mode=live result=PASS
+OUTPUT /home/clcwork/UAV_capture/px4_ros2_ws/visualizations/demo10_air_reach/20260528_114546/trajectory_3d.png
+OUTPUT /home/clcwork/UAV_capture/px4_ros2_ws/visualizations/demo10_air_reach/20260528_114546/phase_timeline.png
+OUTPUT /home/clcwork/UAV_capture/px4_ros2_ws/visualizations/demo10_air_reach/20260528_114546/flight_error.png
+OUTPUT /home/clcwork/UAV_capture/px4_ros2_ws/visualizations/demo10_air_reach/20260528_114546/target_visibility.png
+OUTPUT /home/clcwork/UAV_capture/px4_ros2_ws/visualizations/demo10_air_reach/20260528_114546/joint_positions.png
+OUTPUT /home/clcwork/UAV_capture/px4_ros2_ws/visualizations/demo10_air_reach/20260528_114546/endpoint_error.png
+OUTPUT /home/clcwork/UAV_capture/px4_ros2_ws/visualizations/demo10_air_reach/20260528_114546/summary.json

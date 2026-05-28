@@ -1,0 +1,10 @@
+[demo10] mode=live-smoke output_dir=logs/demo10_air_reach/20260528_113832
+[demo10] live smoke checks PX4 readiness only, then stops the stack
+STACK_READY=YES reason=ready_for_takeoff detail=PX4 reached Ready for takeoff
+micro_xrce_agent: 1 windows (created Thu May 28 11:38:32 2026)
+px4_gz_x500: 1 windows (created Thu May 28 11:38:32 2026)
+uav_codex: 2 windows (created Wed May 27 18:32:47 2026)
+uav_visual_queue: 1 windows (created Thu May 28 11:30:04 2026)
+[stop_stack] stopping Gazebo default.sdf with PX4 world path
+[demo10] live smoke PASS: STACK_READY=YES reason=ready_for_takeoff detail=PX4 reached Ready for takeoff
+[demo10] output_dir=logs/demo10_air_reach/20260528_113832
