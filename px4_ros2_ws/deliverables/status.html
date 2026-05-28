@@ -1,88 +1,267 @@
 <!doctype html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>PX4 ROS2 Workspace Status</title>
+  <title>无人机机械臂智能操作与仿真控制系统项目状态</title>
   <style>
-    :root { color-scheme: light; --bg:#f6f7f9; --panel:#fff; --text:#1f2933; --muted:#5d6876; --line:#d8dde5; --good:#176b45; --warn:#9a5b00; --bad:#b42318; --info:#375a7f; }
+    :root {
+      color-scheme: light;
+      --bg: #f5f7fa;
+      --panel: #ffffff;
+      --text: #1f2933;
+      --muted: #5d6876;
+      --line: #d7dde6;
+      --good: #176b45;
+      --warn: #9a5b00;
+      --bad: #b42318;
+      --info: #375a7f;
+      --head: #243447;
+    }
     * { box-sizing: border-box; }
-    body { margin:0; font:14px/1.45 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background:var(--bg); color:var(--text); }
-    header { background:#243447; color:#fff; padding:24px max(20px, calc((100vw - 1180px)/2)); }
-    h1 { margin:0 0 8px; font-size:26px; font-weight:700; letter-spacing:0; }
-    h2 { margin:0 0 12px; font-size:18px; }
-    main { max-width:1180px; margin:0 auto; padding:20px; }
-    section { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:16px; margin-bottom:16px; }
-    .grid { display:grid; grid-template-columns:repeat(4, minmax(0, 1fr)); gap:12px; }
-    .metric { border:1px solid var(--line); border-radius:6px; padding:12px; min-height:82px; }
-    .metric strong { display:block; font-size:22px; margin-top:4px; }
-    .muted { color:var(--muted); }
-    .pill { display:inline-block; border-radius:999px; padding:2px 8px; font-size:12px; font-weight:700; white-space:nowrap; border:1px solid currentColor; }
-    .good { color:var(--good); background:#eef8f2; } .warn { color:var(--warn); background:#fff6e6; } .bad { color:var(--bad); background:#fff0ef; } .info { color:var(--info); background:#eef5fb; }
-    table { width:100%; border-collapse:collapse; }
-    th, td { text-align:left; vertical-align:top; border-top:1px solid var(--line); padding:8px; }
-    th { color:#334155; background:#f9fafb; font-weight:700; }
-    code { font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size:12px; }
-    ul { margin:8px 0 0 20px; padding:0; }
-    .table-wrap { overflow-x:auto; }
-    footer { max-width:1180px; margin:0 auto; padding:0 20px 24px; color:var(--muted); }
-    @media (max-width: 820px) { .grid { grid-template-columns:repeat(2, minmax(0, 1fr)); } }
-    @media (max-width: 520px) { .grid { grid-template-columns:1fr; } header, main { padding-left:14px; padding-right:14px; } }
+    body {
+      margin: 0;
+      font: 14px/1.55 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", "PingFang SC", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    header {
+      background: var(--head);
+      color: #fff;
+      padding: 24px max(20px, calc((100vw - 1180px) / 2));
+    }
+    h1 { margin: 0 0 8px; font-size: 26px; line-height: 1.25; letter-spacing: 0; }
+    h2 { margin: 0 0 12px; font-size: 18px; }
+    h3 { margin: 14px 0 8px; font-size: 15px; }
+    main { max-width: 1180px; margin: 0 auto; padding: 20px; }
+    section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .metric {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 12px;
+      min-height: 86px;
+      background: #fbfcfe;
+    }
+    .metric strong { display: block; margin-top: 4px; font-size: 22px; line-height: 1.2; }
+    .muted { color: var(--muted); }
+    .pill {
+      display: inline-block;
+      border: 1px solid currentColor;
+      border-radius: 999px;
+      padding: 2px 8px;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .good { color: var(--good); background: #eef8f2; }
+    .warn { color: var(--warn); background: #fff6e6; }
+    .bad { color: var(--bad); background: #fff0ef; }
+    .info { color: var(--info); background: #eef5fb; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { text-align: left; vertical-align: top; border-top: 1px solid var(--line); padding: 8px; }
+    th { background: #f9fafb; color: #334155; font-weight: 700; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; font-size: 12px; }
+    ul { margin: 8px 0 0 20px; padding: 0; }
+    li { margin: 4px 0; }
+    .table-wrap { overflow-x: auto; }
+    .callout {
+      border-left: 4px solid var(--info);
+      background: #f3f8fc;
+      padding: 10px 12px;
+      margin-top: 10px;
+    }
+    footer { max-width: 1180px; margin: 0 auto; padding: 0 20px 24px; color: var(--muted); }
+    @media (max-width: 820px) { .grid, .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 560px) {
+      header, main { padding-left: 14px; padding-right: 14px; }
+      .grid, .grid.two { grid-template-columns: 1fr; }
+      h1 { font-size: 22px; }
+    }
   </style>
 </head>
 <body>
   <header>
-    <h1>PX4 ROS2 UAV Capture Status</h1>
-    <div>Generated 2026-05-28T08:35:46+08:00 for <code>/home/clcwork/UAV_capture/px4_ros2_ws</code></div>
+    <h1>面向空中作业的无人机机械臂智能操作与仿真控制系统</h1>
+    <div>项目进展状态页｜生成时间：2026-05-28T08:35:46+08:00｜工作区：<code>/home/clcwork/UAV_capture/px4_ros2_ws</code></div>
   </header>
+
   <main>
     <section>
-      <h2>Project Overview</h2>
+      <h2>一、项目总体概览</h2>
       <div class="grid">
-        <div class="metric"><span class="muted">Overall</span><strong><span class="pill warn">Warning</span></strong></div>
-        <div class="metric"><span class="muted">Tasks</span><strong>30</strong></div>
-        <div class="metric"><span class="muted">Completed-like</span><strong>30</strong></div>
-        <div class="metric"><span class="muted">Live Ready</span><strong><span class="pill warn">NO</span></strong></div>
+        <div class="metric"><span class="muted">总体状态</span><strong><span class="pill warn">可展示 / 仍有依赖告警</span></strong></div>
+        <div class="metric"><span class="muted">任务队列</span><strong>30 / 30</strong><span class="muted">已完成或完成但有告警</span></div>
+        <div class="metric"><span class="muted">当前运行任务</span><strong>0</strong><span class="muted">优化队列已结束</span></div>
+        <div class="metric"><span class="muted">主线验证</span><strong><span class="pill good">Dry-run PASS</span></strong></div>
       </div>
-      <p>Detected stack: ROS 2 Jazzy, PX4 SITL, Gazebo Sim 8.11.0, Micro XRCE-DDS Agent, Python/rclpy, ament/colcon, shell automation.</p>
-    </section>
-    <section>
-      <h2>Progress Summary</h2>
-      <div class="grid">
-        <div class="metric"><span class="muted">Pending</span><strong>0</strong></div>
-        <div class="metric"><span class="muted">Blocked</span><strong>0</strong></div>
-        <div class="metric"><span class="muted">Failed</span><strong>0</strong></div>
-        <div class="metric"><span class="muted">Current Run</span><strong>0</strong></div>
+      <p>
+        当前项目已经从原有 PX4 Offboard 飞行桥接，推进到“官方 x500 飞行基座 + 轻量 2-DOF 机械臂 + 统一状态/TF + 视觉目标基线 + Demo 10 回归”的阶段。
+        代码层、队列层和报告层已经整理完成，适合向老师展示目前完成的工程闭环和后续风险。
+      </p>
+      <div class="callout">
+        <strong>一句话总结：</strong>项目已经形成可编译、可回归、可展示的空中机械臂仿真控制骨架；当前主要限制不是代码结构，而是本机缺少部分 ROS/Gazebo 桥接与 ros2_control 运行依赖，因此完整 live Demo 仍标为未验证。
       </div>
     </section>
+
     <section>
-      <h2>Latest Checks</h2>
-      <div class="table-wrap"><table><thead><tr><th>Command</th><th>Status</th><th>Evidence</th></tr></thead><tbody><tr><td><code>python3 -m compileall src scripts</code></td><td><span class="pill good">PASS</span></td><td>codex-logs/030-refresh-project-status-deliverables.log</td></tr><tr><td><code>bash -n run_codex_queue.sh</code></td><td><span class="pill good">PASS</span></td><td>codex-logs/030-refresh-project-status-deliverables.log</td></tr><tr><td><code>DEMO10_MODE=dry-run bash scripts/run_regression_demo_10.sh</code></td><td><span class="pill good">PASS</span></td><td>logs/demo10_air_reach/20260528_002122</td></tr><tr><td><code>python3 scripts/check_demo_10.py logs/demo10_air_reach</code></td><td><span class="pill good">PASS</span></td><td>logs/demo10_air_reach/20260528_002122</td></tr><tr><td><code>bash scripts/check_stage2_environment.sh</code></td><td><span class="pill warn">WARN</span></td><td>codex-logs/030-refresh-project-status-deliverables.log</td></tr></tbody></table></div>
+      <h2>二、已经实现的核心功能</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>方向</th><th>已完成内容</th><th>展示价值</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>PX4 高层飞行控制</td>
+              <td>保留并强化 <code>/uav/*</code> 高层接口，外部策略不直接写 PX4 <code>/fmu/in/*</code>。</td>
+              <td>符合安全边界：策略、视觉、任务规划都通过统一桥接进入系统。</td>
+            </tr>
+            <tr>
+              <td>x500 + 2-DOF 机械臂模型</td>
+              <td>建立 <code>x500_arm_2dof</code> SDF 模型，并统一为 <code>arm_shoulder_pitch_joint</code>、<code>arm_elbow_pitch_joint</code> 两个关节。</td>
+              <td>以官方 x500 为基座，避免重写飞行器，符合轻量空中机械臂第一阶段路线。</td>
+            </tr>
+            <tr>
+              <td>机械臂控制接口</td>
+              <td>实现 <code>arm_control_bridge</code>、关节限位、跳变检查、超时保持、2-DOF 默认参数；新增 ros2_control 配置和 launch。</td>
+              <td>后续可平滑接入真实 <code>gz_ros2_control</code> 控制器。</td>
+            </tr>
+            <tr>
+              <td>统一状态与坐标系</td>
+              <td>实现 <code>state_aggregator</code>、统一 <code>/system/observation</code>、安全状态、TF 框架和 NED/ENU 静态回归检查。</td>
+              <td>解决无人机/机械臂/视觉/策略之间最容易出错的坐标边界问题。</td>
+            </tr>
+            <tr>
+              <td>视觉目标基线</td>
+              <td>添加前视相机资源、视觉桥接配置、ArUco/AprilTag 风格目标位姿节点、显式 placeholder 模式和 smoke 检查脚本。</td>
+              <td>先用可解释几何目标验证感知链路，不急于上复杂语义模型。</td>
+            </tr>
+            <tr>
+              <td>任务级 Demo 10</td>
+              <td>实现“稳定悬停 → 目标检测 → UAV-机械臂协同接近 → 末端保持”的 Demo 10 dry-run 回归和 live-smoke。</td>
+              <td>已有可重复指标：飞行误差、目标可见率、关节限位、任务超时、末端误差。</td>
+            </tr>
+            <tr>
+              <td>LeRobot 数据/策略骨架</td>
+              <td>建立数据导出、策略桥和离线训练入口，策略输出仍被限制在高层动作接口。</td>
+              <td>为后续模仿学习和动作块推理预留接口，但没有越过飞控安全边界。</td>
+            </tr>
+            <tr>
+              <td>项目管理与展示</td>
+              <td>完成 023-030 优化队列，生成 JSON、Markdown、HTML 状态报告和运行证据。</td>
+              <td>老师可以直接看到任务完成情况、功能模块、验证证据和风险清单。</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </section>
+
     <section>
-      <h2>Module Status</h2>
-      <div class="table-wrap"><table><thead><tr><th>Module</th><th>Status</th><th>Notes</th></tr></thead><tbody><tr><td>src/px4_offboard_hover</td><td><span class="pill good">present</span></td><td>Demo 01-04 offboard control and UAV bridge package.</td></tr><tr><td>src/aerial_manip_msgs</td><td><span class="pill good">present</span></td><td>Stage 2 arm/platform/observation messages and Approach action.</td></tr><tr><td>src/aerial_manip_control</td><td><span class="pill good">present</span></td><td>Arm bridge, state aggregator, approach coordinator, ros2_control launch/config.</td></tr><tr><td>src/aerial_manip_gazebo</td><td><span class="pill good">present</span></td><td>x500_arm_2dof model, smoke world, camera bridge config.</td></tr><tr><td>src/aerial_manip_vision</td><td><span class="pill good">present</span></td><td>Target pose node with explicit placeholder support.</td></tr><tr><td>src/aerial_manip_eval</td><td><span class="pill good">present</span></td><td>Demo 10 dry-run/live runner support, synthetic controller, episode recorder.</td></tr><tr><td>src/aerial_manip_policy</td><td><span class="pill good">present</span></td><td>LeRobot baseline training and policy bridge scaffolding.</td></tr></tbody></table></div>
+      <h2>三、当前验证结果</h2>
+      <div class="grid">
+        <div class="metric"><span class="muted">Demo 10 dry-run</span><strong><span class="pill good">PASS</span></strong><code>logs/demo10_air_reach/20260528_002122</code></div>
+        <div class="metric"><span class="muted">Demo 10 live-smoke</span><strong><span class="pill good">PASS</span></strong><code>logs/demo10_air_reach/20260528_001327</code></div>
+        <div class="metric"><span class="muted">完整 live Demo 10</span><strong><span class="pill warn">未验证</span></strong><span class="muted">等待依赖齐全</span></div>
+        <div class="metric"><span class="muted">环境预检</span><strong><span class="pill warn">WARN</span></strong><code>dry_run_ready=YES</code></div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>检查命令</th><th>结果</th><th>证据路径</th></tr></thead>
+          <tbody>
+            <tr><td><code>python3 -m compileall src scripts</code></td><td><span class="pill good">PASS</span></td><td><code>codex-logs/030-refresh-project-status-deliverables.log</code></td></tr>
+            <tr><td><code>bash -n run_codex_queue.sh</code></td><td><span class="pill good">PASS</span></td><td><code>codex-logs/030-refresh-project-status-deliverables.log</code></td></tr>
+            <tr><td><code>DEMO10_MODE=dry-run bash scripts/run_regression_demo_10.sh</code></td><td><span class="pill good">PASS</span></td><td><code>logs/demo10_air_reach/20260528_002122</code></td></tr>
+            <tr><td><code>python3 scripts/check_demo_10.py logs/demo10_air_reach</code></td><td><span class="pill good">PASS</span></td><td><code>logs/demo10_air_reach/20260528_002122</code></td></tr>
+            <tr><td><code>bash scripts/check_stage2_environment.sh</code></td><td><span class="pill warn">WARN</span></td><td>缺少 live 所需 ROS/Gazebo 控制与桥接包</td></tr>
+          </tbody>
+        </table>
+      </div>
     </section>
+
     <section>
-      <h2>Codex Queue Status</h2>
-      <div class="table-wrap"><table><thead><tr><th>Task</th><th>Title</th><th>Status</th><th>Validation</th><th>Log</th><th>Main Issue</th><th>Next Action</th></tr></thead><tbody><tr><td>001</td><td>Task 001: Audit Project Structure</td><td><span class="pill good">completed</span></td><td>task_log</td><td>codex-logs/001-audit-project-structure.log</td><td>No known blocking issue in task evidence.</td><td>No immediate action recorded.</td></tr><tr><td>002</td><td>Task 002: Standardize Demo Visualization</td><td><span class="pill good">completed</span></td><td>task_log</td><td>codex-logs/002-standardize-demo-visualization.log</td><td>No known blocking issue in task evidence.</td><td>No immediate action recorded.</td></tr><tr><td>003</td><td>Task 003: Add Demo Regression Checks</td><td><span class="pill good">completed</span></td><td>task_log</td><td>codex-logs/003-add-demo-regression-checks.log</td><td>No known blocking issue in task evidence.</td><td>No immediate action recorded.</td></tr><tr><td>004</td><td>Task 004: Design UAV Control API</td><td><span class="pill good">completed</span></td><td>task_log</td><td>codex-logs/004-design-uav-control-api.log</td><td>No known blocking issue in task evidence.</td><td>No immediate action recorded.</td></tr><tr><td>005</td><td>Task 005: Plan UAV Arm Simulation</td><td><span class="pill good">completed</span></td><td>task_log</td><td>codex-logs/005-plan-uav-arm-simulation.log</td><td>No known blocking issue in task evidence.</td><td>No immediate action recorded.</td></tr><tr><td>006</td><td>Task 006: Implement UAV Control Bridge</td><td><span class="pill good">completed</span></td><td>task_log</td><td>codex-logs/006-implement-uav-control-bridge.log</td><td>No known blocking issue in task evidence.</td><td>No immediate action recorded.</td></tr><tr><td>007</td><td>Task 007: Add UAV State Feedback</td><td><span class="pill good">completed</span></td><td>task_log</td><td>codex-logs/007-add-uav-state-feedback.log</td><td>No known blocking issue in task evidence.</td><td>No immediate action recorded.</td></tr><tr><td>008</td><td>Task 008: Add UAV Bridge Demo and Checks</td><td><span class="pill good">completed</span></td><td>task_log</td><td>codex-logs/008-add-uav-bridge-demo-and-checks.log</td><td>No known blocking issue in task evidence.</td><td>No immediate action recorded.</td></tr><tr><td>009</td><td>Task 009: Document UAV Bridge Usage</td><td><span class="pill good">completed</span></td><td>task_log</td><td>codex-logs/009-document-uav-bridge-usage.log</td><td>No known blocking issue in task evidence.</td><td>No immediate action recorded.</td></tr><tr><td>010</td><td>Task 010: Download Stage 2 Materials</td><td><span class="pill good">completed</span></td><td>task_log</td><td>codex-logs/010-download-stage2-materials.log</td><td>No known blocking issue in task evidence.</td><td>No immediate action recorded.</td></tr><tr><td>011</td><td>Task 011: Audit Stage 2 Environment</td><td><span class="pill good">completed</span></td><td>task_log</td><td>codex-logs/011-audit-stage2-environment.log</td><td>No known blocking issue in task evidence.</td><td>No immediate action recorded.</td></tr><tr><td>012</td><td>Task 012: Create Aerial Manipulation Package Skeleton</td><td><span class="pill good">completed</span></td><td>task_log</td><td>codex-logs/012-create-aerial-manip-packages.log</td><td>No known blocking issue in task evidence.</td><td>No immediate action recorded.</td></tr><tr><td>013</td><td>Task 013: Add x500_arm_2dof Model</td><td><span class="pill good">completed</span></td><td>task_log</td><td>codex-logs/013-add-x500-arm-2dof-model.log</td><td>No known blocking issue in task evidence.</td><td>No immediate action recorded.</td></tr><tr><td>014</td><td>Task 014: Add Arm ros2_control Loop</td><td><span class="pill good">completed</span></td><td>task_log</td><td>codex-logs/014-add-arm-ros2-control-loop-20260527_174119.log</td><td>No known blocking issue in task evidence.</td><td>No immediate action recorded.</td></tr><tr><td>015</td><td>Task 015: Add arm_control_bridge</td><td><span class="pill good">completed</span></td><td>task_log</td><td>codex-logs/015-add-arm-control-bridge.log</td><td>No known blocking issue in task evidence.</td><td>No immediate action recorded.</td></tr><tr><td>016</td><td>Task 016: Add State Aggregator and TF Baseline</td><td><span class="pill good">completed</span></td><td>task_log</td><td>codex-logs/016-add-state-aggregator-and-tf-baseline.log</td><td>No known blocking issue in task evidence.</td><td>No immediate action recorded.</td></tr><tr><td>017</td><td>Task 017: Add Front Camera and ros_gz_bridge</td><td><span class="pill good">completed</span></td><td>task_log</td><td>codex-logs/017-add-front-camera-and-ros-gz-bridge.log</td><td>No known blocking issue in task evidence.</td><td>No immediate action recorded.</td></tr><tr><td>018</td><td>Task 018: Add Tag Target Pose Estimation</td><td><span class="pill good">completed</span></td><td>task_log</td><td>codex-logs/018-add-tag-target-pose-estimation.log</td><td>No known blocking issue in task evidence.</td><td>No immediate action recorded.</td></tr><tr><td>019</td><td>Task 019: Add UAV-Arm Approach Coordinator</td><td><span class="pill good">completed</span></td><td>task_log</td><td>codex-logs/019-add-uav-arm-approach-coordinator.log</td><td>No known blocking issue in task evidence.</td><td>No immediate action recorded.</td></tr><tr><td>020</td><td>Task 020: Add Episode Recorder and LeRobot Export</td><td><span class="pill good">completed</span></td><td>task_log</td><td>codex-logs/020-add-episode-recorder-and-lerobot-export.log</td><td>No known blocking issue in task evidence.</td><td>No immediate action recorded.</td></tr><tr><td>021</td><td>Task 021: Add LeRobot Baseline Training and Policy Bridge</td><td><span class="pill good">completed</span></td><td>task_log</td><td>codex-logs/021-add-lerobot-baseline-training-and-policy-bridge.log</td><td>No known blocking issue in task evidence.</td><td>No immediate action recorded.</td></tr><tr><td>022</td><td>Task 022: Add Air Reach Demo and Regression</td><td><span class="pill good">completed</span></td><td>task_log</td><td>codex-logs/022-add-air-reach-demo-and-regression.log</td><td>No known blocking issue in task evidence.</td><td>No immediate action recorded.</td></tr><tr><td>023</td><td>Task 023: Stage 2 Environment Preflight</td><td><span class="pill warn">completed_with_warnings</span></td><td>preflight_warn</td><td>codex-logs/023-stage2-environment-preflight.log</td><td>Live Stage 2 prerequisites are missing; dry-run paths remain usable.</td><td>Install missing ROS 2 Jazzy bridge/control packages, then rerun bash scripts/check_stage2_environment.sh.</td></tr><tr><td>024</td><td>Task 024: Normalize 2-DOF Arm Interface</td><td><span class="pill good">completed</span></td><td>dry_run_validated</td><td>codex-logs/024-normalize-2dof-arm-interface.log</td><td>2-DOF arm defaults validated by compile/build and Demo 10 dry-run, not by live hardware/controller execution.</td><td>Keep two canonical arm joints unless a later task explicitly expands the model.</td></tr><tr><td>025</td><td>Task 025: Repair Arm ros2_control Integration</td><td><span class="pill warn">completed_with_warnings</span></td><td>static_build_only</td><td>codex-logs/025-repair-arm-ros2-control-integration.log</td><td>ros2_control launch/config exists, but live controller spawning is unverified because required packages are missing.</td><td>After installing ros2_control packages, run ros2 launch aerial_manip_control arm_control.launch.py.</td></tr><tr><td>026</td><td>Task 026: Add Frame and Schema Regression</td><td><span class="pill good">completed</span></td><td>offline_regression</td><td>codex-logs/026-add-frame-and-schema-regression.log</td><td>Frame/schema regression is deterministic and offline; no live TF tree was exercised.</td><td>Run python3 scripts/check_stage2_schema.py after message or frame-boundary edits.</td></tr><tr><td>027</td><td>Task 027: Harden Vision Bridge Smoke</td><td><span class="pill warn">completed_with_warnings</span></td><td>smoke_warn</td><td>codex-logs/027-harden-vision-bridge-smoke.log</td><td>Vision smoke verified assets, Gazebo camera topic, and placeholder target pose; no sample frame was captured because ros_gz_bridge is missing.</td><td>Install ros_gz_bridge and rerun bash scripts/smoke_vision_bridge.sh to capture sample_frame.png.</td></tr><tr><td>028</td><td>Task 028: Harden Live Stack and Demo 10</td><td><span class="pill warn">completed_live_smoke_only</span></td><td>dry_run_and_live_smoke</td><td>codex-logs/028-harden-live-stack-and-demo10.log</td><td>Demo 10 full live mode was not run; latest bounded live-smoke reached PX4 Ready for takeoff and cleaned up.</td><td>Run DEMO10_MODE=live RESET_STACK=1 bash scripts/run_regression_demo_10.sh only after live dependencies are present.</td></tr><tr><td>029</td><td>Task 029: Add Stage 2 Evidence Validator</td><td><span class="pill good">completed</span></td><td>artifact_validator</td><td>codex-logs/029-add-stage2-evidence-validator.log</td><td>Stage 2 evidence validator covers Task 012-022 plus Demo 10 dry-run/live-smoke evidence.</td><td>Rerun python3 scripts/check_stage2_evidence.py after new Demo 10 live/dry-run evidence is created.</td></tr><tr><td>030</td><td>Task 030: Refresh Project Status Deliverables</td><td><span class="pill good">completed</span></td><td>report_refresh</td><td>codex-logs/030-refresh-project-status-deliverables.log</td><td>Status deliverables and HTML were refreshed and verified; queue exited with status 0.</td><td>Use deliverables/status.html for presentation; install missing live dependencies before full live Demo 10.</td></tr></tbody></table></div>
+      <h2>四、模块状态</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>模块</th><th>状态</th><th>说明</th></tr></thead>
+          <tbody>
+            <tr><td><code>px4_offboard_hover</code></td><td><span class="pill good">已实现</span></td><td>Demo 01-04、PX4 Offboard 基类和 UAV 高层控制桥。</td></tr>
+            <tr><td><code>aerial_manip_msgs</code></td><td><span class="pill good">已实现</span></td><td>平台状态、机械臂命令/状态、系统观测、安全状态和 Approach action。</td></tr>
+            <tr><td><code>aerial_manip_control</code></td><td><span class="pill good">已实现</span></td><td>机械臂桥、状态聚合、协同接近控制器、ros2_control 配置与 launch。</td></tr>
+            <tr><td><code>aerial_manip_gazebo</code></td><td><span class="pill good">已实现</span></td><td>x500_arm_2dof 模型、smoke world、相机桥接配置。</td></tr>
+            <tr><td><code>aerial_manip_vision</code></td><td><span class="pill good">已实现基线</span></td><td>目标位姿节点，支持显式 placeholder；真实图像桥接等待 <code>ros_gz_bridge</code>。</td></tr>
+            <tr><td><code>aerial_manip_eval</code></td><td><span class="pill good">已实现</span></td><td>Demo 10、合成机械臂控制器、episode recorder、回归检查。</td></tr>
+            <tr><td><code>aerial_manip_policy</code></td><td><span class="pill good">已实现骨架</span></td><td>LeRobot 训练入口和策略桥，仍只输出高层动作块。</td></tr>
+          </tbody>
+        </table>
+      </div>
     </section>
+
     <section>
-      <h2>Error Diagnosis</h2>
-      <p><span class="pill warn">Warning</span> Live validation is dependency-gated, not source-code failing.</p>
-      <p>Missing packages:</p><ul><li><code>ros_gz_bridge</code></li><li><code>gz_ros2_control</code></li><li><code>controller_manager</code></li><li><code>joint_state_broadcaster</code></li><li><code>forward_command_controller</code></li><li><code>joint_trajectory_controller</code></li></ul>
-      <p>Camera sample frame: <code>sample_frame=not_captured; reason=ros_gz_bridge package is not available; live image bridge skipped</code></p>
-      <p>Demo 10 live-smoke: <code>RESULT=PASS mode=live-smoke reason=stack_ready</code>; <code>STACK_READY=YES reason=ready_for_takeoff detail=PX4 reached Ready for takeoff</code></p>
+      <h2>五、任务队列完成情况</h2>
+      <div class="grid">
+        <div class="metric"><span class="muted">总任务数</span><strong>30</strong></div>
+        <div class="metric"><span class="muted">完成类任务</span><strong>30</strong></div>
+        <div class="metric"><span class="muted">失败任务</span><strong>0</strong></div>
+        <div class="metric"><span class="muted">阻塞任务</span><strong>0</strong></div>
+      </div>
+      <h3>优化队列 023-030</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>任务</th><th>状态</th><th>完成内容</th><th>需要说明的限制</th></tr></thead>
+          <tbody>
+            <tr><td>023 环境预检</td><td><span class="pill warn">完成但有告警</span></td><td>新增环境检查脚本和 Stage 2 runbook。</td><td>live 依赖未齐，但 dry-run 可用。</td></tr>
+            <tr><td>024 2-DOF 接口归一</td><td><span class="pill good">完成</span></td><td>统一机械臂两关节命名和 Demo 10 指标。</td><td>没有做真实硬件/控制器 live 验证。</td></tr>
+            <tr><td>025 ros2_control 集成</td><td><span class="pill warn">完成但有告警</span></td><td>新增控制器 YAML、launch 和 SDF 插件配置。</td><td>缺依赖，controller spawning 未 live 验证。</td></tr>
+            <tr><td>026 坐标/Schema 回归</td><td><span class="pill good">完成</span></td><td>新增 <code>stage2_schema.py</code> 和 <code>check_stage2_schema.py</code>。</td><td>属于离线确定性检查，不代表 live TF 时序验证。</td></tr>
+            <tr><td>027 视觉桥 smoke</td><td><span class="pill warn">完成但有告警</span></td><td>验证模型资源、Gazebo camera topic、placeholder target pose。</td><td>缺 <code>ros_gz_bridge</code>，未捕获 sample_frame。</td></tr>
+            <tr><td>028 live stack / Demo 10 加固</td><td><span class="pill warn">live-smoke 完成</span></td><td>加固 start/stop 脚本，bounded live-smoke 到 PX4 Ready for takeoff。</td><td>完整 <code>DEMO10_MODE=live</code> 未跑。</td></tr>
+            <tr><td>029 证据校验器</td><td><span class="pill good">完成</span></td><td>新增 Stage 2 evidence validator，按产物判断任务完成情况。</td><td>后续新 demo 证据需要继续复跑。</td></tr>
+            <tr><td>030 状态交付物</td><td><span class="pill good">完成</span></td><td>刷新 JSON、Markdown、HTML 报告，队列退出状态为 0。</td><td>报告真实保留 live 依赖风险。</td></tr>
+          </tbody>
+        </table>
+      </div>
     </section>
+
     <section>
-      <h2>Risks</h2>
-      <ul><li>Full Demo 10 live path remains unverified; latest live evidence is bounded stack readiness only.</li><li>ros_gz_bridge is missing, so live ROS image bridge and camera sample-frame capture are unverified.</li><li>gz_ros2_control and controller packages are missing, so live arm controller spawning is unverified.</li><li>Active /usr/bin/python3 lacks LeRobot; use the conda LeRobot Python for training/policy tasks.</li></ul>
+      <h2>六、当前主要风险与未验证项</h2>
+      <ul>
+        <li><strong>完整 live Demo 10 未验证：</strong>目前 live 证据是 stack readiness / live-smoke，说明 PX4/Gazebo 能启动到 Ready for takeoff，但还没有完整执行“识别目标 + 协同接近 + 末端保持”。</li>
+        <li><strong>缺少 ROS/Gazebo 桥接包：</strong><code>ros_gz_bridge</code> 缺失，所以相机图像桥和 sample frame 捕获未验证。</li>
+        <li><strong>缺少 ros2_control 运行包：</strong><code>gz_ros2_control</code>、<code>controller_manager</code>、<code>joint_state_broadcaster</code>、<code>forward_command_controller</code>、<code>joint_trajectory_controller</code> 未在当前 ROS 2 环境中暴露。</li>
+        <li><strong>LeRobot 环境分离：</strong>系统 Python 不能 import <code>lerobot</code>；但 conda 环境 <code>/home/clcwork/miniconda3/envs/lerobot/bin/python</code> 可用，版本为 0.5.2。</li>
+      </ul>
     </section>
+
     <section>
-      <h2>Next Actions</h2>
-      <ul><li><code>Install the missing ROS 2 Jazzy bridge/control packages when approved.</code></li><li><code>Rerun bash scripts/check_stage2_environment.sh and bash scripts/smoke_vision_bridge.sh after package installation.</code></li><li><code>Rerun DEMO10_MODE=live-smoke RESET_STACK=1 bash scripts/run_regression_demo_10.sh before full live Demo 10.</code></li><li><code>Run DEMO10_MODE=live RESET_STACK=1 bash scripts/run_regression_demo_10.sh only after live prerequisites pass.</code></li></ul>
+      <h2>七、下一步建议</h2>
+      <ol>
+        <li>安装或切换到包含 <code>ros_gz_bridge</code> 和 <code>gz_ros2_control</code> 的 ROS 2 Jazzy 环境。</li>
+        <li>复跑 <code>bash scripts/check_stage2_environment.sh</code>，直到 <code>live_ready=YES</code>。</li>
+        <li>复跑 <code>bash scripts/smoke_vision_bridge.sh</code>，补齐相机 sample frame 证据。</li>
+        <li>复跑 <code>ros2 launch aerial_manip_control arm_control.launch.py</code>，验证机械臂控制器真实加载。</li>
+        <li>先跑 <code>DEMO10_MODE=live-smoke RESET_STACK=1 bash scripts/run_regression_demo_10.sh</code>，再跑完整 <code>DEMO10_MODE=live</code>。</li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>八、老师汇报时可以强调的点</h2>
+      <ul>
+        <li>项目路线没有盲目跳到 MoveIt 2 或大模型控制，而是先把 PX4/Gazebo/ROS 2 的最小闭环和安全边界做清楚。</li>
+        <li>已经实现 UAV 高层控制、机械臂高层控制、状态聚合、坐标规范、视觉目标基线、Demo 回归和证据化任务队列。</li>
+        <li>系统具备可重复检查能力：不是只说“能跑”，而是有任务日志、dry-run 指标、live-smoke 结果和 HTML 状态报告。</li>
+        <li>当前风险被明确记录为环境依赖缺失，不是核心代码结构无法推进。</li>
+      </ul>
     </section>
   </main>
-  <footer>Generated by Codex. Source JSON: <code>deliverables/project-audit.json</code>, <code>deliverables/task-status.json</code>.</footer>
+
+  <footer>
+    Generated by Codex｜数据来源：<code>deliverables/project-audit.json</code>、<code>deliverables/task-status.json</code>、<code>codex-logs/</code>
+  </footer>
 </body>
 </html>
