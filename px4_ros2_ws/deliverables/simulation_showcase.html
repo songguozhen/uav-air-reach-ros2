@@ -70,7 +70,7 @@
   <header>
     <h1>PX4 ROS2 UAV Capture Simulation Showcase</h1>
     <div class="hero-line">
-      <span>Generated: 2026-05-28T12:17:13+08:00</span>
+      <span>Generated: 2026-05-29T01:19:27+08:00</span>
       <span>Workspace: <code>/home/clcwork/UAV_capture/px4_ros2_ws</code></span>
       <a href="status.html">Project status page</a>
     </div>
@@ -79,7 +79,7 @@
     <section>
       <h2>Project Simulation Status</h2>
       <div class="grid">
-        <div class="card"><span class="muted">Overall</span><h3><span class="status Healthy">Healthy</span></h3></div>
+        <div class="card"><span class="muted">Overall</span><h3><span class="status Warning">Warning</span></h3></div>
         <div class="card"><span class="muted">Latest live Demo 10</span><h3><span class="status PASS">PASS</span></h3><code>logs/demo10_air_reach/20260528_114546</code></div>
         <div class="card"><span class="muted">Latest camera sample</span><h3><span class="status PASS">PASS</span></h3><code>visualizations/demo_07_camera/20260528_113542</code></div>
       </div>
@@ -179,6 +179,48 @@
   </div>
 </section>
 
+    <section id="advanced-visualizations">
+  <h2>Advanced Visualization Layers</h2>
+  <p><span class="status WARN">WARN</span> Demo 10 advanced replay, Demo 01-04 comparison, diagnostics dashboard, packaging summary, and manifest coverage.</p>
+  <div class="grid two">
+    <div class="card">
+  <h3>Visualization Manifest <span class="status PASS">PASS</span></h3>
+  <p>Machine-readable evidence index for advanced visualization layers.</p>
+  <p><code>visualizations/visualization_manifest.json</code></p>
+  <div class="artifact-links"><a href="../visualizations/visualization_manifest.json">visualization_manifest.json</a></div>
+  <p class="muted">No warnings.</p>
+</div>
+<div class="card">
+  <h3>Demo 10 Advanced 3D Replay <span class="status WARN">WARN</span></h3>
+  <p>Interactive 3D replay plus optional packaged MP4.</p>
+  <p><code>visualizations/demo10_air_reach/20260528_114546/advanced</code></p>
+  <div class="artifact-links"><a href="../visualizations/demo10_air_reach/20260528_114546/advanced/advanced_replay.html">Advanced 3D replay HTML</a><a href="../visualizations/demo10_air_reach/20260528_114546/advanced/advanced_replay_summary.json">Advanced replay summary</a><span>Advanced replay MP4 <span class="status WARN">WARN</span></span></div>
+  <ul><li>camera frustum evidence missing; rendered nominal frustum from UAV pose only</li><li>ffmpeg not installed; skipped advanced_replay.mp4</li><li>ffmpeg unavailable and advanced_replay.mp4 is missing.</li></ul>
+</div>
+<div class="card">
+  <h3>Demo 01-04 Flight Comparison <span class="status WARN">WARN</span></h3>
+  <p>Combined 3D comparison board for the four baseline demos.</p>
+  <p><code>visualizations/flight_comparison/20260529_010033</code></p>
+  <div class="artifact-links"><a href="../visualizations/flight_comparison/20260529_010033/flight_comparison_3d.html">Comparison 3D HTML</a><a href="../visualizations/flight_comparison/20260529_010033/flight_comparison_3d.png">Comparison 3D PNG</a><span>Comparison 3D MP4 <span class="status WARN">WARN</span></span><a href="../visualizations/flight_comparison/20260529_010033/summary.json">Comparison summary</a></div>
+  <ul><li>ffmpeg unavailable and flight_comparison_3d.mp4 is missing.</li></ul>
+</div>
+<div class="card">
+  <h3>2D Diagnostics Dashboard And Sheets <span class="status WARN">WARN</span></h3>
+  <p>Dashboard HTML, poster sheets, diagnostics summary, and optional overview MP4.</p>
+  <p><code>visualizations/diagnostics/20260529_010849</code></p>
+  <div class="artifact-links"><a href="../visualizations/diagnostics/20260529_010849/diagnostics_dashboard.html">Diagnostics dashboard HTML</a><a href="../visualizations/diagnostics/20260529_010849/overview_sheet.png">Overview sheet</a><a href="../visualizations/diagnostics/20260529_010849/metrics_sheet.png">Metrics sheet</a><a href="../visualizations/diagnostics/20260529_010849/diagnostics_summary.json">Diagnostics summary</a><span>Diagnostics overview MP4 <span class="status WARN">WARN</span></span></div>
+  <ul><li>ffmpeg unavailable and diagnostics_overview.mp4 is missing.</li></ul>
+</div>
+<div class="card">
+  <h3>Video Packaging Summary <span class="status WARN">WARN</span></h3>
+  <p>Reusable MP4 packaging status across demo and advanced outputs.</p>
+  <p><code>visualizations/video_packaging_summary.json</code></p>
+  <div class="artifact-links"><a href="../visualizations/video_packaging_summary.json">video_packaging_summary.json</a></div>
+  <ul><li>ffmpeg unavailable; generation will be skipped and existing MP4s will only be validated.</li><li>ffprobe unavailable; codec and duration metadata will be omitted.</li></ul>
+</div>
+  </div>
+</section>
+
     <section>
       <h2>Live / Dry-run / Fallback Status</h2>
       <div class="table-wrap">
@@ -196,10 +238,12 @@
     <section>
       <h2>Risks and Next Actions</h2>
       <div class="grid two">
-        <div><h3>Risks</h3><ul><li>Reproducibility still depends on local ROS/Gazebo bridge and controller packages.</li>
+        <div><h3>Risks</h3><ul><li>One or more advanced visualization layers are incomplete or only partially packaged.</li>
+<li>Reproducibility still depends on local ROS/Gazebo bridge and controller packages.</li>
 <li>Timestamped evidence is local to this workspace and should be regenerated after dependency changes.</li>
 <li>LeRobot policy integration remains scaffolded; current Demo 10 evidence validates the scripted/control bridge path.</li></ul></div>
         <div><h3>Next Actions</h3><ul><li>Use deliverables/simulation_showcase.html for presentation review of current simulation effects.</li>
+<li>Review the Advanced Visualization Layers section for 3D comparison, diagnostics, packaging, and manifest status.</li>
 <li>Open the Demo 10 interactive replay from visualizations/demo10_air_reach/&lt;timestamp&gt;/trajectory_replay.html for path playback.</li>
 <li>Rerun python3 scripts/generate_demo10_visualizations.py --latest-live after new Demo 10 live evidence.</li>
 <li>Rerun python3 scripts/generate_demo10_replay.py --latest-live after new Demo 10 live evidence.</li>

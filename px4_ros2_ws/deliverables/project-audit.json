@@ -2,10 +2,10 @@
   "schema_version": "project_audit_v2_simulation_showcase",
   "project_name": "PX4 ROS2 UAV Capture / Stage 2 Aerial Manipulation Workspace",
   "repository_path": "/home/clcwork/UAV_capture/px4_ros2_ws",
-  "generated_at": "2026-05-28T12:17:13+08:00",
-  "generated_at_utc": "2026-05-28T04:17:13+00:00",
+  "generated_at": "2026-05-29T01:19:27+08:00",
+  "generated_at_utc": "2026-05-28T17:19:27+00:00",
   "git_repository": false,
-  "overall_status": "Healthy",
+  "overall_status": "Warning",
   "detected_stack": [
     "ROS 2 Jazzy",
     "PX4 SITL",
@@ -447,6 +447,170 @@
       "file": "trajectory_replay.html",
       "visualization_dir": "visualizations/demo10_air_reach/20260528_114546"
     },
+    "advanced_visualizations": {
+      "status": "WARN",
+      "layers": [
+        {
+          "id": "visualization_manifest",
+          "title": "Visualization Manifest",
+          "status": "PASS",
+          "path": "visualizations/visualization_manifest.json",
+          "artifacts": [
+            {
+              "label": "visualization_manifest.json",
+              "path": "visualizations/visualization_manifest.json",
+              "exists": true,
+              "required": true,
+              "size_bytes": 53396
+            }
+          ],
+          "detail": "Machine-readable evidence index for advanced visualization layers.",
+          "warnings": []
+        },
+        {
+          "id": "advanced_replay",
+          "title": "Demo 10 Advanced 3D Replay",
+          "status": "WARN",
+          "path": "visualizations/demo10_air_reach/20260528_114546/advanced",
+          "artifacts": [
+            {
+              "label": "Advanced 3D replay HTML",
+              "path": "visualizations/demo10_air_reach/20260528_114546/advanced/advanced_replay.html",
+              "exists": true,
+              "required": true,
+              "size_bytes": 366025
+            },
+            {
+              "label": "Advanced replay summary",
+              "path": "visualizations/demo10_air_reach/20260528_114546/advanced/advanced_replay_summary.json",
+              "exists": true,
+              "required": true,
+              "size_bytes": 2314
+            },
+            {
+              "label": "Advanced replay MP4",
+              "path": "visualizations/demo10_air_reach/20260528_114546/advanced/advanced_replay.mp4",
+              "exists": false,
+              "required": false,
+              "size_bytes": 0
+            }
+          ],
+          "detail": "Interactive 3D replay plus optional packaged MP4.",
+          "warnings": [
+            "camera frustum evidence missing; rendered nominal frustum from UAV pose only",
+            "ffmpeg not installed; skipped advanced_replay.mp4",
+            "ffmpeg unavailable and advanced_replay.mp4 is missing."
+          ]
+        },
+        {
+          "id": "flight_comparison",
+          "title": "Demo 01-04 Flight Comparison",
+          "status": "WARN",
+          "path": "visualizations/flight_comparison/20260529_010033",
+          "artifacts": [
+            {
+              "label": "Comparison 3D HTML",
+              "path": "visualizations/flight_comparison/20260529_010033/flight_comparison_3d.html",
+              "exists": true,
+              "required": true,
+              "size_bytes": 687884
+            },
+            {
+              "label": "Comparison 3D PNG",
+              "path": "visualizations/flight_comparison/20260529_010033/flight_comparison_3d.png",
+              "exists": true,
+              "required": false,
+              "size_bytes": 512703
+            },
+            {
+              "label": "Comparison 3D MP4",
+              "path": "visualizations/flight_comparison/20260529_010033/flight_comparison_3d.mp4",
+              "exists": false,
+              "required": false,
+              "size_bytes": 0
+            },
+            {
+              "label": "Comparison summary",
+              "path": "visualizations/flight_comparison/20260529_010033/summary.json",
+              "exists": true,
+              "required": true,
+              "size_bytes": 6040
+            }
+          ],
+          "detail": "Combined 3D comparison board for the four baseline demos.",
+          "warnings": [
+            "ffmpeg unavailable and flight_comparison_3d.mp4 is missing."
+          ]
+        },
+        {
+          "id": "diagnostics",
+          "title": "2D Diagnostics Dashboard And Sheets",
+          "status": "WARN",
+          "path": "visualizations/diagnostics/20260529_010849",
+          "artifacts": [
+            {
+              "label": "Diagnostics dashboard HTML",
+              "path": "visualizations/diagnostics/20260529_010849/diagnostics_dashboard.html",
+              "exists": true,
+              "required": true,
+              "size_bytes": 141874
+            },
+            {
+              "label": "Overview sheet",
+              "path": "visualizations/diagnostics/20260529_010849/overview_sheet.png",
+              "exists": true,
+              "required": false,
+              "size_bytes": 279734
+            },
+            {
+              "label": "Metrics sheet",
+              "path": "visualizations/diagnostics/20260529_010849/metrics_sheet.png",
+              "exists": true,
+              "required": false,
+              "size_bytes": 265012
+            },
+            {
+              "label": "Diagnostics summary",
+              "path": "visualizations/diagnostics/20260529_010849/diagnostics_summary.json",
+              "exists": true,
+              "required": true,
+              "size_bytes": 2851
+            },
+            {
+              "label": "Diagnostics overview MP4",
+              "path": "visualizations/diagnostics/20260529_010849/diagnostics_overview.mp4",
+              "exists": false,
+              "required": false,
+              "size_bytes": 0
+            }
+          ],
+          "detail": "Dashboard HTML, poster sheets, diagnostics summary, and optional overview MP4.",
+          "warnings": [
+            "ffmpeg unavailable and diagnostics_overview.mp4 is missing."
+          ]
+        },
+        {
+          "id": "video_packaging",
+          "title": "Video Packaging Summary",
+          "status": "WARN",
+          "path": "visualizations/video_packaging_summary.json",
+          "artifacts": [
+            {
+              "label": "video_packaging_summary.json",
+              "path": "visualizations/video_packaging_summary.json",
+              "exists": true,
+              "required": true,
+              "size_bytes": 6874
+            }
+          ],
+          "detail": "Reusable MP4 packaging status across demo and advanced outputs.",
+          "warnings": [
+            "ffmpeg unavailable; generation will be skipped and existing MP4s will only be validated.",
+            "ffprobe unavailable; codec and duration metadata will be omitted."
+          ]
+        }
+      ]
+    },
     "stage2_environment": {
       "live_ready": "PARTIAL",
       "dry_run_ready": "YES",
@@ -485,16 +649,18 @@
     {
       "command": "python3 scripts/check_stage2_evidence.py",
       "status": "required",
-      "evidence": "Task 036 validation command"
+      "evidence": "Task 042 validation command"
     }
   ],
   "risks": [
+    "One or more advanced visualization layers are incomplete or only partially packaged.",
     "Reproducibility still depends on local ROS/Gazebo bridge and controller packages.",
     "Timestamped evidence is local to this workspace and should be regenerated after dependency changes.",
     "LeRobot policy integration remains scaffolded; current Demo 10 evidence validates the scripted/control bridge path."
   ],
   "next_actions": [
     "Use deliverables/simulation_showcase.html for presentation review of current simulation effects.",
+    "Review the Advanced Visualization Layers section for 3D comparison, diagnostics, packaging, and manifest status.",
     "Open the Demo 10 interactive replay from visualizations/demo10_air_reach/<timestamp>/trajectory_replay.html for path playback.",
     "Rerun python3 scripts/generate_demo10_visualizations.py --latest-live after new Demo 10 live evidence.",
     "Rerun python3 scripts/generate_demo10_replay.py --latest-live after new Demo 10 live evidence.",

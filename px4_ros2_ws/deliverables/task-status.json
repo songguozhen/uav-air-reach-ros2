@@ -1,4 +1,218 @@
 {
+  "advanced_visualizations": {
+    "checks": [
+      {
+        "failures": [],
+        "files": [
+          {
+            "exists": true,
+            "path": "visualizations/visualization_manifest.json",
+            "required": true,
+            "size_bytes": 53396
+          }
+        ],
+        "id": "manifest",
+        "path": "visualizations/visualization_manifest.json",
+        "status": "PASS",
+        "task": {
+          "done_exists": true,
+          "log_files": [
+            "codex-logs/037-advanced-visualization-architecture-20260529_003854.log",
+            "codex-logs/037-advanced-visualization-architecture-20260529_003936.log",
+            "codex-logs/037-advanced-visualization-architecture.log"
+          ],
+          "stem": "037-advanced-visualization-architecture",
+          "task": "037",
+          "task_file": "codex-tasks/037-advanced-visualization-architecture.md",
+          "was_run": true
+        },
+        "title": "Visualization manifest",
+        "warnings": []
+      },
+      {
+        "failures": [],
+        "files": [
+          {
+            "exists": true,
+            "path": "visualizations/demo10_air_reach/20260528_114546/advanced/advanced_replay.html",
+            "required": true,
+            "size_bytes": 366025
+          },
+          {
+            "exists": true,
+            "path": "visualizations/demo10_air_reach/20260528_114546/advanced/advanced_replay_summary.json",
+            "required": true,
+            "size_bytes": 2314
+          },
+          {
+            "exists": false,
+            "path": "visualizations/demo10_air_reach/20260528_114546/advanced/advanced_replay.mp4",
+            "required": false,
+            "size_bytes": 0
+          }
+        ],
+        "id": "advanced_replay",
+        "path": "visualizations/demo10_air_reach/20260528_114546/advanced",
+        "status": "WARN",
+        "task": {
+          "done_exists": true,
+          "log_files": [
+            "codex-logs/038-build-demo10-advanced-3d-replay-20260529_004502.log",
+            "codex-logs/038-build-demo10-advanced-3d-replay.log"
+          ],
+          "stem": "038-build-demo10-advanced-3d-replay",
+          "task": "038",
+          "task_file": "codex-tasks/038-build-demo10-advanced-3d-replay.md",
+          "was_run": true
+        },
+        "title": "Demo 10 advanced replay",
+        "warnings": [
+          "advanced_replay.mp4 missing; optional packaging remains WARN"
+        ]
+      },
+      {
+        "failures": [],
+        "files": [
+          {
+            "exists": true,
+            "path": "visualizations/flight_comparison/20260529_010033/flight_comparison_3d.html",
+            "required": true,
+            "size_bytes": 687884
+          },
+          {
+            "exists": true,
+            "path": "visualizations/flight_comparison/20260529_010033/flight_comparison_3d.png",
+            "required": false,
+            "size_bytes": 512703
+          },
+          {
+            "exists": false,
+            "path": "visualizations/flight_comparison/20260529_010033/flight_comparison_3d.mp4",
+            "required": false,
+            "size_bytes": 0
+          },
+          {
+            "exists": true,
+            "path": "visualizations/flight_comparison/20260529_010033/summary.json",
+            "required": true,
+            "size_bytes": 6040
+          }
+        ],
+        "id": "flight_comparison",
+        "path": "visualizations/flight_comparison/20260529_010033",
+        "status": "WARN",
+        "task": {
+          "done_exists": true,
+          "log_files": [
+            "codex-logs/039-build-flight-comparison-3d-visuals-20260529_005441.log",
+            "codex-logs/039-build-flight-comparison-3d-visuals.log"
+          ],
+          "stem": "039-build-flight-comparison-3d-visuals",
+          "task": "039",
+          "task_file": "codex-tasks/039-build-flight-comparison-3d-visuals.md",
+          "was_run": true
+        },
+        "title": "Demo 01-04 flight comparison",
+        "warnings": [
+          "flight_comparison_3d.mp4 missing; optional packaging remains WARN"
+        ]
+      },
+      {
+        "failures": [],
+        "files": [
+          {
+            "exists": true,
+            "path": "visualizations/diagnostics/20260529_010849/diagnostics_dashboard.html",
+            "required": true,
+            "size_bytes": 141874
+          },
+          {
+            "exists": true,
+            "path": "visualizations/diagnostics/20260529_010849/overview_sheet.png",
+            "required": false,
+            "size_bytes": 279734
+          },
+          {
+            "exists": true,
+            "path": "visualizations/diagnostics/20260529_010849/metrics_sheet.png",
+            "required": false,
+            "size_bytes": 265012
+          },
+          {
+            "exists": true,
+            "path": "visualizations/diagnostics/20260529_010849/diagnostics_summary.json",
+            "required": true,
+            "size_bytes": 2851
+          },
+          {
+            "exists": false,
+            "path": "visualizations/diagnostics/20260529_010849/diagnostics_overview.mp4",
+            "required": false,
+            "size_bytes": 0
+          }
+        ],
+        "id": "diagnostics",
+        "path": "visualizations/diagnostics/20260529_010849",
+        "status": "WARN",
+        "task": {
+          "done_exists": true,
+          "log_files": [
+            "codex-logs/040-add-2d-diagnostics-dashboard-20260529_010135.log",
+            "codex-logs/040-add-2d-diagnostics-dashboard.log"
+          ],
+          "stem": "040-add-2d-diagnostics-dashboard",
+          "task": "040",
+          "task_file": "codex-tasks/040-add-2d-diagnostics-dashboard.md",
+          "was_run": true
+        },
+        "title": "Diagnostics dashboard",
+        "warnings": [
+          "diagnostics_overview.mp4 missing; optional packaging remains WARN"
+        ]
+      },
+      {
+        "failures": [],
+        "files": [
+          {
+            "exists": true,
+            "path": "visualizations/video_packaging_summary.json",
+            "required": true,
+            "size_bytes": 6874
+          }
+        ],
+        "id": "video_packaging",
+        "path": "visualizations/video_packaging_summary.json",
+        "status": "WARN",
+        "task": {
+          "done_exists": true,
+          "log_files": [
+            "codex-logs/041-add-visualization-video-packaging-20260529_011044.log",
+            "codex-logs/041-add-visualization-video-packaging.log"
+          ],
+          "stem": "041-add-visualization-video-packaging",
+          "task": "041",
+          "task_file": "codex-tasks/041-add-visualization-video-packaging.md",
+          "was_run": true
+        },
+        "title": "Video packaging summary",
+        "warnings": [
+          "ffmpeg unavailable and flight_comparison_3d.mp4 is missing.",
+          "ffmpeg unavailable and advanced_replay.mp4 is missing.",
+          "ffmpeg unavailable and diagnostics_overview.mp4 is missing."
+        ]
+      }
+    ],
+    "failures": [],
+    "status": "WARN",
+    "warnings": [
+      "advanced_replay: advanced_replay.mp4 missing; optional packaging remains WARN",
+      "flight_comparison: flight_comparison_3d.mp4 missing; optional packaging remains WARN",
+      "diagnostics: diagnostics_overview.mp4 missing; optional packaging remains WARN",
+      "video_packaging: ffmpeg unavailable and flight_comparison_3d.mp4 is missing.",
+      "video_packaging: ffmpeg unavailable and advanced_replay.mp4 is missing.",
+      "video_packaging: ffmpeg unavailable and diagnostics_overview.mp4 is missing."
+    ]
+  },
   "demo10": {
     "dry_run": {
       "failures": [],
@@ -50,7 +264,7 @@
       "status": "PASS"
     }
   },
-  "generated_at": "2026-05-28T04:08:09+00:00",
+  "generated_at": "2026-05-28T17:19:55+00:00",
   "overall_status": "PASS",
   "schema_version": "stage2_evidence_validation_v1",
   "stage2_docs": {

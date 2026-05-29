@@ -94,6 +94,230 @@ plot and labels the missing data with a WARN placeholder. Dry-run fallback
 summaries must be treated as presentation placeholders, not live flight
 evidence.
 
+## Demo 10 Advanced 3D Replay
+
+Generate the richer 3D replay from the same Demo 10 evidence:
+
+```bash
+python3 scripts/generate_demo10_advanced_replay.py --latest-live
+```
+
+To render a specific run directory:
+
+```bash
+python3 scripts/generate_demo10_advanced_replay.py \
+  --run-dir logs/demo10_air_reach/<timestamp>
+```
+
+The script prefers the latest successful live run with episode data and falls
+back to successful dry-run evidence only when no suitable live run is present.
+It writes a self-contained replay under:
+
+```text
+visualizations/demo10_air_reach/<timestamp>/advanced/
+```
+
+Generated files:
+
+| File | Purpose |
+| --- | --- |
+| `advanced_replay.html` | Standalone 3D replay page with UAV path, arm endpoint, target trail, command path, phase markers, safety/workspace boxes, and camera frustum overlay. |
+| `advanced_replay_summary.json` | Machine-readable status, source paths, badge, warning list, metrics, and output inventory. |
+| `advanced_replay.mp4` | Optional compact clip from the same evidence when `ffmpeg` is installed. |
+| `frames/` | Temporary rendered frame set kept only when MP4 export is attempted. |
+
+The replay page does not require ROS to view it. A clear badge marks
+`LIVE PASS`, `LIVE WARN`, or `DRY-RUN FALLBACK`. Missing camera-frustum or
+target-pose evidence is recorded as `WARN` in the summary instead of failing
+generation.
+
+## Demo 10 2D Diagnostics Dashboard
+
+Generate the auxiliary 2D dashboard and poster sheets from the latest
+successful live Demo 10 evidence:
+
+```bash
+python3 scripts/generate_visual_diagnostics_dashboard.py
+```
+
+The script selects the newest `mode=live` and `RESULT=PASS` run with episode
+observations and actions, reuses existing Demo 10 PNGs when present, and
+redraws the remaining panels from JSONL evidence. Outputs are written to:
+
+```text
+visualizations/diagnostics/<timestamp>/
+```
+
+Generated files:
+
+| File | Purpose |
+| --- | --- |
+| `diagnostics_dashboard.html` | Self-contained 2D dashboard with phase timeline, XY path, altitude, speed, flight error, target visibility, joint positions, endpoint error, and final task status. |
+| `overview_sheet.png` | Static poster sheet focused on trajectory, sequence timing, and XY motion. |
+| `metrics_sheet.png` | Static poster sheet focused on altitude, speed, and the main tracking and endpoint metrics. |
+| `diagnostics_summary.json` | Machine-readable source paths, panel readiness, warnings, and output inventory. |
+
+The HTML dashboard reuses these Demo 10 presentation plots from
+`visualizations/demo10_air_reach/<source_timestamp>/` when available:
+`phase_timeline.png`, `flight_error.png`, `target_visibility.png`,
+`joint_positions.png`, and `endpoint_error.png`. Missing streams remain usable
+through `WARN` placeholders instead of failing generation.
+
+## Advanced Visualization Plan
+
+The next visualization stage is documented in
+`docs/ADVANCED_VISUALIZATION_PLAN.md`. It adds a queued plan for richer 3D
+replays, 2D diagnostic dashboards, static poster sheets, and presentation MP4
+clips while preserving all existing timestamped evidence directories.
+
+The planned advanced outputs include:
+
+| Output | Purpose |
+| --- | --- |
+| `advanced/advanced_replay.html` / `advanced/advanced_replay.mp4` | Demo 10 UAV, arm, target, command path, phase markers, camera frustum, and workspace overlays. |
+| `flight_comparison_3d.html` / `flight_comparison_3d.mp4` | Combined Demo 01-04 3D trajectory comparison. |
+| `diagnostics_dashboard.html` | 2D synchronized assist view for phase, path, errors, visibility, joints, and task status. |
+| `overview_sheet.png`, `metrics_sheet.png` | Static slide/report images. |
+| `visualization_manifest.json` | Machine-readable source and artifact inventory. |
+
+## Demo 01-04 Flight Comparison 3D
+
+Generate the latest comparative 3D board from the newest Demo 01-04
+timestamped trajectories:
+
+```bash
+python3 scripts/generate_flight_comparison_3d.py
+```
+
+The script writes a new output directory:
+
+```text
+visualizations/flight_comparison/<timestamp>/
+```
+
+Generated files:
+
+| File | Purpose |
+| --- | --- |
+| `flight_comparison_3d.html` | Self-contained comparison page with the rendered board and per-demo metrics cards. |
+| `flight_comparison_3d.png` | Static comparison board with a shared 3D NED path view and altitude profile panel. |
+| `flight_comparison_3d.mp4` | Optional compact rotating 3D clip when `ffmpeg` is installed. |
+| `summary.json` | Machine-readable source runs, artifact paths, and warnings. |
+
+The comparison board reads the latest `trajectory.csv`, `summary.md`, and
+`result.txt` from Demo 01-04. Solid lines show actual trajectories, dashed
+lines show target paths when present, circle markers show starts, X markers
+show endpoints, and the altitude panel uses `-z` so positive values represent
+height above the local PX4 NED origin.
+
+If the latest Demo 01-04 directories already contain `trajectory.mp4`, the
+script leaves them unchanged. When a latest run is missing its MP4 and source
+data is sufficient, the task workflow may backfill the clip in that same
+timestamped directory.
+
+The implementation tasks are queued as `codex-tasks/037` through
+`codex-tasks/042`. Inspect the order without running work:
+
+```bash
+./run_codex_queue.sh --dry-run --from 037
+```
+
+Run the new advanced visualization queue:
+
+```bash
+./run_codex_queue.sh --from 037
+```
+
+Task 037 also fixes the machine-readable evidence manifest at:
+
+```text
+visualizations/visualization_manifest.json
+```
+
+Regenerate it from the workspace root with:
+
+```bash
+python3 scripts/collect_visualization_sources.py
+python3 scripts/generate_simulation_showcase.py
+```
+
+## Showcase And Status Entry Points
+
+The main entry point for readers is:
+
+```text
+deliverables/status.html
+```
+
+From there, jump into the advanced visualization section of:
+
+```text
+deliverables/simulation_showcase.html#advanced-visualizations
+```
+
+The showcase integrates these advanced layers when present and labels each one
+with `PASS`, `WARN`, or `MISSING`:
+
+| Layer | Expected links |
+| --- | --- |
+| Demo 10 advanced replay | `advanced_replay.html`, `advanced_replay_summary.json`, optional `advanced_replay.mp4` |
+| Demo 01-04 comparison | `flight_comparison_3d.html`, `flight_comparison_3d.png`, optional `flight_comparison_3d.mp4`, `summary.json` |
+| 2D diagnostics | `diagnostics_dashboard.html`, `overview_sheet.png`, `metrics_sheet.png`, `diagnostics_summary.json`, optional `diagnostics_overview.mp4` |
+| Video packaging | `visualizations/video_packaging_summary.json` |
+| Evidence manifest | `visualizations/visualization_manifest.json` |
+
+`PASS` means all expected core artifacts are present. `WARN` means the layer is
+usable but has optional gaps such as missing MP4 packaging. `MISSING` means the
+core HTML or manifest-style output for that layer is absent.
+
+The manifest records the latest Demo 01-04, Demo 07, Demo 10 source evidence,
+planned advanced artifact paths, per-layer readiness, missing-data warnings,
+and file sizes for the selected source artifacts.
+
+## Package Visualization Videos
+
+Use the packaging helper to regenerate or validate reusable MP4 clips from the
+latest verified visualization evidence without rerunning PX4 or Gazebo:
+
+```bash
+python3 scripts/package_visualization_videos.py --dry-run --all
+python3 scripts/package_visualization_videos.py --latest --all
+```
+
+Supported selectors:
+
+| Option | Scope |
+| --- | --- |
+| `--latest` | Latest PASS Demo 01-04 `trajectory.mp4` clips from `trajectory.csv`. |
+| `--demo10` | Demo 10 `advanced/advanced_replay.mp4` and optional diagnostics `diagnostics_overview.mp4`. |
+| `--flight-comparison` | Latest `flight_comparison_3d.mp4` under `visualizations/flight_comparison/<timestamp>/`. |
+| `--all` | Equivalent to `--latest --demo10 --flight-comparison`. |
+| `--dry-run` | Report planned actions and warnings without writing files. |
+
+The packaging script checks `ffmpeg` and `ffprobe` first. When either tool is
+missing, it reports `WARN` instead of failing the run:
+
+- missing `ffmpeg`: generation is skipped and any existing MP4 is only
+  validated by file presence;
+- missing `ffprobe`: codec and duration fields are left empty in the generated
+  summary.
+
+Generated metadata files:
+
+| File | Purpose |
+| --- | --- |
+| `visualizations/video_packaging_summary.json` | Concise per-target packaging summary with codec, duration, file size, source paths, and warnings. |
+| `visualizations/visualization_manifest.json` | Existing manifest plus the latest `video_packaging` section. |
+
+Expected MP4 targets when source artifacts exist:
+
+| Output | Source evidence |
+| --- | --- |
+| `visualizations/demo10_air_reach/<timestamp>/advanced/advanced_replay.mp4` | Demo 10 PNG panels and `advanced_replay_summary.json`. |
+| `visualizations/flight_comparison/<timestamp>/flight_comparison_3d.mp4` | Latest `flight_comparison_3d.png` and `summary.json`. |
+| `visualizations/demo0x_*/<timestamp>/trajectory.mp4` | Latest PASS `trajectory.csv`, `summary.md`, and `result.txt`. |
+| `visualizations/diagnostics/<timestamp>/diagnostics_overview.mp4` | Optional diagnostics poster sheets when they exist. |
+
 ## Generate New Results
 
 Run demos from the workspace root:

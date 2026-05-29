@@ -61,6 +61,24 @@ DEMO10_VIS_FILES = [
     ("endpoint_error.png", "Endpoint error"),
 ]
 DEMO10_REPLAY_FILE = "trajectory_replay.html"
+ADVANCED_REPLAY_FILES = [
+    ("advanced_replay.html", "Advanced 3D replay HTML", True),
+    ("advanced_replay_summary.json", "Advanced replay summary", True),
+    ("advanced_replay.mp4", "Advanced replay MP4", False),
+]
+FLIGHT_COMPARISON_FILES = [
+    ("flight_comparison_3d.html", "Comparison 3D HTML", True),
+    ("flight_comparison_3d.png", "Comparison 3D PNG", False),
+    ("flight_comparison_3d.mp4", "Comparison 3D MP4", False),
+    ("summary.json", "Comparison summary", True),
+]
+DIAGNOSTICS_FILES = [
+    ("diagnostics_dashboard.html", "Diagnostics dashboard HTML", True),
+    ("overview_sheet.png", "Overview sheet", False),
+    ("metrics_sheet.png", "Metrics sheet", False),
+    ("diagnostics_summary.json", "Diagnostics summary", True),
+    ("diagnostics_overview.mp4", "Diagnostics overview MP4", False),
+]
 
 
 def main() -> int:
@@ -93,6 +111,7 @@ def collect_evidence() -> dict[str, Any]:
         "demo10_dry_run": collect_demo10_dry_run(),
         "demo10_visuals": collect_demo10_visuals(),
         "demo10_replay": collect_demo10_replay(),
+        "advanced_visualizations": collect_advanced_visualizations(),
         "stage2_environment": collect_stage2_environment(),
     }
 
@@ -285,6 +304,113 @@ def collect_stage2_environment() -> dict[str, Any]:
     }
 
 
+def collect_advanced_visualizations() -> dict[str, Any]:
+    video_summary = read_json(WORKSPACE / "visualizations" / "video_packaging_summary.json")
+    manifest = collect_manifest_layer()
+    advanced_replay = collect_advanced_replay_layer(video_summary)
+    flight_comparison = collect_flight_comparison_layer(video_summary)
+    diagnostics = collect_diagnostics_layer(video_summary)
+    layers = [
+        manifest,
+        advanced_replay,
+        flight_comparison,
+        diagnostics,
+        collect_video_packaging_layer(video_summary),
+    ]
+    overall = "PASS"
+    if any(layer["status"] == "MISSING" for layer in layers):
+        overall = "MISSING"
+    elif any(layer["status"] == "WARN" for layer in layers):
+        overall = "WARN"
+    return {"status": overall, "layers": layers}
+
+
+def collect_manifest_layer() -> dict[str, Any]:
+    path = WORKSPACE / "visualizations" / "visualization_manifest.json"
+    exists = path.is_file() and path.stat().st_size > 0
+    return {
+        "id": "visualization_manifest",
+        "title": "Visualization Manifest",
+        "status": "PASS" if exists else "MISSING",
+        "path": relative(path) if exists else None,
+        "artifacts": [
+            artifact_entry(path, "visualization_manifest.json", required=True),
+        ],
+        "detail": "Machine-readable evidence index for advanced visualization layers.",
+        "warnings": [],
+    }
+
+
+def collect_advanced_replay_layer(video_summary: dict[str, Any]) -> dict[str, Any]:
+    latest = latest_dir(WORKSPACE / "visualizations" / "demo10_air_reach")
+    base = latest / "advanced" if latest else None
+    artifacts = collect_named_artifacts(base, ADVANCED_REPLAY_FILES)
+    warnings = []
+    if base:
+        warnings.extend(read_summary_warnings(base / "advanced_replay_summary.json"))
+    warnings.extend(video_target_warnings(video_summary, "advanced_replay"))
+    status = classify_layer_status(artifacts, base is not None)
+    return {
+        "id": "advanced_replay",
+        "title": "Demo 10 Advanced 3D Replay",
+        "status": status,
+        "path": relative(base) if base and base.is_dir() else None,
+        "artifacts": artifacts,
+        "detail": "Interactive 3D replay plus optional packaged MP4.",
+        "warnings": warnings,
+    }
+
+
+def collect_flight_comparison_layer(video_summary: dict[str, Any]) -> dict[str, Any]:
+    latest = latest_dir(WORKSPACE / "visualizations" / "flight_comparison")
+    artifacts = collect_named_artifacts(latest, FLIGHT_COMPARISON_FILES)
+    warnings = video_target_warnings(video_summary, "flight_comparison_3d")
+    status = classify_layer_status(artifacts, latest is not None)
+    return {
+        "id": "flight_comparison",
+        "title": "Demo 01-04 Flight Comparison",
+        "status": status,
+        "path": relative(latest) if latest else None,
+        "artifacts": artifacts,
+        "detail": "Combined 3D comparison board for the four baseline demos.",
+        "warnings": warnings,
+    }
+
+
+def collect_diagnostics_layer(video_summary: dict[str, Any]) -> dict[str, Any]:
+    latest = latest_dir(WORKSPACE / "visualizations" / "diagnostics")
+    artifacts = collect_named_artifacts(latest, DIAGNOSTICS_FILES)
+    warnings = video_target_warnings(video_summary, "diagnostics_overview")
+    status = classify_layer_status(artifacts, latest is not None)
+    return {
+        "id": "diagnostics",
+        "title": "2D Diagnostics Dashboard And Sheets",
+        "status": status,
+        "path": relative(latest) if latest else None,
+        "artifacts": artifacts,
+        "detail": "Dashboard HTML, poster sheets, diagnostics summary, and optional overview MP4.",
+        "warnings": warnings,
+    }
+
+
+def collect_video_packaging_layer(video_summary: dict[str, Any]) -> dict[str, Any]:
+    path = WORKSPACE / "visualizations" / "video_packaging_summary.json"
+    exists = path.is_file() and path.stat().st_size > 0
+    warnings = list(video_summary.get("warnings", [])) if video_summary else []
+    status = "PASS" if exists and not warnings else "WARN" if exists else "MISSING"
+    return {
+        "id": "video_packaging",
+        "title": "Video Packaging Summary",
+        "status": status,
+        "path": relative(path) if exists else None,
+        "artifacts": [
+            artifact_entry(path, "video_packaging_summary.json", required=True),
+        ],
+        "detail": "Reusable MP4 packaging status across demo and advanced outputs.",
+        "warnings": warnings,
+    }
+
+
 def build_audit(
     evidence: dict[str, Any], generated_at: str, generated_at_utc: str
 ) -> dict[str, Any]:
@@ -298,6 +424,10 @@ def build_audit(
     if demo07["status"] != "PASS":
         overall = "Warning"
         risks.append("Demo 07 camera sample frame is not captured in the latest evidence.")
+    advanced = evidence["advanced_visualizations"]
+    if advanced["status"] != "PASS":
+        overall = "Warning"
+        risks.append("One or more advanced visualization layers are incomplete or only partially packaged.")
     risks.extend(
         [
             "Reproducibility still depends on local ROS/Gazebo bridge and controller packages.",
@@ -367,6 +497,7 @@ def build_audit(
             "demo10_dry_run": evidence["demo10_dry_run"],
             "demo10_visuals": evidence["demo10_visuals"],
             "demo10_replay": evidence["demo10_replay"],
+            "advanced_visualizations": advanced,
             "stage2_environment": evidence["stage2_environment"],
         },
         "latest_validation": [
@@ -393,12 +524,13 @@ def build_audit(
             {
                 "command": "python3 scripts/check_stage2_evidence.py",
                 "status": "required",
-                "evidence": "Task 036 validation command",
+                "evidence": "Task 042 validation command",
             },
         ],
         "risks": risks,
         "next_actions": [
             "Use deliverables/simulation_showcase.html for presentation review of current simulation effects.",
+            "Review the Advanced Visualization Layers section for 3D comparison, diagnostics, packaging, and manifest status.",
             "Open the Demo 10 interactive replay from visualizations/demo10_air_reach/<timestamp>/trajectory_replay.html for path playback.",
             "Rerun python3 scripts/generate_demo10_visualizations.py --latest-live after new Demo 10 live evidence.",
             "Rerun python3 scripts/generate_demo10_replay.py --latest-live after new Demo 10 live evidence.",
@@ -462,6 +594,13 @@ def render_summary(audit: dict[str, Any]) -> str:
         f"- Demo 10 interactive replay: `{artifacts['demo10_replay']['status']}` at "
         f"`{artifacts['demo10_replay']['path']}`"
     )
+    lines.append(
+        f"- Advanced visualization bundle: `{artifacts['advanced_visualizations']['status']}`"
+    )
+    for layer in artifacts["advanced_visualizations"]["layers"]:
+        lines.append(
+            f"  - {layer['title']}: `{layer['status']}` at `{layer['path']}`"
+        )
     lines.extend(
         [
             "",
@@ -491,6 +630,7 @@ def render_showcase(audit: dict[str, Any]) -> str:
         artifacts["demo10_visuals"],
         artifacts["demo10_replay"],
     )
+    advanced = render_advanced_layers_section(artifacts["advanced_visualizations"])
     risks = "\n".join(f"<li>{escape(risk)}</li>" for risk in audit["risks"])
     actions = "\n".join(f"<li>{escape(action)}</li>" for action in audit["next_actions"])
     env = artifacts["stage2_environment"]
@@ -592,6 +732,8 @@ def render_showcase(audit: dict[str, Any]) -> str:
     {camera}
 
     {demo10}
+
+    {advanced}
 
     <section>
       <h2>Live / Dry-run / Fallback Status</h2>
@@ -720,6 +862,41 @@ def render_demo10_section(
 </section>"""
 
 
+def render_advanced_layers_section(bundle: dict[str, Any]) -> str:
+    cards = "\n".join(render_advanced_layer_card(layer) for layer in bundle["layers"])
+    return f"""<section id="advanced-visualizations">
+  <h2>Advanced Visualization Layers</h2>
+  <p><span class="status {escape(bundle['status'])}">{escape(bundle['status'])}</span> Demo 10 advanced replay, Demo 01-04 comparison, diagnostics dashboard, packaging summary, and manifest coverage.</p>
+  <div class="grid two">
+    {cards}
+  </div>
+</section>"""
+
+
+def render_advanced_layer_card(layer: dict[str, Any]) -> str:
+    artifacts = []
+    for artifact in layer["artifacts"]:
+        label = escape(artifact["label"])
+        if artifact["exists"] and artifact["path"]:
+            artifacts.append(f'<a href="{href(artifact["path"])}">{label}</a>')
+        else:
+            artifacts.append(
+                f'<span>{label} <span class="status {"MISSING" if artifact["required"] else "WARN"}">'
+                f'{"MISSING" if artifact["required"] else "WARN"}</span></span>'
+            )
+    warning_items = "".join(
+        f"<li>{escape(warning)}</li>" for warning in layer.get("warnings", [])[:4]
+    )
+    warnings = f"<ul>{warning_items}</ul>" if warning_items else "<p class=\"muted\">No warnings.</p>"
+    return f"""<div class="card">
+  <h3>{escape(layer['title'])} <span class="status {escape(layer['status'])}">{escape(layer['status'])}</span></h3>
+  <p>{escape(layer['detail'])}</p>
+  <p><code>{escape(str(layer['path']))}</code></p>
+  <div class="artifact-links">{''.join(artifacts)}</div>
+  {warnings}
+</div>"""
+
+
 def ensure_status_page(audit: dict[str, Any]) -> None:
     STATUS_HTML.write_text(render_status_page(audit), encoding="utf-8")
 
@@ -740,6 +917,10 @@ def render_status_page(audit: dict[str, Any]) -> str:
     )
     risks = "\n".join(f"<li>{escape(risk)}</li>" for risk in audit["risks"])
     actions = "\n".join(f"<li>{escape(action)}</li>" for action in audit["next_actions"])
+    advanced_rows = "\n".join(
+        f"<tr><td>{escape(layer['title'])}</td><td><span class=\"status {escape(layer['status'])}\">{escape(layer['status'])}</span></td><td><code>{escape(str(layer['path']))}</code></td></tr>"
+        for layer in artifacts["advanced_visualizations"]["layers"]
+    )
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -799,9 +980,10 @@ def render_status_page(audit: dict[str, Any]) -> str:
         <div class="metric"><span class="muted">Overall status</span><strong><span class="status {escape(audit['overall_status'])}">{escape(audit['overall_status'])}</span></strong></div>
         <div class="metric"><span class="muted">Demo 10 live</span><strong><span class="status {escape(artifacts['demo10_live']['status'])}">{escape(artifacts['demo10_live']['status'])}</span></strong></div>
         <div class="metric"><span class="muted">Demo 07 camera</span><strong><span class="status {escape(artifacts['demo07_camera']['status'])}">{escape(artifacts['demo07_camera']['status'])}</span></strong></div>
-        <div class="metric"><span class="muted">Showcase</span><strong><a href="simulation_showcase.html">Open page</a></strong></div>
+        <div class="metric"><span class="muted">Advanced layers</span><strong><span class="status {escape(artifacts['advanced_visualizations']['status'])}">{escape(artifacts['advanced_visualizations']['status'])}</span></strong></div>
       </div>
       <p>Detected stack: {", ".join(escape(item) for item in audit["detected_stack"])}.</p>
+      <p><a href="simulation_showcase.html">Open showcase</a> | <a href="simulation_showcase.html#advanced-visualizations">Jump to advanced visualization section</a></p>
     </section>
 
     <section>
@@ -814,6 +996,12 @@ def render_status_page(audit: dict[str, Any]) -> str:
       <div class="table-wrap"><table><thead><tr><th>Demo</th><th>Status</th><th>Latest path</th></tr></thead><tbody>{demo_rows}</tbody></table></div>
       <p>Demo 07: <span class="status {escape(artifacts['demo07_camera']['status'])}">{escape(artifacts['demo07_camera']['status'])}</span> <code>{escape(str(artifacts['demo07_camera']['path']))}</code>.</p>
       <p>Demo 10 live: <span class="status {escape(artifacts['demo10_live']['status'])}">{escape(artifacts['demo10_live']['status'])}</span> <code>{escape(str(artifacts['demo10_live']['path']))}</code>; visuals: <code>{escape(str(artifacts['demo10_visuals']['path']))}</code>; replay: <a href="{href(str(artifacts['demo10_replay']['path'])) if artifacts['demo10_replay'].get('path') else '#'}">trajectory replay</a>.</p>
+    </section>
+
+    <section>
+      <h2>Advanced Visualization Status</h2>
+      <div class="table-wrap"><table><thead><tr><th>Layer</th><th>Status</th><th>Latest path</th></tr></thead><tbody>{advanced_rows}</tbody></table></div>
+      <p>Manifest: <a href="../visualizations/visualization_manifest.json">visualization_manifest.json</a> | Packaging summary: <a href="../visualizations/video_packaging_summary.json">video_packaging_summary.json</a>.</p>
     </section>
 
     <section>
@@ -870,6 +1058,51 @@ def read_text(path: Path) -> str:
         return path.read_text(encoding="utf-8")
     except OSError:
         return ""
+
+
+def collect_named_artifacts(base: Path | None, specs: list[tuple[str, str, bool]]) -> list[dict[str, Any]]:
+    artifacts = []
+    for filename, label, required in specs:
+        path = base / filename if base else None
+        artifacts.append(artifact_entry(path, label, required))
+    return artifacts
+
+
+def artifact_entry(path: Path | None, label: str, required: bool) -> dict[str, Any]:
+    exists = bool(path and path.is_file())
+    return {
+        "label": label,
+        "path": relative(path) if exists else (relative(path) if path else None),
+        "exists": exists,
+        "required": required,
+        "size_bytes": path.stat().st_size if exists else 0,
+    }
+
+
+def classify_layer_status(artifacts: list[dict[str, Any]], has_base_dir: bool) -> str:
+    if not has_base_dir:
+        return "MISSING"
+    required_missing = any(item["required"] and not item["exists"] for item in artifacts)
+    optional_missing = any((not item["required"]) and not item["exists"] for item in artifacts)
+    if required_missing:
+        return "MISSING"
+    if optional_missing:
+        return "WARN"
+    return "PASS"
+
+
+def read_summary_warnings(path: Path) -> list[str]:
+    data = read_json(path)
+    warnings = data.get("warnings", [])
+    return [str(item) for item in warnings] if isinstance(warnings, list) else []
+
+
+def video_target_warnings(video_summary: dict[str, Any], target_id: str) -> list[str]:
+    for target in video_summary.get("targets", []):
+        if target.get("id") == target_id:
+            warnings = target.get("warnings", [])
+            return [str(item) for item in warnings] if isinstance(warnings, list) else []
+    return []
 
 
 def write_json(path: Path, data: dict[str, Any]) -> None:

@@ -16,6 +16,7 @@ DEMO10_ROOT = WORKSPACE_ROOT / "logs" / "demo10_air_reach"
 DELIVERABLES_DIR = WORKSPACE_ROOT / "deliverables"
 STATUS_JSON = DELIVERABLES_DIR / "task-status.json"
 SUMMARY_MD = DELIVERABLES_DIR / "task-summary.md"
+VISUALIZATIONS_DIR = WORKSPACE_ROOT / "visualizations"
 
 REQUIRED_SEQUENCE = [
     "stable_hover",
@@ -56,10 +57,11 @@ def build_report() -> dict[str, Any]:
     demo10 = validate_demo10()
     docs = validate_stage2_docs()
     tasks = validate_task_evidence(12, 22)
+    advanced = validate_advanced_visualizations()
 
     overall_status = "PASS"
-    for section in (demo10["dry_run"], demo10["live"], docs, tasks):
-        if section["status"] != "PASS":
+    for section in (demo10["dry_run"], demo10["live"], docs, tasks, advanced):
+        if section["status"] == "FAIL":
             overall_status = "FAIL"
             break
 
@@ -71,6 +73,7 @@ def build_report() -> dict[str, Any]:
         "demo10": demo10,
         "stage2_docs": docs,
         "task_evidence": tasks,
+        "advanced_visualizations": advanced,
     }
 
 
@@ -270,6 +273,199 @@ def validate_task_evidence(first_task: int, last_task: int) -> dict[str, Any]:
     }
 
 
+def validate_advanced_visualizations() -> dict[str, Any]:
+    checks = [
+        validate_advanced_manifest(),
+        validate_advanced_replay(),
+        validate_flight_comparison(),
+        validate_diagnostics_dashboard(),
+        validate_video_packaging(),
+    ]
+    failures = [f"{item['id']}: {msg}" for item in checks for msg in item["failures"]]
+    warnings = [f"{item['id']}: {msg}" for item in checks for msg in item["warnings"]]
+    status = "FAIL" if failures else "WARN" if warnings else "PASS"
+    return {
+        "status": status,
+        "checks": checks,
+        "failures": failures,
+        "warnings": warnings,
+    }
+
+
+def validate_advanced_manifest() -> dict[str, Any]:
+    task = task_execution_state(37)
+    path = VISUALIZATIONS_DIR / "visualization_manifest.json"
+    exists = path.is_file() and path.stat().st_size > 0
+    failures = []
+    warnings = []
+    if task["was_run"] and not exists:
+        failures.append("visualization_manifest.json missing after Task 037/042 execution")
+    elif not exists:
+        warnings.append("visualization_manifest.json not generated yet")
+    return build_adv_check(
+        "manifest",
+        "Visualization manifest",
+        task,
+        [file_state(path, required=True)],
+        failures,
+        warnings,
+        relative(path),
+    )
+
+
+def validate_advanced_replay() -> dict[str, Any]:
+    task = task_execution_state(38)
+    latest = latest_dir(VISUALIZATIONS_DIR / "demo10_air_reach")
+    base = latest / "advanced" if latest else None
+    html = base / "advanced_replay.html" if base else None
+    summary = base / "advanced_replay_summary.json" if base else None
+    mp4 = base / "advanced_replay.mp4" if base else None
+    failures = []
+    warnings = []
+    if task["was_run"]:
+        if not is_nonempty_file(html):
+            failures.append("advanced_replay.html missing after Task 038 execution")
+        if not is_nonempty_file(summary):
+            failures.append("advanced_replay_summary.json missing after Task 038 execution")
+        if not is_nonempty_file(mp4):
+            warnings.append("advanced_replay.mp4 missing; optional packaging remains WARN")
+    elif not latest:
+        warnings.append("no Demo 10 advanced visualization directory detected")
+    return build_adv_check(
+        "advanced_replay",
+        "Demo 10 advanced replay",
+        task,
+        [file_state(html, True), file_state(summary, True), file_state(mp4, False)],
+        failures,
+        warnings,
+        relative(base) if base else None,
+    )
+
+
+def validate_flight_comparison() -> dict[str, Any]:
+    task = task_execution_state(39)
+    latest = latest_dir(VISUALIZATIONS_DIR / "flight_comparison")
+    html = latest / "flight_comparison_3d.html" if latest else None
+    png = latest / "flight_comparison_3d.png" if latest else None
+    summary = latest / "summary.json" if latest else None
+    mp4 = latest / "flight_comparison_3d.mp4" if latest else None
+    failures = []
+    warnings = []
+    if task["was_run"]:
+        if not is_nonempty_file(html):
+            failures.append("flight_comparison_3d.html missing after Task 039 execution")
+        if not is_nonempty_file(summary):
+            failures.append("summary.json missing for latest flight comparison output")
+        if not is_nonempty_file(png):
+            warnings.append("flight_comparison_3d.png missing from latest comparison output")
+        if not is_nonempty_file(mp4):
+            warnings.append("flight_comparison_3d.mp4 missing; optional packaging remains WARN")
+    elif not latest:
+        warnings.append("no flight comparison output directory detected")
+    return build_adv_check(
+        "flight_comparison",
+        "Demo 01-04 flight comparison",
+        task,
+        [
+            file_state(html, True),
+            file_state(png, False),
+            file_state(mp4, False),
+            file_state(summary, True),
+        ],
+        failures,
+        warnings,
+        relative(latest) if latest else None,
+    )
+
+
+def validate_diagnostics_dashboard() -> dict[str, Any]:
+    task = task_execution_state(40)
+    latest = latest_dir(VISUALIZATIONS_DIR / "diagnostics")
+    html = latest / "diagnostics_dashboard.html" if latest else None
+    overview = latest / "overview_sheet.png" if latest else None
+    metrics = latest / "metrics_sheet.png" if latest else None
+    summary = latest / "diagnostics_summary.json" if latest else None
+    mp4 = latest / "diagnostics_overview.mp4" if latest else None
+    failures = []
+    warnings = []
+    if task["was_run"]:
+        if not is_nonempty_file(html):
+            failures.append("diagnostics_dashboard.html missing after Task 040 execution")
+        if not is_nonempty_file(summary):
+            failures.append("diagnostics_summary.json missing for latest diagnostics output")
+        if not is_nonempty_file(overview):
+            warnings.append("overview_sheet.png missing from latest diagnostics output")
+        if not is_nonempty_file(metrics):
+            warnings.append("metrics_sheet.png missing from latest diagnostics output")
+        if not is_nonempty_file(mp4):
+            warnings.append("diagnostics_overview.mp4 missing; optional packaging remains WARN")
+    elif not latest:
+        warnings.append("no diagnostics dashboard output directory detected")
+    return build_adv_check(
+        "diagnostics",
+        "Diagnostics dashboard",
+        task,
+        [
+            file_state(html, True),
+            file_state(overview, False),
+            file_state(metrics, False),
+            file_state(summary, True),
+            file_state(mp4, False),
+        ],
+        failures,
+        warnings,
+        relative(latest) if latest else None,
+    )
+
+
+def validate_video_packaging() -> dict[str, Any]:
+    task = task_execution_state(41)
+    path = VISUALIZATIONS_DIR / "video_packaging_summary.json"
+    summary = read_json(path)
+    failures = []
+    warnings = []
+    if task["was_run"]:
+        if not is_nonempty_file(path):
+            failures.append("video_packaging_summary.json missing after Task 041 execution")
+        else:
+            for target in summary.get("targets", []):
+                if not target.get("exists"):
+                    warnings.extend(str(item) for item in target.get("warnings", []) or [])
+    elif not path.is_file():
+        warnings.append("video_packaging_summary.json not generated yet")
+    return build_adv_check(
+        "video_packaging",
+        "Video packaging summary",
+        task,
+        [file_state(path, True)],
+        failures,
+        warnings,
+        relative(path),
+    )
+
+
+def build_adv_check(
+    check_id: str,
+    title: str,
+    task: dict[str, Any],
+    files: list[dict[str, Any]],
+    failures: list[str],
+    warnings: list[str],
+    path: str | None = None,
+) -> dict[str, Any]:
+    status = "FAIL" if failures else "WARN" if warnings else "PASS"
+    return {
+        "id": check_id,
+        "title": title,
+        "status": status,
+        "task": task,
+        "path": path,
+        "files": files,
+        "failures": failures,
+        "warnings": warnings,
+    }
+
+
 def latest_demo10_run(predicate: Any) -> Path | None:
     if not DEMO10_ROOT.is_dir():
         return None
@@ -278,6 +474,28 @@ def latest_demo10_run(predicate: Any) -> Path | None:
         if path.is_dir() and predicate(path):
             candidates.append(path)
     return sorted(candidates)[-1] if candidates else None
+
+
+def latest_dir(root: Path) -> Path | None:
+    if not root.is_dir():
+        return None
+    candidates = sorted(path for path in root.iterdir() if path.is_dir())
+    return candidates[-1] if candidates else None
+
+
+def task_execution_state(task_number: int) -> dict[str, Any]:
+    task_file = task_file_for(task_number)
+    stem = task_file.stem if task_file else f"{task_number:03d}-unknown"
+    done_path = WORKSPACE_ROOT / "codex-logs" / f"{stem}.done"
+    log_files = sorted((WORKSPACE_ROOT / "codex-logs").glob(f"{stem}*.log"))
+    return {
+        "task": f"{task_number:03d}",
+        "stem": stem,
+        "task_file": relative(task_file) if task_file else None,
+        "done_exists": done_path.is_file(),
+        "log_files": [relative(path) for path in log_files],
+        "was_run": done_path.is_file() or bool(log_files),
+    }
 
 
 def demo10_metrics(run_dir: Path) -> dict[str, Any]:
@@ -371,6 +589,16 @@ def read_text(path: Path) -> str:
     return path.read_text(encoding="utf-8", errors="replace")
 
 
+def read_json(path: Path) -> dict[str, Any]:
+    if not path.is_file():
+        return {}
+    try:
+        value = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return {}
+    return value if isinstance(value, dict) else {}
+
+
 def write_deliverables(report: dict[str, Any]) -> None:
     DELIVERABLES_DIR.mkdir(parents=True, exist_ok=True)
     STATUS_JSON.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
@@ -382,6 +610,7 @@ def render_summary(report: dict[str, Any]) -> str:
     live = report["demo10"]["live"]
     docs = report["stage2_docs"]
     tasks = report["task_evidence"]
+    advanced = report["advanced_visualizations"]
 
     lines = [
         "# Stage 2 Evidence Summary",
@@ -410,6 +639,23 @@ def render_summary(report: dict[str, Any]) -> str:
     lines.extend(
         [
             "",
+            "## Advanced Visualization Evidence",
+            "",
+            f"- advanced_status: `{advanced['status']}`",
+        ]
+    )
+    for check in advanced["checks"]:
+        lines.append(
+            f"- {check['title']}: `{check['status']}` `{check.get('path', 'n/a')}`"
+        )
+    for warning in advanced["warnings"]:
+        lines.append(f"- warning: `{warning}`")
+    for failure in advanced["failures"]:
+        lines.append(f"- failure: `{failure}`")
+
+    lines.extend(
+        [
+            "",
             "## Task 012-022 Evidence",
             "",
             f"- task_evidence_status: `{tasks['status']}`",
@@ -434,6 +680,19 @@ def relative(path: Path) -> str:
         return str(path.relative_to(WORKSPACE_ROOT))
     except ValueError:
         return str(path)
+
+
+def is_nonempty_file(path: Path | None) -> bool:
+    return bool(path and path.is_file() and path.stat().st_size > 0)
+
+
+def file_state(path: Path | None, required: bool) -> dict[str, Any]:
+    return {
+        "path": relative(path) if path else None,
+        "exists": is_nonempty_file(path),
+        "required": required,
+        "size_bytes": path.stat().st_size if is_nonempty_file(path) else 0,
+    }
 
 
 if __name__ == "__main__":

@@ -48,18 +48,19 @@
 <body>
   <header>
     <h1>PX4 ROS2 UAV Capture Project Status</h1>
-    <div>Generated: 2026-05-28T12:17:13+08:00 | Workspace: <code>/home/clcwork/UAV_capture/px4_ros2_ws</code></div>
+    <div>Generated: 2026-05-29T01:19:27+08:00 | Workspace: <code>/home/clcwork/UAV_capture/px4_ros2_ws</code></div>
   </header>
   <main>
     <section>
       <h2>Project Overview</h2>
       <div class="grid">
-        <div class="metric"><span class="muted">Overall status</span><strong><span class="status Healthy">Healthy</span></strong></div>
+        <div class="metric"><span class="muted">Overall status</span><strong><span class="status Warning">Warning</span></strong></div>
         <div class="metric"><span class="muted">Demo 10 live</span><strong><span class="status PASS">PASS</span></strong></div>
         <div class="metric"><span class="muted">Demo 07 camera</span><strong><span class="status PASS">PASS</span></strong></div>
-        <div class="metric"><span class="muted">Showcase</span><strong><a href="simulation_showcase.html">Open page</a></strong></div>
+        <div class="metric"><span class="muted">Advanced layers</span><strong><span class="status WARN">WARN</span></strong></div>
       </div>
       <p>Detected stack: ROS 2 Jazzy, PX4 SITL, Gazebo Sim, Micro XRCE-DDS Agent, Python/rclpy, ament/colcon, shell automation.</p>
+      <p><a href="simulation_showcase.html">Open showcase</a> | <a href="simulation_showcase.html#advanced-visualizations">Jump to advanced visualization section</a></p>
     </section>
 
     <section>
@@ -75,6 +76,16 @@
 <tr><td>Demo 04 External Setpoint / UAV Bridge</td><td><span class="status PASS">PASS</span></td><td><code>visualizations/demo04_external_setpoint/20260527_085025</code></td></tr></tbody></table></div>
       <p>Demo 07: <span class="status PASS">PASS</span> <code>visualizations/demo_07_camera/20260528_113542</code>.</p>
       <p>Demo 10 live: <span class="status PASS">PASS</span> <code>logs/demo10_air_reach/20260528_114546</code>; visuals: <code>visualizations/demo10_air_reach/20260528_114546</code>; replay: <a href="../visualizations/demo10_air_reach/20260528_114546/trajectory_replay.html">trajectory replay</a>.</p>
+    </section>
+
+    <section>
+      <h2>Advanced Visualization Status</h2>
+      <div class="table-wrap"><table><thead><tr><th>Layer</th><th>Status</th><th>Latest path</th></tr></thead><tbody><tr><td>Visualization Manifest</td><td><span class="status PASS">PASS</span></td><td><code>visualizations/visualization_manifest.json</code></td></tr>
+<tr><td>Demo 10 Advanced 3D Replay</td><td><span class="status WARN">WARN</span></td><td><code>visualizations/demo10_air_reach/20260528_114546/advanced</code></td></tr>
+<tr><td>Demo 01-04 Flight Comparison</td><td><span class="status WARN">WARN</span></td><td><code>visualizations/flight_comparison/20260529_010033</code></td></tr>
+<tr><td>2D Diagnostics Dashboard And Sheets</td><td><span class="status WARN">WARN</span></td><td><code>visualizations/diagnostics/20260529_010849</code></td></tr>
+<tr><td>Video Packaging Summary</td><td><span class="status WARN">WARN</span></td><td><code>visualizations/video_packaging_summary.json</code></td></tr></tbody></table></div>
+      <p>Manifest: <a href="../visualizations/visualization_manifest.json">visualization_manifest.json</a> | Packaging summary: <a href="../visualizations/video_packaging_summary.json">video_packaging_summary.json</a>.</p>
     </section>
 
     <section>
@@ -99,12 +110,13 @@
 <tr><td><code>python3 scripts/generate_simulation_showcase.py</code></td><td>required</td><td><code>codex-logs/036-build-simulation-showcase-deliverable.log</code></td></tr>
 <tr><td><code>python3 -m compileall src scripts</code></td><td>required</td><td><code>Task 036 validation command</code></td></tr>
 <tr><td><code>bash -n run_codex_queue.sh</code></td><td>required</td><td><code>Task 036 validation command</code></td></tr>
-<tr><td><code>python3 scripts/check_stage2_evidence.py</code></td><td>required</td><td><code>Task 036 validation command</code></td></tr></tbody></table></div>
+<tr><td><code>python3 scripts/check_stage2_evidence.py</code></td><td>required</td><td><code>Task 042 validation command</code></td></tr></tbody></table></div>
     </section>
 
     <section>
       <h2>Error Diagnosis and Risks</h2>
-      <ul><li>Reproducibility still depends on local ROS/Gazebo bridge and controller packages.</li>
+      <ul><li>One or more advanced visualization layers are incomplete or only partially packaged.</li>
+<li>Reproducibility still depends on local ROS/Gazebo bridge and controller packages.</li>
 <li>Timestamped evidence is local to this workspace and should be regenerated after dependency changes.</li>
 <li>LeRobot policy integration remains scaffolded; current Demo 10 evidence validates the scripted/control bridge path.</li></ul>
     </section>
@@ -112,6 +124,7 @@
     <section>
       <h2>Next Actions</h2>
       <ul><li>Use deliverables/simulation_showcase.html for presentation review of current simulation effects.</li>
+<li>Review the Advanced Visualization Layers section for 3D comparison, diagnostics, packaging, and manifest status.</li>
 <li>Open the Demo 10 interactive replay from visualizations/demo10_air_reach/&lt;timestamp&gt;/trajectory_replay.html for path playback.</li>
 <li>Rerun python3 scripts/generate_demo10_visualizations.py --latest-live after new Demo 10 live evidence.</li>
 <li>Rerun python3 scripts/generate_demo10_replay.py --latest-live after new Demo 10 live evidence.</li>
